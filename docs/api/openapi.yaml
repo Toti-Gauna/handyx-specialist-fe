@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: api-especialista (Handyx)
-  version: 0.2.0
+  version: 0.3.0
   description: |
     BORRADOR del contrato de api-especialista (TECH-20). Fuente de los esquemas: src/contracts/dto.ts
-    (contrato compartido v0.2.0, dueño handyx-client-be). Nada implementado todavía: lo construye
+    (contrato compartido v0.3.0, dueño handyx-client-be). Nada implementado todavía: lo construye
     handyx-specialist-be en la fase 4. Sesión por cookie HttpOnly; CSRF en X-CSRF-Token para mutaciones;
     Idempotency-Key (UUIDv4) donde se indica. Timestamps UTC; importes en centavos enteros.
 servers:
@@ -89,6 +89,132 @@ paths:
       parameters: [{ $ref: '#/components/parameters/Csrf' }]
       responses:
         '204': { description: Sesión revocada }
+
+  # ── 0.3.0 · Cuenta (lote 4.2): código por email, Google o Apple y recuperación con enlace ──────
+  /v1/auth/verificacion:
+    get:
+      tags: [auth]
+      summary: Estado del código de 6 dígitos enviado al email (el código nunca viaja al cliente)
+      responses:
+        '200':
+          description: Código vigente
+          content: { application/json: { schema: { $ref: '#/components/schemas/VerificacionEmail' } } }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [auth]
+      summary: Verificar el email con el código (5 intentos; vence a los 10 minutos)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [codigo]
+              properties:
+                codigo: { type: string, pattern: '^[0-9]{6}$' }
+      responses:
+        '200':
+          description: Email verificado
+          content: { application/json: { schema: { $ref: '#/components/schemas/Sesion' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /v1/auth/verificacion/reenvio:
+    post:
+      tags: [auth]
+      summary: Mandar otro código (solo después de reenviarDesde)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '200':
+          description: Código nuevo enviado
+          content: { application/json: { schema: { $ref: '#/components/schemas/VerificacionEmail' } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /v1/auth/proveedor:
+    post:
+      tags: [auth]
+      security: []
+      summary: Entrar con Google o Apple (el servidor valida firma, audiencia, emisor, vencimiento y nonce del id_token)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [proveedor, idToken, nonce]
+              properties:
+                proveedor: { type: string, enum: [google, apple] }
+                idToken: { type: string, minLength: 20 }
+                nonce: { type: string, minLength: 16 }
+      responses:
+        '200':
+          description: Sesión iniciada; cuentaNueva indica que falta aceptar términos y privacidad
+          content: { application/json: { schema: { $ref: '#/components/schemas/ResultadoProveedor' } } }
+        '401': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /v1/auth/aceptaciones:
+    post:
+      tags: [auth]
+      summary: Aceptar términos y privacidad (cuentas nuevas de Google o Apple)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [terminos, privacidad]
+              properties:
+                terminos: { type: string, description: id de la versión aceptada }
+                privacidad: { type: string, description: id de la versión del aviso aceptado }
+      responses:
+        '204': { description: Aceptaciones registradas }
+        '400': { $ref: '#/components/responses/Error' }
+  /v1/auth/recuperacion/estado:
+    post:
+      tags: [auth]
+      security: []
+      summary: Estado del enlace de recuperación (token en el cuerpo, nunca en la ruta; uno desconocido se informa vencido)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [token]
+              properties:
+                token: { type: string, minLength: 16 }
+      responses:
+        '200':
+          description: Estado del enlace
+          content: { application/json: { schema: { $ref: '#/components/schemas/EstadoToken' } } }
+        '429': { $ref: '#/components/responses/Error' }
+  /v1/auth/recuperacion/nueva:
+    post:
+      tags: [auth]
+      security: []
+      summary: Elegir la contraseña nueva con el enlace (un solo uso; cierra todas las sesiones)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [token, password]
+              properties:
+                token: { type: string, minLength: 16 }
+                password: { type: string, minLength: 12, maxLength: 128 }
+      responses:
+        '204': { description: Contraseña cambiada }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
 
   /v1/especialista/perfil:
     get:
@@ -767,12 +893,36 @@ components:
         cuenta:
           type: object
           additionalProperties: false
-          required: [id, roles]
+          required: [id, roles, emailVerificado, terminosAceptados]
           properties:
             id: { type: string, format: uuid }
             roles: { type: array, items: { type: string, enum: [usuario, especialista] } }
+            emailVerificado: { type: boolean, description: '0.3.0 · hasta verificar el código solo se puede verificar, reenviar o salir' }
+            terminosAceptados: { type: boolean, description: '0.3.0 · las cuentas nuevas de Google o Apple aceptan después de entrar' }
         csrfToken: { type: string, minLength: 16 }
         expiraEn: { $ref: '#/components/schemas/Instante' }
+    VerificacionEmail:
+      type: object
+      additionalProperties: false
+      required: [emailEnmascarado, venceEn, reenviarDesde, intentosRestantes]
+      properties:
+        emailEnmascarado: { type: string, description: 'ma•••@dominio' }
+        venceEn: { $ref: '#/components/schemas/Instante' }
+        reenviarDesde: { $ref: '#/components/schemas/Instante' }
+        intentosRestantes: { type: integer, minimum: 0 }
+    ResultadoProveedor:
+      type: object
+      additionalProperties: false
+      required: [sesion, cuentaNueva]
+      properties:
+        sesion: { $ref: '#/components/schemas/Sesion' }
+        cuentaNueva: { type: boolean }
+    EstadoToken:
+      type: object
+      additionalProperties: false
+      required: [estado]
+      properties:
+        estado: { type: string, enum: [valido, vencido, usado] }
     PerfilEspecialista:
       type: object
       additionalProperties: false

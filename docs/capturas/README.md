@@ -1,16 +1,21 @@
-# Capturas sanitizadas · PWA Especialista (lote 3.3)
+# Capturas sanitizadas · PWA Especialista (lotes 3.3 y 4.2)
 
 Generadas con `npm run build && npm run capturas:docs` (`scripts/capturas-docs.sh`). Datos **sintéticos** del mock, nunca de
 producción. `e2e/capturas.cjs` rechaza la captura si aparece un email que no sea `@example.test`, un DNI/CUIT que no sea de
 prueba, un teléfono o si falta el banner "Datos de prueba" (salvo en las dos pantallas sin datos de la cuenta).
 
-Celular 390×844 en `390x844/` (las 25) y escritorio 1280×800 en `1280x800/` (inicio, pedido, trabajo, agenda, caja y cuenta).
+Celular 390×844 en `390x844/` (las 31) y escritorio 1280×800 en `1280x800/` (inicio, pedido, trabajo, agenda, caja y cuenta).
 
 | Pantalla | Ruta | Escenario |
 |---|---|---|
+| [bienvenida](390x844/bienvenida.webp) | `/bienvenida/` | `nuevo` |
 | [acceso](390x844/acceso.webp) | `/acceso/` | `nuevo` |
+| [acceso-de-nuevo](390x844/acceso-de-nuevo.webp) | `/acceso/?motivo=sesion` | `nuevo` |
 | [registro](390x844/registro.webp) | `/registro/` | `nuevo` |
+| [verificar](390x844/verificar.webp) | `/verificar/` | `sin_verificar` |
+| [aceptar](390x844/aceptar.webp) | `/registro/aceptar/` | `sin_aceptar` |
 | [recuperar](390x844/recuperar.webp) | `/recuperar/` | `nuevo` |
+| [enlace-vencido](390x844/enlace-vencido.webp) | `/recuperar/nueva/?token=…vencido` | `nuevo` |
 | [alta-borrador](390x844/alta-borrador.webp) | `/alta/` | `incompleto` |
 | [alta-en-revision](390x844/alta-en-revision.webp) | `/alta/` | `en_revision` |
 | [alta-correccion](390x844/alta-correccion.webp) | `/alta/` | `correccion` |

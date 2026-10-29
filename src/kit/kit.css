@@ -1205,6 +1205,77 @@
   touch-action: pan-y;
 }
 
+/* ── Código de 6 números ───────────────────────────────────────────── */
+
+.hx-codigo {
+  display: grid;
+  gap: var(--esp-2);
+}
+
+.hx-codigo__etiqueta {
+  color: var(--hd-tinta);
+  font-weight: 700;
+}
+
+.hx-codigo__caja {
+  position: relative;
+}
+
+/* El campo real cubre las casillas: recibe el foco, el pegado y el autocompletado del teléfono. */
+.hx-codigo__input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font-size: 1.6rem;
+  letter-spacing: 1.5em;
+  outline: none;
+}
+
+.hx-codigo__casillas {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--esp-2);
+}
+
+.hx-codigo__casilla {
+  display: grid;
+  place-items: center;
+  min-height: 60px;
+  border: 2px solid var(--hd-borde);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--hd-azul);
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.7rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hx-codigo__casilla--llena {
+  border-color: var(--hd-azul-ui);
+}
+
+/* La casilla que sigue se marca solo cuando el campo tiene el foco (foco visible de 3 px). */
+.hx-codigo__input:focus-visible + .hx-codigo__casillas .hx-codigo__casilla--actual,
+.hx-codigo__input:focus + .hx-codigo__casillas .hx-codigo__casilla--actual {
+  border-color: var(--hd-azul);
+  box-shadow: 0 0 0 3px var(--hd-azul-tinte), 0 0 0 5px var(--hd-azul);
+}
+
+.hx-codigo--error .hx-codigo__casilla {
+  border-color: var(--hd-error);
+}
+
+.hx-codigo__input:disabled + .hx-codigo__casillas {
+  opacity: 0.5;
+}
+
 /* ── Movimiento (solo sin "reducir movimiento") ────────────────────── */
 
 @media (prefers-reduced-motion: no-preference) {

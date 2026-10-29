@@ -1,10 +1,73 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y el lote 4.1) · Bloque 4 · **Fase 4 en curso: lote 4.1 cerrado localmente.**
-Modelos: fases 1, 3 y lote 4.1 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 y 4.2) · Bloque 4 · **Fase 4 en curso: lotes 4.1 y 4.2 cerrados localmente.**
+Modelos: fases 1, 3 y lotes 4.1–4.2 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 4 · Lote 4.2 (carga, bienvenida y cuenta)
+
+- **Carga** (`PantallaCarga`):
+  - El fondo pasa por azul, amarillo y noche hasta el hueso.
+  - Los 5 Handys saltan, cae el logo de Handyx y terminan de la mano con un saltito final.
+  - Dura 2,5 s y se saltea tocando o con una tecla. Con "reducir movimiento" es un cuadro quieto de 0,6 s.
+  - La `Puerta` redirige cuando terminaron la carga **y** la consulta de la cuenta (`lib/destino.ts`).
+- **Bienvenida**: 3 láminas ("Vos ponés tu precio", "La plata va directo a vos", "0 % de tarifa hasta el 10/12"). Se pasan con el
+  dedo, las flechas, los puntos o "Siguiente". Al final: "Crear cuenta" o "Ya tengo cuenta".
+- **Entrar**:
+  - Google en todos los dispositivos; Apple solo en iPhone, iPad y Mac (`lib/dispositivo.ts`); o email y contraseña.
+  - Con `?motivo=sesion` dice "Hola de nuevo": la hoja de sesión expirada lleva ahí.
+- **Crear cuenta** en 3 pasos (email, contraseña con medidor de fuerza, aceptaciones sin tildar) → **Verificar** con un código de
+  6 números → **Cuenta creada**, con celebración y el aviso del fee 0 %.
+  - Verificar: vencimiento, intentos que quedan, reenvío con espera y "Cambiar el email".
+  - Una cuenta nueva de Google o Apple pasa por **Un paso más** (aceptaciones).
+- **Recuperar** → Revisá tu correo → Contraseña nueva → Tu contraseña cambió, o Enlace vencido. El token sale de la URL apenas se lee.
+- **Contrato 0.3.0** (`docs/contracts.md`):
+  - `Sesion.cuenta` suma `emailVerificado` y `terminosAceptados`.
+  - 7 endpoints `/v1/auth/*` en la API, el mock, el adaptador HTTP y el OpenAPI.
+  - El mock exige terminar la cuenta antes de usar el resto (403).
+  - `version.ts` estaba vacío desde el lote 2.1: se restauró, y ahora una prueba lo compara con el OpenAPI.
+- **Solo en la vista previa**:
+  - Google y Apple muestran cuentas de prueba en una hoja.
+  - El código (482913) y los enlaces de recuperación se ven en pantalla.
+  - En producción (`ayudasPrueba = null`) los botones de Google y Apple no aparecen hasta el lote 5.2.
+  - `verificar-bundle` controla que no se filtren los tokens ni los correos de prueba.
+- **Corregido en el camino** (anterior a 4.2):
+  - Una contraseña incorrecta abría "Tu sesión expiró", porque `useAccion` tomaba todo 401 como sesión vencida. Se agregó
+    `useAccion({ publica: true })` y se fija en L5.
+  - El id del título de `Hoja` era fijo; ahora sale de `useId`.
+- **E2E**:
+  - Se actualizaron A y F.
+  - Recorridos nuevos:
+    - L1: carga, láminas y sin Apple en Linux.
+    - L2: Apple en iPhone → aceptar → alta.
+    - L3: Google con una cuenta existente.
+    - L4: código incorrecto.
+    - L5: recuperar y contraseña nueva.
+    - L6: enlace vencido.
+  - `npm run accesibilidad` suma verificar y el foco al primer error del registro.
+
+### Comandos del lote 4.2 (29/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 89 pruebas: 87 OK y 2 omitidas (sincronías con otros repos) |
+| `npm run build` | OK, 28 páginas + `out/sw.js` |
+| `npm run e2e` | 19/19 recorridos (nuevos: L1–L6) |
+| `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento; solo días del calendario del catálogo por debajo de 44 px (≥ 30 px) |
+| `ANCHOS=` 7 tamaños `npm run capturas` | 266/266 sin desborde y sanitizadas |
+| `build:hostinger` con API ficticia | OK: 27 páginas, sin `/catalogo/`, fixtures, tokens ni cuentas de prueba |
+
+**Pendiente de autorización (fase 5)**:
+- Cuenta de Apple Developer (≈ USD 99 al año).
+- Proyecto de Google Cloud con OAuth.
+- Proveedor de email transaccional.
+
+No se contrató nada.
+
+**Próximo paso**: lote 4.3 (mapa de Mar del Plata, ubicación en tiempo real y trayectos), con Opus 5.5 / xhigh.
 
 ## Fase 4 · Lote 4.1 (marca Handyx, sistema visual v2 y kit)
 
@@ -47,8 +110,7 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 | `ANCHOS=` 7 tamaños `npm run capturas` | 231/231 sin desborde y sanitizadas |
 | `build:hostinger` con API ficticia | OK: 23 páginas, sin `/catalogo/` ni fixtures |
 
-**Próximo paso**: lote 4.2 (pantalla de carga con los Handys de la mano, bienvenida, entrar con Google, Apple o email, crear cuenta
-con código de 6 dígitos y recuperación), armado con el kit.
+**Siguiente**: lote 4.2 (cerrado, ver arriba).
 
 ## Fase 3 · Lote 3.3 (movimiento, PWA y QA visual)
 

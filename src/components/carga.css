@@ -1,0 +1,156 @@
+/* Pantalla de carga (lote 4.2). La importa PantallaCarga.tsx. */
+
+.cu-carga {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--hx-seguro-arriba) var(--esp-4) var(--hx-seguro-abajo);
+  background: var(--color-hueso);
+  cursor: pointer;
+  transition: opacity 0.28s ease, scale 0.28s ease;
+}
+
+.cu-carga--sale {
+  opacity: 0;
+  scale: 1.04;
+  pointer-events: none;
+}
+
+.cu-carga__escena {
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+}
+
+.cu-carga__logo {
+  width: min(62vw, 240px);
+  height: auto;
+}
+
+.cu-carga__fila {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.cu-carga__handy {
+  position: relative;
+  display: block;
+}
+
+/* Las manos: un brazo que une a cada Handy con el de al lado. */
+.cu-carga__handy:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  bottom: 34%;
+  left: calc(100% - 6px);
+  width: 26px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--hd-azul);
+}
+
+.cu-carga__sombra {
+  width: 220px;
+  height: 10px;
+  margin-top: -22px;
+  border-radius: 50%;
+  background: rgb(14 29 54 / 0.12);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cu-carga {
+    animation: cu-fondo 2.5s linear both;
+  }
+  .cu-carga__logo {
+    animation: cu-logo-cae 0.55s 1.45s var(--hx-resorte) both; /* cae cuando el fondo ya es claro */
+  }
+  .cu-carga__handy {
+    animation:
+      cu-saltar 0.5s ease-in-out 0.1s 3,
+      cu-saltito 0.36s ease-out 2.1s;
+  }
+  .cu-carga__handy:nth-child(2) {
+    animation-delay: 0.18s, 2.1s;
+  }
+  .cu-carga__handy:nth-child(3) {
+    animation-delay: 0.26s, 2.1s;
+  }
+  .cu-carga__handy:nth-child(4) {
+    animation-delay: 0.34s, 2.1s;
+  }
+  .cu-carga__handy:nth-child(5) {
+    animation-delay: 0.42s, 2.1s;
+  }
+  .cu-carga__handy:not(:last-child)::after {
+    transform-origin: left center;
+    animation: cu-mano 0.3s 1.8s ease-out both;
+  }
+  .cu-carga__sombra {
+    animation: cu-sombra 0.5s ease-in-out 0.1s 3;
+  }
+
+  /* Cada color se sostiene y el cambio es un fundido corto: así no pasa por mezclas grises (azul → amarillo). */
+  @keyframes cu-fondo {
+    0%,
+    16% {
+      background: var(--hd-azul);
+    }
+    20%,
+    36% {
+      background: var(--hd-amarillo);
+    }
+    40%,
+    56% {
+      background: var(--hd-noche);
+    }
+    60%,
+    100% {
+      background: var(--color-hueso);
+    }
+  }
+  @keyframes cu-logo-cae {
+    from {
+      translate: 0 -70vh;
+      rotate: -8deg;
+    }
+  }
+  /* Un salto con aplaste al caer. */
+  @keyframes cu-saltar {
+    0%,
+    100% {
+      translate: 0 0;
+      scale: 1 1;
+    }
+    12% {
+      scale: 1.12 0.86;
+    }
+    45% {
+      translate: 0 -46px;
+      scale: 0.94 1.08;
+    }
+    85% {
+      translate: 0 0;
+      scale: 1.1 0.9;
+    }
+  }
+  @keyframes cu-saltito {
+    50% {
+      translate: 0 -16px;
+    }
+  }
+  @keyframes cu-mano {
+    from {
+      scale: 0 1;
+    }
+  }
+  @keyframes cu-sombra {
+    45% {
+      scale: 0.75 1;
+      opacity: 0.6;
+    }
+  }
+}

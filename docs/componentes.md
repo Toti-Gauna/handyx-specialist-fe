@@ -1,4 +1,4 @@
-# Catálogo de componentes · PWA Especialista (lotes 3.3 y 4.1)
+# Catálogo de componentes · PWA Especialista (lotes 3.3, 4.1 y 4.2)
 
 Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila dice dónde verlo en
 `docs/capturas/390x844/` (todas con datos sintéticos; ver `docs/capturas/README.md`).
@@ -80,6 +80,21 @@ Para las pantallas de la fase 4. Se ven en uso en `/catalogo/` (solo en la vista
 | `LineaDeTiempo` | `Piezas.tsx` | Revisión del alta, estado de un trabajo, etapas de una obra | El estado se lee ("hecho", "en curso", "pendiente"); `aria-current="step"` |
 | `EstadoVacio` | `Piezas.tsx` | Un Handy contento con título, texto y acción | El Handy es decorativo |
 | `Tilde` | `Piezas.tsx` | Tilde de éxito que se dibuja | Decorativo |
+
+| `CampoCodigo` | `CampoCodigo.tsx` (4.2) | Código de 6 números: un solo campo real (teclado numérico, `one-time-code`, pegar) sobre 6 casillas dibujadas | Una etiqueta y un error asociados; las casillas son `aria-hidden` |
+
+## Cuenta (lote 4.2)
+
+| Componente | Archivo | Para qué | Notas |
+|---|---|---|---|
+| `PantallaCarga` | `PantallaCarga.tsx` + `carga.css` | Carga al abrir: fondo que cambia de color, los Handys saltan, cae el logo y se dan la mano (2,5 s) | Se saltea tocando o con una tecla; con "reducir movimiento", cuadro quieto de 0,6 s. La `Puerta` redirige cuando terminan la carga y la consulta |
+| `Escena` | `Cuenta.tsx` | Escena de color de arriba con Handys, logo y mosaicos de herramientas | Decorativa |
+| `CampoClave` | `Cuenta.tsx` | Contraseña con "Mostrar" y, en las nuevas, medidor de fuerza en 3 tramos con texto (`lib/clave.ts`) | La fuerza se dice con palabras, no solo con color |
+| `CasillasLegales` | `Cuenta.tsx` | Términos y privacidad sin tildar, con la lectura en una `Hoja` | Error por casilla |
+| `CuentaCreada` | `Cuenta.tsx` | Tilde, confeti, aviso del fee 0 % y "Completar mi alta" | Celebración permitida |
+| `BotonesProveedor` | `BotonesProveedor.tsx` | "Continuar con Google" siempre y "Continuar con Apple" solo en dispositivos Apple (`lib/dispositivo.ts`) | Hoy solo en el mock (cuentas de prueba en una hoja). En producción no aparecen hasta conectar los SDK (lote 5.2) |
+
+`useAccion({ publica: true })`: en entrar y con Google o Apple, un 401 es "credenciales incorrectas", no "tu sesión expiró".
 
 Handys disponibles (`Handy.tsx`):
 - Contentos: grupo, lamparita, llave, engranaje, caño y gota.

@@ -73,7 +73,7 @@ la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote
   - Tokens v2.
   - Kit `.hd-*` de la demo portado a React: barra compacta, pestañas flotantes, hoja arrastrable, isla, stepper de precio, confeti y monto que sube.
   - Catálogo solo en el mock.
-- [ ] **4.2 Arranque y cuenta:**
+- [x] **4.2 Arranque y cuenta** (evidencia: recorridos A y L1–L6, `docs/screens.md` → A0–A3, contrato 0.3.0):
   - Carga animada: colores que cambian, los Handys saltan y terminan de la mano bajo el logo.
   - Bienvenida en 3 láminas.
   - Entrar con email, con Google (Android, iPhone y computadora) o con Apple (solo en iPhone, iPad y Mac).

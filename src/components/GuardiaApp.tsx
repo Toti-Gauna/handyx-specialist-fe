@@ -20,14 +20,27 @@ const Ctx = createContext<CtxPerfil | null>(null);
 export function GuardiaApp({ children }: { children: ReactNode }) {
   const router = useRouter();
   // Se vuelve a pedir cada minuto: el alta la cambia Operations, no la persona (habilitación, corrección, rechazo).
-  const c = useCarga(async () => ((await api.sesion()) ? api.perfil() : null), [], { cadaMs: 60_000 });
-  const perfil = c.datos;
+  // Una cuenta a medio crear (email sin verificar o términos sin aceptar) vuelve a terminarla antes de entrar.
+  const c = useCarga(
+    async () => {
+      const s = await api.sesion();
+      if (!s) return null;
+      if (!s.cuenta.emailVerificado) return 'verificar' as const;
+      if (!s.cuenta.terminosAceptados) return 'aceptar' as const;
+      return api.perfil();
+    },
+    [],
+    { cadaMs: 60_000 },
+  );
+  const perfil = typeof c.datos === 'string' ? null : c.datos;
   const valor = useMemo(() => (perfil ? { perfil, recargar: c.recargar } : null), [perfil, c.recargar]);
 
   useEffect(() => {
-    if (c.estado === 'ok' && perfil === null) router.replace(RUTAS.acceso.ruta);
+    if (c.estado === 'ok' && c.datos === null) router.replace(RUTAS.acceso.ruta);
+    if (c.datos === 'verificar') router.replace(RUTAS.verificar.ruta);
+    if (c.datos === 'aceptar') router.replace(RUTAS.aceptar.ruta);
     if (perfil?.baja && perfil.baja !== 'cancelada') router.replace(RUTAS.baja.ruta);
-  }, [c.estado, perfil, router]);
+  }, [c.estado, c.datos, perfil, router]);
 
   if (c.fallo && !perfil) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!valor) return <Cargando />;

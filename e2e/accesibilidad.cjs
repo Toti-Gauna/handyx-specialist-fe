@@ -97,13 +97,16 @@ async function main() {
 
   // Errores de formulario: al enviar con datos faltantes, el foco va al primer campo marcado
   for (const [nombre, ruta, boton, escenario] of [
-    ['registro', '/registro/', 'Crear cuenta', 'nuevo'],
+    ['registro', '/registro/', 'Siguiente', 'nuevo'],
+    ['verificar', '/verificar/', null, 'sin_verificar'],
     ['alta-datos', '/alta/', 'Guardar y seguir', 'incompleto'],
     ['caso', '/soporte/', 'Abrir un caso', 'habilitado'],
   ]) {
     const p = await ctx.newPage();
     await p.goto(`${base}${ruta}?escenario=${escenario}`);
-    await p.getByRole('button', { name: boton }).first().click();
+    if (boton) await p.getByRole('button', { name: boton }).first().click();
+    // Verificar: un código incorrecto deja el error y el foco en el campo del código
+    if (nombre === 'verificar') await p.getByLabel('Código de 6 números').fill('000000');
     if (nombre === 'caso') await p.getByRole('button', { name: 'Enviar', exact: true }).click();
     await p.waitForTimeout(300);
     const ok = await p.evaluate(() => document.activeElement?.getAttribute('aria-invalid') === 'true');

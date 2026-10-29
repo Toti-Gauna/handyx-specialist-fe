@@ -61,6 +61,10 @@ export const SesionSchema = z.strictObject({
   cuenta: z.strictObject({
     id: IdSchema,
     roles: z.array(z.enum(['usuario', 'especialista'])),
+    /** 0.3.0: hasta verificar el email con el código, la cuenta solo puede verificar, reenviar o salir. */
+    emailVerificado: z.boolean(),
+    /** 0.3.0: las cuentas que entran por primera vez con Google o Apple aceptan términos y privacidad después. */
+    terminosAceptados: z.boolean(),
   }),
   csrfToken: z.string().min(16),
   expiraEn: InstanteSchema,
@@ -498,6 +502,56 @@ export type Registro = z.infer<typeof RegistroSchema>;
 
 export const IngresoSchema = z.strictObject({ email: z.email(), password: z.string().min(1) });
 export type Ingreso = z.infer<typeof IngresoSchema>;
+
+// ═══ Contrato 0.3.0: cuenta (fase 4, lote 4.2) ═══════════════════════════════════════════════════
+// Código de 6 dígitos al email, entrada con Google o Apple y recuperación con enlace de un solo uso.
+
+/** Estado del código enviado al email. El código nunca viaja del servidor al cliente. */
+export const VerificacionEmailSchema = z.strictObject({
+  /** "ma•••@example.test": para que la persona reconozca el email sin mostrarlo entero. */
+  emailEnmascarado: z.string(),
+  venceEn: InstanteSchema,
+  /** Antes de este instante no se puede pedir otro código. */
+  reenviarDesde: InstanteSchema,
+  intentosRestantes: z.number().int().min(0),
+});
+export type VerificacionEmail = z.infer<typeof VerificacionEmailSchema>;
+
+export const CodigoEmailSchema = z.strictObject({ codigo: z.string().regex(/^\d{6}$/) });
+export type CodigoEmail = z.infer<typeof CodigoEmailSchema>;
+
+export const PROVEEDORES = ['google', 'apple'] as const;
+export type Proveedor = (typeof PROVEEDORES)[number];
+
+/** El id_token lo da Google o Apple en el navegador; el servidor lo valida (firma, audiencia, nonce) antes de abrir sesión. */
+export const IngresoProveedorSchema = z.strictObject({
+  proveedor: z.enum(PROVEEDORES),
+  idToken: z.string().min(20),
+  nonce: z.string().min(16),
+});
+export type IngresoProveedor = z.infer<typeof IngresoProveedorSchema>;
+
+export const ResultadoProveedorSchema = z.strictObject({
+  sesion: SesionSchema,
+  /** true: la cuenta se creó ahora y falta aceptar términos y privacidad. */
+  cuentaNueva: z.boolean(),
+});
+export type ResultadoProveedor = z.infer<typeof ResultadoProveedorSchema>;
+
+export const AceptacionesSchema = z.strictObject({ terminos: z.string(), privacidad: z.string() });
+export type Aceptaciones = z.infer<typeof AceptacionesSchema>;
+
+/** El token del enlace de recuperación va en el cuerpo, nunca en la ruta (no queda en los registros del servidor). */
+export const TokenRecuperacionSchema = z.strictObject({ token: z.string().min(16) });
+export const ESTADOS_TOKEN = ['valido', 'vencido', 'usado'] as const;
+export const EstadoTokenSchema = z.strictObject({ estado: z.enum(ESTADOS_TOKEN) });
+export type EstadoToken = z.infer<typeof EstadoTokenSchema>;
+
+export const RestablecerSchema = z.strictObject({
+  token: z.string().min(16),
+  password: z.string().min(REGLAS_CLAVE.minimo).max(REGLAS_CLAVE.maximo),
+});
+export type Restablecer = z.infer<typeof RestablecerSchema>;
 
 // Tipos de los esquemas que antes no los exportaban
 export type Mensaje = z.infer<typeof MensajeSchema>;

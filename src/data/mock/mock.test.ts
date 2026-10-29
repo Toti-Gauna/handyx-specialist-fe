@@ -9,7 +9,7 @@ import {
 import { monto } from '../../contracts/dinero.ts';
 import { crearApiMockConEstado } from './adaptador.ts';
 import { crearControles } from './controles.ts';
-import { CREDENCIALES_PRUEBA, type Escenario } from './estado.ts';
+import { CODIGO_PRUEBA, CREDENCIALES_PRUEBA, CUENTAS_PROVEEDOR_PRUEBA, TOKEN_RECUPERACION_PRUEBA, TOKEN_VENCIDO_PRUEBA, type Escenario } from './estado.ts';
 import { ID } from './fixtures.ts';
 
 const nuevo = (escenario: Escenario = 'habilitado') => {
@@ -60,6 +60,7 @@ describe('alta: del registro a la habilitación', () => {
     assert.equal(await api.sesion(), null);
     await api.registrar({ email: 'nueva@example.test', password: 'una-clave-larga-123', terminos: 'esp-terminos-2026-10-29-prov', privacidad: 'esp-privacidad-2026-10-29-prov' });
     assert.ok(await api.sesion());
+    await api.verificarEmail({ codigo: CODIGO_PRUEBA });
     let perfil = await api.perfil();
     assert.equal(perfil.estadoAlta, 'borrador');
     // Enviar incompleto es un error por campo, no un éxito
@@ -365,5 +366,94 @@ describe('cuenta, baja y fallas', () => {
     const { api } = nuevo();
     const claves = Object.keys(await api.inicio()).join(' ');
     assert.doesNotMatch(claves, /acept|respuesta|puntual|ranking/i);
+  });
+});
+
+describe('cuenta: código por email, Google o Apple y recuperación (lote 4.2)', () => {
+  const VERSIONES = { terminos: 'esp-terminos-2026-10-29-prov', privacidad: 'esp-privacidad-2026-10-29-prov' };
+  type Falla = { tipo: string; detalle?: { mensaje?: string } };
+
+  it('una cuenta nueva no usa el resto de la API hasta verificar el email', async () => {
+    const { api } = nuevo('nuevo');
+    await api.registrar({ email: 'nueva@example.test', password: 'una-clave-larga-123', ...VERSIONES });
+    const sesion = await api.sesion();
+    assert.equal(sesion?.cuenta.emailVerificado, false);
+    assert.equal(sesion?.cuenta.terminosAceptados, true);
+    await assert.rejects(api.perfil(), (e: Falla) => e.tipo === 'permiso');
+    const v = await api.estadoVerificacion();
+    assert.equal(v.emailEnmascarado, 'nu•••@example.test');
+    assert.equal(v.intentosRestantes, 5);
+  });
+
+  it('el código: incorrecto descuenta intentos, después de 5 hay que pedir otro, y el correcto verifica', async () => {
+    const { api, estado } = nuevo('sin_verificar');
+    await assert.rejects(api.verificarEmail({ codigo: '000000' }), (e: Falla) => e.tipo === 'validacion' && /Te quedan 4 intentos/.test(e.detalle?.mensaje ?? ''));
+    for (let i = 0; i < 3; i++) await assert.rejects(api.verificarEmail({ codigo: '000000' }));
+    await assert.rejects(api.verificarEmail({ codigo: '000000' }), (e: Falla) => e.tipo === 'limite');
+    await assert.rejects(api.verificarEmail({ codigo: CODIGO_PRUEBA }), (e: Falla) => e.tipo === 'limite', 'bloqueado aunque ahora acierte');
+    // Pedir otro código exige esperar un minuto
+    estado.saltosMs = 0;
+    await assert.rejects(api.reenviarCodigo(), (e: Falla) => e.tipo === 'limite');
+    estado.saltosMs = 61_000;
+    assert.equal((await api.reenviarCodigo()).intentosRestantes, 5);
+    const s = await api.verificarEmail({ codigo: CODIGO_PRUEBA });
+    assert.equal(s.cuenta.emailVerificado, true);
+    assert.ok(await api.perfil());
+  });
+
+  it('el código vence a los 10 minutos', async () => {
+    const { api, estado } = nuevo('sin_verificar');
+    estado.saltosMs = 11 * 60_000;
+    await assert.rejects(api.verificarEmail({ codigo: CODIGO_PRUEBA }), (e: Falla) => e.tipo === 'validacion' && /venció/.test(e.detalle?.mensaje ?? ''));
+  });
+
+  it('Google: una cuenta nueva viene verificada pero acepta términos antes de seguir; una existente entra directo', async () => {
+    const { api } = nuevo('nuevo');
+    const nueva = CUENTAS_PROVEEDOR_PRUEBA.google[0];
+    const r = await api.ingresarConProveedor({ proveedor: 'google', idToken: nueva.idToken, nonce: 'nonce-de-prueba-0001' });
+    assert.equal(r.cuentaNueva, true);
+    assert.equal(r.sesion.cuenta.emailVerificado, true);
+    assert.equal(r.sesion.cuenta.terminosAceptados, false);
+    await assert.rejects(api.perfil(), (e: Falla) => e.tipo === 'permiso');
+    await api.aceptarTerminos(VERSIONES);
+    assert.ok(await api.perfil());
+
+    const { api: otra } = nuevo('nuevo');
+    const existente = CUENTAS_PROVEEDOR_PRUEBA.google[1];
+    const r2 = await otra.ingresarConProveedor({ proveedor: 'google', idToken: existente.idToken, nonce: 'nonce-de-prueba-0002' });
+    assert.equal(r2.cuentaNueva, false);
+    assert.ok(await otra.perfil());
+  });
+
+  it('un token de proveedor desconocido no abre sesión, y una cuenta de Google no entra con contraseña', async () => {
+    const { api } = nuevo('nuevo');
+    await assert.rejects(api.ingresarConProveedor({ proveedor: 'apple', idToken: 'token-que-no-existe-0000000', nonce: 'nonce-de-prueba-0003' }), (e: Falla) => e.tipo === 'sesion');
+    assert.equal(await api.sesion(), null);
+    const { api: otra } = nuevo('sin_aceptar');
+    await otra.salir();
+    await assert.rejects(otra.ingresar({ email: CUENTAS_PROVEEDOR_PRUEBA.google[0].email, password: 'cualquier-clave' }), (e: Falla) => e.tipo === 'sesion');
+  });
+
+  it('recuperación: el enlace sirve una sola vez, cambia la contraseña y cierra la sesión', async () => {
+    const { api } = nuevo('habilitado');
+    await api.recuperar(CREDENCIALES_PRUEBA.email);
+    assert.deepEqual(await api.estadoRecuperacion(TOKEN_RECUPERACION_PRUEBA), { estado: 'valido' });
+    await api.restablecer({ token: TOKEN_RECUPERACION_PRUEBA, password: 'otra-clave-bien-larga' });
+    assert.equal(await api.sesion(), null);
+    assert.deepEqual(await api.estadoRecuperacion(TOKEN_RECUPERACION_PRUEBA), { estado: 'usado' });
+    await assert.rejects(api.restablecer({ token: TOKEN_RECUPERACION_PRUEBA, password: 'otra-clave-bien-larga' }), (e: Falla) => e.tipo === 'conflicto');
+    await assert.rejects(api.ingresar(CREDENCIALES_PRUEBA), (e: Falla) => e.tipo === 'sesion');
+    assert.ok(await api.ingresar({ email: CREDENCIALES_PRUEBA.email, password: 'otra-clave-bien-larga' }));
+  });
+
+  it('recuperación neutra: un email sin cuenta, un enlace desconocido o uno viejo se ven como vencidos', async () => {
+    const { api, estado } = nuevo('habilitado');
+    await api.recuperar('nadie@example.test');
+    assert.deepEqual(await api.estadoRecuperacion(TOKEN_RECUPERACION_PRUEBA), { estado: 'vencido' });
+    assert.deepEqual(await api.estadoRecuperacion('token-inventado-00000000'), { estado: 'vencido' });
+    assert.deepEqual(await api.estadoRecuperacion(TOKEN_VENCIDO_PRUEBA), { estado: 'vencido' });
+    await api.recuperar(CREDENCIALES_PRUEBA.email);
+    estado.saltosMs = 31 * 60_000;
+    assert.deepEqual(await api.estadoRecuperacion(TOKEN_RECUPERACION_PRUEBA), { estado: 'vencido' });
   });
 });

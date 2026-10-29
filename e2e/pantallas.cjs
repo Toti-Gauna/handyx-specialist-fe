@@ -3,9 +3,14 @@ const id = (n) => `00000000-0000-4000-8000-${n.toString(16).padStart(12, '0')}`;
 
 // [nombre, ruta, texto que indica que terminó de cargar, escenario]
 const PANTALLAS = [
-  ['acceso', '/acceso/', 'Entrá a tu cuenta', 'nuevo'],
-  ['registro', '/registro/', 'Crear tu cuenta', 'nuevo'],
-  ['recuperar', '/recuperar/', 'Recuperar el acceso', 'nuevo'],
+  ['bienvenida', '/bienvenida/', 'tu precio', 'nuevo'],
+  ['acceso', '/acceso/', 'La app para especialistas', 'nuevo'],
+  ['acceso-de-nuevo', '/acceso/?motivo=sesion', 'Por seguridad cerramos tu sesión', 'nuevo'],
+  ['registro', '/registro/', 'Te vamos a mandar un código', 'nuevo'],
+  ['verificar', '/verificar/', 'Vence en 10 minutos', 'sin_verificar'],
+  ['aceptar', '/registro/aceptar/', 'Es tu primera vez en Handyx', 'sin_aceptar'],
+  ['recuperar', '/recuperar/', 'Escribí el email de tu cuenta', 'nuevo'],
+  ['enlace-vencido', '/recuperar/nueva/?token=tok-prueba-recuperacion-vencido', 'Los enlaces sirven una sola vez', 'nuevo'],
   ['alta-borrador', '/alta/', 'Tus datos', 'incompleto'],
   ['alta-en-revision', '/alta/', 'Próximos pasos', 'en_revision'],
   ['alta-correccion', '/alta/', 'Hay que corregir algo', 'correccion'],

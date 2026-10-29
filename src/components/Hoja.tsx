@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { Icono } from './Icono.tsx';
 
 const ENFOCABLES = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -16,6 +16,7 @@ interface Props {
 /** Hoja inferior sobre <dialog> modal: foco atrapado, Esc cierra, el contenido de atrás queda inerte. */
 export function Hoja({ abierta, titulo, onCerrar, cerrable = true, children }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
+  const idTitulo = useId(); // único: puede haber más de una hoja en la pantalla
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
@@ -27,7 +28,7 @@ export function Hoja({ abierta, titulo, onCerrar, cerrable = true, children }: P
     <dialog
       ref={ref}
       className="hoja"
-      aria-labelledby="hoja-titulo"
+      aria-labelledby={idTitulo}
       onCancel={(e) => {
         e.preventDefault();
         if (cerrable) onCerrar();
@@ -54,7 +55,7 @@ export function Hoja({ abierta, titulo, onCerrar, cerrable = true, children }: P
       {abierta ? (
         <div className="hoja__cuerpo">
           <div className="hoja__cabecera">
-            <h2 id="hoja-titulo" className="hoja__titulo">
+            <h2 id={idTitulo} className="hoja__titulo">
               {titulo}
             </h2>
             {cerrable ? (

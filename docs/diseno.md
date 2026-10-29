@@ -164,7 +164,7 @@ Para verlo en uso, abrí `/catalogo/` en la vista previa. Solo existe en el mock
 | Acción principal | Una por pantalla, en `BotonFijo` abajo, sobre el área segura. No tapa contenido |
 | Hojas | Hay dos: `Hoja` (modal, para confirmar aceptar, rechazar, terminar o cancelar) y `HojaArrastrable` (no modal, sobre el mapa, con tres alturas) |
 | Elegido | Mosaicos, chips, días: azul **y** con tilde, subrayado o `aria-pressed`. Nunca solo el color |
-| Celebraciones | `useConfeti` y `MontoGrande` (monto que sube) **solo** al ganar un trabajo, terminarlo o registrar un cobro. Nunca en decisiones pendientes, vencimientos ni urgencia |
+| Celebraciones | `useConfeti` y `MontoGrande` (monto que sube) **solo** al ganar un trabajo, terminarlo, registrar un cobro o crear la cuenta (y, más adelante, al quedar habilitado). Nunca en decisiones pendientes, vencimientos ni urgencia |
 | Isla | Avisos que bajan desde arriba (`useIsla`). Se anuncian, se cierran y no se van mientras los tocás o tienen el foco. Todo lo que dicen queda también en Avisos |
 | Montos | Los grandes usan un espacio que no se corta ("$ 44.000" nunca deja el "$" solo). Mientras suben, se muestran en pesos enteros |
 | Precio | "Handyx sugiere · Vos decidís": la sugerencia es una ayuda, siempre editable. La tarifa de Handyx se muestra aparte ("Recibís") y no es un descuento sobre el precio |

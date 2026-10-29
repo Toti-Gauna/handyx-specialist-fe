@@ -10,8 +10,19 @@ import type {
   Propuesta,
 } from '../../contracts/dto.ts';
 import { monto } from '../../contracts/dinero.ts';
-import { RELOJ_BASE, idFijo, iso, type Escenario, type EstadoMock, type PedidoInterno, type TrabajoInterno } from './estado.ts';
-import { CREDENCIALES_PRUEBA } from './estado.ts';
+import {
+  CODIGO_PRUEBA,
+  CREDENCIALES_PRUEBA,
+  CUENTAS_PROVEEDOR_PRUEBA,
+  MINUTO,
+  RELOJ_BASE,
+  idFijo,
+  iso,
+  type Escenario,
+  type EstadoMock,
+  type PedidoInterno,
+  type TrabajoInterno,
+} from './estado.ts';
 
 const MIN = 60_000;
 const HORA = 60 * MIN;
@@ -80,6 +91,10 @@ export function estadoBase(escenario: Escenario): EstadoMock {
     conflictoProximo: false,
     pushRechazado: false,
     sesionActiva: escenario !== 'nuevo',
+    verificados: new Set([CREDENCIALES_PRUEBA.email]),
+    aceptaron: new Set([CREDENCIALES_PRUEBA.email]),
+    codigoEmail: null,
+    recuperacion: new Map(),
     sesionExpirada: false,
     intentosFallidos: 0,
     cuentas: new Map([[CREDENCIALES_PRUEBA.email, CREDENCIALES_PRUEBA.password]]),
@@ -119,6 +134,25 @@ export function estadoBase(escenario: Escenario): EstadoMock {
 export function crearEstado(escenario: Escenario): EstadoMock {
   const s = estadoBase(escenario);
   if (escenario === 'nuevo') return s;
+
+  // Cuentas a medio crear: no hay alta todavía.
+  if (escenario === 'sin_verificar') {
+    const email = 'cuenta.nueva@example.test';
+    s.cuentas.set(email, 'una-clave-larga-de-prueba');
+    s.aceptaron.add(email);
+    s.cuenta.email = email;
+    s.perfil.email = email;
+    s.codigoEmail = { codigo: CODIGO_PRUEBA, venceMs: RELOJ_BASE + 10 * MINUTO, reenviarDesdeMs: RELOJ_BASE + MINUTO, intentos: 0 };
+    return s;
+  }
+  if (escenario === 'sin_aceptar') {
+    const { email } = CUENTAS_PROVEEDOR_PRUEBA.google[0];
+    s.cuentas.set(email, '');
+    s.verificados.add(email);
+    s.cuenta.email = email;
+    s.perfil.email = email;
+    return s;
+  }
 
   if (escenario === 'incompleto') {
     s.alta.datos = { ...s.alta.datos, nombre: 'Especialista', apellido: 'De Prueba' };

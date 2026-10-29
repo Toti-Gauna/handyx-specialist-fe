@@ -11,13 +11,20 @@ estas pruebas demuestran la interfaz y las reglas emuladas del servidor, no el b
 | Recorridos de punta a punta | `npm run build && npm run e2e` | 12 recorridos en Chromium (390×844) sobre `out/`, incluido J: sin conexión con service worker |
 | Service worker | `npm test` (`src/pwa/politica.test.ts`) | Nunca intercepta la API, mutaciones ni otros sitios |
 | Accesibilidad | `npm run accesibilidad` (`ANCHO=1280x800`) | axe WCAG 2.2 AA en 32 pantallas y 6 diálogos, áreas táctiles, teclado, foco al primer error y texto al 200 % |
-| Capturas | `npm run capturas -- [carpeta]` (`ANCHOS=360x740,…`) | 32 pantallas/escenarios (incluye errores, sin conexión y 404) con control de desborde y de sanitización |
+| Capturas | `npm run capturas -- [carpeta]` (`ANCHOS=360x740,…`) | 38 pantallas/escenarios (incluye cuenta, errores, sin conexión y 404) con control de desborde y de sanitización |
 | Catálogo en `docs/capturas/` | `npm run capturas:docs` (ImageMagick) | Las 32 a 390×844 y 6 a 1280×800 en webp |
 | Capturas de recorridos | `CAPTURAS=/ruta node e2e/flujos.cjs` | Una captura por estado clave (insumo de la fase 3 y de Handy Docs, sin datos reales) |
 | Recorrido manual | `npm run dev` y el **Panel de prueba** del banner amarillo | Escenarios, fallas, reloj y simulación de las otras partes |
 
 El estado de prueba vive solo en la memoria de la pestaña: **recargar la página lo reinicia**. `?escenario=` en la URL de
-entrada elige el punto de partida: `nuevo`, `incompleto`, `en_revision`, `correccion`, `rechazado`, `habilitado`, `baja`.
+entrada elige el punto de partida: `nuevo`, `sin_verificar` (cuenta nueva sin el código), `sin_aceptar` (entró con Google por
+primera vez), `incompleto`, `en_revision`, `correccion`, `rechazado`, `habilitado` y `baja`.
+
+En la vista previa no se manda ningún email ni se abre Google o Apple:
+- El código de prueba es **482913** y aparece en Verificar.
+- Las cuentas de Google y Apple se eligen de una lista.
+- El enlace de recuperación se abre desde "Revisá tu correo" ("Abrir el enlace del email" o "Probar un enlace vencido").
+- Apple aparece solo con un navegador de iPhone, iPad o Mac (en el recorrido L2, el agente de usuario es de iPhone).
 
 ## Escenarios obligatorios (prompt del Bloque 4) y cómo reproducirlos
 

@@ -21,7 +21,10 @@ import {
   PerfilPublicoSchema,
   PreferenciasSchema,
   PropuestaSchema,
+  ResultadoProveedorSchema,
   SesionSchema,
+  VerificacionEmailSchema,
+  EstadoTokenSchema,
   TrabajoDetalleSchema,
   TrabajoSchema,
 } from '../../contracts/dto.ts';
@@ -56,6 +59,27 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
     },
     async salir() {
       await c.pedir('POST', '/v1/auth/salida', Nada);
+      c.recordarCsrf(null);
+    },
+
+    estadoVerificacion: () => c.pedir('GET', '/v1/auth/verificacion', VerificacionEmailSchema),
+    reenviarCodigo: () => c.pedir('POST', '/v1/auth/verificacion/reenvio', VerificacionEmailSchema),
+    async verificarEmail(datos) {
+      const s = await c.pedir('POST', '/v1/auth/verificacion', SesionSchema, { cuerpo: datos });
+      c.recordarCsrf(s.csrfToken);
+      return s;
+    },
+    async ingresarConProveedor(datos) {
+      const r = await c.pedir('POST', '/v1/auth/proveedor', ResultadoProveedorSchema, { cuerpo: datos });
+      c.recordarCsrf(r.sesion.csrfToken);
+      return r;
+    },
+    async aceptarTerminos(datos) {
+      await c.pedir('POST', '/v1/auth/aceptaciones', Nada, { cuerpo: datos });
+    },
+    estadoRecuperacion: (token) => c.pedir('POST', '/v1/auth/recuperacion/estado', EstadoTokenSchema, { cuerpo: { token } }),
+    async restablecer(datos) {
+      await c.pedir('POST', '/v1/auth/recuperacion/nueva', Nada, { cuerpo: datos });
       c.recordarCsrf(null);
     },
 

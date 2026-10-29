@@ -23,9 +23,12 @@ habilitada → disponibilidad declarada (urgentes "Ahora" opt-in, programados, f
 | # | Pantalla | Ruta | Lote | Estados que muestra | Reglas |
 |---|---|---|---|---|---|
 | Z1 | Sin conexión | `/sin-conexion/` | 3.3 | sin red y pantalla no guardada | HTML estático del service worker, sin datos de la cuenta (`docs/pwa.md`) |
-| A1 | Entrar | `/acceso/` | 2.1 | vacío, error de credenciales, bloqueo por intentos, sin red | Sin OTP/SMS. Mensaje genérico ante credenciales inválidas |
-| A2 | Crear cuenta | `/registro/` | 2.1 | validación de campos, cuenta existente (respuesta neutra) | Términos y privacidad versionados con aceptación explícita (sin tildar) |
-| A3 | Recuperar acceso | `/recuperar/` | 2.1 | enviado (respuesta neutra), token vencido | No revela si la cuenta existe |
+| A0 | Carga y bienvenida | `/` · `/bienvenida/` | 4.2 | carga animada (se saltea tocando; quieta con "reducir movimiento"); 3 láminas; crear cuenta o entrar | La carga solo al abrir la app. Las láminas no prometen nada fuera de las reglas: precio propio, pago directo, fee 0 % hasta el 10/12 |
+| A1 | Entrar | `/acceso/` (`?motivo=sesion`: "Hola de nuevo") | 4.2 | vacío, error de credenciales, bloqueo por intentos, sin red; Google; Apple solo en dispositivos Apple | Sin SMS. Mensaje genérico ante credenciales inválidas (y sin el aviso de sesión vencida) |
+| A2 | Crear cuenta | `/registro/` | 4.2 | 3 pasos (email, contraseña con medidor, aceptaciones); cuenta existente (respuesta neutra) | Términos y privacidad versionados con aceptación explícita (sin tildar) |
+| A2b | Verificar el email | `/verificar/` | 4.2 | código incorrecto (intentos que quedan), vencido, bloqueado, reenvío con espera, cambiar el email; cuenta creada | Código de 6 dígitos que no viaja al cliente; hasta verificar no se usa el resto |
+| A2c | Un paso más | `/registro/aceptar/` | 4.2 | cuenta nueva de Google o Apple | Email ya verificado por el proveedor; aceptaciones sin tildar |
+| A3 | Recuperar acceso | `/recuperar/` · `/recuperar/nueva/?token=` | 4.2 | enviado (respuesta neutra), contraseña nueva, cambiada, enlace vencido o usado | No revela si la cuenta existe; el token sale de la URL al leerlo |
 | A4 | Fee 0 % post-registro | (paso de `/registro/`) | 2.1 | antes / vigente / último día | "Handyx no te cobra tarifa hasta el 10/12/2026". No es descuento sobre tu precio |
 | B1 | Alta · datos base | `/alta/?paso=datos` | 2.1 | incompleto, guardado, error | Nombre, apellido, fecha de nacimiento, nacionalidad, ubicación real, género (PROD-15). Sin campos comerciales obligatorios |
 | B2 | Alta · identidad | `/alta/?paso=identidad` | 2.1 | faltante, cargado, en revisión, rechazado con motivo | DNI y CUIT/CUIL. CUIL no equivale a habilitación fiscal: queda capturado pero no habilita si Legal exige CUIT |

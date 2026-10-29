@@ -72,7 +72,8 @@ const COLORES_CONFETI = ['#1F57A8', '#F5F59A', '#2F6BFF', '#ECECEC', '#4A72B0', 
 export function useConfeti(): { lanzar(): void; capa: ReactNode } {
   const [activo, setActivo] = useState(0);
   const capa = useMemo(() => (activo && typeof document !== 'undefined' ? createPortal(<CapaConfeti key={activo} />, document.body) : null), [activo]);
-  return { lanzar: () => (sinMovimiento() ? undefined : setActivo((n) => n + 1)), capa };
+  const lanzar = useCallback(() => (sinMovimiento() ? undefined : setActivo((n) => n + 1)), []);
+  return { lanzar, capa };
 }
 
 function CapaConfeti() {

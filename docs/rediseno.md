@@ -174,6 +174,12 @@ de flujos (la del artifact) antes del siguiente.
 
 ### 4.2 · Carga, bienvenida y cuenta
 
+**Estado: cerrado localmente (29/10/2026).**
+- Las pantallas están en `src/app/(cuenta)/` y `src/pantallas/`.
+- El contrato sube a 0.3.0.
+- Google y Apple se prueban con cuentas de prueba elegidas de una lista. Los SDK reales y el envío de emails llegan en el lote 5.2,
+  con autorización de Ignacio.
+
 Pantallas:
 1. Carga animada (§3).
 2. Bienvenida en 3 láminas con los Handys:

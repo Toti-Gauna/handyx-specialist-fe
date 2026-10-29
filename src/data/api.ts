@@ -3,6 +3,13 @@
 // Cada método existe en los dos adaptadores y en docs/api/openapi.yaml.
 import type {
   Aceptacion,
+  Aceptaciones,
+  CodigoEmail,
+  EstadoToken,
+  IngresoProveedor,
+  Restablecer,
+  ResultadoProveedor,
+  VerificacionEmail,
   AgendaItem,
   Aviso,
   Baja,
@@ -60,6 +67,20 @@ export interface EspecialistaApi {
   /** Respuesta neutra: es igual exista o no la cuenta. */
   recuperar(email: string): Promise<void>;
   salir(): Promise<void>;
+
+  // Cuenta (contrato 0.3.0, lote 4.2)
+  /** Estado del código de 6 dígitos que se mandó al email de una cuenta nueva. */
+  estadoVerificacion(): Promise<VerificacionEmail>;
+  /** Manda otro código (el servidor exige esperar hasta `reenviarDesde`). */
+  reenviarCodigo(): Promise<VerificacionEmail>;
+  verificarEmail(datos: CodigoEmail): Promise<Sesion>;
+  /** Google o Apple: el id_token lo valida el servidor. Una cuenta nueva vuelve con `cuentaNueva` y falta aceptar. */
+  ingresarConProveedor(datos: IngresoProveedor): Promise<ResultadoProveedor>;
+  aceptarTerminos(datos: Aceptaciones): Promise<void>;
+  /** Estado del enlace de recuperación (uno desconocido se informa como vencido: no revela nada). */
+  estadoRecuperacion(token: string): Promise<EstadoToken>;
+  /** Elige la contraseña nueva con el enlace del email; cierra las sesiones abiertas. */
+  restablecer(datos: Restablecer): Promise<void>;
 
   // Alta y perfil
   perfil(): Promise<PerfilEspecialista>;

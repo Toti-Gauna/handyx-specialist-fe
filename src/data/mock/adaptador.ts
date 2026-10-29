@@ -3,7 +3,7 @@
 // escenarios y simulaciones para recorrer todos los estados sin backend en ./controles.ts.
 import type { EspecialistaApi } from '../api.ts';
 import { FalloApi } from '../errores.ts';
-import { acceso } from './acceso.ts';
+import { acceso, cuentaLista } from './acceso.ts';
 import { alta } from './alta.ts';
 import { caja } from './caja.ts';
 import { cuenta } from './cuenta.ts';
@@ -26,8 +26,10 @@ type Metodos = Omit<EspecialistaApi, 'origen' | 'ahora' | 'simulacionPostDemo'>;
 /** Versión síncrona de cada método del puerto: el adaptador la envuelve con latencia, fallas y sesión. */
 type Sincrono = { [K in keyof Metodos]: Metodos[K] extends (...a: infer A) => Promise<infer R> ? (...a: A) => R : never };
 
-// No exigen sesión: acceso y consulta de sesión.
-const PUBLICOS = new Set<keyof Metodos>(['sesion', 'ingresar', 'registrar', 'recuperar', 'salir']);
+// No exigen sesión: acceso, consulta de sesión y recuperación con el enlace del email.
+const PUBLICOS = new Set<keyof Metodos>(['sesion', 'ingresar', 'registrar', 'recuperar', 'salir', 'ingresarConProveedor', 'estadoRecuperacion', 'restablecer']);
+// Con sesión pero sin terminar la cuenta (email sin verificar o términos sin aceptar) solo se puede esto.
+const CUENTA_A_MEDIAS = new Set<keyof Metodos>(['estadoVerificacion', 'reenviarCodigo', 'verificarEmail', 'aceptarTerminos']);
 
 export interface ApiMock {
   api: EspecialistaApi;
@@ -62,6 +64,9 @@ export function crearApiMockConEstado(o: OpcionesMock = {}): ApiMock {
       if (!PUBLICOS.has(nombre) && (!s.sesionActiva || s.sesionExpirada)) {
         s.sesionActiva = false;
         throw fallo('sesion', 401, 'no_autenticado', 'Tu sesión expiró. Volvé a entrar.');
+      }
+      if (!PUBLICOS.has(nombre) && !CUENTA_A_MEDIAS.has(nombre) && !cuentaLista(s)) {
+        throw fallo('permiso', 403, 'sin_permiso', 'Primero terminá de crear tu cuenta.');
       }
       return structuredClone(hacer(...args));
     };

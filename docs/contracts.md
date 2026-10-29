@@ -1,6 +1,17 @@
 # Contrato compartido Usuario · Especialista · Portal (lote 1.3)
 
-Versión: **0.2.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+Versión: **0.3.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+
+**0.2.0 → 0.3.0 (fase 4, lote 4.2, cambios para el dueño del contrato):** cuenta con código por email, Google o Apple y
+recuperación con enlace de un solo uso.
+- `Sesion.cuenta` suma `emailVerificado` y `terminosAceptados`. Es obligatorio: no es compatible con 0.2.0, y se acepta porque
+  todavía no existe la API.
+- Nuevos `VerificacionEmail`, `CodigoEmail`, `IngresoProveedor` (`PROVEEDORES`), `ResultadoProveedor`, `Aceptaciones`,
+  `EstadoToken` (`ESTADOS_TOKEN`) y `Restablecer`.
+- 7 endpoints `/v1/auth/*` nuevos en `docs/api/openapi.yaml`.
+- Con sesión pero sin terminar la cuenta, el servidor solo deja verificar, reenviar, aceptar o salir: lo demás responde
+  `403 sin_permiso`.
+- `version.ts` había quedado vacío en el lote 2.1: se restauró y una prueba lo compara con `info.version` del OpenAPI.
 
 **0.1.0 → 0.2.0 (fase 2, cambios para el dueño del contrato):** DTO de alta (`DatosAlta`, `GuardarDatosAlta`, `PerfilPublico`), cuenta
 (`Preferencias`, `Baja`), `Aviso`, `Inicio`, `PedidoDetalle`, `TrabajoDetalle` (etapas de obra y cambio pendiente), `AgendaItem`,

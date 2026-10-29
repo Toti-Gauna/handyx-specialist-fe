@@ -19,11 +19,13 @@ import type {
 import { FalloApi, type TipoFallo } from '../errores.ts';
 import type { ErrorApi } from '../../contracts/dto.ts';
 
-export const ESCENARIOS = ['nuevo', 'incompleto', 'en_revision', 'correccion', 'rechazado', 'habilitado', 'baja'] as const;
+export const ESCENARIOS = ['nuevo', 'sin_verificar', 'sin_aceptar', 'incompleto', 'en_revision', 'correccion', 'rechazado', 'habilitado', 'baja'] as const;
 export type Escenario = (typeof ESCENARIOS)[number];
 
 export const ETIQUETA_ESCENARIO: Record<Escenario, string> = {
   nuevo: 'Sin cuenta (registro desde cero)',
+  sin_verificar: 'Cuenta nueva sin verificar el email',
+  sin_aceptar: 'Entró con Google por primera vez (falta aceptar)',
   incompleto: 'Alta incompleta (borrador)',
   en_revision: 'Alta en revisión',
   correccion: 'Requiere corrección',
@@ -36,6 +38,20 @@ export const ETIQUETA_ESCENARIO: Record<Escenario, string> = {
 export const RELOJ_BASE = Date.parse('2026-11-17T15:00:00.000Z');
 
 export const CREDENCIALES_PRUEBA = { email: 'especialista@example.test', password: 'clave-de-prueba-123' } as const;
+
+// Cuenta (lote 4.2). Todo esto es del mock: en producción el código llega por email y los tokens los firman Google, Apple
+// o el servidor. scripts/verificar-bundle.mjs comprueba que nada de esto llegue al build de producción.
+export const CODIGO_PRUEBA = '482913';
+export const TOKEN_RECUPERACION_PRUEBA = 'tok-prueba-recuperacion-0001';
+export const TOKEN_VENCIDO_PRUEBA = 'tok-prueba-recuperacion-vencido';
+export const CUENTAS_PROVEEDOR_PRUEBA = {
+  google: [
+    { email: 'especialista.google@example.test', idToken: 'id-token-de-prueba-google-nueva-0001', nueva: true },
+    { email: CREDENCIALES_PRUEBA.email, idToken: 'id-token-de-prueba-google-existente-0002', nueva: false },
+  ],
+  apple: [{ email: 'especialista.apple@example.test', idToken: 'id-token-de-prueba-apple-nueva-0001', nueva: true }],
+} as const;
+export const MINUTO = 60_000;
 
 export interface PedidoInterno {
   pub: Omit<PedidoElegible, 'miPropuesta'>;
@@ -79,6 +95,14 @@ export interface EstadoMock {
   sesionExpirada: boolean;
   intentosFallidos: number;
   cuentas: Map<string, string>;
+  /** Emails confirmados con el código (o que vienen verificados de Google o Apple). */
+  verificados: Set<string>;
+  /** Cuentas que aceptaron términos y privacidad. */
+  aceptaron: Set<string>;
+  /** Código de 6 dígitos de la cuenta nueva actual (el servidor nunca lo devuelve). */
+  codigoEmail: { codigo: string; venceMs: number; reenviarDesdeMs: number; intentos: number } | null;
+  /** Enlaces de recuperación: token → cuenta, vencimiento y si ya se usó. */
+  recuperacion: Map<string, { email: string; venceMs: number; usado: boolean }>;
   cuenta: { id: string; email: string };
   perfil: PerfilEspecialista;
   alta: DatosAltaCompletos;
