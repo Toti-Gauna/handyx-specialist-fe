@@ -1,15 +1,29 @@
-import type { ReactNode } from 'react';
+'use client';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { FalloApi } from '../data/errores.ts';
 import { Handy, type NombreHandy } from './Handy.tsx';
 import { Icono, type NombreIcono } from './Icono.tsx';
 
+/** Las esperas cortas no muestran los bloques grises: así no parpadean al pasar de una pantalla a otra (ni al terminar la carga). */
+export const ESPERA_ESQUELETO_MS = 500;
+
 export function Cargando({ texto = 'Cargando…' }: { texto?: string }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setVisible(true), ESPERA_ESQUELETO_MS);
+    return () => window.clearTimeout(t);
+  }, []);
+  // El aviso para lectores de pantalla está desde el primer momento; los bloques, solo si la espera se alarga.
   return (
-    <div className="esqueleto" role="status" aria-live="polite">
+    <div className={`esqueleto${visible ? '' : ' esqueleto--esperando'}`} role="status" aria-live="polite">
       <span className="visualmente-oculto">{texto}</span>
-      <div className="esqueleto__linea esqueleto__linea--titulo" />
-      <div className="esqueleto__linea" />
-      <div className="esqueleto__linea esqueleto__linea--corta" />
+      {visible ? (
+        <>
+          <div className="esqueleto__linea esqueleto__linea--titulo" />
+          <div className="esqueleto__linea" />
+          <div className="esqueleto__linea esqueleto__linea--corta" />
+        </>
+      ) : null}
     </div>
   );
 }

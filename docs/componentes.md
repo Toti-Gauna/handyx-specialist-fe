@@ -21,7 +21,7 @@ Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila d
 
 | Componente | Cuándo | Qué muestra | Captura |
 |---|---|---|---|
-| `Cargando` | Primera carga | Esqueleto gris que late (quieto con "reducir movimiento") | — |
+| `Cargando` | Primera carga | Esqueleto gris que late (quieto con "reducir movimiento"). Aparece recién si la espera pasa de 0,5 s: las cargas cortas (y el paso de la pantalla de carga a la app) no muestran bloques | El aviso "Cargando…" para lectores de pantalla está desde el principio |
 | `ErrorCaja` | Una consulta falló | Handy roto según la falla (lamparita: red; llave: no encontrado o permiso; engranaje: el resto), mensaje seguro, referencia y "Reintentar". Conserva lo ya cargado. **Nunca cae a datos de prueba** | `error-red`, `error-servidor` |
 | `Vacio` | No hay nada que mostrar | Ícono de línea + título + ayuda | `inicio-sin-habilitar` |
 | `AvisoSinConexion` | El teléfono no tiene red | Franja oscura con la lamparita rota bajo la cabecera | recorrido J (`npm run e2e`) |

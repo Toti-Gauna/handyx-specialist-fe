@@ -38,7 +38,8 @@ export function Puerta() {
       {fallo && cargaLista ? (
         <ErrorCaja fallo={fallo} onReintentar={() => void decidir()} />
       ) : (
-        <p className="cargando" role="status">
+        // Solo para lectores de pantalla: a la vista queda la pantalla de carga, sin texto ni bloques detrás.
+        <p className="visualmente-oculto" role="status">
           Cargando…
         </p>
       )}

@@ -972,6 +972,11 @@ legend {
   border-radius: var(--radio-tarjeta);
   background: var(--hd-fondo-2);
 }
+/* Primer medio segundo de una espera: nada a la vista (ni la tarjeta). */
+.esqueleto--esperando {
+  padding: 0;
+  background: none;
+}
 .esqueleto__linea {
   height: 14px;
   border-radius: 7px;
