@@ -1,6 +1,6 @@
 # Plan · PWA Especialista de Handyx (Bloque 4)
 
-Estado: **fases 1, 2 y 3 cerradas localmente (29/10/2026)**; fases 4–5 pendientes. Los checks solo se marcan con resultado observable.
+Estado: **fases 1 y 2 cerradas; fase 3 reabierta (29/10/2026)** para el rediseño premium (lotes 3.4–3.11, `docs/rediseno.md`); fases 4–5 pendientes. Los checks solo se marcan con resultado observable.
 Seguimiento de avance, comandos y bloqueos: `docs/handoff.md`.
 Cada entrega distingue: decidido · mock · conectado · probado · desplegado.
 
@@ -56,6 +56,21 @@ Fixtures sintéticos rotulados; el mock permite éxito, rechazo, expiración y c
 - Evidencia del 3.1: `docs/diseno.md` y `e2e/capturas.cjs` (28 capturas a 390×844).
 - Evidencia del 3.2: `npm run accesibilidad` (axe WCAG 2.2 AA en 0, teclado, foco, zoom 200 %) y 196 capturas en 7 tamaños; checklist en `docs/diseno.md`.
 - Evidencia del 3.3: `docs/pwa.md`, `docs/componentes.md`, `docs/capturas/` (sanitizadas), recorrido J de `npm run e2e` y control de movimiento en `npm run accesibilidad`.
+
+**Reapertura (29/10/2026):** Ignacio pidió rehacer el diseño. Hoy no está a la altura de la demo de la landing: le faltan
+pantallas, el mapa y la entrada de una app on demand, y la cabecera ocupa lugar. Detalle, decisiones pendientes e inventario de
+65 pantallas en `docs/rediseno.md`. La fase 4 empieza después del sí de diseño del 3.11.
+- [ ] **3.4 Sistema visual v2 y kit** (Opus / high): tokens v2 y kit `.hd-*` de la demo en React; catálogo solo en el mock.
+- [ ] **3.5 Carga, bienvenida y cuenta** (Opus / high): pantalla de carga nueva, bienvenida, entrar, crear cuenta, verificar
+  email, recuperar con contraseña nueva y enlace vencido.
+- [ ] **3.6 Mapa** (Opus / high): MapLibre con teselas propias de Mar del Plata, estilo Handyx, zonas aproximadas y carga diferida.
+- [ ] **3.7 Alta guiada** (Opus / high): lista de pasos, marcos de cámara, rubros en mosaico, zonas en el mapa, turno presencial y
+  corrección con acceso directo a cada paso.
+- [ ] **3.8 Inicio, pedidos y propuesta** (Opus / high): inicio sobre el mapa, pedido entrante, "Handy sugiere · Vos decidís",
+  "¡Te eligió!".
+- [ ] **3.9 Trabajo de punta a punta** (Opus / high): en camino con mapa, llegada, adicionales y "¡Terminaste!".
+- [ ] **3.10 Agenda, mensajes, cuenta, caja y ayuda** (Sonnet / high).
+- [ ] **3.11 QA premium y cierre** (Opus / high): E2E nuevos, axe en 0, lectores de pantalla, Lighthouse ≥ 90 y sí de diseño.
 
 ### Fase 4 · Backend y DB conectados — Opus 5.5 / high
 - [ ] **4.1 Modelo y migraciones:** ERD y diccionario (tipo, nulabilidad, sensibilidad, FK, índice, retención, dueño); importes en centavos ≥ 0; un acuerdo activo por pedido; login e idempotency keys únicos; sin cascadas que rompan retenciones.

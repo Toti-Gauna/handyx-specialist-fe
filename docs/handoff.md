@@ -59,8 +59,18 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 - iOS no muestra aviso de instalación: hay que usar "Agregar a inicio".
 - Para el deploy: servir `sw.js` con `Cache-Control: no-cache` y configurar `404.html` en el hosting (`docs/pwa.md`).
 
-**Próximo paso**: fase 4 (backend y DB conectados), bloqueada hasta que exista `handyx-client-be` (dueño del esquema y de las
-migraciones). Empieza por el lote 4.1 (modelo y migraciones) en ese repo.
+**Próximo paso** (actualizado el 29/10/2026): **rediseño premium**, lotes 3.4–3.11 de `docs/rediseno.md`. Antes de empezar hacen falta
+las decisiones de §8:
+- Llegada.
+- Proveedor del mapa.
+- Verificación del email.
+- Adicionales.
+- Precio sugerido.
+- Cupones.
+- Interpretación de la pantalla de carga.
+- Imágenes nuevas de los Handys.
+
+La fase 4 queda para después del sí de diseño del lote 3.11.
 
 
 ## Fase 3 · Lote 3.2 (responsive y accesibilidad)
