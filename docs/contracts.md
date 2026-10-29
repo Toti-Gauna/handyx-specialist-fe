@@ -1,6 +1,13 @@
 # Contrato compartido Usuario · Especialista · Portal (lote 1.3)
 
-Versión: **0.1.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+Versión: **0.2.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+
+**0.1.0 → 0.2.0 (fase 2, cambios para el dueño del contrato):** DTO de alta (`DatosAlta`, `GuardarDatosAlta`, `PerfilPublico`), cuenta
+(`Preferencias`, `Baja`), `Aviso`, `Inicio`, `PedidoDetalle`, `TrabajoDetalle` (etapas de obra y cambio pendiente), `AgendaItem`,
+`Conversacion`, `CajaResumen`, `CasoSoporteDetalle`. Cambios no compatibles con 0.1.0 (aceptables antes de que exista la API):
+`PerfilEspecialista` suma `email` y `faltantesEnvio` y admite nombre/apellido nulos; `EstadoRubro` suma `elegido`; `Pago` suma
+`descripcion`, `feeHandy` y `neto`; `CasoSoporte` suma `asunto`; `AgendaItem` suma `pedidoId`; el código de error
+`transicion_invalida` es nuevo. El inventario de endpoints está en `docs/api/openapi.yaml`.
 
 ## 1. Quién es dueño de qué
 

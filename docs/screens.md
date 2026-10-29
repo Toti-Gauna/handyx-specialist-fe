@@ -2,7 +2,7 @@
 
 Fuente: Bloque 4 (prompt maestro Especialista), TECH-03, PROD-21 (mapa de flujo), PROD-06/11 (herramientas y chat),
 demo de la landing (`Handy-landing-page-fe/src/render/demo/especialista.ts`, 25 pantallas `e-*`) y decisiones de
-Ignacio del 29/10/2026. Es el mapa **inicial**: lo materializa la fase 2 con fixtures y lo refina la fase 3.
+Ignacio del 29/10/2026. Mapa **inicial** (fase 1). La fase 2 lo materializó con datos de prueba: la columna *Fase 2* dice qué pantalla existe y cómo probarla; la fase 3 la refina.
 
 Regla de cierre del lote: **documento cargado ≠ verificado** y **ningún antecedente se acepta como upload**.
 
@@ -85,3 +85,30 @@ caída de red/servidor. El resto entra con cada lote de la fase 2.
    y push opcional. Validación de Legal para urgencias (LEG-46) pendiente.
 5. **Relanzamiento**: el especialista que dejó pasar un pedido no lo vuelve a recibir (PROD-21 §9, recomendado).
 6. **Fin del fee 0 %**: inclusive el 10/12 (decisión de Ignacio) vs "cupones desde el 10/12". Parametrizado en `fee.ts`.
+
+## 6. Estado al cierre de la fase 2 (mock navegable)
+
+Todas las pantallas del mapa existen y se recorren con datos de prueba. **Ninguna está conectada a un backend.**
+Escenarios y cómo reproducirlos: `docs/qa.md`.
+
+| Pantallas | Archivo | Estado |
+|---|---|---|
+| A1 Entrar · A2 Crear cuenta · A3 Recuperar · A4 Fee post-registro | `src/pantallas/{Acceso,Registro,Recuperar}.tsx`, `components/FeeAvisoRegistro.tsx` | mock |
+| B1–B7 Alta por pasos y estados de revisión | `src/pantallas/Alta.tsx`, `components/Documento.tsx` | mock |
+| C1 Inicio · C2 Disponibilidad · C3 Bandeja · C4 Avisos | `Inicio`, `Disponibilidad`, `Pedidos`, `Avisos` | mock |
+| D1 Detalle de pedido y propuestas · D2 Mensajes · D3 Conversación | `PedidoDetalle`, `Mensajes`, `Hilo`, `TarjetaPropuesta`, `FormPropuesta` | mock |
+| E1 Mis trabajos · E2 Detalle · E3 Agenda · E4 Ayuda y reclamos | `Trabajos`, `TrabajoDetalle`, `Agenda`, `Soporte`, `CasoDetalle`, `AccionTrabajo`, `FormCambio` | mock |
+| F1 Caja · F2 Simulación post-demo | `Caja` | mock (la simulación existe solo en el mock) |
+| G1 Cuenta · G2 Baja · G3 Modal del fee | `Cuenta`, `Baja`, `components/ModalFee.tsx` | mock |
+| Z1 Sesión expirada, sin permiso, error | `app/contexto.tsx`, `components/Estados.tsx` | mock |
+
+Decisiones tomadas al construirlas (todas reversibles):
+
+- **El fee 0 % se avisa en tres lugares**: tras el registro (informativo), en el modal de primer ingreso a Inicio (se registra con
+  `POST /v1/fee/aviso`) y como contador de días en Cuenta. Es la tarifa de Handy, no un descuento sobre tu precio.
+- **Chat antes de contratar**: `POST /v1/especialista/pedidos/{id}/conversacion` abre el hilo sin comprometer nada.
+- **Aceptar y rechazar piden confirmación** en una hoja con el resumen del acuerdo; la bandeja y los avisos solo abren el detalle.
+- **"Llegué"** es un botón explícito del especialista; la ubicación del teléfono es opcional y no hay geocerca simulada.
+- **Reportar un cobro** lo deja "reportado, sin verificar": solo un webhook validado u Operations lo verifica.
+- **Baja**: cierra las sesiones y se ve el estado real al volver a entrar (`/baja/`); se cancela mientras esté "solicitada".
+- **Cancelar un trabajo** avisa al usuario y no aplica penalización automática (PROD-21 §4, LEG-22).

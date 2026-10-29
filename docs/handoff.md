@@ -1,19 +1,93 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` → PR a `main` · Bloque 4 · **Fase 1 (lotes 1.1–1.3)**.
-Modelo de la sesión: `claude-opus-5-5` (seleccionado por Ignacio con `/model`); el plan y la decisión de stack se
-hicieron antes con `claude-sonnet-5-5`.
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` · Bloque 4 · **Fase 2 cerrada localmente (lotes 2.1–2.5)**; fase 1 más abajo.
+Modelos: fase 1 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
 
-Estado: **fase 1 cerrada localmente.** Base ejecutable, mapa de pantallas y contrato v0.1.0 con pruebas. Ninguna
-pantalla de negocio construida (fase 2), backend inexistente (fase 4), nada desplegado (fase 5).
+Estado: **mockup navegable completo con datos de prueba.** Todas las pantallas del mapa existen y se recorren sin backend. El
+adaptador HTTP cumple el mismo puerto y está probado con `fetch` simulado, pero **no hay API real**: nada está conectado ni desplegado.
 
 | Ítem | Decidido | Mock | Conectado | Probado | Desplegado |
 |---|---|---|---|---|---|
-| Stack Next.js estático + guardas de build | ✔ | — | — | ✔ (build mock y http) | — |
-| Contrato compartido v0.1.0 (estados, DTO, fee, dinero) | ✔ | — | — | ✔ (unitarias) | — |
-| Adaptador mock (sesión, perfil, disponibilidad, bandeja, fee) | ✔ | ✔ | — | ✔ | — |
-| Cliente HTTP (cookies, CSRF, idempotencia, errores) | ✔ | — | ✘ (no hay API) | ✔ (fetch simulado) | — |
-| Pantallas | rutas reservadas | — | — | navegación con Playwright | — |
+| Contrato compartido v0.2.0 + OpenAPI (42 rutas) | ✔ | — | — | ✔ (unitarias + enums contra el YAML) | — |
+| Pantallas de alta, inicio, pedidos, propuestas, chat, trabajos, agenda, caja, soporte y cuenta | ✔ | ✔ | ✘ | ✔ (11 recorridos E2E) | — |
+| Reglas de servidor emuladas (elegibilidad, transiciones, idempotencia, vencimientos) | ✔ | ✔ | ✘ | ✔ (24 pruebas del mock) | — |
+| Cliente HTTP | ✔ | — | ✘ (no hay API) | ✔ (`fetch` simulado) | — |
+| Panel de prueba (escenarios, fallas, reloj, otras partes) | ✔ | ✔ | — | ✔ | — |
+| Producción sin fixtures ni panel | ✔ | — | — | ✔ (`verificar-bundle`) | — |
+
+## Fase 2 · qué se hizo
+
+- **2.1 Registro, perfil y verificación**: acceso, registro con aceptaciones explícitas (textos provisorios), recuperación neutra, aviso del
+  fee 0 % tras el registro, alta por pasos (datos, identidad, rubros y matrícula, foto, antecedentes presenciales **sin archivos**, resumen),
+  estados de revisión/corrección/rechazo/habilitación, cuenta con contador del fee y quién ve qué, preferencias y baja con estado real.
+  Los documentos son "documentos de prueba": no se sube ni se lee ningún archivo real.
+- **2.2 Inicio, disponibilidad y pedidos**: Inicio distinto de Mis trabajos, modal del fee 0 % en el primer ingreso, interruptores de
+  "Ahora" y programados (revocables al instante), cobertura y franjas, bandeja por orden de llegada con datos mínimos, avisos urgente vs
+  programado que solo abren el detalle.
+- **2.3 Propuestas y chat**: detalle del pedido, enviar propuesta, contraoferta, aceptar/rechazar con confirmación, vigencia con cuenta
+  regresiva (5 min en urgentes), retirar, chat antes de contratar, presupuesto estructurado en el hilo, fotos de prueba, reintento sin duplicar.
+- **2.4 Agenda, servicio y soporte**: Mis trabajos (activos e historial), detalle con acuerdo inmutable, cambio de fecha como propuesta,
+  paso a paso con **"Llegué"** explícito, obra por etapas, cancelación, agenda mensual con superposiciones, ayuda y reclamos con historial.
+- **2.5 Caja y bordes**: pagos directos (MP y efectivo) con estados pendiente/reportado/verificado/fallido/discrepancia, fee $ 0, sin saldo ni
+  retiros de Handy, y simulación post-demo rotulada "no vigente" (solo existe en el mock).
+
+## Comandos ejecutados (29/10/2026, local, desde `npm ci` limpio)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `npm run typecheck` | OK |
+| `npm test` | 60 pruebas: 58 OK, 2 omitidas (sincronías que piden rutas a otros repos) |
+| `HANDY_LANDING_TOKENS=… node --test src/brand/tokens.test.ts` | 2 OK |
+| `npm run build` (origen de prueba) | OK, 22 páginas estáticas |
+| `node e2e/flujos.cjs` (Chromium 390×844, movimiento reducido) | **11/11 recorridos OK**, 0 errores de consola |
+| `NEXT_PUBLIC_DATA_SOURCE=http … npm run build:hostinger` | OK; `verificar-bundle`: sin fixtures, panel, credenciales ni correos de prueba |
+| `npm audit --omit=dev` | 0 vulnerabilidades |
+
+## Defectos corregidos durante la fase (por si reaparecen)
+
+- Un cambio de fecha rechazado seguía figurando como pendiente en el trabajo (el estado vencía o se rechazaba pero no se limpiaba).
+- Carreras "guardar y refrescar": mostrar "guardado" o habilitar de nuevo un control antes de tener la versión nueva producía un 409 de
+  versión. Ahora el refresco va **dentro** de la acción (el botón sigue deshabilitado hasta tener la versión vigente).
+- Al cambiar las claves de una consulta (por ejemplo, de pestaña) se reusaban datos de la anterior.
+- La barra del chat quedaba tapada por la navegación inferior.
+
+## Decisiones tomadas (reversibles)
+
+1. El aviso del fee 0 % se ve en tres lugares: tras el registro, modal de Inicio (registra `POST /v1/fee/aviso`) y contador en Cuenta.
+2. Chat previo a la propuesta: `POST /v1/especialista/pedidos/{id}/conversacion`. Es un endpoint nuevo respecto de TECH-03.
+3. Los cambios de fecha/importe de un trabajo son propuestas (`reemplazaA` = propuesta aceptada vigente): el acuerdo no cambia hasta la aceptación.
+4. Reportar un cobro lo deja "reportado, sin verificar".
+5. Cancelar un trabajo no tiene penalización automática (PROD-21 §4).
+6. La baja cierra las sesiones; el estado se ve al volver a entrar en `/baja/` y se cancela mientras esté "solicitada".
+7. Vigencia de propuestas programadas: 24 h **provisoria** (PROD-21 deja `[H]` sin valor).
+
+## Abiertos y límites visibles
+
+- Heredados de la fase 1: monorepo vs copia sincronizada (TECH-20), fin inclusivo del 10/12, dos precios (visita + trabajo), confirmación de
+  finalización del usuario, "Llegué" sonoro (LEG-46), `MAX_RELANZAMIENTOS`.
+- **Nuevos**: opciones de género (PROD-15), tamaño máximo de archivos, vigencia de propuestas programadas, textos legales definitivos
+  (hoy provisorios y rotulados), y cómo se verifica el email al registrarse (sin OTP/SMS contratado; el mock abre sesión directamente).
+- Contrato 0.2.0 trae **cambios no compatibles con 0.1.0** (ver `docs/contracts.md`): hay que transferirlos a `handyx-client-be` cuando exista.
+
+## Qué NO está hecho (no atribuir a esta fase)
+
+- Backend, base de datos, autenticación real, almacenamiento privado, Mercado Pago, push y webhooks: **fase 4** (todo bloqueado hasta que
+  exista `handyx-client-be`).
+- Refinación visual, responsive 360/768/820/desktop, accesibilidad completa (foco, contraste, lector de pantalla), service worker, manifest
+  verificado, offline y capturas finales: **fase 3**. Hoy solo se probó 390×844.
+- E2E en CI: el script usa Playwright, que no es dependencia del repo (en esta máquina viene instalado). Se agrega en el lote 5.1.
+- Pruebas en dispositivos físicos y rendimiento en gama baja: fase 5.
+
+## Próximo paso
+
+Fase 3 · lote 3.1 (sistema visual y jerarquía de acción) con Opus 5.5 high. Insumos: capturas con `CAPTURAS=/ruta node e2e/flujos.cjs`,
+`docs/qa.md` y los puntos de la sección "Lo que esta fase NO demuestra".
+
+---
+
+# Historial · Fase 1
+
+Fecha: 29/10/2026 · Lotes 1.1–1.3 (PR #1). Modelo: `claude-opus-5-5`.
 
 ## Lote 1.1 · Auditoría y base ejecutable ✔
 

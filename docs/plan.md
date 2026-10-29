@@ -1,6 +1,6 @@
 # Plan · PWA Especialista de Handyx (Bloque 4)
 
-Estado: **fase 1 cerrada (lotes 1.1–1.3, 29/10/2026)**; fases 2–5 pendientes. Los checks solo se marcan con resultado observable.
+Estado: **fases 1 y 2 cerradas localmente (29/10/2026)**; fases 3–5 pendientes. Los checks solo se marcan con resultado observable.
 Seguimiento de avance, comandos y bloqueos: `docs/handoff.md`.
 Cada entrega distingue: decidido · mock · conectado · probado · desplegado.
 
@@ -41,12 +41,13 @@ Notion verificado en el lote 1.3: TECH-03, TECH-20, PROD-21 (incluye PROD-03/13/
 
 ### Fase 2 · Mockup completo — Sonnet 5.5 / high
 Fixtures sintéticos rotulados; el mock permite éxito, rechazo, expiración y caída de red.
-- [ ] **2.1 Registro, perfil y verificación:** acceso, datos base, DNI/CUIT-CUIL/foto/certificación, estados pendiente/corrección/verificación/habilitado/rechazado, cita presencial de antecedentes, modal de fee, baja.
-- [ ] **2.2 Inicio, disponibilidad y pedidos:** Inicio ≠ Mis trabajos, opt-in urgente "Ahora" revocable, cobertura/rubros, bandeja, notificaciones diferenciadas. Opt-out impide oferta mock.
-- [ ] **2.3 Propuestas y chat:** detalle, precio/horario/alcance, aceptar/rechazar/contraofertar, vencimiento 5 min, presupuesto en chat, fotos. Chat previo a contratar.
-- [ ] **2.4 Agenda, servicio y soporte:** calendario con fecha alternativa, historial, llegada/inicio/fin, cancelación, reclamo.
-- [ ] **2.5 Caja, pago y bordes:** MP directo/efectivo, reportado/verificado/fallido, fee 0%, escenario rotulado post-demo, sin saldo retirable de Handy.
-- Escenarios obligatorios: registro incompleto; documento faltante; rubro habilitado/no; verificación pendiente/corrección; antecedentes presenciales pendientes; disponible/revocado; urgente con opt-in apagado; propuesta vencida/rechazada; contrapropuesta; acuerdo; mensaje fallido; doble aceptación; programado/obra; efectivo reportado; MP pendiente/verificado/fallido; reclamo; baja; sesión expirada.
+- [x] **2.1 Registro, perfil y verificación:** acceso, datos base, DNI/CUIT-CUIL/foto/certificación, estados pendiente/corrección/verificación/habilitado/rechazado, cita presencial de antecedentes, modal de fee, baja.
+- [x] **2.2 Inicio, disponibilidad y pedidos:** Inicio ≠ Mis trabajos, opt-in urgente "Ahora" revocable, cobertura/rubros, bandeja, notificaciones diferenciadas. Opt-out impide oferta mock.
+- [x] **2.3 Propuestas y chat:** detalle, precio/horario/alcance, aceptar/rechazar/contraofertar, vencimiento 5 min, presupuesto en chat, fotos. Chat previo a contratar.
+- [x] **2.4 Agenda, servicio y soporte:** calendario con fecha alternativa, historial, llegada/inicio/fin, cancelación, reclamo.
+- [x] **2.5 Caja, pago y bordes:** MP directo/efectivo, reportado/verificado/fallido, fee 0%, escenario rotulado post-demo, sin saldo retirable de Handy.
+- Evidencia de la fase 2: `docs/qa.md` (escenarios y comprobaciones por lote) y `docs/handoff.md` (comandos y resultados). 11 recorridos E2E + 60 pruebas, todo con datos de prueba.
+- Escenarios obligatorios (todos cubiertos, ver `docs/qa.md`): registro incompleto; documento faltante; rubro habilitado/no; verificación pendiente/corrección; antecedentes presenciales pendientes; disponible/revocado; urgente con opt-in apagado; propuesta vencida/rechazada; contrapropuesta; acuerdo; mensaje fallido; doble aceptación; programado/obra; efectivo reportado; MP pendiente/verificado/fallido; reclamo; baja; sesión expirada.
 
 ### Fase 3 · Refinación de diseño — Opus 5.5 / high
 - [ ] **3.1 Sistema visual y jerarquía de acción:** pedido/urgencia/vigencia/monto; enviar, aceptar y rechazar inequívocos; sin dark patterns.

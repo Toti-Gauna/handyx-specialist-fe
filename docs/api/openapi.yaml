@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: api-especialista (Handyx)
-  version: 0.1.0
+  version: 0.2.0
   description: |
     BORRADOR del contrato de api-especialista (TECH-20). Fuente de los esquemas: src/contracts/dto.ts
-    (contrato compartido v0.1.0, dueño handyx-client-be). Nada implementado todavía: lo construye
+    (contrato compartido v0.2.0, dueño handyx-client-be). Nada implementado todavía: lo construye
     handyx-specialist-be en la fase 4. Sesión por cookie HttpOnly; CSRF en X-CSRF-Token para mutaciones;
     Idempotency-Key (UUIDv4) donde se indica. Timestamps UTC; importes en centavos enteros.
 servers:
@@ -259,7 +259,7 @@ paths:
   /v1/especialista/trabajos/{id}/eventos:
     post:
       tags: [trabajos]
-      summary: Transición del trabajo (en_camino, en_sitio = "Llegué", en_curso, finalizado, cancelado)
+      summary: 'Transición del trabajo (en_camino, en_sitio = "Llegué", en_curso, finalizado, cancelado)'
       parameters:
         - { $ref: '#/components/parameters/Id' }
         - { $ref: '#/components/parameters/Csrf' }
@@ -415,6 +415,20 @@ paths:
           content: { application/json: { schema: { $ref: '#/components/schemas/FeeVigente' } } }
 
   /v1/cuenta/baja:
+    get:
+      tags: [cuenta]
+      summary: Estado real de la baja (null si no hay)
+      responses:
+        '200':
+          description: Baja o null
+          content: { application/json: { schema: { oneOf: [{ $ref: '#/components/schemas/Baja' }, { type: 'null' }] } } }
+    delete:
+      tags: [cuenta]
+      summary: Cancelar la baja (solo mientras está `solicitada`)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '204': { description: Cancelada }
+        '409': { $ref: '#/components/responses/Error' }
     post:
       tags: [cuenta]
       summary: Solicitar eliminación real de la cuenta (revoca sesiones; estado honesto)
@@ -430,6 +444,253 @@ paths:
                 required: [estado]
                 properties:
                   estado: { type: string, enum: [solicitada, en_proceso, completada, completada_con_retencion, cancelada] }
+
+  /v1/auth/recuperar:
+    post:
+      tags: [auth]
+      security: []
+      summary: Pedir instrucciones para elegir una contraseña nueva (respuesta neutra)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '202': { description: Recibido (igual exista o no la cuenta) }
+        '429': { $ref: '#/components/responses/Error' }
+
+  /v1/especialista/perfil/publico:
+    get:
+      tags: [perfil]
+      summary: Cómo te ve el usuario del hogar (el sello verificado solo lo pone el backend)
+      responses:
+        '200':
+          description: Vista pública
+          content: { application/json: { schema: { $ref: '#/components/schemas/PerfilPublico' } } }
+  /v1/especialista/alta/datos:
+    get:
+      tags: [perfil]
+      summary: Datos del alta (DNI y CUIT/CUIL solo con los últimos dígitos)
+      responses:
+        '200':
+          description: Datos guardados
+          content: { application/json: { schema: { $ref: '#/components/schemas/DatosAlta' } } }
+    put:
+      tags: [perfil]
+      summary: 'Guardar datos del alta (parcial: se puede retomar). Solo con el alta en borrador o con corrección pedida'
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/GuardarDatosAlta' } } }
+      responses:
+        '200':
+          description: Guardado
+          content: { application/json: { schema: { $ref: '#/components/schemas/DatosAlta' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/rubros:
+    put:
+      tags: [perfil]
+      summary: 'Elegir rubros. Gas y aire acondicionado quedan "requiere_matricula" hasta que Operations verifique'
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [rubros]
+              properties:
+                rubros: { type: array, items: { $ref: '#/components/schemas/Rubro' } }
+      responses:
+        '200':
+          description: Perfil actualizado
+          content: { application/json: { schema: { $ref: '#/components/schemas/PerfilEspecialista' } } }
+        '409': { $ref: '#/components/responses/Error' }
+
+  /v1/especialista/inicio:
+    get:
+      tags: [pedidos]
+      summary: Resumen del Inicio (nunca tasa de aceptación, tiempos de respuesta ni puntualidad)
+      responses:
+        '200':
+          description: Resumen
+          content: { application/json: { schema: { $ref: '#/components/schemas/Inicio' } } }
+  /v1/especialista/avisos:
+    get:
+      tags: [pedidos]
+      summary: Avisos dentro de la app, más nuevos primero (sin datos personales)
+      responses:
+        '200':
+          description: Avisos
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Aviso' } } } }
+  /v1/especialista/avisos/{id}/leido:
+    post:
+      tags: [pedidos]
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '204': { description: Marcado como leído (abrir un aviso nunca acepta nada) }
+  /v1/especialista/pedidos/{id}/conversacion:
+    post:
+      tags: [mensajes]
+      summary: Abrir (o devolver) el chat de un pedido antes de contratar. No compromete nada
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '200':
+          description: Conversación
+          content: { application/json: { schema: { $ref: '#/components/schemas/Conversacion' } } }
+        '404': { $ref: '#/components/responses/Error' }
+
+  /v1/especialista/trabajos/{id}:
+    get:
+      tags: [trabajos]
+      summary: Detalle con acuerdo vigente, historial, etapas y cambio pendiente
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Detalle
+          content: { application/json: { schema: { $ref: '#/components/schemas/TrabajoDetalle' } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/cambio:
+    post:
+      tags: [trabajos]
+      summary: Proponer otra fecha, importe o alcance. El acuerdo vigente no cambia hasta que la otra parte acepte
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/NuevoCambio' } } }
+      responses:
+        '201':
+          description: Propuesta de cambio pendiente
+          content: { application/json: { schema: { $ref: '#/components/schemas/Propuesta' } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/agenda:
+    get:
+      tags: [trabajos]
+      summary: Trabajos y ofertas pendientes del rango (una oferta no es un turno)
+      parameters:
+        - { name: desde, in: query, required: true, schema: { type: string, format: date-time } }
+        - { name: hasta, in: query, required: true, schema: { type: string, format: date-time } }
+      responses:
+        '200':
+          description: Items de agenda
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/AgendaItem' } } } }
+
+  /v1/conversaciones:
+    get:
+      tags: [mensajes]
+      responses:
+        '200':
+          description: Conversaciones propias, la más reciente primero
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Conversacion' } } } }
+  /v1/conversaciones/{id}:
+    get:
+      tags: [mensajes]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Conversación
+          content: { application/json: { schema: { $ref: '#/components/schemas/Conversacion' } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /v1/conversaciones/{id}/propuestas:
+    get:
+      tags: [mensajes]
+      summary: Presupuestos estructurados del hilo
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Propuestas
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Propuesta' } } } }
+
+  /v1/especialista/caja/resumen:
+    get:
+      tags: [caja]
+      responses:
+        '200':
+          description: Totales por estado y tarifa de Handy del período (0 en la demo). No hay saldo de Handy
+          content: { application/json: { schema: { $ref: '#/components/schemas/CajaResumen' } } }
+  /v1/especialista/pagos/{id}/discrepancia:
+    post:
+      tags: [caja]
+      summary: Marcar que el cobro o el importe no coinciden (solo desde `reportado`)
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
+      responses:
+        '200':
+          description: En discrepancia
+          content: { application/json: { schema: { $ref: '#/components/schemas/Pago' } } }
+        '409': { $ref: '#/components/responses/Error' }
+
+  /v1/soporte/casos/{id}:
+    get:
+      tags: [soporte]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Caso con su historial
+          content: { application/json: { schema: { $ref: '#/components/schemas/CasoSoporteDetalle' } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /v1/soporte/casos/{id}/mensajes:
+    post:
+      tags: [soporte]
+      summary: Responder un caso (reabre uno resuelto)
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [texto]
+              properties:
+                texto: { type: string, minLength: 1, maxLength: 2000 }
+      responses:
+        '200':
+          description: Caso actualizado
+          content: { application/json: { schema: { $ref: '#/components/schemas/CasoSoporteDetalle' } } }
+
+  /v1/cuenta/preferencias:
+    get:
+      tags: [cuenta]
+      responses:
+        '200':
+          description: Preferencias de avisos
+          content: { application/json: { schema: { $ref: '#/components/schemas/Preferencias' } } }
+    put:
+      tags: [cuenta]
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [avisosUrgentes, avisosProgramados, avisosMensajes, avisosPagos]
+              properties:
+                avisosUrgentes: { type: boolean }
+                avisosProgramados: { type: boolean }
+                avisosMensajes: { type: boolean }
+                avisosPagos: { type: boolean }
+      responses:
+        '200':
+          description: Guardadas
+          content: { application/json: { schema: { $ref: '#/components/schemas/Preferencias' } } }
+  /v1/cuenta/push:
+    post:
+      tags: [cuenta]
+      summary: Registrar el opt-in a avisos del dispositivo (la entrega no está garantizada)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '200':
+          description: Estado del permiso
+          content: { application/json: { schema: { $ref: '#/components/schemas/Preferencias' } } }
 
 components:
   securitySchemes:
@@ -515,11 +776,13 @@ components:
     PerfilEspecialista:
       type: object
       additionalProperties: false
-      required: [id, nombre, apellido, estadoAlta, motivoRevision, documentos, antecedentes, rubros, baja, version]
+      required: [id, email, nombre, apellido, estadoAlta, motivoRevision, documentos, antecedentes, rubros, faltantesEnvio, baja, version]
       properties:
         id: { type: string, format: uuid }
-        nombre: { type: string }
-        apellido: { type: string }
+        email: { type: string }
+        nombre: { type: [string, 'null'] }
+        apellido: { type: [string, 'null'] }
+        faltantesEnvio: { type: array, items: { type: string, enum: [datos, dni, cuitCuil, fotoCara, rubros, matricula] } }
         estadoAlta:
           type: string
           enum: [borrador, enviada, en_revision, requiere_correccion, habilitada, rechazada, suspendida]
@@ -543,7 +806,7 @@ components:
             required: [rubro, estado, matricula]
             properties:
               rubro: { $ref: '#/components/schemas/Rubro' }
-              estado: { type: string, enum: [habilitado, requiere_matricula, en_revision, no_habilitado] }
+              estado: { type: string, enum: [elegido, habilitado, requiere_matricula, en_revision, no_habilitado] }
               matricula: { oneOf: [{ $ref: '#/components/schemas/EstadoDocumento' }, { type: 'null' }] }
         baja:
           type: [string, 'null']
@@ -678,10 +941,13 @@ components:
     Pago:
       type: object
       additionalProperties: false
-      required: [id, trabajoId, metodo, monto, estado, fuenteConfirmacion, referenciaProveedor, actualizadoEn]
+      required: [id, trabajoId, descripcion, feeHandy, neto, metodo, monto, estado, fuenteConfirmacion, referenciaProveedor, actualizadoEn]
       properties:
         id: { type: string, format: uuid }
         trabajoId: { type: string, format: uuid }
+        descripcion: { type: string }
+        feeHandy: { $ref: '#/components/schemas/Monto' }
+        neto: { $ref: '#/components/schemas/Monto' }
         metodo: { type: string, enum: [mercado_pago, efectivo] }
         monto: { $ref: '#/components/schemas/Monto' }
         estado: { type: string, enum: [pendiente, reportado, verificado, fallido, en_discrepancia] }
@@ -693,9 +959,10 @@ components:
     CasoSoporte:
       type: object
       additionalProperties: false
-      required: [id, trabajoId, pedidoId, categoria, estado, creadoEn, actualizadoEn]
+      required: [id, asunto, trabajoId, pedidoId, categoria, estado, creadoEn, actualizadoEn]
       properties:
         id: { type: string, format: uuid }
+        asunto: { type: string }
         trabajoId: { type: [string, 'null'], format: uuid }
         pedidoId: { type: [string, 'null'], format: uuid }
         categoria: { type: string, enum: [asistencia, reclamo, pago, cuenta] }
@@ -723,3 +990,191 @@ components:
       properties:
         politica: { oneOf: [{ $ref: '#/components/schemas/PoliticaFee' }, { type: 'null' }] }
         avisoAceptadoEn: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
+
+    DatosAlta:
+      type: object
+      additionalProperties: false
+      required: [nombre, apellido, fechaNacimiento, nacionalidad, genero, ciudad, barrio, dniUltimos, cuitCuilUltimos, version]
+      properties:
+        nombre: { type: [string, 'null'] }
+        apellido: { type: [string, 'null'] }
+        fechaNacimiento: { type: [string, 'null'], format: date }
+        nacionalidad: { type: [string, 'null'] }
+        genero: { type: [string, 'null'], enum: [mujer, varon, otro, prefiero_no_decir, null], description: 'PENDIENTE: opciones según PROD-15' }
+        ciudad: { type: [string, 'null'] }
+        barrio: { type: [string, 'null'] }
+        dniUltimos: { type: [string, 'null'], description: 'Solo los últimos dígitos' }
+        cuitCuilUltimos: { type: [string, 'null'] }
+        version: { type: integer, minimum: 0 }
+    GuardarDatosAlta:
+      type: object
+      additionalProperties: false
+      required: [version]
+      properties:
+        nombre: { type: string, minLength: 1, maxLength: 60 }
+        apellido: { type: string, minLength: 1, maxLength: 60 }
+        fechaNacimiento: { type: string, format: date }
+        nacionalidad: { type: string, minLength: 2, maxLength: 60 }
+        genero: { type: string, enum: [mujer, varon, otro, prefiero_no_decir] }
+        ciudad: { type: string, minLength: 2, maxLength: 80 }
+        barrio: { type: string, maxLength: 80 }
+        dni: { type: string, pattern: '^\\d{7,8}$' }
+        cuitCuil: { type: string, pattern: '^\\d{11}$' }
+        version: { type: integer, minimum: 0 }
+    PerfilPublico:
+      type: object
+      additionalProperties: false
+      required: [nombrePublico, rubrosHabilitados, verificado]
+      properties:
+        nombrePublico: { type: [string, 'null'] }
+        rubrosHabilitados: { type: array, items: { $ref: '#/components/schemas/Rubro' } }
+        verificado: { type: boolean, description: Solo true si el backend verificó el alta completa }
+    Preferencias:
+      type: object
+      additionalProperties: false
+      required: [avisosUrgentes, avisosProgramados, avisosMensajes, avisosPagos, push]
+      properties:
+        avisosUrgentes: { type: boolean }
+        avisosProgramados: { type: boolean }
+        avisosMensajes: { type: boolean }
+        avisosPagos: { type: boolean }
+        push: { type: string, enum: [sin_pedir, activado, rechazado, no_disponible] }
+    Baja:
+      type: object
+      additionalProperties: false
+      required: [estado, solicitadaEn, mensaje]
+      properties:
+        estado: { type: string, enum: [solicitada, en_proceso, completada, completada_con_retencion, cancelada] }
+        solicitadaEn: { $ref: '#/components/schemas/Instante' }
+        mensaje: { type: string, description: Texto honesto del estado real y de lo que se retiene por ley }
+    Aviso:
+      type: object
+      additionalProperties: false
+      required: [id, tipo, titulo, cuerpo, creadoEn, leido, destino]
+      properties:
+        id: { type: string, format: uuid }
+        tipo: { type: string, enum: [pedido_urgente, pedido_programado, propuesta, mensaje, trabajo, pago, soporte, cuenta] }
+        titulo: { type: string }
+        cuerpo: { type: string, description: Sin datos personales }
+        creadoEn: { $ref: '#/components/schemas/Instante' }
+        leido: { type: boolean }
+        destino:
+          type: object
+          additionalProperties: false
+          required: [ruta, id]
+          properties:
+            ruta: { type: string, enum: [pedido, trabajo, hilo, caja, soporte, cuenta, alta] }
+            id: { type: [string, 'null'], format: uuid }
+    Inicio:
+      type: object
+      additionalProperties: false
+      required: [estadoAlta, urgentesAhora, pedidosAbiertos, urgentesAbiertos, propuestasPendientes, avisosSinLeer, proximoTrabajo, cobradoMes, trabajosCobrados]
+      properties:
+        estadoAlta: { type: string, enum: [borrador, enviada, en_revision, requiere_correccion, habilitada, rechazada, suspendida] }
+        urgentesAhora: { type: boolean }
+        pedidosAbiertos: { type: integer, minimum: 0 }
+        urgentesAbiertos: { type: integer, minimum: 0 }
+        propuestasPendientes: { type: integer, minimum: 0 }
+        avisosSinLeer: { type: integer, minimum: 0 }
+        proximoTrabajo: { oneOf: [{ $ref: '#/components/schemas/Trabajo' }, { type: 'null' }] }
+        cobradoMes: { $ref: '#/components/schemas/Monto' }
+        trabajosCobrados: { type: integer, minimum: 0 }
+    PedidoDetalle:
+      allOf:
+        - { $ref: '#/components/schemas/PedidoElegible' }
+        - type: object
+          required: [conversacionId, propuestas]
+          properties:
+            conversacionId: { type: [string, 'null'], format: uuid }
+            propuestas: { type: array, items: { $ref: '#/components/schemas/Propuesta' } }
+    TrabajoDetalle:
+      type: object
+      additionalProperties: false
+      required: [trabajo, contraparte, eventos, etapas, cambioPendiente, pagoId]
+      properties:
+        trabajo: { $ref: '#/components/schemas/Trabajo' }
+        contraparte: { type: string }
+        eventos:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [estado, en, actor]
+            properties:
+              estado: { type: string, enum: [agendado, en_camino, en_sitio, en_curso, finalizado, cancelado] }
+              en: { $ref: '#/components/schemas/Instante' }
+              actor: { type: string, enum: [especialista, usuario, operations, sistema] }
+        etapas:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [nombre, monto, estado]
+            properties:
+              nombre: { type: string }
+              monto: { $ref: '#/components/schemas/Monto' }
+              estado: { type: string, enum: [pendiente, en_curso, terminada] }
+        cambioPendiente: { oneOf: [{ $ref: '#/components/schemas/Propuesta' }, { type: 'null' }] }
+        pagoId: { type: [string, 'null'], format: uuid }
+    NuevoCambio:
+      type: object
+      additionalProperties: false
+      required: [horario, alcance, monto]
+      properties:
+        horario: { $ref: '#/components/schemas/Horario' }
+        alcance: { type: string, minLength: 1, maxLength: 2000 }
+        monto: { oneOf: [{ $ref: '#/components/schemas/Monto' }, { type: 'null' }] }
+    AgendaItem:
+      type: object
+      additionalProperties: false
+      required: [id, trabajoId, pedidoId, titulo, inicio, fin, estado, superpuesto]
+      properties:
+        id: { type: string }
+        trabajoId: { type: [string, 'null'], format: uuid }
+        pedidoId: { type: [string, 'null'], format: uuid }
+        titulo: { type: string }
+        inicio: { $ref: '#/components/schemas/Instante' }
+        fin: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
+        estado: { type: string, enum: [confirmado, cambio_pendiente, oferta_pendiente] }
+        superpuesto: { type: boolean }
+    Conversacion:
+      type: object
+      additionalProperties: false
+      required: [id, pedidoId, trabajoId, contraparte, etapa, ultimoMensaje, noLeidos, actualizadoEn]
+      properties:
+        id: { type: string, format: uuid }
+        pedidoId: { type: string, format: uuid }
+        trabajoId: { type: [string, 'null'], format: uuid }
+        contraparte: { type: string }
+        etapa: { type: string, enum: [cotizando, trabajo, cerrada] }
+        ultimoMensaje: { type: [string, 'null'] }
+        noLeidos: { type: integer, minimum: 0 }
+        actualizadoEn: { $ref: '#/components/schemas/Instante' }
+    CajaResumen:
+      type: object
+      additionalProperties: false
+      required: [pendiente, reportado, verificado, feeHandyPeriodo]
+      properties:
+        pendiente: { $ref: '#/components/schemas/Monto' }
+        reportado: { $ref: '#/components/schemas/Monto' }
+        verificado: { $ref: '#/components/schemas/Monto' }
+        feeHandyPeriodo: { $ref: '#/components/schemas/Monto' }
+    CasoSoporteDetalle:
+      allOf:
+        - { $ref: '#/components/schemas/CasoSoporte' }
+        - type: object
+          required: [detalle, eventos]
+          properties:
+            detalle: { type: string }
+            eventos:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [id, autor, texto, adjuntos, creadoEn]
+                properties:
+                  id: { type: string, format: uuid }
+                  autor: { type: string, enum: [vos, handy] }
+                  texto: { type: string }
+                  adjuntos: { type: integer, minimum: 0 }
+                  creadoEn: { $ref: '#/components/schemas/Instante' }

@@ -1,7 +1,7 @@
 # Arquitectura · PWA Especialista de Handyx
 
-Estado: **fase 1 (bases)**. Esqueleto ejecutable, contratos v0.1.0 y adaptadores mock/HTTP. Ninguna pantalla de
-negocio está terminada (cada ruta indica el lote que la construye). Nada desplegado.
+Estado: **fase 2 (mockup navegable)**. Todas las pantallas existen con datos de prueba (origen `mock`); el adaptador HTTP
+cumple el mismo puerto pero no hay API contra la cual probarlo. Contrato v0.2.0. Nada desplegado.
 
 ## Decisiones
 
@@ -23,7 +23,11 @@ src/
   app/                 rutas (App Router). (publico): acceso/registro/recuperar/alta sin nav · (app): con nav
     rutas.ts           mapa de rutas con el lote que construye cada pantalla
   brand/tokens.ts      copia de la landing → variables CSS (--color-*, --radio-*, --fuente*)
-  components/          marco de la app, banner de prueba, íconos, puerta de entrada, estados
+  pantallas/           una por pantalla de negocio (Acceso, Alta, Inicio, Pedidos, Hilo, Trabajos, Caja…)
+  components/          marco de la app, banner y panel de prueba, íconos, hojas, formularios y piezas compartidas
+  hooks/               useCarga (con reintento y sin fallback), useAccion (idempotencia), useAhora
+  lib/                 formato (Buenos Aires, pesos), etiquetas de estado, tarifa, textos legales provisorios
+e2e/                   recorridos de punta a punta con Playwright sobre out/
   config/entorno.ts    origen de datos (mock | http) validado; sin secretos
   contracts/           CONTRATO COMPARTIDO v0.1.0 (borrador a transferir a handyx-client-be)
     dto.ts             esquemas Zod de requests/responses
@@ -35,7 +39,8 @@ src/
   data/
     api.ts             puerto EspecialistaApi (las pantallas solo conocen esto)
     http/              cliente HTTP (cookies, CSRF en memoria, Idempotency-Key, validación Zod)
-    mock/              fixtures sintéticos + reglas emuladas del servidor
+    mock/              estado en memoria, fixtures sintéticos y reglas del servidor emuladas por dominio
+                       (acceso, alta, pedidos, propuestas, trabajos, mensajes, caja, soporte, cuenta) + panel de prueba
     origen.http.ts     origen de producción (no importa el mock)
     origen.mock.ts     origen de desarrollo/preview
   security/            pruebas de política (no-storage)
@@ -66,9 +71,11 @@ conocen en build (no hay `generateStaticParams` para datos de usuarios). Hosting
 | `/inicio/` | 2.2 | `/caja/` | 2.5 |
 | `/pedidos/` | 2.2 | `/cuenta/` | 2.1 / 2.5 |
 | `/pedidos/detalle/` | 2.3 | `/soporte/` | 2.4 |
-| `/notificaciones/` | 2.2 | | |
+| `/notificaciones/` | 2.2 | `/disponibilidad/` | 2.2 |
+| `/baja/` (estado de la baja) | 2.1 | `/soporte/detalle/` | 2.4 |
 
-Navegación inferior: Inicio · Trabajos · Agenda · Mensajes · Cuenta (Caja y Soporte se abren desde Cuenta e Inicio).
+Navegación inferior: Inicio · Trabajos · Agenda · Mensajes · Cuenta (Caja, Ayuda, Disponibilidad y Avisos se abren desde Cuenta e Inicio).
+Las rutas con `?id=` van envueltas en `Suspense` (requisito de la exportación estática).
 
 ## Seguridad del frontend
 

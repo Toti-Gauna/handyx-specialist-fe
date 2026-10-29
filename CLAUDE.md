@@ -30,6 +30,19 @@ React 19 + Next.js 16 (App Router) + TypeScript `strict`, exportación estática
 - Datos de prueba sintéticos (`*@example.test`, "Especialista De Prueba", ids `00000000-…`). Nada de datos reales en
   fixtures, logs, capturas ni a proveedores de IA.
 
+## Convenciones del código (fase 2)
+
+- Una pantalla de negocio = un archivo en `src/pantallas/`; `src/app/**/page.tsx` solo la monta (con `Suspense`). Los ids van en `?id=`.
+- Datos: `useCarga` (consulta; un error conserva lo ya cargado y ofrece reintentar, nunca cae a fixtures) y `useAccion` (mutación:
+  estado de envío, error y **Idempotency-Key estable al reintentar**). Un 401 abre el aviso de sesión expirada.
+- **El refresco de datos va dentro de la acción**, antes de liberar el control: así un segundo envío no usa una versión vieja (409).
+- Aceptar/rechazar/terminar/cancelar piden confirmación en una `Hoja` con el resumen. Avisos y bandeja nunca aceptan nada.
+- Estados con ícono **y** texto (`lib/etiquetas.ts`); el color es solo apoyo. Importes siempre con `lib/formato.ts` (centavos enteros).
+- El mock emula al servidor en `src/data/mock/*` (un archivo por dominio) y se controla desde el **Panel de prueba** del banner
+  amarillo (escenarios `?escenario=`, fallas, reloj, Operations, usuario, pagos). Una regla nueva en la UI va con su prueba en `mock.test.ts`.
+- Todo endpoint nuevo entra a la vez en `data/api.ts`, el mock, `data/http/adaptador.ts` y `docs/api/openapi.yaml`.
+- Recorridos de punta a punta: `npm run build && node e2e/flujos.cjs` (Playwright; `SOLO=C` corre uno; `CAPTURAS=/ruta` guarda capturas).
+
 ## Lenguaje y marca
 
 Español rioplatense con voseo; montos `$ 45.000`; "verificados" sí, "matriculados"/"despachamos" no; sin "inmediato"
@@ -44,5 +57,5 @@ npm ci
 npm run dev | build | build:hostinger | lint | typecheck | test
 ```
 
-Antes de cada PR: `lint`, `typecheck`, `test`, `build` y `build:hostinger` con una API ficticia (lo corre el CI).
+Antes de cada PR: `lint`, `typecheck`, `test`, `build`, `node e2e/flujos.cjs` y `build:hostinger` con una API ficticia (el CI corre todo menos el E2E hasta el lote 5.1).
 Mantener `docs/` (TECH-12) junto al código.
