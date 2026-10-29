@@ -42,11 +42,11 @@ export function TrabajoDetalle() {
   const activo = ACTIVO.includes(t.estado);
 
   async function confirmarCancelacion() {
-    const r = await cancelacion.ejecutar(() => api.avanzarTrabajo(t.id, 'cancelado', t.version, cancelacion.clave()));
-    if (r.ok) {
-      setCancelar(false);
+    const r = await cancelacion.ejecutar(async () => {
+      await api.avanzarTrabajo(t.id, 'cancelado', t.version, cancelacion.clave());
       await c.recargar();
-    }
+    });
+    if (r.ok) setCancelar(false);
   }
 
   return (
@@ -73,7 +73,7 @@ export function TrabajoDetalle() {
         ) : null}
       </Tarjeta>
 
-      {activo ? <AccionTrabajo trabajo={t} alCambiar={() => void c.recargar()} /> : null}
+      {activo ? <AccionTrabajo trabajo={t} alCambiar={c.recargar} /> : null}
       {t.estado === 'finalizado' ? (
         <Aviso tono="exito" icono="checkCirculo" titulo="Trabajo terminado">
           {pagoId ? <>El cobro está en tu <Link href={RUTAS.caja.ruta}>Caja</Link>: pagó directamente a vos, no a Handy.</> : 'Todavía no hay un cobro registrado.'}

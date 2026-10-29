@@ -17,7 +17,7 @@ const PASOS: Partial<Record<EstadoTrabajo, { hacia: Exclude<EstadoTrabajo, 'agen
 };
 
 /** El próximo paso del trabajo, uno solo y bien visible. Cada paso lo marca el especialista y queda con fecha y actor. */
-export function AccionTrabajo({ trabajo, alCambiar }: { trabajo: Trabajo; alCambiar(): void }) {
+export function AccionTrabajo({ trabajo, alCambiar }: { trabajo: Trabajo; alCambiar(): Promise<unknown> }) {
   const { pendiente, fallo, ejecutar, clave, nueva, limpiar } = useAccion();
   const [confirmar, setConfirmar] = useState(false);
   const paso = PASOS[trabajo.estado];
@@ -25,13 +25,16 @@ export function AccionTrabajo({ trabajo, alCambiar }: { trabajo: Trabajo; alCamb
 
   async function avanzar() {
     if (!paso) return;
-    const r = await ejecutar(() => api.avanzarTrabajo(trabajo.id, paso.hacia, trabajo.version, clave()));
+    // El refresco va dentro de la acción: el botón se libera con la versión nueva del trabajo (evita un 409 al tocar dos veces).
+    const r = await ejecutar(async () => {
+      await api.avanzarTrabajo(trabajo.id, paso.hacia, trabajo.version, clave());
+      await alCambiar();
+    });
     if (r.ok) {
       setConfirmar(false);
-      alCambiar();
     } else if (r.fallo.tipo === 'conflicto') {
       nueva();
-      alCambiar();
+      await alCambiar();
     }
   }
 

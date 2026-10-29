@@ -34,10 +34,13 @@ export function Caja() {
   async function confirmar() {
     if (!intencion) return;
     const { pago, accion: a } = intencion;
-    const r = await accion.ejecutar(() => (a === 'reportar' ? api.reportarCobro(pago.id, accion.clave()) : api.marcarDiscrepancia(pago.id, accion.clave())));
+    // El refresco va dentro de la acción: la hoja se cierra con la lista ya actualizada.
+    const r = await accion.ejecutar(async () => {
+      await (a === 'reportar' ? api.reportarCobro(pago.id, accion.clave()) : api.marcarDiscrepancia(pago.id, accion.clave()));
+      await c.recargar();
+    });
     if (r.ok) {
       setIntencion(null);
-      await c.recargar();
     } else if (r.fallo.tipo === 'conflicto') {
       await c.recargar();
     }

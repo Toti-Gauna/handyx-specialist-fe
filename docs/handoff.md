@@ -31,6 +31,16 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
   arranca el mock con esa falla.
 - El servidor de pruebas devuelve `404.html` con estado 404, como tiene que hacerlo el hosting.
 - **Sellos de habilitación**: "Verificado por Handy" solo con `verificado` del servidor (sin cambios: se revisó).
+- **Revisión de flujos** (después del lote): `CAPTURAS=/ruta npm run e2e` guarda una captura por paso (≈70, numeradas), con la
+  barra fija abajo y las hojas a la vista.
+  - Bug corregido: en Caja, al avanzar y al cancelar un trabajo, la hoja se cerraba antes de refrescar los datos. Ahora el refresco va
+    dentro de la acción, y el recorrido C lo verifica.
+  - Pendientes de producto que salieron de la revisión (sin implementar):
+    - El resumen del alta en corrección se contradice.
+    - Falta el aviso "Aceptaron tu propuesta" y un acceso al trabajo.
+    - Faltan "contraseña nueva" y "verificar email".
+    - Las pestañas de la bandeja quedan cortadas a 390 px.
+    - La caja es larga y no tiene filtros.
 
 ### Comandos del lote 3.3 (29/10/2026, local)
 
