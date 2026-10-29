@@ -7,7 +7,7 @@ import {
 } from '../../contracts/dto.ts';
 import { monto } from '../../contracts/dinero.ts';
 import { fallo, ahoraMs, type EstadoMock } from './estado.ts';
-import { aPedidoElegible, habilitada, tengoPropuesta, visible } from './reglas.ts';
+import { aPedidoElegible, habilitada, visible } from './reglas.ts';
 import { zodAFallo } from './validacion.ts';
 
 const ESTADOS_ACTIVOS = ['agendado', 'en_camino', 'en_sitio', 'en_curso'] as const;
@@ -67,7 +67,7 @@ export const pedidos = (s: EstadoMock) => ({
     const propuestas = s.propuestas.filter((x) => x.pedidoId === id);
     return {
       ...aPedidoElegible(s, p),
-      conversacionId: tengoPropuesta(s, id) || propuestas.length > 0 ? (p.conversacionId ?? null) : null,
+      conversacionId: p.conversacionId,
       propuestas,
     };
   },

@@ -99,9 +99,17 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
 
     conversaciones: () => c.pedir('GET', '/v1/conversaciones', z.array(ConversacionSchema)),
     conversacion: (cid) => c.pedir('GET', `/v1/conversaciones/${id(cid)}`, ConversacionSchema),
+    abrirConversacion: (pid) => c.pedir('POST', `/v1/especialista/pedidos/${id(pid)}/conversacion`, ConversacionSchema),
     mensajes: (cid) => c.pedir('GET', `/v1/conversaciones/${id(cid)}/mensajes`, z.array(MensajeSchema)),
-    enviarMensaje: (cid, mensaje, clave) =>
-      c.pedir('POST', `/v1/conversaciones/${id(cid)}/mensajes`, MensajeSchema, { cuerpo: mensaje, idempotencyKey: clave }),
+    propuestasConversacion: (cid) => c.pedir('GET', `/v1/conversaciones/${id(cid)}/propuestas`, z.array(PropuestaSchema)),
+    enviarMensaje(cid, mensaje, clave, archivo) {
+      if (!archivo) return c.pedir('POST', `/v1/conversaciones/${id(cid)}/mensajes`, MensajeSchema, { cuerpo: mensaje, idempotencyKey: clave });
+      const f = new FormData();
+      f.set('archivo', archivo);
+      f.set('tipo', mensaje.tipo);
+      if (mensaje.texto) f.set('texto', mensaje.texto);
+      return c.pedir('POST', `/v1/conversaciones/${id(cid)}/mensajes`, MensajeSchema, { formulario: f, idempotencyKey: clave });
+    },
 
     cajaResumen: () => c.pedir('GET', '/v1/especialista/caja/resumen', CajaResumenSchema),
     pagos: () => c.pedir('GET', '/v1/especialista/caja', paginado(PagoSchema)),

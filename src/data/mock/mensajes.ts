@@ -1,6 +1,7 @@
-import { EnviarMensajeSchema, type Conversacion, type Mensaje } from '../../contracts/dto.ts';
+import { EnviarMensajeSchema, type Conversacion, type Mensaje, type Propuesta } from '../../contracts/dto.ts';
 import { fallo, idempotente, type EstadoMock } from './estado.ts';
-import { agregarMensaje } from './propuestas.ts';
+import { agregarMensaje, asegurarConversacion } from './propuestas.ts';
+import { visible } from './reglas.ts';
 import { zodAFallo } from './validacion.ts';
 import { FalloApi } from '../errores.ts';
 
@@ -20,6 +21,15 @@ function conversacion(s: EstadoMock, id: string): Conversacion {
 export const mensajes = (s: EstadoMock) => ({
   conversaciones: (): Conversacion[] => [...s.conversaciones].sort((a, b) => Date.parse(b.actualizadoEn) - Date.parse(a.actualizadoEn)),
   conversacion: (id: string): Conversacion => conversacion(s, id),
+  abrirConversacion(pedidoId: string): Conversacion {
+    const p = s.pedidos.find((x) => x.pub.id === pedidoId);
+    if (!p || !visible(s, p)) throw fallo('no_encontrado', 404, 'no_encontrado', 'No encontramos ese pedido.');
+    return conversacion(s, asegurarConversacion(s, p));
+  },
+  propuestasConversacion(id: string): Propuesta[] {
+    const c = conversacion(s, id);
+    return s.propuestas.filter((p) => p.pedidoId === c.pedidoId);
+  },
   mensajes(id: string): Mensaje[] {
     const c = conversacion(s, id);
     c.noLeidos = 0; // el servidor marca como leído al abrir el hilo

@@ -19,7 +19,8 @@ const Ctx = createContext<CtxPerfil | null>(null);
  */
 export function GuardiaApp({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const c = useCarga(async () => ((await api.sesion()) ? api.perfil() : null), []);
+  // Se vuelve a pedir cada minuto: el alta la cambia Operations, no la persona (habilitación, corrección, rechazo).
+  const c = useCarga(async () => ((await api.sesion()) ? api.perfil() : null), [], { cadaMs: 60_000 });
   const perfil = c.datos;
   const valor = useMemo(() => (perfil ? { perfil, recargar: c.recargar } : null), [perfil, c.recargar]);
 

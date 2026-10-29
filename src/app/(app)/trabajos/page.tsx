@@ -1,5 +1,10 @@
-import { PantallaPendiente } from '../../../components/PantallaPendiente.tsx';
+import { Suspense } from 'react';
+import { Trabajos } from '../../../pantallas/Trabajos.tsx';
 
 export default function Pagina() {
-  return <PantallaPendiente clave="trabajos" />;
+  return (
+    <Suspense>
+      <Trabajos />
+    </Suspense>
+  );
 }

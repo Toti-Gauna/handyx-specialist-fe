@@ -46,7 +46,7 @@ function Asistente({ datos, alGuardar }: { datos: DatosAlta; alGuardar(): Promis
         <p className="texto-suave">Se guarda en cada paso: podés dejarlo y seguir después.</p>
       )}
       <Pasos actual={paso} pasos={PASOS} />
-      {paso === 0 ? <PasoDatos datos={datos} alGuardar={async () => { await alGuardar(); await recargar(); setPaso(1); }} /> : null}
+      {paso === 0 ? <PasoDatos datos={datos} alGuardar={async (avanzar) => { await alGuardar(); await recargar(); if (avanzar) setPaso(1); }} /> : null}
       {paso === 1 ? <PasoIdentidad datos={datos} perfil={perfil} alCambiar={async () => { await alGuardar(); await recargar(); }} /> : null}
       {paso === 2 ? <PasoRubros perfil={perfil} alCambiar={recargar} /> : null}
       {paso === 3 ? <PasoFoto perfil={perfil} alCambiar={recargar} /> : null}
@@ -67,7 +67,7 @@ function Asistente({ datos, alGuardar }: { datos: DatosAlta; alGuardar(): Promis
 type ErroresCampo = Record<string, string>;
 const ERR_GENERICO = 'Revisá este dato.';
 
-function PasoDatos({ datos, alGuardar }: { datos: DatosAlta; alGuardar(): Promise<void> }) {
+function PasoDatos({ datos, alGuardar }: { datos: DatosAlta; alGuardar(avanzar: boolean): Promise<void> }) {
   const { pendiente, fallo, ejecutar } = useAccion();
   const [f, setF] = useState({
     nombre: datos.nombre ?? '',
@@ -100,12 +100,14 @@ function PasoDatos({ datos, alGuardar }: { datos: DatosAlta; alGuardar(): Promis
     setErrores(err);
     // Guarda lo válido aunque falte algo: se puede dejar el paso y retomarlo después.
     if (!ok.success) return;
-    const r = await ejecutar(() => api.guardarDatosAlta(ok.data));
-    if (!r.ok) {
-      setErrores(Object.fromEntries((r.fallo.detalle?.campos ?? []).map((c) => [c.campo, ERR_GENERICO])));
-      return;
-    }
-    if (Object.keys(err).length === 0) await alGuardar();
+    // El refresco de la versión va dentro de la acción: mientras no termina, el botón sigue deshabilitado
+    // (si no, un segundo envío rápido usaría la versión vieja y chocaría).
+    const completo = Object.keys(err).length === 0;
+    const r = await ejecutar(async () => {
+      await api.guardarDatosAlta(ok.data);
+      await alGuardar(completo); // lo válido ya quedó guardado: el paso se puede retomar; solo avanza si está completo
+    });
+    if (!r.ok) setErrores(Object.fromEntries((r.fallo.detalle?.campos ?? []).map((c) => [c.campo, ERR_GENERICO])));
   }
 
   return (

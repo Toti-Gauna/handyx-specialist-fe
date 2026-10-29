@@ -413,6 +413,8 @@ export type NuevoCambio = z.infer<typeof NuevoCambioSchema>;
 export const AgendaItemSchema = z.strictObject({
   id: IdSchema,
   trabajoId: IdSchema.nullable(),
+  /** Para abrir la oferta pendiente de la agenda. */
+  pedidoId: IdSchema.nullable(),
   titulo: z.string(),
   inicio: InstanteSchema,
   fin: InstanteSchema.nullable(),

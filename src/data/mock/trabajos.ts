@@ -110,7 +110,7 @@ export const trabajos = (s: EstadoMock) => ({
       if (!ACTIVOS.includes(t.trabajo.estado)) continue;
       const { inicio, fin: f } = t.trabajo.acuerdo.horario;
       confirmados.push([Date.parse(inicio), fin(inicio, f)]);
-      items.push({ id: `${t.trabajo.id}`, trabajoId: t.trabajo.id, titulo: `${t.trabajo.tipo === 'obra' ? 'Obra' : 'Trabajo'} · ${t.contraparte}`, inicio, fin: f, estado: cambioVigente(s, t) ? 'cambio_pendiente' : 'confirmado', superpuesto: false });
+      items.push({ id: `${t.trabajo.id}`, trabajoId: t.trabajo.id, pedidoId: null, titulo: `${t.trabajo.tipo === 'obra' ? 'Obra' : 'Trabajo'} · ${t.contraparte}`, inicio, fin: f, estado: cambioVigente(s, t) ? 'cambio_pendiente' : 'confirmado', superpuesto: false });
     }
     // Ofertas pendientes (mías o del usuario) que se superponen con un trabajo confirmado
     for (const p of s.propuestas) {
@@ -118,7 +118,7 @@ export const trabajos = (s: EstadoMock) => ({
       if (s.trabajos.some((t) => t.cambioPendienteId === p.id)) continue;
       const pi = Date.parse(p.horario.inicio);
       const pf = fin(p.horario.inicio, p.horario.fin);
-      items.push({ id: p.id, trabajoId: null, titulo: p.autorRol === 'usuario' ? 'Propuesta recibida' : 'Propuesta enviada', inicio: p.horario.inicio, fin: p.horario.fin, estado: 'oferta_pendiente', superpuesto: confirmados.some(([a, b]) => pi < b && a < pf) });
+      items.push({ id: p.id, trabajoId: null, pedidoId: p.pedidoId, titulo: p.autorRol === 'usuario' ? 'Propuesta recibida' : 'Propuesta enviada', inicio: p.horario.inicio, fin: p.horario.fin, estado: 'oferta_pendiente', superpuesto: confirmados.some(([a, b]) => pi < b && a < pf) });
     }
     return items.filter((i) => Date.parse(i.inicio) >= d && Date.parse(i.inicio) < h).sort((a, b) => Date.parse(a.inicio) - Date.parse(b.inicio));
   },

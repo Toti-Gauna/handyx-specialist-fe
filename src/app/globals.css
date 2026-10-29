@@ -8,6 +8,7 @@
   --fuente-titulos-app: 'Archivo Variable', var(--fuente-titulos);
   --azul-hondo: #143e7e;
   --toque-min: 44px;
+  --nav-alto: 84px;
   color-scheme: light;
 }
 
@@ -963,7 +964,8 @@ legend {
 }
 .compositor {
   position: sticky;
-  bottom: 0;
+  /* La barra inferior de la app también es fija: el compositor se apoya encima de ella. */
+  bottom: var(--nav-alto);
   display: grid;
   gap: 8px;
   padding: 10px 0 4px;
@@ -1161,4 +1163,31 @@ legend {
 .icono--chico {
   width: 16px;
   height: 16px;
+}
+
+.pedido__descripcion {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+.pedido--urgente {
+  border: 2px solid var(--color-noche);
+}
+
+.propuesta .botones {
+  margin-top: 4px;
+}
+
+.tarjeta--noche .dato dt,
+.tarjeta--noche .dato dd,
+.tarjeta--azul .dato dt,
+.tarjeta--azul .dato dd {
+  color: #fff;
+}
+.tarjeta--noche .dato,
+.tarjeta--azul .dato {
+  border-color: rgb(255 255 255 / 0.25);
 }

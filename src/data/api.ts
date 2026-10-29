@@ -96,8 +96,13 @@ export interface EspecialistaApi {
   // Mensajes
   conversaciones(): Promise<Conversacion[]>;
   conversacion(id: string): Promise<Conversacion>;
+  /** Abre (o devuelve) el chat de un pedido ANTES de contratar: sirve para consultar y cotizar. No compromete nada. */
+  abrirConversacion(pedidoId: string): Promise<Conversacion>;
   mensajes(conversacionId: string): Promise<Mensaje[]>;
-  enviarMensaje(conversacionId: string, mensaje: EnviarMensaje, clave: ClaveIdempotencia): Promise<Mensaje>;
+  /** Presupuestos estructurados del hilo (mensajes de tipo `propuesta`). */
+  propuestasConversacion(conversacionId: string): Promise<Propuesta[]>;
+  /** `archivo`: solo para fotos con la API real; el mock nunca lee ni guarda una imagen. */
+  enviarMensaje(conversacionId: string, mensaje: EnviarMensaje, clave: ClaveIdempotencia, archivo?: Blob): Promise<Mensaje>;
 
   // Caja
   cajaResumen(): Promise<CajaResumen>;
