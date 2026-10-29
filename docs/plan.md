@@ -80,7 +80,8 @@ la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote
   - Crear cuenta con **código de 6 dígitos al email**.
   - Recuperar con contraseña nueva y enlace vencido.
   - Sesión expirada.
-- [ ] **4.3 Mapa, ubicación en tiempo real y trayectos** (Opus / xhigh):
+- [ ] **4.3 Mapa, ubicación en tiempo real y trayectos** (Opus / xhigh). Hecho localmente, menos el mapa base. Falta bajar los datos
+  de OpenStreetMap: el entorno bloquea Overpass y Ignacio lo habilita (`docs/mapa.md`).
   - MapLibre con teselas propias de Mar del Plata y Batán y estilo Handyx.
   - Zonas aproximadas.
   - Posición del especialista en vivo durante el viaje, simulada en el mock.

@@ -1,4 +1,4 @@
-# Catálogo de componentes · PWA Especialista (lotes 3.3, 4.1 y 4.2)
+# Catálogo de componentes · PWA Especialista (lotes 3.3, 4.1, 4.2 y 4.3)
 
 Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila dice dónde verlo en
 `docs/capturas/390x844/` (todas con datos sintéticos; ver `docs/capturas/README.md`).
@@ -95,6 +95,15 @@ Para las pantallas de la fase 4. Se ven en uso en `/catalogo/` (solo en la vista
 | `BotonesProveedor` | `BotonesProveedor.tsx` | "Continuar con Google" siempre y "Continuar con Apple" solo en dispositivos Apple (`lib/dispositivo.ts`) | Hoy solo en el mock (cuentas de prueba en una hoja). En producción no aparecen hasta conectar los SDK (lote 5.2) |
 
 `useAccion({ publica: true })`: en entrar y con Google o Apple, un 401 es "credenciales incorrectas", no "tu sesión expiró".
+
+## Mapa (lote 4.3)
+
+| Componente | Archivo | Para qué | Accesibilidad |
+|---|---|---|---|
+| `Mapa` | `src/mapa/Mapa.tsx` | Zona aproximada, destino, tu posición, trayecto, cobertura y radar. Alturas `chico`, `medio`, `grande` y `completo`; `interactivo`, `conCentrar` y `tapadoAbajo` (lo que tapa una hoja) | El lienzo es una región con `etiqueta`. Sin interacción, no entra en el orden de tabulación. Los marcadores son `aria-hidden`: lo importante está en texto al lado. `alternativa` en texto si no carga |
+| `useCompartirUbicacion` | `src/hooks/useCompartirUbicacion.ts` | GPS solo a pedido, envíos limitados y señal (`precisa`, `imprecisa`, `sin señal`, `sin permiso`) | La señal se muestra con ícono **y** texto |
+
+Detalle, privacidad y datos: `docs/mapa.md`.
 
 Handys disponibles (`Handy.tsx`):
 - Contentos: grupo, lamparita, llave, engranaje, caño y gota.

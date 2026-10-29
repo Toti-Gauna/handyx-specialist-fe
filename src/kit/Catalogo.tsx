@@ -14,8 +14,18 @@ import { HojaArrastrable } from './HojaArrastrable.tsx';
 import { BarraSuperior, PestanasFlotantes, type ItemPestana } from './Navegacion.tsx';
 import { Avatar, BotonFijo, ChipOpcion, EstadoVacio, Fila, LineaDeTiempo, MontoGrande, Mosaico, Tilde } from './Piezas.tsx';
 import { PrecioStepper } from './Precio.tsx';
+import { Mapa } from '../mapa/Mapa.tsx';
+import { desplazar } from '../lib/geo.ts';
 
 const HOY = '2026-11-17';
+// Puntos de muestra para las capas del mapa (sintéticos: no son hogares ni bases reales).
+const M_DESTINO = { lat: -38.0152, lng: -57.5481 };
+const M_YO = desplazar(M_DESTINO, 1800, 300);
+const M_BARRIOS = [
+  { id: 'Centro', nombre: 'Centro', centro: { lat: -38.0005, lng: -57.547 } },
+  { id: 'La Perla', nombre: 'La Perla', centro: { lat: -37.9905, lng: -57.553 } },
+  { id: 'Güemes', nombre: 'Güemes', centro: { lat: -38.014, lng: -57.545 } },
+];
 const PESTANAS: ItemPestana[] = [
   { href: '/inicio/', texto: 'Inicio', icono: 'casa' },
   { href: '/agenda/', texto: 'Agenda', icono: 'calendario' },
@@ -98,6 +108,7 @@ export function Catalogo() {
               ['personas', 'Personas y listas'],
               ['estados', 'Estados'],
               ['handys', 'Handys'],
+              ['mapa', 'Mapa'],
             ].map(([id, t]) => (
               <a key={id} href={`#${id}`} className="hx-chip">
                 {t}
@@ -307,6 +318,22 @@ export function Catalogo() {
           >
             Cuando estés disponible, los pedidos de tus zonas aparecen acá por orden de llegada.
           </EstadoVacio>
+        </Bloque>
+
+        <Bloque id="mapa" titulo="Mapa (lote 4.3)" nota="MapLibre con el estilo Handyx. Antes del acuerdo, solo una zona aproximada; con trabajo, el destino, tu posición y el trayecto. Si el mapa no carga, queda el texto.">
+          <Mapa etiqueta="Zona aproximada de un pedido en Güemes" alto="chico" zona={{ centro: desplazar(M_DESTINO, 260, 40), radioM: 700 }} alternativa={<p>Zona aproximada: Güemes</p>} />
+          <Mapa
+            etiqueta="Trayecto de muestra hasta el destino"
+            alto="grande"
+            interactivo
+            conCentrar
+            destino={M_DESTINO}
+            posicion={{ punto: M_YO, precisionM: 12 }}
+            trayecto={[M_YO, M_DESTINO]}
+            alternativa={<p>Destino a 1,8 km</p>}
+          />
+          <p className="texto-suave texto-chico">El trayecto de muestra va en línea recta: los de la app siguen las calles y los calcula el servidor.</p>
+          <Mapa etiqueta="Tus barrios de cobertura" alto="medio" cobertura={M_BARRIOS} radar={M_BARRIOS[0]?.centro ?? null} alternativa={<p>Centro, La Perla y Güemes</p>} />
         </Bloque>
 
         <Bloque id="handys" titulo="Handys" nota="Siempre decorativos: el texto de al lado dice lo que pasa. Las poses nuevas llegan con docs/handys-prompt.md.">

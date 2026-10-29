@@ -4,7 +4,7 @@
 const { readFileSync } = require('node:fs');
 const { chromium } = require('playwright');
 const { servir } = require('./servidor.cjs');
-const { PANTALLAS, id } = require('./pantallas.cjs');
+const { PANTALLAS, id, esperarMapas } = require('./pantallas.cjs');
 
 const AXE = readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
 const ETIQUETAS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -57,6 +57,7 @@ async function main() {
     const sep = ruta.includes('?') ? '&' : '?';
     await p.goto(`${base}${ruta}${sep}escenario=${escenario}`);
     await p.getByText(texto).first().waitFor({ timeout: 8000 });
+    await esperarMapas(p);
     await auditar(p, nombre, violaciones);
     await areas(p, nombre, tactiles);
     // Texto al 200 % (WCAG 1.4.4 / 1.4.10): nada desborda hacia los costados
@@ -92,6 +93,23 @@ async function main() {
     await p.keyboard.press('Escape');
     const cerrado = await p.evaluate(() => !document.querySelector('dialog[open]'));
     if (!cerrado) teclado.push(`${nombre}: Escape no cerró el diálogo`);
+    await p.close();
+  }
+
+  // En camino compartiendo la ubicación (lote 4.3): mapa interactivo, hoja arrastrable y señal en texto
+  {
+    const p = await ctx.newPage();
+    await p.goto(`${base}/en-camino/?id=${id(0xc1)}&escenario=habilitado`);
+    await p.getByRole('button', { name: 'Salgo hacia el lugar' }).click();
+    await p.getByRole('button', { name: 'Compartir mi ubicación' }).click();
+    await p.getByText('Ubicación precisa').first().waitFor({ timeout: 8000 });
+    await esperarMapas(p);
+    await auditar(p, 'en-camino-compartiendo', violaciones);
+    await areas(p, 'en-camino-compartiendo', tactiles);
+    await p.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+    await p.waitForTimeout(80);
+    const desborde = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    if (desborde > 0) teclado.push(`en-camino-compartiendo: con texto al 200 % desborda ${desborde}px hacia el costado`);
     await p.close();
   }
 

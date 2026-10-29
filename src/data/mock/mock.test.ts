@@ -5,7 +5,12 @@ import {
   AceptacionSchema, AgendaItemSchema, AvisoSchema, BajaSchema, CajaResumenSchema, CasoSoporteDetalleSchema, CasoSoporteSchema, ConversacionSchema,
   DatosAltaSchema, DisponibilidadSchema, FeeVigenteSchema, InicioSchema, MensajeSchema, PagoSchema, PedidoDetalleSchema, PedidoElegibleSchema,
   PerfilEspecialistaSchema, PerfilPublicoSchema, PreferenciasSchema, PropuestaSchema, SesionSchema, TrabajoDetalleSchema, TrabajoSchema,
+  BarrioSchema, ViajeSchema,
 } from '../../contracts/dto.ts';
+import type { FalloApi } from '../errores.ts';
+import { desplazar, distanciaM } from '../../lib/geo.ts';
+import { armarGrafo, type WayOsm } from '../../mapa/osm.ts';
+import { usarGrafo } from './mapa.ts';
 import { monto } from '../../contracts/dinero.ts';
 import { crearApiMockConEstado } from './adaptador.ts';
 import { crearControles } from './controles.ts';
@@ -455,5 +460,82 @@ describe('cuenta: código por email, Google o Apple y recuperación (lote 4.2)',
     await api.recuperar(CREDENCIALES_PRUEBA.email);
     estado.saltosMs = 31 * 60_000;
     assert.deepEqual(await api.estadoRecuperacion(TOKEN_RECUPERACION_PRUEBA), { estado: 'vencido' });
+  });
+});
+
+describe('mapa y viaje (lote 4.3)', () => {
+  // Cuadrícula sintética de 3 × 3 esquinas a ~220 m (no son calles reales): el trayecto se puede calcular y recalcular.
+  const O = { lat: -10, lng: -20 };
+  const PASO = 0.002;
+  const esquina = (f: number, c: number) => ({ lat: O.lat + f * PASO, lng: O.lng + c * PASO });
+  const via = (id: number, puntos: Array<[number, number]>): WayOsm => ({
+    type: 'way',
+    id,
+    nodes: puntos.map(([f, c]) => 1000 + f * 10 + c),
+    geometry: puntos.map(([f, c]) => ({ lat: esquina(f, c).lat, lon: esquina(f, c).lng })),
+    tags: { highway: 'residential' },
+  });
+  const CUADRICULA = [0, 1, 2].flatMap((k) => [via(k, [[k, 0], [k, 1], [k, 2]]), via(10 + k, [[0, k], [1, k], [2, k]])]);
+  const pos = (api: { ahora(): Date }, punto: { lat: number; lng: number }, precisionM = 8) => ({ punto, precisionM, en: api.ahora().toISOString() });
+
+  it('el pedido trae una zona aproximada que contiene al destino, pero nunca el punto exacto', async () => {
+    const { api, estado } = nuevo();
+    const p = (await api.pedidosElegibles()).items.find((x) => x.id === ID.pProgramado);
+    assert.ok(p?.zonaMapa);
+    const interno = estado.pedidos.find((x) => x.pub.id === ID.pProgramado)!;
+    const d = distanciaM(p.zonaMapa.centro, interno.destino);
+    assert.ok(d >= 200 && d <= 350, `centro corrido ${Math.round(d)} m`);
+    assert.ok(d < p.zonaMapa.radioM);
+    assert.ok(!JSON.stringify(p).includes(String(interno.destino.lat)));
+    const barrios = await api.barrios();
+    assert.ok(barrios.some((b) => b.id === 'La Perla'));
+    barrios.forEach((b) => assert.ok(BarrioSchema.safeParse(b).success));
+  });
+
+  it('solo se comparte durante el viaje y el servidor deja de compartir al llegar', async () => {
+    usarGrafo(null);
+    const { api } = nuevo();
+    let v = await api.viaje(ID.t1);
+    assert.ok(ViajeSchema.safeParse(v).success);
+    assert.equal(v.estado, 'sin_compartir');
+    await assert.rejects(api.enviarPosicion(ID.t1, pos(api, v.destino)), (e: FalloApi) => e.status === 409);
+    const t = await api.avanzarTrabajo(ID.t1, 'en_camino', (await api.trabajo(ID.t1)).trabajo.version, clave());
+    v = await api.enviarPosicion(ID.t1, pos(api, desplazar(v.destino, 2000, 270)));
+    assert.equal(v.estado, 'compartiendo');
+    assert.equal(v.trayecto, null, 'sin grafo no hay trayecto: la app ofrece Google Maps o Waze');
+    assert.ok(Math.abs((v.distanciaRestanteM ?? 0) - 2000) < 2);
+    assert.ok(v.llegadaEstimada);
+    v = await api.dejarDeCompartir(ID.t1);
+    assert.equal(v.estado, 'sin_compartir');
+    await api.enviarPosicion(ID.t1, pos(api, v.destino));
+    await api.avanzarTrabajo(ID.t1, 'en_sitio', t.version, clave());
+    assert.equal((await api.viaje(ID.t1)).estado, 'terminado');
+    await assert.rejects(api.enviarPosicion(ID.t1, pos(api, v.destino)), (e: FalloApi) => e.status === 409);
+    await assert.rejects(api.viaje(ID.t2), (e: FalloApi) => e.status === 409, 'un trabajo sin dirección no tiene destino');
+    await assert.rejects(api.enviarPosicion(ID.t1, { punto: { lat: 200, lng: 0 }, precisionM: 5, en: api.ahora().toISOString() }), (e: FalloApi) => e.status === 400);
+  });
+
+  it('calcula el trayecto con la primera posición y lo recalcula después de dos posiciones fuera', async () => {
+    usarGrafo(armarGrafo(CUADRICULA, [O.lng - 0.01, O.lat - 0.01, O.lng + 0.01, O.lat + 0.01], 'prueba'));
+    try {
+      const { api, estado } = nuevo();
+      estado.trabajos.find((x) => x.trabajo.id === ID.t1)!.trabajo.destino = esquina(2, 2);
+      await api.avanzarTrabajo(ID.t1, 'en_camino', (await api.trabajo(ID.t1)).trabajo.version, clave());
+      let v = await api.enviarPosicion(ID.t1, pos(api, esquina(0, 0)));
+      assert.equal(v.trayecto?.version, 0);
+      assert.ok((v.trayecto?.distanciaM ?? 0) > 800, 'por las calles, no en diagonal');
+      assert.ok(v.trayecto!.duracionS > 0);
+      const centroManzana = { lat: O.lat + PASO / 2, lng: O.lng + PASO / 2 };
+      v = await api.enviarPosicion(ID.t1, pos(api, centroManzana));
+      assert.equal(v.trayecto?.version, 0, 'una sola posición fuera no alcanza');
+      v = await api.enviarPosicion(ID.t1, pos(api, centroManzana, 300));
+      assert.equal(v.trayecto?.version, 0, 'con mala precisión no cuenta como desvío');
+      v = await api.enviarPosicion(ID.t1, pos(api, centroManzana));
+      v = await api.enviarPosicion(ID.t1, pos(api, centroManzana));
+      assert.equal(v.trayecto?.version, 1);
+      assert.ok(v.distanciaRestanteM !== null && v.distanciaRestanteM < 900);
+    } finally {
+      usarGrafo(null);
+    }
   });
 });

@@ -68,6 +68,7 @@ export function aplicarAceptacion(s: EstadoMock, p: Propuesta): Trabajo {
     tipo: pedido.pub.tipo,
     acuerdo: { monto: p.monto, alcance: p.alcance, horario: p.horario },
     direccion: pedido.direccion,
+    destino: pedido.destino,
     estado: 'agendado',
     conversacionId,
     version: 0,

@@ -23,6 +23,7 @@ import {
   type PedidoInterno,
   type TrabajoInterno,
 } from './estado.ts';
+import { BASE_PRUEBA, destinoPrueba, zonaPrueba } from './mapa.ts';
 
 const MIN = 60_000;
 const HORA = 60 * MIN;
@@ -125,6 +126,8 @@ export function estadoBase(escenario: Escenario): EstadoMock {
     preferencias: { avisosUrgentes: true, avisosProgramados: true, avisosMensajes: true, avisosPagos: true, push: 'sin_pedir' },
     baja: null,
     feeAvisoEn: null,
+    viajes: new Map(),
+    gps: { senal: 'normal', rapido: false, posicion: BASE_PRUEBA, desviar: false },
     idempotencia: new Map(),
     contador: 0,
     nota: null,
@@ -252,9 +255,10 @@ export function crearEstado(escenario: Escenario): EstadoMock {
     p: Partial<PedidoInterno['pub']> & Pick<PedidoInterno['pub'], 'rubro' | 'tipo' | 'descripcion' | 'zonaAproximada' | 'creadoEn' | 'estado'>,
     extra: Partial<PedidoInterno> = {},
   ): PedidoInterno => ({
-    pub: { id, fechaSolicitada: null, ventanaHasta: null, ...p },
+    pub: { id, fechaSolicitada: null, ventanaHasta: null, zonaMapa: zonaPrueba(id, destinoPrueba(id, p.zonaAproximada)), ...p },
     cliente: 'Cliente de prueba',
     direccion: 'Dirección de prueba 100 (ficticia)',
+    destino: destinoPrueba(id, p.zonaAproximada),
     metodoPago: 'mercado_pago',
     conversacionId: null,
     ...extra,
@@ -301,6 +305,7 @@ export function crearEstado(escenario: Escenario): EstadoMock {
       tipo,
       acuerdo: { monto: pesos(importe), alcance, horario: { inicio: iso(inicio), fin: null } },
       direccion: 'Dirección de prueba 100 (ficticia)',
+      destino: destinoPrueba(id, 'Güemes'),
       estado,
       conversacionId,
       version: 1,
@@ -319,9 +324,11 @@ export function crearEstado(escenario: Escenario): EstadoMock {
   const t2 = trab(ID.t2, idFijo(0xb8), ID.pr3, 'finalizado', 'plomeria', 'urgente', 30000, 'Destapación de cañería.', T0 - DIA - 3 * HORA, ID.c3, 'Cliente de prueba 6', { pagoId: ID.pg2, metodoPago: 'efectivo' });
   t2.eventos.push({ estado: 'en_camino', en: iso(T0 - DIA - 3 * HORA), actor: 'especialista' }, { estado: 'en_sitio', en: iso(T0 - DIA - 2.6 * HORA), actor: 'especialista' }, { estado: 'en_curso', en: iso(T0 - DIA - 2.5 * HORA), actor: 'especialista' }, { estado: 'finalizado', en: iso(T0 - DIA - 1.5 * HORA), actor: 'especialista' });
   t2.trabajo.direccion = null;
+  t2.trabajo.destino = null;
   const t3 = trab(ID.t3, idFijo(0xb9), ID.pr4, 'finalizado', 'electricidad', 'programado', 52000, 'Cambio de tablero y térmicas.', T0 - 5 * DIA, idFijo(0xd4), 'Cliente de prueba 7', { pagoId: ID.pg3 });
   t3.eventos.push({ estado: 'finalizado', en: iso(T0 - 5 * DIA + 4 * HORA), actor: 'especialista' });
   t3.trabajo.direccion = null;
+  t3.trabajo.destino = null;
   const t4 = trab(ID.t4, idFijo(0xba), idFijo(0xf5), 'en_curso', 'albanileria', 'obra', 320000, 'Revoque, pintura y terminación de una medianera, en tres etapas.', T0 - 3 * DIA, idFijo(0xd5), 'Cliente de prueba 8', { pagoId: ID.pg4 });
   t4.eventos.push({ estado: 'en_curso', en: iso(T0 - 3 * DIA), actor: 'especialista' });
   t4.etapas = [
@@ -332,6 +339,7 @@ export function crearEstado(escenario: Escenario): EstadoMock {
   const t5 = trab(ID.t5, idFijo(0xbb), idFijo(0xf6), 'cancelado', 'plomeria', 'programado', 25000, 'Revisión de pérdida (cancelado por el usuario).', T0 - 8 * DIA, idFijo(0xd6), 'Cliente de prueba 9');
   t5.eventos.push({ estado: 'cancelado', en: iso(T0 - 8 * DIA - 3 * HORA), actor: 'usuario' });
   t5.trabajo.direccion = null;
+  t5.trabajo.destino = null;
   s.trabajos = [t1, t2, t3, t4, t5];
 
   const pago = (

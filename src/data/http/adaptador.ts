@@ -3,6 +3,8 @@ import {
   AceptacionSchema,
   AgendaItemSchema,
   AvisoSchema,
+  BarrioSchema,
+  ViajeSchema,
   BajaSchema,
   CajaResumenSchema,
   CasoSoporteDetalleSchema,
@@ -120,6 +122,12 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
       c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/cambio`, PropuestaSchema, { cuerpo: cambio, idempotencyKey: clave }),
     agenda: (desde, hasta) =>
       c.pedir('GET', `/v1/especialista/agenda?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`, z.array(AgendaItemSchema)),
+
+    // La posición va siempre en el cuerpo, nunca en la URL (no queda en logs de acceso ni en el historial).
+    barrios: () => c.pedir('GET', '/v1/especialista/mapa/barrios', z.array(BarrioSchema)),
+    viaje: (tid) => c.pedir('GET', `/v1/especialista/trabajos/${id(tid)}/viaje`, ViajeSchema),
+    enviarPosicion: (tid, posicion) => c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/viaje/posiciones`, ViajeSchema, { cuerpo: posicion }),
+    dejarDeCompartir: (tid) => c.pedir('DELETE', `/v1/especialista/trabajos/${id(tid)}/viaje/posiciones`, ViajeSchema),
 
     conversaciones: () => c.pedir('GET', '/v1/conversaciones', z.array(ConversacionSchema)),
     conversacion: (cid) => c.pedir('GET', `/v1/conversaciones/${id(cid)}`, ConversacionSchema),

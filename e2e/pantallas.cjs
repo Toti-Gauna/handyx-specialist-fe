@@ -28,6 +28,7 @@ const PANTALLAS = [
   ['hilo-trabajo', `/mensajes/hilo/?id=${id(0xd1)}`, 'Perfecto, te espero', 'habilitado'],
   ['trabajos', '/trabajos/', 'Cliente de prueba 5', 'habilitado'],
   ['trabajo-agendado', `/trabajos/detalle/?id=${id(0xc1)}`, 'Salgo hacia el lugar', 'habilitado'],
+  ['en-camino', `/en-camino/?id=${id(0xc1)}`, 'Todavía no saliste', 'habilitado'],
   ['trabajo-obra', `/trabajos/detalle/?id=${id(0xc4)}`, 'Etapas de la obra', 'habilitado'],
   ['trabajo-finalizado', `/trabajos/detalle/?id=${id(0xc2)}`, 'Trabajo terminado', 'habilitado'],
   ['agenda', '/agenda/', 'número subrayado', 'habilitado'],
@@ -43,4 +44,7 @@ const PANTALLAS = [
   ['catalogo', '/catalogo/', 'Todavía no hay pedidos para vos', 'habilitado'],
 ];
 
-module.exports = { PANTALLAS, id };
+/** Espera a que los mapas de la pantalla terminen de cargar (o queden con su texto de respaldo). */
+const esperarMapas = (p) => p.waitForFunction(() => !document.querySelector('[data-mapa="cargando"]'), null, { timeout: 20000 });
+
+module.exports = { PANTALLAS, id, esperarMapas };

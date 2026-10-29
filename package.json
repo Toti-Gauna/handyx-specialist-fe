@@ -7,9 +7,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && node --disable-warning=ExperimentalWarning scripts/generar-sw.mjs",
-    "build:hostinger": "node scripts/verificar-build.mjs && next build && node --disable-warning=ExperimentalWarning scripts/generar-sw.mjs && node scripts/verificar-bundle.mjs",
+    "dev": "node scripts/mapa/preparar-motor.mjs && next dev",
+    "build": "node scripts/mapa/preparar-motor.mjs && next build && node --disable-warning=ExperimentalWarning scripts/generar-sw.mjs",
+    "build:hostinger": "node scripts/verificar-build.mjs && node scripts/mapa/preparar-motor.mjs && next build && node --disable-warning=ExperimentalWarning scripts/generar-sw.mjs && node scripts/verificar-bundle.mjs",
     "start": "npx --yes serve@14.2.4 out",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -17,11 +17,14 @@
     "e2e": "node e2e/flujos.cjs",
     "accesibilidad": "node e2e/accesibilidad.cjs",
     "capturas": "node e2e/capturas.cjs",
-    "capturas:docs": "bash scripts/capturas-docs.sh"
+    "capturas:docs": "bash scripts/capturas-docs.sh",
+    "mapa:descargar": "NODE_USE_ENV_PROXY=1 node scripts/mapa/descargar.ts",
+    "mapa:generar": "node scripts/mapa/generar.ts"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "5.3.0",
     "@fontsource-variable/dm-sans": "5.3.0",
+    "maplibre-gl": "6.14.0",
     "next": "16.4.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
@@ -29,6 +32,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@maplibre/geojson-vt": "6.3.0",
+    "@maplibre/vt-pbf": "4.3.3",
     "@types/node": "^24.10.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

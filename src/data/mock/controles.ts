@@ -5,9 +5,10 @@ import { faltantesParaHabilitar } from '../../contracts/maquinas.ts';
 import { monto } from '../../contracts/dinero.ts';
 import { requiereMatricula } from '../../contracts/rubros.ts';
 import type { Propuesta } from '../../contracts/dto.ts';
-import { ahoraMs, ESCENARIOS, ETIQUETA_ESCENARIO, idNuevo, iso, RELOJ_BASE, type Escenario, type EstadoMock } from './estado.ts';
+import { ahoraMs, ESCENARIOS, ETIQUETA_ESCENARIO, idNuevo, iso, RELOJ_BASE, SENALES_PRUEBA, type Escenario, type EstadoMock, type SenalPrueba } from './estado.ts';
 import { crearEstado, ID } from './fixtures.ts';
 import { agregarMensaje, aplicarAceptacion } from './propuestas.ts';
+import { destinoPrueba, zonaPrueba } from './mapa.ts';
 import { recalcular } from './reglas.ts';
 
 export interface AccionPrueba {
@@ -38,6 +39,13 @@ export interface ControlesPrueba {
   /** Se llama tras cada acción del panel para que las pantallas vuelvan a pedir sus datos. */
   alCambiar(fn: () => void): () => void;
 }
+
+const ETIQUETA_SENAL: Record<SenalPrueba, string> = {
+  normal: 'Señal normal',
+  imprecisa: 'Señal imprecisa (± 250 m)',
+  sin_senal: 'Sin señal',
+  sin_permiso: 'Permiso de ubicación negado',
+};
 
 const MIN = 60_000;
 const HORA = 60 * MIN;
@@ -87,6 +95,11 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
     }
     if (s.baja?.estado === 'solicitada' || s.baja?.estado === 'en_proceso') a.push({ id: 'baja_procesar', etiqueta: 'Avanzar el proceso de baja', grupo: 'Cuenta' });
     a.push({ id: 'sesion_expira', etiqueta: 'Expirar la sesión ahora', grupo: 'Cuenta' });
+    if (s.perfil.estadoAlta === 'habilitada') {
+      const g = (id: string, etiqueta: string) => a.push({ id, etiqueta, grupo: 'Ubicación (GPS simulado)' });
+      for (const senal of SENALES_PRUEBA) g(`gps_${senal}`, `${ETIQUETA_SENAL[senal]}${s.gps.senal === senal ? ' · actual' : ''}`);
+      g('gps_desviar', 'Desviarme del trayecto');
+    }
     return a;
   };
 
@@ -199,7 +212,8 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       case 'pedido_urgente': {
         const base = s.pedidos.find((p) => p.pub.id === ID.pUrgente);
         const idp = idNuevo(s);
-        s.pedidos.push({ pub: { id: idp, rubro: 'plomeria', tipo: 'urgente', descripcion: 'Se rompió un caño debajo de la pileta y pierde agua (pedido de prueba).', zonaAproximada: 'Centro', fechaSolicitada: null, creadoEn: iso(ahoraMs(s)), ventanaHasta: iso(ahoraMs(s) + 20 * MIN), estado: 'buscando' }, cliente: 'Cliente de prueba 10', direccion: base?.direccion ?? 'Dirección de prueba 100 (ficticia)', metodoPago: 'mercado_pago', conversacionId: null });
+        const destino = destinoPrueba(idp, 'Centro');
+        s.pedidos.push({ pub: { id: idp, rubro: 'plomeria', tipo: 'urgente', descripcion: 'Se rompió un caño debajo de la pileta y pierde agua (pedido de prueba).', zonaAproximada: 'Centro', zonaMapa: zonaPrueba(idp, destino), fechaSolicitada: null, creadoEn: iso(ahoraMs(s)), ventanaHasta: iso(ahoraMs(s) + 20 * MIN), estado: 'buscando' }, cliente: 'Cliente de prueba 10', direccion: base?.direccion ?? 'Dirección de prueba 100 (ficticia)', destino, metodoPago: 'mercado_pago', conversacionId: null });
         s.avisos.unshift({ id: idNuevo(s), tipo: 'pedido_urgente', titulo: 'Pedido urgente en tu zona', cuerpo: 'Plomería · Centro. Abrilo para ver el detalle y decidir.', creadoEn: iso(ahoraMs(s)), leido: false, destino: { ruta: 'pedido', id: idp } });
         s.nota = s.disponibilidad.urgentesAhora ? 'Entró un pedido urgente.' : 'Entró un pedido urgente, pero no lo ves: tenés urgentes apagados (el servidor no te lo ofrece).';
         break;
@@ -239,6 +253,17 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         else if (s.baja) s.baja = { ...s.baja, estado: 'completada_con_retencion', mensaje: 'Tu cuenta fue dada de baja. Conservamos solo los registros que la ley nos obliga a guardar (por ejemplo, de trabajos y pagos ya realizados), con acceso restringido.' };
         s.perfil.baja = s.baja?.estado ?? null;
         break;
+      case 'gps_normal':
+      case 'gps_imprecisa':
+      case 'gps_sin_senal':
+      case 'gps_sin_permiso':
+        s.gps.senal = id.slice(4) as SenalPrueba;
+        s.nota = `GPS simulado: ${ETIQUETA_SENAL[s.gps.senal].toLowerCase()}.`;
+        break;
+      case 'gps_desviar':
+        s.gps.desviar = true;
+        s.nota = 'El GPS simulado se va 150 m de costado. Con dos posiciones fuera, el servidor recalcula el trayecto.';
+        break;
       case 'sesion_expira':
         s.sesionExpirada = true;
         s.nota = 'La sesión expiró: la próxima acción te pide volver a entrar.';
@@ -260,6 +285,7 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         { id: 'mensaje', etiqueta: 'Falla el próximo mensaje', activo: s.fallaMensaje },
         { id: 'conflicto', etiqueta: 'Doble aceptación: otra persona gana la próxima respuesta', activo: s.conflictoProximo },
         { id: 'push', etiqueta: 'Rechazar el permiso de avisos del dispositivo', activo: s.pushRechazado },
+        { id: 'gps_rapido', etiqueta: 'GPS simulado rápido (×6)', activo: s.gps.rapido },
       ],
       acciones: acciones(),
       relojes: Object.entries(RELOJES).map(([id, r]) => ({ id, etiqueta: r.etiqueta })),
@@ -276,6 +302,7 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       if (id === 'mensaje') s.fallaMensaje = !s.fallaMensaje;
       if (id === 'conflicto') s.conflictoProximo = !s.conflictoProximo;
       if (id === 'push') s.pushRechazado = !s.pushRechazado;
+      if (id === 'gps_rapido') s.gps.rapido = !s.gps.rapido;
       avisar();
     },
     fijarReloj(id) {

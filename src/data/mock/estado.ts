@@ -15,6 +15,10 @@ import type {
   Baja,
   Trabajo,
   TrabajoDetalle,
+  EstadoViaje,
+  Posicion,
+  Punto,
+  Trayecto,
 } from '../../contracts/dto.ts';
 import { FalloApi, type TipoFallo } from '../errores.ts';
 import type { ErrorApi } from '../../contracts/dto.ts';
@@ -57,6 +61,8 @@ export interface PedidoInterno {
   pub: Omit<PedidoElegible, 'miPropuesta'>;
   cliente: string;
   direccion: string;
+  /** Punto exacto (sintético) del destino: la app recién lo ve cuando hay trabajo. */
+  destino: Punto;
   metodoPago: 'mercado_pago' | 'efectivo';
   conversacionId: string | null;
 }
@@ -69,6 +75,24 @@ export interface TrabajoInterno {
   cambioPendienteId: string | null;
   pagoId: string | null;
   metodoPago: 'mercado_pago' | 'efectivo';
+}
+
+/** Viaje de un trabajo (lote 4.3). `desvios`: posiciones seguidas lejos del trayecto (con 2 se recalcula). */
+export interface ViajeInterno {
+  estado: EstadoViaje;
+  trayecto: Trayecto | null;
+  ultimaPosicion: Posicion | null;
+  desvios: number;
+}
+
+/** GPS simulado del Panel de prueba: qué señal da, a qué velocidad avanza y si el próximo paso se desvía. */
+export const SENALES_PRUEBA = ['normal', 'imprecisa', 'sin_senal', 'sin_permiso'] as const;
+export type SenalPrueba = (typeof SENALES_PRUEBA)[number];
+export interface GpsSimulado {
+  senal: SenalPrueba;
+  rapido: boolean;
+  posicion: Punto;
+  desviar: boolean;
 }
 
 export interface DatosAltaCompletos {
@@ -118,6 +142,8 @@ export interface EstadoMock {
   preferencias: Preferencias;
   baja: Baja | null;
   feeAvisoEn: string | null;
+  viajes: Map<string, ViajeInterno>;
+  gps: GpsSimulado;
   /** Para devolver el mismo resultado ante una repetición con la misma Idempotency-Key. */
   idempotencia: Map<string, unknown>;
   contador: number;

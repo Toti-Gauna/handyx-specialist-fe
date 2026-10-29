@@ -1,8 +1,22 @@
 # Contrato compartido Usuario · Especialista · Portal (lote 1.3)
 
-Versión: **0.3.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+Versión: **0.4.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
 
-**0.2.0 → 0.3.0 (fase 4, lote 4.2, cambios para el dueño del contrato):** cuenta con código por email, Google o Apple y
+**0.3.0 → 0.4.0 (fase 4, lote 4.3, cambios para el dueño del contrato):** mapa, ubicación en vivo y trayectos (`docs/mapa.md`).
+- `PedidoElegible` suma `zonaMapa`: centro ya desplazado por el servidor y radio en metros. Antes del acuerdo, nunca el punto
+  exacto.
+- `Trabajo` suma `destino`, con la misma regla que `direccion`.
+- Nuevos `Punto`, `ZonaMapa`, `Barrio`, `Posicion`, `Trayecto` (con `version`, que sube al recalcular) y `Viaje`
+  (`ESTADOS_VIAJE`).
+- Endpoints nuevos:
+  - Barrios de cobertura.
+  - Viaje de un trabajo.
+  - Enviar posiciones, solo en camino; el servidor recalcula después de 2 desvíos.
+  - Dejar de compartir.
+- La posición va en el cuerpo, nunca en la URL. El servidor deja de compartir al llegar, empezar, terminar o cancelar.
+- Del lado del cliente (`handyx-client-be`), el seguimiento en vivo es por SSE. Retención de posiciones: 30 días (lote 5.3).
+
+**0.2.0 → 0.3.0 (fase 4, lote 4.2):** cuenta con código por email, Google o Apple y
 recuperación con enlace de un solo uso.
 - `Sesion.cuenta` suma `emailVerificado` y `terminosAceptados`. Es obligatorio: no es compatible con 0.2.0, y se acepta porque
   todavía no existe la API.

@@ -6,7 +6,7 @@ const { join } = require('node:path');
 const { chromium } = require('playwright');
 const { servir } = require('./servidor.cjs');
 
-const { PANTALLAS } = require('./pantallas.cjs');
+const { PANTALLAS, esperarMapas } = require('./pantallas.cjs');
 
 // Sanitización: una captura solo puede mostrar datos sintéticos. Emails @example.test, los DNI/CUIT de prueba y,
 // en toda pantalla con datos de la cuenta, el banner amarillo "Datos de prueba".
@@ -42,6 +42,7 @@ async function main() {
       try {
         await p.goto(`${base}${ruta}${sep}escenario=${escenario}`);
         await p.getByText(texto).first().waitFor({ timeout: 8000 });
+        await esperarMapas(p);
         await p.waitForTimeout(150);
         // Desborde horizontal: ningún elemento puede hacer scroll lateral la página.
         const desborde = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

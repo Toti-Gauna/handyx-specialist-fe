@@ -59,6 +59,8 @@ async function main() {
   const srv = await servir();
   const base = `http://localhost:${srv.address().port}`;
   const nav_ = await chromium.launch();
+  // Un navegador sin WebGL: el mapa no puede dibujarse y tiene que quedar el texto (lote 4.3).
+  const navSinWebgl = await chromium.launch({ args: ['--disable-webgl', '--disable-3d-apis'] });
   const capturas = process.env.CAPTURAS ?? null;
 
   await escenario('A-alta-completa-hasta-habilitar', nav_, base, async ({ p, foto }) => {
@@ -234,10 +236,13 @@ async function main() {
     await foto('03-trabajo-agendado');
     // Paso a paso, con "Llegué" explícito
     await p.getByRole('button', { name: 'Salgo hacia el lugar' }).click();
-    await ver(p, 'En camino');
+    // Al salir se abre el mapa del viaje (lote 4.3); compartir la ubicación es opcional para marcar "Llegué"
+    await p.waitForURL('**/en-camino/?id=*');
     await ver(p, 'Compartir la ubicación del teléfono es opcional');
     await foto('04-en-camino');
     await p.getByRole('button', { name: 'Llegué' }).click();
+    await ver(p, 'Ya llegaste');
+    await ir(p, 'Ver el trabajo');
     await ver(p, 'En el lugar');
     await foto('05-en-el-lugar');
     await p.getByRole('button', { name: 'Empezar el trabajo' }).click();
@@ -611,6 +616,70 @@ async function main() {
     await p.waitForURL('**/recuperar/');
   }, { capturas });
 
+  // ── Mapa, ubicación en vivo y trayectos (lote 4.3) ──
+  const mapaListo = (p, n = 1) => p.waitForFunction((k) => document.querySelectorAll('[data-mapa="listo"]').length >= k, n, { timeout: 20000 });
+  const chip = (p, texto) => p.locator('.vj-compartir .chip').getByText(texto).waitFor();
+
+  await escenario('M1-zona-aproximada-del-pedido', nav_, base, async ({ p, foto }) => {
+    await p.goto(`${base}/pedidos/detalle/?id=00000000-0000-4000-8000-0000000000b2&escenario=habilitado`);
+    await ver(p, 'El círculo es aproximado');
+    await mapaListo(p);
+    assert.equal(await p.getByRole('region', { name: 'Zona aproximada del pedido en Centro' }).count(), 1);
+    // Antes del acuerdo no hay pin de destino: solo la zona
+    assert.equal(await p.locator('.hx-mapa-pin').count(), 0);
+    await foto('01-pedido');
+  }, { capturas });
+
+  await escenario('M2-en-camino-compartir-senal-y-llegue', nav_, base, async ({ p, foto }) => {
+    await p.goto(`${base}/trabajos/detalle/?id=00000000-0000-4000-8000-0000000000c1&escenario=habilitado`);
+    await ver(p, 'Cómo llegar');
+    await mapaListo(p);
+    assert.equal(await p.locator('.hx-mapa-pin').count(), 1);
+    const google = await p.getByRole('link', { name: /Google Maps/ }).getAttribute('href');
+    assert.match(google, /^https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=-38\.\d+,-57\.\d+&travelmode=driving$/);
+    assert.equal(await p.getByRole('link', { name: /Waze/ }).getAttribute('target'), '_blank');
+    await p.getByRole('button', { name: 'Salgo hacia el lugar' }).click();
+    await p.waitForURL('**/en-camino/?id=*');
+    await ver(p, 'Compartí tu ubicación durante el viaje');
+    await mapaListo(p);
+    // Antes de compartir no se lee el GPS: no hay punto propio en el mapa
+    assert.equal(await p.locator('.hx-mapa-yo').count(), 0);
+    await foto('01-permiso');
+    await panel(p, 'GPS simulado rápido (×6)');
+    await p.getByRole('button', { name: 'Compartir mi ubicación' }).click();
+    await chip(p, 'Ubicación precisa');
+    await ver(p, 've tu ubicación mientras esta pantalla esté abierta');
+    await ver(p, 'Llegás en');
+    assert.equal(await p.locator('.hx-mapa-yo').count(), 1);
+    await foto('02-compartiendo');
+    await panel(p, 'Señal imprecisa');
+    await chip(p, 'Ubicación imprecisa');
+    await panel(p, 'Sin señal');
+    await chip(p, 'Sin señal de ubicación');
+    await panel(p, 'Permiso de ubicación negado');
+    await ver(p, 'No tenemos permiso para ver tu ubicación');
+    assert.equal(await p.locator('.hx-mapa-yo').count(), 0, 'sin permiso no se muestra una posición');
+    await foto('03-sin-permiso');
+    await panel(p, 'Señal normal');
+    await p.getByRole('button', { name: 'Volver a intentar' }).click();
+    await chip(p, 'Ubicación precisa');
+    await p.getByRole('button', { name: 'Dejar de compartir' }).click();
+    await ver(p, 'Tu ubicación está en pausa');
+    await p.getByRole('button', { name: 'Seguir compartiendo' }).click();
+    await chip(p, 'Ubicación precisa');
+    await p.getByRole('button', { name: 'Llegué' }).click();
+    await ver(p, 'Ya llegaste');
+    assert.equal(await p.locator('.vj-compartir').count(), 0, 'al llegar se deja de compartir');
+    await foto('04-llegaste');
+  }, { capturas });
+
+  await escenario('M3-sin-mapa-queda-el-texto', navSinWebgl, base, async ({ p, foto }) => {
+    await p.goto(`${base}/pedidos/detalle/?id=00000000-0000-4000-8000-0000000000b2&escenario=habilitado`);
+    await p.waitForSelector('[data-mapa="sin_mapa"]', { timeout: 20000 });
+    await ver(p, 'Zona aproximada: Centro');
+    await foto('01-respaldo');
+  }, { capturas });
+
   await escenario('J-sin-conexion-service-worker', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/?escenario=habilitado`);
     await p.waitForURL('**/inicio/');
@@ -642,6 +711,7 @@ async function main() {
   }, { capturas });
 
   await nav_.close();
+  await navSinWebgl.close();
   srv.close();
   const mal = resultados.filter(([, r]) => r !== 'OK');
   console.log(`\n${resultados.length - mal.length}/${resultados.length} recorridos OK`);

@@ -1,4 +1,4 @@
-// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.1.0, borrador).
+// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.4.0, borrador; versión en version.ts).
 // El servidor valida con los mismos esquemas; el cliente valida cada respuesta y trata un desajuste
 // como error de contrato (nunca lo "arregla" con datos de muestra). OpenAPI: docs/api/openapi.yaml.
 import { z } from 'zod';
@@ -24,6 +24,29 @@ export const MontoSchema = z.strictObject({
   centavos: z.int().nonnegative(),
   moneda: z.enum(MONEDAS),
 });
+
+// ── Mapa (contrato 0.4.0) ───────────────────────────────────────────────────────────────────────
+// Coordenadas WGS84. Antes del acuerdo, el servidor solo manda una zona aproximada (centro ya desplazado + radio):
+// la app nunca recibe ni calcula el punto exacto de un hogar hasta que hay trabajo.
+export const PuntoSchema = z.strictObject({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+});
+export type Punto = z.infer<typeof PuntoSchema>;
+
+export const ZonaMapaSchema = z.strictObject({
+  centro: PuntoSchema,
+  radioM: z.int().min(200).max(5000),
+});
+export type ZonaMapa = z.infer<typeof ZonaMapaSchema>;
+
+/** Barrio de cobertura: id del servidor, nombre y un punto para la etiqueta. */
+export const BarrioSchema = z.strictObject({
+  id: z.string().min(1),
+  nombre: z.string().min(1),
+  centro: PuntoSchema,
+});
+export type Barrio = z.infer<typeof BarrioSchema>;
 
 // ── Errores ──────────────────────────────────────────────────────────────────────────────────────
 // Código estable + mensaje seguro (sin internos) + requestId + errores de campo.
@@ -144,6 +167,8 @@ export const PedidoElegibleSchema = z.strictObject({
   tipo: z.enum(TIPOS_PEDIDO),
   descripcion: z.string(),
   zonaAproximada: z.string(),
+  /** Zona para el mapa (0.4.0): centro desplazado por el servidor y radio. Null si el servidor todavía no la tiene. */
+  zonaMapa: ZonaMapaSchema.nullable(),
   fechaSolicitada: InstanteSchema.nullable(),
   creadoEn: InstanteSchema,
   /** Fin de la ventana de búsqueda calculado por el servidor. */
@@ -197,6 +222,8 @@ export const TrabajoSchema = z.strictObject({
   }),
   /** Dirección exacta: solo después de contratar y solo para las partes del trabajo. */
   direccion: z.string().nullable(),
+  /** Punto exacto del destino (0.4.0): con la misma regla que la dirección. */
+  destino: PuntoSchema.nullable(),
   estado: z.enum(ESTADOS_TRABAJO),
   conversacionId: IdSchema,
   version: z.int().nonnegative(),
@@ -405,6 +432,43 @@ export const TrabajoDetalleSchema = z.strictObject({
   pagoId: IdSchema.nullable(),
 });
 export type TrabajoDetalle = z.infer<typeof TrabajoDetalleSchema>;
+
+// ── Viaje (contrato 0.4.0) ──────────────────────────────────────────────────────────────────────
+// Solo durante el viaje de un trabajo en camino y con la app abierta. La ubicación la ven solo las dos partes del
+// trabajo; se deja de compartir al llegar, al cancelar o cuando el especialista lo decide. Retención: 30 días (lote 5.3).
+export const PosicionSchema = z.strictObject({
+  punto: PuntoSchema,
+  /** Radio de incertidumbre que informa el GPS, en metros. */
+  precisionM: z.number().min(0).max(10_000),
+  en: InstanteSchema,
+});
+export type Posicion = z.infer<typeof PosicionSchema>;
+
+export const TrayectoSchema = z.strictObject({
+  /** Recorrido por las calles, del origen al destino. */
+  linea: z.array(PuntoSchema).min(2).max(5000),
+  distanciaM: z.int().nonnegative(),
+  duracionS: z.int().nonnegative(),
+  /** Sube cada vez que el servidor lo recalcula (por ejemplo, después de un desvío). */
+  version: z.int().nonnegative(),
+});
+export type Trayecto = z.infer<typeof TrayectoSchema>;
+
+export const ESTADOS_VIAJE = ['sin_compartir', 'compartiendo', 'terminado'] as const;
+export type EstadoViaje = (typeof ESTADOS_VIAJE)[number];
+
+export const ViajeSchema = z.strictObject({
+  trabajoId: IdSchema,
+  destino: PuntoSchema,
+  estado: z.enum(ESTADOS_VIAJE),
+  /** Null si todavía no hay posición o si el motor de trayectos no pudo calcularlo (la app ofrece Google Maps o Waze). */
+  trayecto: TrayectoSchema.nullable(),
+  ultimaPosicion: PosicionSchema.nullable(),
+  /** Lo que falta por el trayecto (o en línea recta si no hay trayecto). */
+  distanciaRestanteM: z.int().nonnegative().nullable(),
+  llegadaEstimada: InstanteSchema.nullable(),
+});
+export type Viaje = z.infer<typeof ViajeSchema>;
 
 export const NuevoCambioSchema = z.strictObject({
   horario: z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() }),

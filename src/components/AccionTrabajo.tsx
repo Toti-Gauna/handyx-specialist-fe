@@ -17,7 +17,7 @@ const PASOS: Partial<Record<EstadoTrabajo, { hacia: Exclude<EstadoTrabajo, 'agen
 };
 
 /** El próximo paso del trabajo, uno solo y bien visible. Cada paso lo marca el especialista y queda con fecha y actor. */
-export function AccionTrabajo({ trabajo, alCambiar }: { trabajo: Trabajo; alCambiar(): Promise<unknown> }) {
+export function AccionTrabajo({ trabajo, alCambiar, alSalir }: { trabajo: Trabajo; alCambiar(): Promise<unknown>; /** Después de "Salgo hacia el lugar" (por ejemplo, abrir el mapa del viaje). */ alSalir?: () => void }) {
   const { pendiente, fallo, ejecutar, clave, nueva, limpiar } = useAccion();
   const [confirmar, setConfirmar] = useState(false);
   const paso = PASOS[trabajo.estado];
@@ -32,6 +32,7 @@ export function AccionTrabajo({ trabajo, alCambiar }: { trabajo: Trabajo; alCamb
     });
     if (r.ok) {
       setConfirmar(false);
+      if (paso.hacia === 'en_camino') alSalir?.();
     } else if (r.fallo.tipo === 'conflicto') {
       nueva();
       await alCambiar();

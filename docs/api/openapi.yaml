@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: api-especialista (Handyx)
-  version: 0.3.0
+  version: 0.4.0
   description: |
     BORRADOR del contrato de api-especialista (TECH-20). Fuente de los esquemas: src/contracts/dto.ts
-    (contrato compartido v0.3.0, dueño handyx-client-be). Nada implementado todavía: lo construye
+    (contrato compartido v0.4.0, dueño handyx-client-be). Nada implementado todavía: lo construye
     handyx-specialist-be en la fase 4. Sesión por cookie HttpOnly; CSRF en X-CSRF-Token para mutaciones;
     Idempotency-Key (UUIDv4) donde se indica. Timestamps UTC; importes en centavos enteros.
 servers:
@@ -23,6 +23,7 @@ tags:
   - name: pedidos
   - name: propuestas
   - name: trabajos
+  - name: mapa
   - name: mensajes
   - name: caja
   - name: soporte
@@ -696,6 +697,51 @@ paths:
           description: Propuesta de cambio pendiente
           content: { application/json: { schema: { $ref: '#/components/schemas/Propuesta' } } }
         '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/mapa/barrios:
+    get:
+      tags: [mapa]
+      summary: Barrios de cobertura con un punto para la etiqueta del mapa (0.4.0)
+      responses:
+        '200':
+          description: Barrios
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Barrio' } } } }
+  /v1/especialista/trabajos/{id}/viaje:
+    get:
+      tags: [mapa]
+      summary: Destino, trayecto y última posición del viaje (0.4.0). Solo para las partes de un trabajo con dirección
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Viaje
+          content: { application/json: { schema: { $ref: '#/components/schemas/Viaje' } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/viaje/posiciones:
+    post:
+      tags: [mapa]
+      summary: >-
+        Posición actual mientras el trabajo está en camino (0.4.0). El cliente de ese trabajo la ve en vivo (SSE de su lado).
+        La primera calcula el trayecto; con dos posiciones seguidas fuera del trayecto se recalcula y sube su versión.
+        La posición va en el cuerpo, nunca en la URL. Como mucho una cada 5 s. Retención: 30 días.
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Posicion' } } }
+      responses:
+        '200':
+          description: Viaje actualizado
+          content: { application/json: { schema: { $ref: '#/components/schemas/Viaje' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [mapa]
+      summary: Dejar de compartir la ubicación (0.4.0). El servidor también deja de compartir al llegar, empezar, terminar o cancelar
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '200':
+          description: Viaje sin compartir
+          content: { application/json: { schema: { $ref: '#/components/schemas/Viaje' } } }
   /v1/especialista/agenda:
     get:
       tags: [trabajos]
@@ -901,6 +947,59 @@ components:
             terminosAceptados: { type: boolean, description: '0.3.0 · las cuentas nuevas de Google o Apple aceptan después de entrar' }
         csrfToken: { type: string, minLength: 16 }
         expiraEn: { $ref: '#/components/schemas/Instante' }
+    Punto:
+      type: object
+      additionalProperties: false
+      required: [lat, lng]
+      properties:
+        lat: { type: number, minimum: -90, maximum: 90 }
+        lng: { type: number, minimum: -180, maximum: 180 }
+    ZonaMapa:
+      type: object
+      additionalProperties: false
+      required: [centro, radioM]
+      properties:
+        centro: { $ref: '#/components/schemas/Punto' }
+        radioM: { type: integer, minimum: 200, maximum: 5000 }
+    Barrio:
+      type: object
+      additionalProperties: false
+      required: [id, nombre, centro]
+      properties:
+        id: { type: string, minLength: 1 }
+        nombre: { type: string, minLength: 1 }
+        centro: { $ref: '#/components/schemas/Punto' }
+    Posicion:
+      type: object
+      additionalProperties: false
+      required: [punto, precisionM, en]
+      properties:
+        punto: { $ref: '#/components/schemas/Punto' }
+        precisionM: { type: number, minimum: 0, maximum: 10000 }
+        en: { $ref: '#/components/schemas/Instante' }
+    Trayecto:
+      type: object
+      additionalProperties: false
+      required: [linea, distanciaM, duracionS, version]
+      properties:
+        linea: { type: array, minItems: 2, maxItems: 5000, items: { $ref: '#/components/schemas/Punto' } }
+        distanciaM: { type: integer, minimum: 0 }
+        duracionS: { type: integer, minimum: 0 }
+        version: { type: integer, minimum: 0 }
+    Viaje:
+      type: object
+      additionalProperties: false
+      required: [trabajoId, destino, estado, trayecto, ultimaPosicion, distanciaRestanteM, llegadaEstimada]
+      properties:
+        trabajoId: { type: string, format: uuid }
+        destino: { $ref: '#/components/schemas/Punto' }
+        estado: { type: string, enum: [sin_compartir, compartiendo, terminado] }
+        trayecto:
+          description: Null sin posición o si el motor de trayectos no pudo calcularlo
+          oneOf: [{ $ref: '#/components/schemas/Trayecto' }, { type: 'null' }]
+        ultimaPosicion: { oneOf: [{ $ref: '#/components/schemas/Posicion' }, { type: 'null' }] }
+        distanciaRestanteM: { type: [integer, 'null'], minimum: 0 }
+        llegadaEstimada: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
     VerificacionEmail:
       type: object
       additionalProperties: false
@@ -994,13 +1093,16 @@ components:
     PedidoElegible:
       type: object
       additionalProperties: false
-      required: [id, rubro, tipo, descripcion, zonaAproximada, fechaSolicitada, creadoEn, ventanaHasta, estado, miPropuesta]
+      required: [id, rubro, tipo, descripcion, zonaAproximada, zonaMapa, fechaSolicitada, creadoEn, ventanaHasta, estado, miPropuesta]
       properties:
         id: { type: string, format: uuid }
         rubro: { $ref: '#/components/schemas/Rubro' }
         tipo: { type: string, enum: [urgente, programado, obra] }
         descripcion: { type: string }
         zonaAproximada: { type: string }
+        zonaMapa:
+          description: Centro ya desplazado por el servidor y radio. Nunca el punto exacto del hogar antes del acuerdo
+          oneOf: [{ $ref: '#/components/schemas/ZonaMapa' }, { type: 'null' }]
         fechaSolicitada: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
         creadoEn: { $ref: '#/components/schemas/Instante' }
         ventanaHasta: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
@@ -1056,7 +1158,7 @@ components:
     Trabajo:
       type: object
       additionalProperties: false
-      required: [id, pedidoId, propuestaAceptadaId, rubro, tipo, acuerdo, direccion, estado, conversacionId, version]
+      required: [id, pedidoId, propuestaAceptadaId, rubro, tipo, acuerdo, direccion, destino, estado, conversacionId, version]
       properties:
         id: { type: string, format: uuid }
         pedidoId: { type: string, format: uuid }
@@ -1072,6 +1174,9 @@ components:
             alcance: { type: string }
             horario: { $ref: '#/components/schemas/Horario' }
         direccion: { type: [string, 'null'], description: solo con trabajo acordado y para sus partes }
+        destino:
+          description: Punto exacto del destino, con la misma regla que la dirección (0.4.0)
+          oneOf: [{ $ref: '#/components/schemas/Punto' }, { type: 'null' }]
         estado: { type: string, enum: [agendado, en_camino, en_sitio, en_curso, finalizado, cancelado] }
         conversacionId: { type: string, format: uuid }
         version: { type: integer, minimum: 0 }

@@ -42,6 +42,7 @@ export const RUTAS = {
     nav: { icono: 'maletin', texto: 'Trabajos' },
   },
   trabajo: { ruta: '/trabajos/detalle/', titulo: 'Trabajo', lote: '2.4', descripcion: 'Acuerdo, en camino, Llegué, avance, fin y cancelación.' },
+  enCamino: { ruta: '/en-camino/', titulo: 'En camino', lote: '4.3', descripcion: 'Mapa con tu posición en vivo, el trayecto, la llegada estimada y "Llegué".' },
   agenda: {
     ruta: '/agenda/',
     titulo: 'Agenda',

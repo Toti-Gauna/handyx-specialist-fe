@@ -212,6 +212,15 @@ Sin entrada por teléfono ni SMS. En el mock, Google y Apple se simulan con un b
 
 ### 4.3 · Mapa, ubicación en tiempo real y trayectos
 
+**Estado (29/10/2026): hecho localmente, menos el mapa base.** Detalle en `docs/mapa.md`.
+- Listo: el componente, el contrato 0.4.0, el mock con el GPS simulado y las pantallas (zona del pedido, cómo llegar, En
+  camino), además de E2E M1–M3 y accesibilidad.
+- Bloqueado: la red del entorno no deja bajar los datos de OpenStreetMap (`overpass-api.de`). Ignacio lo va a habilitar. Con
+  eso, `npm run mapa:descargar && npm run mapa:generar` arma las teselas, los barrios y el grafo, y hay que volver a medir el
+  rendimiento.
+- Cambio respecto del plan: teselas en carpetas `{z}/{x}/{y}.pbf` en lugar de PMTiles (sin depender de pedidos por rangos del
+  hosting).
+
 - MapLibre con estilo Handyx y teselas de prueba de Mar del Plata servidas por el servidor local de E2E.
 - Componente `Mapa` con capas para cobertura, zona aproximada, pin del trabajo, mi posición y radar.
 - Carga diferida.

@@ -1,10 +1,75 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 y 4.2) · Bloque 4 · **Fase 4 en curso: lotes 4.1 y 4.2 cerrados localmente.**
-Modelos: fases 1, 3 y lotes 4.1–4.2 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.3) · Bloque 4 · **Fase 4 en curso: 4.1 y 4.2 cerrados localmente; 4.3 hecho salvo el mapa base (datos de OpenStreetMap bloqueados por la red).**
+Modelos: fases 1, 3 y lotes 4.1–4.3 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 4 · Lote 4.3 (mapa, ubicación en vivo y trayectos)
+
+Detalle completo en `docs/mapa.md`.
+
+- **Bloqueo**:
+  - La red del entorno rechaza `overpass-api.de` y `download.geofabrik.de`; la única fuente de los datos de OpenStreetMap es
+    Overpass. Ignacio eligió habilitar `overpass-api.de` en la configuración del entorno.
+  - Hasta entonces, el mapa se ve sin calles ("Sin calles: falta el mapa base"). El mock no tiene trayectos por calles: la app
+    muestra "No pudimos calcular el trayecto" y ofrece Google Maps o Waze.
+  - **No se inventaron calles ni recorridos.**
+  - Para terminar: `npm run mapa:descargar && npm run mapa:generar`. Después, revisar el peso de las teselas, volver a medir los
+    cuadros por segundo con el mapa base y regenerar las capturas.
+- **Componente `Mapa`** (MapLibre 6.14.0, BSD-3):
+  - Carga diferida: ~283 KB comprimido, y ninguna página lo precarga.
+  - Estilo Handyx, con capas de cobertura, zona aproximada, trayecto, precisión, destino, tu posición, radar y barrios.
+  - Atribución de OpenStreetMap visible.
+  - Sin WebGL, o sin poder bajar el motor, queda la alternativa en texto. Sin teselas, avisa "Sin conexión".
+  - El worker de MapLibre se copia a `public/mapa/motor/` en cada build (`scripts/mapa/preparar-motor.mjs`, sin versionar).
+- **Contrato 0.4.0**:
+  - `zonaMapa` en el pedido (centro corrido por el servidor y radio) y `destino` en el trabajo.
+  - `Barrio`, `Posicion`, `Trayecto` y `Viaje`, con 4 endpoints (API, mock, adaptador HTTP y OpenAPI).
+  - La posición va siempre en el cuerpo.
+- **Pantallas**:
+  - Detalle de pedido: el círculo aproximado, sin pin.
+  - Detalle de trabajo: "Cómo llegar", con el pin, Google Maps, Waze y "Ver el viaje en el mapa".
+  - **En camino** (`/en-camino/?id=`, nueva, a pantalla completa con la hoja arrastrable).
+    - Explica para qué es antes de pedir el permiso.
+    - Muestra la señal en texto, la llegada estimada, "Dejar de compartir" y "Seguir compartiendo", el aviso de trayecto
+      recalculado y "Llegué", que deja de compartir.
+  - "Salgo hacia el lugar" abre En camino.
+- **Mock**:
+  - GPS simulado controlado desde el Panel: señal normal, imprecisa, sin señal o sin permiso; desviarme; velocidad ×6.
+  - El servidor emulado calcula el trayecto con la primera posición, lo recalcula después de 2 desvíos con buena precisión y
+    deja de compartir al llegar o cancelar.
+  - Centros de barrio aproximados y destinos sintéticos hasta tener los datos.
+- **Datos**:
+  - `src/mapa/osm.ts` arma las capas (incluido el mar desde las líneas de costa), los barrios y el grafo de calles con manos
+    únicas.
+  - `src/mapa/grafo.ts` calcula trayectos por tiempo (Dijkstra).
+  - Probado con una ciudad sintética y de punta a punta con un extracto sintético, y MapLibre dibujó sus teselas.
+- **Pruebas**:
+  - 20 unitarias nuevas (geo, OSM y grafo, mock del viaje).
+  - E2E M1–M3. C se actualizó porque ahora "Salgo hacia el lugar" abre el mapa.
+  - Accesibilidad de En camino compartiendo; botones de zoom de 44 px.
+
+### Comandos del lote 4.3 (29/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 109 pruebas: 107 OK y 2 omitidas (sincronías con otros repos) |
+| `npm run build` | OK, 29 páginas + `out/sw.js` |
+| `npm run e2e` | 22/22 recorridos (nuevos: M1–M3) |
+| `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento; solo días del calendario del catálogo por debajo de 44 px (≥ 30 px) |
+| `ANCHOS=` 7 tamaños `npm run capturas` | 273/273 sin desborde y sanitizadas |
+| `build:hostinger` con API ficticia | OK: 28 páginas, sin `/catalogo/` ni fixtures; el motor del mapa no se precarga |
+| Cuadros por segundo (arrastre en En camino, CPU ×4) | 57 (sin mapa base: hay que volver a medir) |
+
+**Pendiente de autorización (fase 5)**: el motor de trayectos real (OSRM o Valhalla propio en Render, o un servicio con plan
+gratis). No se contrató nada.
+
+**Próximo paso**:
+1. Con Overpass habilitado, generar el mapa base y cerrar el 4.3.
+2. Después, el lote 4.4 (alta guiada, con las zonas en el mapa).
 
 ## Fase 4 · Lote 4.2 (carga, bienvenida y cuenta)
 
@@ -67,7 +132,7 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 
 No se contrató nada.
 
-**Próximo paso**: lote 4.3 (mapa de Mar del Plata, ubicación en tiempo real y trayectos), con Opus 5.5 / xhigh.
+**Siguiente**: lote 4.3 (ver arriba).
 
 ## Fase 4 · Lote 4.1 (marca Handyx, sistema visual v2 y kit)
 

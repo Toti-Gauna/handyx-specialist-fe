@@ -8,10 +8,10 @@ estas pruebas demuestran la interfaz y las reglas emuladas del servidor, no el b
 | Qué | Comando | Qué cubre |
 |---|---|---|
 | Unitarias y del mock | `npm test` | Contrato, máquinas de estado, fee, formato, mock con reglas de servidor (60+ pruebas) |
-| Recorridos de punta a punta | `npm run build && npm run e2e` | 12 recorridos en Chromium (390×844) sobre `out/`, incluido J: sin conexión con service worker |
+| Recorridos de punta a punta | `npm run build && npm run e2e` | 22 recorridos en Chromium (390×844) sobre `out/`, incluidos J (sin conexión con service worker) y M1–M3 (mapa) |
 | Service worker | `npm test` (`src/pwa/politica.test.ts`) | Nunca intercepta la API, mutaciones ni otros sitios |
-| Accesibilidad | `npm run accesibilidad` (`ANCHO=1280x800`) | axe WCAG 2.2 AA en 32 pantallas y 6 diálogos, áreas táctiles, teclado, foco al primer error y texto al 200 % |
-| Capturas | `npm run capturas -- [carpeta]` (`ANCHOS=360x740,…`) | 38 pantallas/escenarios (incluye cuenta, errores, sin conexión y 404) con control de desborde y de sanitización |
+| Accesibilidad | `npm run accesibilidad` (`ANCHO=1280x800`) | axe WCAG 2.2 AA en 39 pantallas, En camino compartiendo y 6 diálogos, áreas táctiles, teclado, foco al primer error y texto al 200 % |
+| Capturas | `npm run capturas -- [carpeta]` (`ANCHOS=360x740,…`) | 39 pantallas/escenarios (incluye cuenta, mapas, errores, sin conexión y 404) con control de desborde y de sanitización |
 | Catálogo en `docs/capturas/` | `npm run capturas:docs` (ImageMagick) | Las 32 a 390×844 y 6 a 1280×800 en webp |
 | Capturas de recorridos | `CAPTURAS=/ruta node e2e/flujos.cjs` | Una captura por estado clave (insumo de la fase 3 y de Handy Docs, sin datos reales) |
 | Recorrido manual | `npm run dev` y el **Panel de prueba** del banner amarillo | Escenarios, fallas, reloj y simulación de las otras partes |
@@ -25,6 +25,11 @@ En la vista previa no se manda ningún email ni se abre Google o Apple:
 - Las cuentas de Google y Apple se eligen de una lista.
 - El enlace de recuperación se abre desde "Revisá tu correo" ("Abrir el enlace del email" o "Probar un enlace vencido").
 - Apple aparece solo con un navegador de iPhone, iPad o Mac (en el recorrido L2, el agente de usuario es de iPhone).
+
+Mapa y viaje (lote 4.3, `docs/mapa.md`): el GPS es simulado y se controla desde el Panel → "Ubicación (GPS simulado)"
+(señal normal, imprecisa, sin señal, permiso negado, desviarme del trayecto y velocidad ×6). Para probarlo: Trabajos →
+el agendado → "Salgo hacia el lugar" → "Compartir mi ubicación". Hasta que se genere el mapa base, el mapa se ve sin calles y
+el trayecto no se puede calcular (la app ofrece Google Maps o Waze).
 
 ## Escenarios obligatorios (prompt del Bloque 4) y cómo reproducirlos
 
@@ -49,6 +54,8 @@ En la vista previa no se manda ningún email ni se abre Google o Apple:
 | Baja | Cuenta › *Eliminar mi cuenta*: sesión cerrada, estado real y cancelación | E2E F |
 | Sesión expirada | Panel › *Expirar la sesión ahora*: aviso modal con salida a Entrar | E2E F |
 | Red caída / error del servidor | Panel › *Sin conexión* / *El servidor responde con error*: error con Reintentar, sin datos de muestra | E2E F |
+| Ubicación en vivo (señal, permiso, desvío) | En camino › *Compartir mi ubicación*; panel › señal imprecisa, sin señal, permiso negado o desviarme | E2E M2 · `mock.test` |
+| Mapa que no carga | Sin WebGL (o sin conexión al abrirlo): queda el texto con el barrio o el destino | E2E M3 |
 
 ## Comprobaciones de cierre por lote
 

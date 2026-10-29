@@ -3,6 +3,8 @@ import type { EspecialistaApi } from './api.ts';
 import { crearApiMockConEstado } from './mock/adaptador.ts';
 import { crearControles, type ControlesPrueba } from './mock/controles.ts';
 import type { AyudasPrueba } from './ayudas.ts';
+import type { FuenteUbicacion } from '../lib/ubicacion.ts';
+import { crearGpsSimulado } from './mock/gps.ts';
 import { CODIGO_PRUEBA, CREDENCIALES_PRUEBA, CUENTAS_PROVEEDOR_PRUEBA, ESCENARIOS, TOKEN_RECUPERACION_PRUEBA, TOKEN_VENCIDO_PRUEBA, type Escenario } from './mock/estado.ts';
 
 /** `?escenario=` en la URL de entrada elige el escenario inicial (por defecto, habilitado). */
@@ -19,6 +21,8 @@ if (fallaInicial === 'red' || fallaInicial === 'servidor') estado.falla = fallaI
 
 export const api: EspecialistaApi = apiMock;
 export const controles: ControlesPrueba | null = crearControles(estado, () => undefined);
+/** GPS simulado que se controla desde el Panel de prueba (lote 4.3). */
+export const ubicacion: FuenteUbicacion = crearGpsSimulado(estado);
 /** Para la ayuda de la pantalla de acceso en la vista previa. */
 export const credencialesPrueba: { email: string; password: string } | null = CREDENCIALES_PRUEBA;
 /** Código, enlaces y cuentas de Google o Apple de prueba (pantallas de cuenta del lote 4.2). */

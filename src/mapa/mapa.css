@@ -1,0 +1,229 @@
+/* Mapa (lote 4.3). Prefijo hx-mapa. Los marcadores son HTML (decorativos: lo que dicen también está en texto). */
+
+.hx-mapa {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--hx-radio-mosaico);
+  background: var(--hd-mosaico);
+  isolation: isolate;
+}
+
+.hx-mapa--chico {
+  height: 160px;
+}
+
+.hx-mapa--medio {
+  height: 220px;
+}
+
+.hx-mapa--grande {
+  height: min(52dvh, 420px);
+}
+
+.hx-mapa--completo {
+  height: 100%;
+  min-height: 320px;
+  border-radius: 0;
+}
+
+/* Más específico que .maplibregl-map (que pone position: relative). */
+.hx-mapa > .hx-mapa__lienzo {
+  position: absolute;
+  inset: 0;
+}
+
+.hx-mapa__lienzo[hidden] {
+  display: none;
+}
+
+/* Mientras baja el motor: el fondo gris mosaico con el dibujo de las manzanas, sin parpadeo. */
+.hx-mapa__cargando {
+  position: absolute;
+  inset: 0;
+  background-color: var(--hd-mosaico);
+  background-image:
+    linear-gradient(90deg, rgb(255 255 255 / 0.9) 6px, transparent 6px),
+    linear-gradient(rgb(255 255 255 / 0.9) 6px, transparent 6px);
+  background-size: 64px 52px;
+}
+
+.hx-mapa__respaldo {
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--esp-2);
+  height: 100%;
+  min-height: inherit;
+  padding: var(--esp-4);
+  text-align: center;
+  background-color: var(--hd-mosaico);
+  background-image:
+    linear-gradient(90deg, rgb(255 255 255 / 0.7) 6px, transparent 6px),
+    linear-gradient(rgb(255 255 255 / 0.7) 6px, transparent 6px);
+  background-size: 64px 52px;
+}
+
+.hx-mapa__respaldo > * {
+  max-width: 32ch;
+  margin: 0;
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.hx-mapa__nota {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  width: fit-content;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.95);
+  color: var(--hd-texto);
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgb(14 29 54 / 0.12);
+}
+
+.hx-mapa__centrar {
+  position: absolute;
+  right: 12px;
+  bottom: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--toque-min);
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--hd-azul);
+  font: inherit;
+  font-weight: 800;
+  box-shadow: 0 3px 0 var(--hd-mosaico-hondo), 0 4px 12px rgb(14 29 54 / 0.14);
+  cursor: pointer;
+}
+
+.hx-mapa__centrar .icono {
+  width: 18px;
+  height: 18px;
+}
+
+/* Atajos "Cómo llegar" (Google Maps y Waze). */
+.hx-mapa-atajos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--esp-2);
+}
+
+/* ── Marcadores ─────────────────────────────────────────────────────── */
+
+.hx-mapa-pin {
+  color: var(--hd-azul);
+  filter: drop-shadow(0 3px 3px rgb(14 29 54 / 0.25));
+}
+
+.hx-mapa-pin svg {
+  display: block;
+}
+
+.hx-mapa-yo {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgb(14 29 54 / 0.3);
+}
+
+.hx-mapa-yo span {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--hd-azul-vivo);
+}
+
+.hx-mapa-radar {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--hd-azul-vivo);
+  box-shadow: 0 0 0 4px #fff;
+}
+
+.hx-mapa-radar span {
+  position: absolute;
+  inset: -40px;
+  border: 2px solid var(--hd-azul-vivo);
+  border-radius: 50%;
+  opacity: 0.25;
+}
+
+.hx-mapa-radar span:nth-child(2) {
+  inset: -80px;
+  opacity: 0.15;
+}
+
+.hx-mapa-radar span:nth-child(3) {
+  inset: -120px;
+  opacity: 0.08;
+}
+
+.hx-mapa-barrio {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.92);
+  color: var(--hd-azul);
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgb(14 29 54 / 0.15);
+}
+
+/* Atribución de OpenStreetMap: siempre visible, legible y con un área táctil razonable. */
+.hx-mapa .maplibregl-ctrl-attrib {
+  padding: 2px 8px;
+  border-radius: 0 10px 0 0;
+  background: rgb(255 255 255 / 0.9);
+  color: var(--hd-texto);
+  font: 600 0.72rem/1.6 var(--fuente);
+}
+
+.hx-mapa .maplibregl-ctrl-attrib a {
+  color: var(--hd-azul);
+}
+
+.hx-mapa .maplibregl-ctrl-group button {
+  width: var(--toque-min);
+  height: var(--toque-min);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hx-mapa-radar span {
+    animation: hx-radar 2.4s ease-out infinite;
+  }
+  .hx-mapa-radar span:nth-child(2) {
+    animation-delay: 0.8s;
+  }
+  .hx-mapa-radar span:nth-child(3) {
+    animation-delay: 1.6s;
+  }
+  .hx-mapa-yo {
+    transition: transform 0.2s ease;
+  }
+  @keyframes hx-radar {
+    from {
+      transform: scale(0.2);
+      opacity: 0.45;
+    }
+    to {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+}

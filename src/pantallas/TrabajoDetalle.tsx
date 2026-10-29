@@ -1,6 +1,7 @@
 'use client';
 import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { RUTAS } from '../app/rutas.ts';
 import { AccionTrabajo } from '../components/AccionTrabajo.tsx';
@@ -17,12 +18,15 @@ import { useCarga } from '../hooks/useCarga.ts';
 import { useIdDeUrl } from '../hooks/useIdDeUrl.ts';
 import { TRABAJO } from '../lib/etiquetas.ts';
 import { fechaHora, hora, pesos } from '../lib/formato.ts';
+import { enlacesNavegacion } from '../lib/geo.ts';
+import { Mapa } from '../mapa/Mapa.tsx';
 
 const ACTIVO = ['agendado', 'en_camino', 'en_sitio', 'en_curso'];
 const ACTOR = { especialista: 'Vos', usuario: 'El usuario', operations: 'Handyx', sistema: 'La app' } as const;
 
 export function TrabajoDetalle() {
   const id = useIdDeUrl();
+  const router = useRouter();
   const c = useCarga(() => (id ? api.trabajo(id) : Promise.resolve(null)), [id]);
   const [cambio, setCambio] = useState(false);
   const [cancelar, setCancelar] = useState(false);
@@ -73,7 +77,25 @@ export function TrabajoDetalle() {
         ) : null}
       </Tarjeta>
 
-      {activo ? <AccionTrabajo trabajo={t} alCambiar={c.recargar} /> : null}
+      {activo && t.destino ? (
+        <Seccion titulo="Cómo llegar">
+          <Mapa etiqueta={`Destino del trabajo: ${t.direccion ?? 'dirección del trabajo'}`} alto="chico" destino={t.destino} alternativa={<p>{t.direccion}</p>} />
+          {t.estado === 'en_camino' ? (
+            <Link className="boton boton--bloque" href={`${RUTAS.enCamino.ruta}?id=${t.id}`}>
+              <Icono nombre="pin" /> Ver el viaje en el mapa
+            </Link>
+          ) : null}
+          <div className="hx-mapa-atajos" role="group" aria-label="Cómo llegar con otra app">
+            <a className="boton boton--claro" href={enlacesNavegacion(t.destino).google} target="_blank" rel="noopener noreferrer">
+              Google Maps<span className="visualmente-oculto"> (se abre aparte)</span>
+            </a>
+            <a className="boton boton--claro" href={enlacesNavegacion(t.destino).waze} target="_blank" rel="noopener noreferrer">
+              Waze<span className="visualmente-oculto"> (se abre aparte)</span>
+            </a>
+          </div>
+        </Seccion>
+      ) : null}
+      {activo ? <AccionTrabajo trabajo={t} alCambiar={c.recargar} alSalir={() => router.push(`${RUTAS.enCamino.ruta}?id=${t.id}`)} /> : null}
       {t.estado === 'finalizado' ? (
         <Aviso tono="exito" icono="checkCirculo" titulo="Trabajo terminado">
           {pagoId ? <>El cobro está en tu <Link href={RUTAS.caja.ruta}>Caja</Link>: pagó directamente a vos, no a Handyx.</> : 'Todavía no hay un cobro registrado.'}

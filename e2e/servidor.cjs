@@ -4,7 +4,7 @@ const { readFileSync, existsSync, statSync } = require('node:fs');
 const { join, extname } = require('node:path');
 
 const RAIZ = join(__dirname, '..', 'out');
-const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.txt': 'text/plain', '.woff2': 'font/woff2' };
+const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.txt': 'text/plain', '.woff2': 'font/woff2', '.pbf': 'application/x-protobuf' };
 
 function servir() {
   return new Promise((ok) => {

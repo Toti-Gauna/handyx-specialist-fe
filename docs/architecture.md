@@ -1,7 +1,7 @@
 # Arquitectura · PWA Especialista de Handyx
 
 Estado: **fase 2 (mockup navegable)**. Todas las pantallas existen con datos de prueba (origen `mock`); el adaptador HTTP
-cumple el mismo puerto pero no hay API contra la cual probarlo. Contrato v0.2.0. Nada desplegado.
+cumple el mismo puerto pero no hay API contra la cual probarlo. Contrato v0.4.0 (fase 4: rediseño y mapa). Nada desplegado.
 
 ## Decisiones
 
@@ -14,6 +14,7 @@ cumple el mismo puerto pero no hay API contra la cual probarlo. Contrato v0.2.0.
 | Esquema y migraciones | Dueño único: `handyx-client-be`. Este repo y `handyx-specialist-be` consumen esa versión | Ignacio, 29/10/2026 |
 | Marca | Tokens de la landing copiados byte a byte (`src/brand/tokens.ts`); íconos y lenguaje visual de `demo-app.css` | CLAUDE.md de la landing |
 | Fuentes | `@fontsource-variable` (Archivo con ancho variable y DM Sans), empaquetadas: sin pedidos a Google | Como el portal |
+| Mapa | MapLibre 6 (BSD-3) con teselas propias de OpenStreetMap servidas por el mismo hosting, motor con carga diferida; trayectos del servidor (fase 5: OSRM o Valhalla, con autorización) | Ignacio, 29/10/2026 · `docs/mapa.md` |
 | Tests | `node --test` con TypeScript nativo de Node 22 (igual que landing y portal). Vitest 4/5 dispara un error de `npm` 10.9 al resolver peers en un proyecto limpio | Lote 1.1 |
 
 ## Estructura
@@ -26,10 +27,11 @@ src/
   pantallas/           una por pantalla de negocio (Acceso, Alta, Inicio, Pedidos, Hilo, Trabajos, Caja…)
   components/          marco de la app, banner y panel de prueba, íconos, hojas, formularios y piezas compartidas
   hooks/               useCarga (con reintento y sin fallback), useAccion (idempotencia), useAhora
-  lib/                 formato (Buenos Aires, pesos), etiquetas de estado, tarifa, textos legales provisorios
+  lib/                 formato (Buenos Aires, pesos), etiquetas de estado, tarifa, textos legales provisorios, geo y ubicación
+  mapa/                Mapa (React), motor MapLibre con carga diferida, estilo Handyx, datos de OSM y grafo (docs/mapa.md)
 e2e/                   recorridos de punta a punta con Playwright sobre out/
   config/entorno.ts    origen de datos (mock | http) validado; sin secretos
-  contracts/           CONTRATO COMPARTIDO v0.1.0 (borrador a transferir a handyx-client-be)
+  contracts/           CONTRATO COMPARTIDO v0.4.0 (borrador a transferir a handyx-client-be)
     dto.ts             esquemas Zod de requests/responses
     maquinas.ts        máquinas de estado con actor
     fee.ts             políticas de tarifa y contador del fee 0 %

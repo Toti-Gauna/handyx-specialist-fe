@@ -18,6 +18,7 @@ import { useCarga } from '../hooks/useCarga.ts';
 import { useIdDeUrl } from '../hooks/useIdDeUrl.ts';
 import { fechaHora } from '../lib/formato.ts';
 import { tarifaTexto } from '../lib/tarifa.ts';
+import { Mapa } from '../mapa/Mapa.tsx';
 
 export function PedidoDetalle() {
   const id = useIdDeUrl();
@@ -73,8 +74,20 @@ export function PedidoDetalle() {
         {tarifa ? <p className="texto-suave texto-chico">{tarifa}</p> : null}
       </Tarjeta>
 
+      {pedido.zonaMapa ? (
+        <Mapa
+          etiqueta={`Zona aproximada del pedido en ${pedido.zonaAproximada}`}
+          alto="chico"
+          zona={pedido.zonaMapa}
+          alternativa={
+            <p>
+              Zona aproximada: <strong>{pedido.zonaAproximada}</strong>
+            </p>
+          }
+        />
+      ) : null}
       <Aviso tono="neutro" icono="candado">
-        Todavía no ves el nombre ni la dirección exacta: se muestran cuando el usuario te elige, y solo para ese trabajo.
+        {pedido.zonaMapa ? 'El círculo es aproximado. ' : ''}Todavía no ves el nombre ni la dirección exacta: se muestran cuando el usuario te elige, y solo para ese trabajo.
       </Aviso>
       {pedido.tipo === 'obra' ? (
         <Aviso tono="azul" icono="info">

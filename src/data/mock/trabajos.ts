@@ -4,6 +4,7 @@ import { MAQUINA_TRABAJO, puedeTransicionar, type EstadoTrabajo } from '../../co
 import { VIGENCIA_PROPUESTA_PROGRAMADO_MS } from '../../contracts/tiempos.ts';
 import { ahoraMs, fallo, idempotente, idNuevo, iso, type EstadoMock, type TrabajoInterno } from './estado.ts';
 import { zodAFallo } from './validacion.ts';
+import { terminarViaje } from './viajes.ts';
 
 const ACTIVOS: readonly EstadoTrabajo[] = ['agendado', 'en_camino', 'en_sitio', 'en_curso'];
 const DOS_HORAS = 2 * 60 * 60_000;
@@ -49,6 +50,7 @@ export const trabajos = (s: EstadoMock) => ({
       t.trabajo.estado = hacia;
       t.trabajo.version += 1;
       t.eventos.push({ estado: hacia, en: iso(ahoraMs(s)), actor: 'especialista' });
+      if (hacia !== 'en_camino') terminarViaje(s, t.trabajo.id);
       if (hacia === 'finalizado' || hacia === 'cancelado') {
         const c = s.conversaciones.find((x) => x.id === t.trabajo.conversacionId);
         if (c) c.etapa = 'cerrada';

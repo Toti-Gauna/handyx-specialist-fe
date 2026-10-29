@@ -14,6 +14,8 @@ import { pedidos } from './pedidos.ts';
 import { propuestas } from './propuestas.ts';
 import { soporte } from './soporte.ts';
 import { trabajos } from './trabajos.ts';
+import { cargarGrafo } from './mapa.ts';
+import { viajes } from './viajes.ts';
 import { fallo } from './estado.ts';
 
 export interface OpcionesMock {
@@ -46,6 +48,7 @@ export function crearApiMockConEstado(o: OpcionesMock = {}): ApiMock {
     ...pedidos(s),
     ...propuestas(s),
     ...trabajos(s),
+    ...viajes(s),
     ...mensajes(s),
     ...caja(s),
     ...soporte(s),
@@ -68,6 +71,8 @@ export function crearApiMockConEstado(o: OpcionesMock = {}): ApiMock {
       if (!PUBLICOS.has(nombre) && !CUENTA_A_MEDIAS.has(nombre) && !cuentaLista(s)) {
         throw fallo('permiso', 403, 'sin_permiso', 'Primero terminá de crear tu cuenta.');
       }
+      // El grafo de calles se carga recién cuando hace falta un trayecto (pesa: no va en el arranque de la vista previa).
+      if (nombre === 'enviarPosicion') await cargarGrafo();
       return structuredClone(hacer(...args));
     };
   }

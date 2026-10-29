@@ -167,6 +167,7 @@ Para verlo en uso, abrí `/catalogo/` en la vista previa. Solo existe en el mock
 | Celebraciones | `useConfeti` y `MontoGrande` (monto que sube) **solo** al ganar un trabajo, terminarlo, registrar un cobro o crear la cuenta (y, más adelante, al quedar habilitado). Nunca en decisiones pendientes, vencimientos ni urgencia |
 | Isla | Avisos que bajan desde arriba (`useIsla`). Se anuncian, se cierran y no se van mientras los tocás o tienen el foco. Todo lo que dicen queda también en Avisos |
 | Montos | Los grandes usan un espacio que no se corta ("$ 44.000" nunca deja el "$" solo). Mientras suben, se muestran en pesos enteros |
+| Mapa | Estilo Handyx (`src/mapa/estilo.ts`): manzanas en gris mosaico, calles blancas, avenidas en azul pálido, mar azul y trayecto en el azul de la marca. Zona aproximada con borde punteado; pin del destino con la casita; tu posición en azul vivo. Lo que dice el mapa también está en texto, y si no carga queda solo el texto. Atribución de OpenStreetMap siempre visible. Con "reducir movimiento", la cámara salta sin animar y el radar queda quieto |
 | Precio | "Handyx sugiere · Vos decidís": la sugerencia es una ayuda, siempre editable. La tarifa de Handyx se muestra aparte ("Recibís") y no es un descuento sobre el precio |
 | Estilos | Sin estilos inline en JSX. Lo dinámico va por clases (tonos del avatar) o por una variable que se fija desde código solo mientras se arrastra (`HojaArrastrable`) |
 

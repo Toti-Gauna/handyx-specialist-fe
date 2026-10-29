@@ -41,6 +41,9 @@ import type {
   TipoDocumento,
   Trabajo,
   TrabajoDetalle,
+  Barrio,
+  Posicion,
+  Viaje,
 } from '../contracts/dto.ts';
 import type { Rubro } from '../contracts/rubros.ts';
 import type { EstadoTrabajo } from '../contracts/maquinas.ts';
@@ -113,6 +116,19 @@ export interface EspecialistaApi {
   avanzarTrabajo(id: string, hacia: Exclude<EstadoTrabajo, 'agendado'>, version: number, clave: ClaveIdempotencia): Promise<Trabajo>;
   proponerCambio(id: string, cambio: NuevoCambio, clave: ClaveIdempotencia): Promise<Propuesta>;
   agenda(desde: string, hasta: string): Promise<AgendaItem[]>;
+
+  // Mapa y viaje (contrato 0.4.0)
+  /** Barrios de cobertura con un punto para la etiqueta del mapa. */
+  barrios(): Promise<Barrio[]>;
+  /** Destino, trayecto y última posición del viaje de un trabajo (solo con dirección, es decir, con acuerdo). */
+  viaje(trabajoId: string): Promise<Viaje>;
+  /**
+   * Manda la posición actual mientras el trabajo está en camino: el cliente la ve en vivo. La primera calcula el
+   * trayecto; si te desviás, el servidor lo recalcula y sube su versión.
+   */
+  enviarPosicion(trabajoId: string, posicion: Posicion): Promise<Viaje>;
+  /** Deja de compartir: el cliente deja de verte. */
+  dejarDeCompartir(trabajoId: string): Promise<Viaje>;
 
   // Mensajes
   conversaciones(): Promise<Conversacion[]>;
