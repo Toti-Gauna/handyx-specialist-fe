@@ -1,0 +1,254 @@
+/* Base de la PWA Especialista. Lenguaje visual de la landing (Handy-landing-page-fe: main.css y
+   demo-app.css): azul de marca, mosaicos grises, botones cuadrados con base que se hunde, títulos en
+   Archivo 900 ensanchado y texto en DM Sans. Las fuentes van empaquetadas (sin pedidos a terceros).
+   Refinación visual completa: fase 3. */
+
+:root {
+  --fuente-app: 'DM Sans Variable', var(--fuente);
+  --fuente-titulos-app: 'Archivo Variable', var(--fuente-titulos);
+  --azul-hondo: #143e7e;
+  --toque-min: 44px;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--color-hueso);
+  color: var(--color-texto);
+  font-family: var(--fuente-app);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-azul-personajes);
+  outline-offset: 2px;
+}
+
+.saltar {
+  position: absolute;
+  left: 8px;
+  top: -100px;
+  z-index: 100;
+  padding: 8px 12px;
+  border-radius: var(--radio-sm);
+  background: var(--color-tinta);
+  color: #fff;
+}
+
+.saltar:focus {
+  top: 8px;
+}
+
+.icono {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+
+/* ── Marco de la app ──────────────────────────────────────────────── */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--color-fondo);
+}
+
+.banner-prueba {
+  margin: 0;
+  padding: 6px 16px;
+  background: var(--color-amarillo);
+  color: var(--color-tinta);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.app-cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(10px, env(safe-area-inset-top)) 16px 12px;
+  background: var(--color-fondo);
+}
+
+.app-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--color-azul);
+  text-decoration: none;
+}
+
+.app-logo img {
+  width: auto;
+  height: 32px;
+}
+
+.app-logo small {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.app-cuadrado {
+  display: grid;
+  place-items: center;
+  width: var(--toque-min);
+  height: var(--toque-min);
+  border-radius: 12px;
+  background: var(--color-azul);
+  color: #fff;
+}
+
+.app-cuerpo {
+  flex: 1;
+  padding: 16px;
+}
+
+.app-cuerpo--centro {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+}
+
+.app-nav {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 6px max(14px, env(safe-area-inset-bottom));
+  border-radius: 24px 24px 0 0;
+  background: var(--color-azul);
+}
+
+.app-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: var(--toque-min);
+  min-height: var(--toque-min);
+  color: rgb(255 255 255 / 0.72);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app-nav__item--activo {
+  color: #fff;
+}
+
+/* ── Piezas base ──────────────────────────────────────────────────── */
+
+.titulo {
+  margin: 0 0 8px;
+  color: var(--color-tinta);
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.6rem;
+  font-stretch: 112%;
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 8px 18px;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-azul);
+  box-shadow: 0 4px 0 var(--azul-hondo);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.boton:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--azul-hondo);
+}
+
+.pendiente {
+  padding: 20px;
+  border-radius: var(--radio-lg);
+  background: var(--color-mosaico);
+}
+
+.pendiente__lote {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 4px 10px;
+  border-radius: var(--radio-pastilla);
+  background: var(--color-noche);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.cargando {
+  color: var(--color-texto-suave);
+}
+
+.caja-error {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  max-width: 320px;
+  padding: 20px;
+  border-radius: var(--radio-lg);
+  background: var(--color-mosaico);
+  text-align: center;
+}
+
+.caja-error > .icono {
+  color: var(--color-error);
+}
+
+.caja-error p {
+  margin: 0;
+}
+
+.caja-error__ref {
+  color: var(--color-texto-suave);
+  font-size: 0.8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
