@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - name: Build de vista previa (mock, con banner)
+        run: npm run build
+      - name: Build de producción contra una API ficticia (sin fixtures en el bundle)
+        run: npm run build:hostinger
+        env:
+          NEXT_PUBLIC_DATA_SOURCE: http
+          NEXT_PUBLIC_API_BASE_URL: https://api.example.test

@@ -1,0 +1,79 @@
+# Contrato compartido Usuario · Especialista · Portal (lote 1.3)
+
+Versión: **0.2.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+
+**0.1.0 → 0.2.0 (fase 2, cambios para el dueño del contrato):** DTO de alta (`DatosAlta`, `GuardarDatosAlta`, `PerfilPublico`), cuenta
+(`Preferencias`, `Baja`), `Aviso`, `Inicio`, `PedidoDetalle`, `TrabajoDetalle` (etapas de obra y cambio pendiente), `AgendaItem`,
+`Conversacion`, `CajaResumen`, `CasoSoporteDetalle`. Cambios no compatibles con 0.1.0 (aceptables antes de que exista la API):
+`PerfilEspecialista` suma `email` y `faltantesEnvio` y admite nombre/apellido nulos; `EstadoRubro` suma `elegido`; `Pago` suma
+`descripcion`, `feeHandy` y `neto`; `CasoSoporte` suma `asunto`; `AgendaItem` suma `pedidoId`; el código de error
+`transicion_invalida` es nuevo. El inventario de endpoints está en `docs/api/openapi.yaml`.
+
+## 1. Quién es dueño de qué
+
+| Pieza | Dueño | Consumidores | Regla |
+|---|---|---|---|
+| Esquema PostgreSQL (Neon) y **todas** las migraciones | `handyx-client-be` | `handyx-specialist-be` | Un solo historial de migraciones. Nadie más crea migraciones (Ignacio, 29/10/2026) |
+| Contrato compartido (`contracts/`: estados, DTO, dinero, fee, rubros, tiempos) | `handyx-client-be` | las dos API, las dos PWA, portal | Copia byte a byte + prueba de sincronía (patrón de la landing con `preregistro.ts`) |
+| `api-usuario` | `handyx-client-be` | PWA Usuario | Escribe: cuentas de usuario, perfil usuario, pedidos, aceptación de propuestas del especialista, pagos reportados por el usuario |
+| `api-especialista` | `handyx-specialist-be` | esta PWA | Escribe: perfil especialista, documentos, disponibilidad/cobertura, propuestas del especialista, aceptación de propuestas del usuario, eventos del trabajo, reportes de pago del especialista |
+| Operación interna (revisión de alta, verificación presencial, búsqueda manual, soporte) | API del portal / admin vigente | `handy-internal-portal` | Personal con `ADMIN_ACCOUNTS_JSON` (mecanismo vigente); no se registra como especialista |
+| Pre-registros (`growth`) | `Handy-landing-page-be` | landing, portal | **Separado**: no se migra a cuentas activas; vincular solo con autenticación y aceptación |
+
+Estado real: `handyx-client-be`, `handyx-specialist-be` y `handyx-client-fe` están vacíos. Hasta que
+`handyx-client-be` exista, `src/contracts/` de este repo es el **borrador a transferir**; al transferirlo, este
+directorio pasa a ser copia y `HANDYX_CONTRATOS=<ruta> npm test` verifica que sea idéntico.
+
+**Conflicto con TECH-20** (Notion, 27/09): pide "monorepo con paquete compartido de auth y tipos", pero los repos
+existen separados. Mientras no se decida otra cosa, la copia sincronizada cumple "una sola fuente" sin monorepo.
+
+## 2. Escrituras por entidad (TECH-03 conciliado)
+
+Una tabla tiene un solo servicio que la escribe por dominio; donde dos escriben, la regla está explícita.
+
+| Entidad (TECH-03) | Escribe | Lee | Nota |
+|---|---|---|---|
+| `accounts`, `sessions` | la API donde se autentica cada rol (código compartido de auth) | ambas | Login único; roles en `account_roles` (usuario/especialista). Staff no está acá |
+| `user_profiles` | api-usuario | api-especialista (solo nombre público tras contratar) | |
+| `specialist_profiles`, `specialist_categories`, `specialist_credentials` | api-especialista (carga) · portal (revisión/verificación) | api-usuario (perfil público) | `verified=*` nunca viene del cliente |
+| verificación presencial de antecedentes | portal | api-especialista (estado) | Sin archivos |
+| `specialist_availability` / coverage | api-especialista | api-usuario (búsqueda) | |
+| `service_requests`, `request_media` | api-usuario | api-especialista (elegibles, datos mínimos) | Búsqueda manual: portal |
+| `proposals` | ambas: cada parte crea las suyas y responde las de la contraparte | ambas | Aceptación en transacción con versión; una sola aceptada activa por pedido |
+| `jobs`, `job_events` | se crea en la transacción de aceptación; eventos del especialista (en camino, Llegué, en curso, fin) desde api-especialista; cancelaciones de cada parte desde su API | ambas | Snapshot del acuerdo inmutable |
+| `conversations`, `messages`, media | cada parte desde su API | participantes + staff | Hilo desde la primera cotización (prompt Bloque 4) — TECH-03 lo ataba a `job_id`: se agrega `request_id` y `job_id` opcional |
+| `support_cases`, `support_events` | cada parte abre desde su API; portal gestiona | partes + staff | |
+| `payment_records` | reportes: cada parte; verificación: webhook validado o portal | ambas | Reportado ≠ verificado; Handy no es receptor |
+| `fee_policies`, `fee_acceptances` | portal (políticas, solo con aprobación); cada API registra la aceptación de su rol | ambas | Demo: 0 bps |
+| `commission_entries` (`commission_ledger`) | solo backend con política activa | portal | Demo: `demo_zero`; nada se cobra ni se netea sin mecanismo aprobado |
+| `consents`, `account_deletion_requests`, `audit_events` | cada API para su rol; baja ejecutada por proceso privado | portal | |
+| `analytics_events` | ambas (allowlist) | métricas | Sin PII ni contenido de chats/documentos |
+
+## 3. Diferencias con TECH-03 (a resolver en 4.1)
+
+| Tema | TECH-03 | Contrato v0.1 | Motivo |
+|---|---|---|---|
+| Estados de propuesta | pending/accepted/rejected/withdrawn/expired | + `reemplazada` | La contrapropuesta deja la anterior reemplazada (demo de la landing y prompt Bloque 4) |
+| Estados de pedido | draft → searching → proposals_received → accepted → in_progress → completed | `buscando`, `sin_propuestas`, `busqueda_manual`, `acordado`, `cancelado`; el progreso vive en `jobs` | TECH-03 pide conciliar nombres; se evita duplicar el estado del trabajo en el pedido |
+| `account_roles.role = admin` | incluido | no se usa | El personal sigue con `ADMIN_ACCOUNTS_JSON` (prompt Bloque 4 e invariantes del BE de captación) |
+| Conversación | `job_id` | `requestId` + `jobId` opcional | Chat antes de contratar |
+| Autor de propuesta | `specialist_id` | `autorRol` + autor + contraparte | Propuestas bidireccionales |
+
+## 4. Versionado
+
+- SemVer del contrato: **patch** = documentación/aclaración; **minor** = campo opcional o estado nuevo compatible;
+  **major** = cambio de nombre, estado eliminado o campo obligatorio nuevo.
+- Las API exponen `/v1/...`; un major del contrato no rompe `/v1` sin una ruta `/v2` y migración compatible.
+- Respuestas validadas con `z.strictObject`: un campo nuevo exige que el consumidor actualice el contrato primero
+  (minor); por eso los consumidores se actualizan **antes** que el productor.
+
+## 5. Convenciones comunes
+
+- IDs UUID; timestamps UTC ISO 8601 con `Z`; fechas mostradas en `America/Argentina/Buenos_Aires`.
+- Importes: `{ centavos: entero ≥ 0, moneda: 'ARS' }`. Porcentajes en puntos básicos enteros. Nunca floats.
+- Errores: `{ error: { codigo, mensaje, requestId, campos? } }` con `codigo` estable (`dto.ts → CODIGOS_ERROR`). Un
+  recurso ajeno responde `404 no_encontrado` (no revela existencia).
+- Paginación por cursor `{ items, siguienteCursor }`; filtros en servidor.
+- Mutaciones críticas (propuestas, aceptación, reportes de pago, cierre de trabajo) con `Idempotency-Key` (UUIDv4) y
+  `version` (control optimista → `409 conflicto_version`).
+- Vencimientos y ventanas calculados por el servidor; el cliente solo muestra lo recibido.
