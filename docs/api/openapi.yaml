@@ -1,0 +1,725 @@
+openapi: 3.1.0
+info:
+  title: api-especialista (Handyx)
+  version: 0.1.0
+  description: |
+    BORRADOR del contrato de api-especialista (TECH-20). Fuente de los esquemas: src/contracts/dto.ts
+    (contrato compartido v0.1.0, dueño handyx-client-be). Nada implementado todavía: lo construye
+    handyx-specialist-be en la fase 4. Sesión por cookie HttpOnly; CSRF en X-CSRF-Token para mutaciones;
+    Idempotency-Key (UUIDv4) donde se indica. Timestamps UTC; importes en centavos enteros.
+servers:
+  - url: https://api.handyc.com/especialista
+    description: Producción prevista (PENDIENTE de recurso en Render)
+  - url: http://localhost:4000
+    description: Desarrollo local
+
+security:
+  - sesion: []
+
+tags:
+  - name: auth
+  - name: perfil
+  - name: disponibilidad
+  - name: pedidos
+  - name: propuestas
+  - name: trabajos
+  - name: mensajes
+  - name: caja
+  - name: soporte
+  - name: fee
+  - name: cuenta
+
+paths:
+  /v1/auth/registro:
+    post:
+      tags: [auth]
+      security: []
+      summary: Crear cuenta de especialista (respuesta neutra si ya existe)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [email, password, terminos, privacidad]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 12, maxLength: 128 }
+                terminos: { type: string, description: id de la versión aceptada }
+                privacidad: { type: string, description: id de la versión del aviso aceptado }
+      responses:
+        '202': { description: Recibido (mismo resultado exista o no la cuenta) }
+        '400': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /v1/auth/ingreso:
+    post:
+      tags: [auth]
+      security: []
+      summary: Iniciar sesión (emite cookie HttpOnly)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: Sesión iniciada
+          content: { application/json: { schema: { $ref: '#/components/schemas/Sesion' } } }
+        '401': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /v1/auth/sesion:
+    get:
+      tags: [auth]
+      summary: Sesión actual y token CSRF (solo en memoria del cliente)
+      responses:
+        '200':
+          description: Con sesión
+          content: { application/json: { schema: { $ref: '#/components/schemas/Sesion' } } }
+        '401': { $ref: '#/components/responses/Error' }
+  /v1/auth/salida:
+    post:
+      tags: [auth]
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '204': { description: Sesión revocada }
+
+  /v1/especialista/perfil:
+    get:
+      tags: [perfil]
+      responses:
+        '200':
+          description: Perfil propio con estados de revisión (nunca el contenido de los documentos)
+          content: { application/json: { schema: { $ref: '#/components/schemas/PerfilEspecialista' } } }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /v1/especialista/documentos/{tipo}:
+    post:
+      tags: [perfil]
+      summary: Cargar un documento (queda `cargado`; solo Operations verifica)
+      description: Antecedentes NO se aceptan como archivo; se verifican en persona.
+      parameters:
+        - { $ref: '#/components/parameters/Csrf' }
+        - name: tipo
+          in: path
+          required: true
+          schema: { type: string, enum: [dni, cuit_cuil, foto_cara, matricula] }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                archivo: { type: string, format: binary, description: 'image/jpeg|png|webp, tamaño máximo PENDIENTE' }
+                rubro: { type: string, description: solo para matrícula }
+      responses:
+        '201':
+          description: Cargado
+          content: { application/json: { schema: { $ref: '#/components/schemas/PerfilEspecialista' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '413': { $ref: '#/components/responses/Error' }
+        '415': { $ref: '#/components/responses/Error' }
+  /v1/especialista/alta/envio:
+    post:
+      tags: [perfil]
+      summary: Enviar el alta a revisión (borrador|requiere_correccion → enviada)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '200':
+          description: Enviada
+          content: { application/json: { schema: { $ref: '#/components/schemas/PerfilEspecialista' } } }
+        '409': { $ref: '#/components/responses/Error' }
+
+  /v1/especialista/disponibilidad:
+    get:
+      tags: [disponibilidad]
+      responses:
+        '200':
+          description: Disponibilidad declarada
+          content: { application/json: { schema: { $ref: '#/components/schemas/Disponibilidad' } } }
+    put:
+      tags: [disponibilidad]
+      summary: Cambiar disponibilidad (revocar urgentes corta la oferta al instante)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CambioDisponibilidad' } } }
+      responses:
+        '200':
+          description: Guardada
+          content: { application/json: { schema: { $ref: '#/components/schemas/Disponibilidad' } } }
+        '409': { $ref: '#/components/responses/Error' }
+
+  /v1/especialista/pedidos:
+    get:
+      tags: [pedidos]
+      summary: Pedidos elegibles, filtrados en servidor y por orden de llegada
+      parameters:
+        - { name: cursor, in: query, schema: { type: string } }
+        - { name: tipo, in: query, schema: { type: string, enum: [urgente, programado, obra] } }
+      responses:
+        '200':
+          description: Página
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [items, siguienteCursor]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/PedidoElegible' } }
+                  siguienteCursor: { type: [string, 'null'] }
+  /v1/especialista/pedidos/{id}:
+    get:
+      tags: [pedidos]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Detalle con datos mínimos (zona aproximada, sin dirección exacta)
+          content: { application/json: { schema: { $ref: '#/components/schemas/PedidoElegible' } } }
+        '404': { $ref: '#/components/responses/Error' }
+
+  /v1/especialista/propuestas:
+    post:
+      tags: [propuestas]
+      summary: Enviar propuesta o contrapropuesta (reemplazaA)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/NuevaPropuesta' } } }
+      responses:
+        '201':
+          description: Creada (vencimiento calculado por el servidor)
+          content: { application/json: { schema: { $ref: '#/components/schemas/Propuesta' } } }
+        '200':
+          description: Repetición con la misma Idempotency-Key (mismo resultado)
+          content: { application/json: { schema: { $ref: '#/components/schemas/Propuesta' } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/propuestas/{id}/respuesta:
+    post:
+      tags: [propuestas]
+      summary: Aceptar o rechazar una propuesta del usuario (solo contraparte, pendiente y vigente)
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { $ref: '#/components/parameters/Csrf' }
+        - { $ref: '#/components/parameters/Idempotencia' }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/RespuestaPropuesta' } } }
+      responses:
+        '200':
+          description: Respondida; si aceptó, devuelve el trabajo creado en la misma transacción
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [propuesta, trabajo]
+                properties:
+                  propuesta: { $ref: '#/components/schemas/Propuesta' }
+                  trabajo: { oneOf: [{ $ref: '#/components/schemas/Trabajo' }, { type: 'null' }] }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/propuestas/{id}/retiro:
+    post:
+      tags: [propuestas]
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '200':
+          description: Retirada
+          content: { application/json: { schema: { $ref: '#/components/schemas/Propuesta' } } }
+        '409': { $ref: '#/components/responses/Error' }
+
+  /v1/especialista/trabajos:
+    get:
+      tags: [trabajos]
+      parameters:
+        - { name: estado, in: query, schema: { type: string, enum: [activos, historial] } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Página de trabajos propios
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [items, siguienteCursor]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/Trabajo' } }
+                  siguienteCursor: { type: [string, 'null'] }
+  /v1/especialista/trabajos/{id}/eventos:
+    post:
+      tags: [trabajos]
+      summary: Transición del trabajo (en_camino, en_sitio = "Llegué", en_curso, finalizado, cancelado)
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { $ref: '#/components/parameters/Csrf' }
+        - { $ref: '#/components/parameters/Idempotencia' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [hacia, version]
+              properties:
+                hacia: { type: string, enum: [en_camino, en_sitio, en_curso, finalizado, cancelado] }
+                version: { type: integer, minimum: 0 }
+      responses:
+        '200':
+          description: Trabajo actualizado
+          content: { application/json: { schema: { $ref: '#/components/schemas/Trabajo' } } }
+        '409': { $ref: '#/components/responses/Error' }
+
+  /v1/conversaciones/{id}/mensajes:
+    get:
+      tags: [mensajes]
+      parameters: [{ $ref: '#/components/parameters/Id' }, { name: cursor, in: query, schema: { type: string } }]
+      responses:
+        '200':
+          description: Mensajes (solo participantes)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [items, siguienteCursor]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/Mensaje' } }
+                  siguienteCursor: { type: [string, 'null'] }
+        '404': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [mensajes]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { $ref: '#/components/parameters/Csrf' }
+        - { $ref: '#/components/parameters/Idempotencia' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [texto]
+              properties:
+                texto: { type: string, minLength: 1, maxLength: 2000 }
+      responses:
+        '201':
+          description: Enviado
+          content: { application/json: { schema: { $ref: '#/components/schemas/Mensaje' } } }
+
+  /v1/especialista/caja:
+    get:
+      tags: [caja]
+      summary: Pagos directos recibidos por el especialista (Handy no es receptor)
+      responses:
+        '200':
+          description: Página de pagos
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [items, siguienteCursor]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/Pago' } }
+                  siguienteCursor: { type: [string, 'null'] }
+  /v1/especialista/pagos/{id}/reporte:
+    post:
+      tags: [caja]
+      summary: Reportar cobro en efectivo o MP directo (queda `reportado`, no verificado)
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { $ref: '#/components/parameters/Csrf' }
+        - { $ref: '#/components/parameters/Idempotencia' }
+      responses:
+        '200':
+          description: Reportado
+          content: { application/json: { schema: { $ref: '#/components/schemas/Pago' } } }
+        '409': { $ref: '#/components/responses/Error' }
+
+  /v1/soporte/casos:
+    get:
+      tags: [soporte]
+      responses:
+        '200':
+          description: Casos propios
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [items, siguienteCursor]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/CasoSoporte' } }
+                  siguienteCursor: { type: [string, 'null'] }
+    post:
+      tags: [soporte]
+      parameters: [{ $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [categoria, detalle]
+              properties:
+                categoria: { type: string, enum: [asistencia, reclamo, pago, cuenta] }
+                trabajoId: { type: [string, 'null'], format: uuid }
+                pedidoId: { type: [string, 'null'], format: uuid }
+                detalle: { type: string, minLength: 1, maxLength: 4000 }
+      responses:
+        '201':
+          description: Abierto
+          content: { application/json: { schema: { $ref: '#/components/schemas/CasoSoporte' } } }
+
+  /v1/fee/vigente:
+    get:
+      tags: [fee]
+      summary: Política de fee vigente (null = ninguna; no se infiere tarifa)
+      responses:
+        '200':
+          description: Fee vigente
+          content: { application/json: { schema: { $ref: '#/components/schemas/FeeVigente' } } }
+  /v1/fee/aviso:
+    post:
+      tags: [fee]
+      summary: Registrar que el especialista vio y aceptó el aviso de esta versión (fee_acceptances)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [politicaId, version]
+              properties:
+                politicaId: { type: string }
+                version: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Registrado
+          content: { application/json: { schema: { $ref: '#/components/schemas/FeeVigente' } } }
+
+  /v1/cuenta/baja:
+    post:
+      tags: [cuenta]
+      summary: Solicitar eliminación real de la cuenta (revoca sesiones; estado honesto)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '202':
+          description: Solicitada
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [estado]
+                properties:
+                  estado: { type: string, enum: [solicitada, en_proceso, completada, completada_con_retencion, cancelada] }
+
+components:
+  securitySchemes:
+    sesion:
+      type: apiKey
+      in: cookie
+      name: __Host-handyx_esp
+      description: Cookie HttpOnly/Secure/SameSite=Lax emitida por la API
+
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    Csrf:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema: { type: string }
+    Idempotencia:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    Error:
+      description: Error con código estable, mensaje seguro y requestId
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorApi' } } }
+
+  schemas:
+    Instante: { type: string, format: date-time, description: UTC con Z }
+    Monto:
+      type: object
+      additionalProperties: false
+      required: [centavos, moneda]
+      properties:
+        centavos: { type: integer, minimum: 0 }
+        moneda: { type: string, enum: [ARS] }
+    Rubro: { type: string, enum: [electricidad, plomeria, gas, cerrajeria, albanileria, aire_acondicionado] }
+    EstadoDocumento: { type: string, enum: [faltante, cargado, en_revision, verificado, rechazado, vencido] }
+    ErrorApi:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [codigo, mensaje, requestId]
+          properties:
+            codigo:
+              type: string
+              enum:
+                [validacion, no_autenticado, sin_permiso, no_encontrado, conflicto_version, propuesta_no_disponible,
+                 pedido_no_elegible, tipo_archivo_prohibido, limite, servicio_no_disponible, interno]
+            mensaje: { type: string }
+            requestId: { type: string }
+            campos:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [campo, codigo]
+                properties:
+                  campo: { type: string }
+                  codigo: { type: string }
+    Sesion:
+      type: object
+      additionalProperties: false
+      required: [cuenta, csrfToken, expiraEn]
+      properties:
+        cuenta:
+          type: object
+          additionalProperties: false
+          required: [id, roles]
+          properties:
+            id: { type: string, format: uuid }
+            roles: { type: array, items: { type: string, enum: [usuario, especialista] } }
+        csrfToken: { type: string, minLength: 16 }
+        expiraEn: { $ref: '#/components/schemas/Instante' }
+    PerfilEspecialista:
+      type: object
+      additionalProperties: false
+      required: [id, nombre, apellido, estadoAlta, motivoRevision, documentos, antecedentes, rubros, baja, version]
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        apellido: { type: string }
+        estadoAlta:
+          type: string
+          enum: [borrador, enviada, en_revision, requiere_correccion, habilitada, rechazada, suspendida]
+        motivoRevision: { type: [string, 'null'] }
+        documentos:
+          type: object
+          additionalProperties: false
+          required: [dni, cuitCuil, fotoCara]
+          properties:
+            dni: { $ref: '#/components/schemas/EstadoDocumento' }
+            cuitCuil: { $ref: '#/components/schemas/EstadoDocumento' }
+            fotoCara: { $ref: '#/components/schemas/EstadoDocumento' }
+        antecedentes:
+          type: string
+          enum: [pendiente_cita, cita_coordinada, aprobada, no_aprobada, no_asistio]
+        rubros:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [rubro, estado, matricula]
+            properties:
+              rubro: { $ref: '#/components/schemas/Rubro' }
+              estado: { type: string, enum: [habilitado, requiere_matricula, en_revision, no_habilitado] }
+              matricula: { oneOf: [{ $ref: '#/components/schemas/EstadoDocumento' }, { type: 'null' }] }
+        baja:
+          type: [string, 'null']
+          enum: [solicitada, en_proceso, completada, completada_con_retencion, cancelada, null]
+        version: { type: integer, minimum: 0 }
+    Franja:
+      type: object
+      additionalProperties: false
+      required: [dia, desde, hasta]
+      properties:
+        dia: { type: integer, minimum: 0, maximum: 6 }
+        desde: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+        hasta: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+    Disponibilidad:
+      type: object
+      additionalProperties: false
+      required: [urgentesAhora, urgentesCambiadoEn, programados, franjas, zonas, version]
+      properties:
+        urgentesAhora: { type: boolean }
+        urgentesCambiadoEn: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
+        programados: { type: boolean }
+        franjas: { type: array, items: { $ref: '#/components/schemas/Franja' } }
+        zonas: { type: array, items: { type: string } }
+        version: { type: integer, minimum: 0 }
+    CambioDisponibilidad:
+      type: object
+      additionalProperties: false
+      required: [urgentesAhora, programados, version]
+      properties:
+        urgentesAhora: { type: boolean }
+        programados: { type: boolean }
+        franjas: { type: array, items: { $ref: '#/components/schemas/Franja' } }
+        zonas: { type: array, items: { type: string } }
+        version: { type: integer, minimum: 0 }
+    PedidoElegible:
+      type: object
+      additionalProperties: false
+      required: [id, rubro, tipo, descripcion, zonaAproximada, fechaSolicitada, creadoEn, ventanaHasta, estado, miPropuesta]
+      properties:
+        id: { type: string, format: uuid }
+        rubro: { $ref: '#/components/schemas/Rubro' }
+        tipo: { type: string, enum: [urgente, programado, obra] }
+        descripcion: { type: string }
+        zonaAproximada: { type: string }
+        fechaSolicitada: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
+        creadoEn: { $ref: '#/components/schemas/Instante' }
+        ventanaHasta: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
+        estado: { type: string, enum: [buscando, sin_propuestas, busqueda_manual, acordado, cancelado] }
+        miPropuesta:
+          oneOf:
+            - type: 'null'
+            - type: object
+              additionalProperties: false
+              required: [id, estado]
+              properties:
+                id: { type: string, format: uuid }
+                estado: { type: string, enum: [pendiente, aceptada, rechazada, reemplazada, vencida, retirada] }
+    Horario:
+      type: object
+      additionalProperties: false
+      required: [inicio, fin]
+      properties:
+        inicio: { $ref: '#/components/schemas/Instante' }
+        fin: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
+    Propuesta:
+      type: object
+      additionalProperties: false
+      required: [id, pedidoId, autorRol, monto, alcance, horario, venceEn, estado, reemplazaA, version]
+      properties:
+        id: { type: string, format: uuid }
+        pedidoId: { type: string, format: uuid }
+        autorRol: { type: string, enum: [usuario, especialista] }
+        monto: { $ref: '#/components/schemas/Monto' }
+        alcance: { type: string, maxLength: 2000 }
+        horario: { $ref: '#/components/schemas/Horario' }
+        venceEn: { $ref: '#/components/schemas/Instante' }
+        estado: { type: string, enum: [pendiente, aceptada, rechazada, reemplazada, vencida, retirada] }
+        reemplazaA: { type: [string, 'null'], format: uuid }
+        version: { type: integer, minimum: 0 }
+    NuevaPropuesta:
+      type: object
+      additionalProperties: false
+      required: [pedidoId, monto, alcance, horario, reemplazaA]
+      properties:
+        pedidoId: { type: string, format: uuid }
+        monto: { $ref: '#/components/schemas/Monto' }
+        alcance: { type: string, minLength: 1, maxLength: 2000 }
+        horario: { $ref: '#/components/schemas/Horario' }
+        reemplazaA: { type: [string, 'null'], format: uuid }
+    RespuestaPropuesta:
+      type: object
+      additionalProperties: false
+      required: [accion, version]
+      properties:
+        accion: { type: string, enum: [aceptar, rechazar] }
+        version: { type: integer, minimum: 0 }
+    Trabajo:
+      type: object
+      additionalProperties: false
+      required: [id, pedidoId, propuestaAceptadaId, rubro, tipo, acuerdo, direccion, estado, conversacionId, version]
+      properties:
+        id: { type: string, format: uuid }
+        pedidoId: { type: string, format: uuid }
+        propuestaAceptadaId: { type: string, format: uuid }
+        rubro: { $ref: '#/components/schemas/Rubro' }
+        tipo: { type: string, enum: [urgente, programado, obra] }
+        acuerdo:
+          type: object
+          additionalProperties: false
+          required: [monto, alcance, horario]
+          properties:
+            monto: { $ref: '#/components/schemas/Monto' }
+            alcance: { type: string }
+            horario: { $ref: '#/components/schemas/Horario' }
+        direccion: { type: [string, 'null'], description: solo con trabajo acordado y para sus partes }
+        estado: { type: string, enum: [agendado, en_camino, en_sitio, en_curso, finalizado, cancelado] }
+        conversacionId: { type: string, format: uuid }
+        version: { type: integer, minimum: 0 }
+    Mensaje:
+      type: object
+      additionalProperties: false
+      required: [id, conversacionId, autorRol, tipo, texto, mediaUrl, propuestaId, enviadoEn]
+      properties:
+        id: { type: string, format: uuid }
+        conversacionId: { type: string, format: uuid }
+        autorRol: { type: string, enum: [usuario, especialista, operations] }
+        tipo: { type: string, enum: [texto, foto, propuesta] }
+        texto: { type: [string, 'null'] }
+        mediaUrl: { type: [string, 'null'], format: uri, description: URL firmada de corta duración }
+        propuestaId: { type: [string, 'null'], format: uuid }
+        enviadoEn: { $ref: '#/components/schemas/Instante' }
+    Pago:
+      type: object
+      additionalProperties: false
+      required: [id, trabajoId, metodo, monto, estado, fuenteConfirmacion, referenciaProveedor, actualizadoEn]
+      properties:
+        id: { type: string, format: uuid }
+        trabajoId: { type: string, format: uuid }
+        metodo: { type: string, enum: [mercado_pago, efectivo] }
+        monto: { $ref: '#/components/schemas/Monto' }
+        estado: { type: string, enum: [pendiente, reportado, verificado, fallido, en_discrepancia] }
+        fuenteConfirmacion:
+          type: [string, 'null']
+          enum: [reporte_usuario, reporte_especialista, webhook_proveedor, operations, null]
+        referenciaProveedor: { type: [string, 'null'] }
+        actualizadoEn: { $ref: '#/components/schemas/Instante' }
+    CasoSoporte:
+      type: object
+      additionalProperties: false
+      required: [id, trabajoId, pedidoId, categoria, estado, creadoEn, actualizadoEn]
+      properties:
+        id: { type: string, format: uuid }
+        trabajoId: { type: [string, 'null'], format: uuid }
+        pedidoId: { type: [string, 'null'], format: uuid }
+        categoria: { type: string, enum: [asistencia, reclamo, pago, cuenta] }
+        estado: { type: string, enum: [abierto, en_curso, esperando_respuesta, resuelto, cerrado] }
+        creadoEn: { $ref: '#/components/schemas/Instante' }
+        actualizadoEn: { $ref: '#/components/schemas/Instante' }
+    PoliticaFee:
+      type: object
+      additionalProperties: false
+      required: [id, version, alcance, desde, hastaExclusivo, ultimoDiaLocal, bpsUsuario, bpsEspecialista, estado]
+      properties:
+        id: { type: string }
+        version: { type: integer, minimum: 1 }
+        alcance: { type: string, enum: [demo_cerrada, general] }
+        desde: { $ref: '#/components/schemas/Instante' }
+        hastaExclusivo: { $ref: '#/components/schemas/Instante' }
+        ultimoDiaLocal: { type: string, format: date }
+        bpsUsuario: { type: integer, minimum: 0, maximum: 10000 }
+        bpsEspecialista: { type: integer, minimum: 0, maximum: 10000 }
+        estado: { type: string, enum: [activa, borrador] }
+    FeeVigente:
+      type: object
+      additionalProperties: false
+      required: [politica, avisoAceptadoEn]
+      properties:
+        politica: { oneOf: [{ $ref: '#/components/schemas/PoliticaFee' }, { type: 'null' }] }
+        avisoAceptadoEn: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }

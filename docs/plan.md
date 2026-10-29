@@ -1,7 +1,7 @@
 # Plan · PWA Especialista de Handyx (Bloque 4)
 
-Estado: **plan creado, nada implementado.** Los checks empiezan pendientes y solo se marcan con resultado observable.
-Seguimiento de avance, comandos y bloqueos: `docs/handoff.md` (se crea al terminar la Fase 1).
+Estado: **fase 1 cerrada (lotes 1.1–1.3, 29/10/2026)**; fases 2–5 pendientes. Los checks solo se marcan con resultado observable.
+Seguimiento de avance, comandos y bloqueos: `docs/handoff.md`.
 Cada entrega distingue: decidido · mock · conectado · probado · desplegado.
 
 ## 1. Estado real de los repos (auditoría inicial, 29/10/2026)
@@ -14,12 +14,12 @@ Cada entrega distingue: decidido · mock · conectado · probado · desplegado.
 | `Handy-landing-page-be` | Express 5 + Prisma 7 + Postgres, esquema `growth` | Referencia de capas, cifrado de PII (AES-256-GCM + HMAC), auditoría, logger con lista blanca |
 | `handy-internal-portal` | Vite + TS, `AdminSessionClient` | Futuro consumidor de la revisión de Operations |
 
-No verificado (conector Notion no disponible al momento de redactar): TECH-03, PROD-03/15/18/26, LEG-39/40.
+Notion verificado en el lote 1.3: TECH-03, TECH-20, PROD-21 (incluye PROD-03/13/18/23/24) y PROD-06/11. Sin página propia encontrada: PROD-15, PROD-26, LEG-39/40.
 
 ## 2. Decisiones propuestas (reversibles)
 
 - **FE (decidido por Ignacio):** React + Next.js + TypeScript, PWA para Hostinger. Hostinger sirve estático: Next.js con `output: 'export'` (sin SSR, sin Route Handlers ni middleware de Next; toda la lógica de servidor vive en el BE). Service worker y manifest propios (sin dependencia de runtime Node). Tokens y kit `.hd-*` de la landing portados a componentes; no se clonan pantallas de la demo.
-- **BE:** Node 22, TS ESM, Express 5, Prisma 7 sobre Neon; capas `routes → controllers → services → repositories`, Zod, Vitest.
+- **BE:** Node 22, TS ESM, Express 5, Prisma 7 sobre Neon; capas `routes → controllers → services → repositories`, Zod. El scaffold del BE se hace en 4.1, después del dueño del esquema (`handyx-client-be`), para no crear un esquema paralelo.
 - **Auth de consumidores:** cuenta con Argon2id, cookie HttpOnly/Secure/SameSite=Lax, CSRF, sesiones revocables, roles `usuario`/`especialista`. Sin OTP/SMS. Personal interno: `ADMIN_ACCOUNTS_JSON` vigente.
 - **Esquema compartido (decidido por Ignacio):** `handyx-client-be` es el único dueño de migraciones y del esquema; `handyx-specialist-be` consume esa versión y no edita migraciones propias.
 - **Datos:** pre-registro (`growth`) y cuentas reales separados; no se migran interesados a cuentas activas.
@@ -34,10 +34,10 @@ No verificado (conector Notion no disponible al momento de redactar): TECH-03, P
 ## 4. Fases y lotes
 
 ### Fase 1 · Bases — Opus 5.5 / high
-- [ ] **1.1 Base ejecutable:** scaffold FE/BE, scripts dev/build/typecheck/lint/test, rutas, layout, adapters `mock`/`http`; inventario de faltantes.
-- [ ] **1.2 Alta, elegibilidad y alcance:** mapa de pantallas/estados alta → revisión → habilitación → disponibilidad → pedido → propuesta → chat/agenda → trabajo → pago directo → caja → soporte. Documento cargado ≠ verificado; antecedentes nunca como upload.
-- [ ] **1.3 Contratos:** OpenAPI versionado, schemas/tipos compartidos (fuente única), máquinas de estado, matriz pantalla/API/permiso/QA.
-- Docs: `architecture.md`, `state-machines.md`, `auth-permissions.md`, `handoff.md`.
+- [x] **1.1 Base ejecutable:** scaffold FE, scripts dev/build/typecheck/lint/test, rutas, layout, adapters `mock`/`http`; inventario de faltantes. Evidencia: `docs/handoff.md` (build mock y http, 35 pruebas OK, Playwright).
+- [x] **1.2 Alta, elegibilidad y alcance:** mapa de pantallas/estados alta → revisión → habilitación → disponibilidad → pedido → propuesta → chat/agenda → trabajo → pago directo → caja → soporte. Documento cargado ≠ verificado; antecedentes nunca como upload. Evidencia: `docs/screens.md` + pruebas de `maquinas.ts`.
+- [x] **1.3 Contratos:** OpenAPI versionado, schemas/tipos compartidos (fuente única), máquinas de estado, matriz pantalla/API/permiso/QA. Evidencia: `src/contracts/`, `docs/contracts.md`, `docs/api/openapi.yaml`, `docs/matriz.md`.
+- Docs: `architecture.md`, `screens.md`, `contracts.md`, `state-machines.md`, `auth-permissions.md`, `matriz.md`, `api/openapi.yaml`, `handoff.md`.
 
 ### Fase 2 · Mockup completo — Sonnet 5.5 / high
 Fixtures sintéticos rotulados; el mock permite éxito, rechazo, expiración y caída de red.
