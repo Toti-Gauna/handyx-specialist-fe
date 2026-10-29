@@ -3,26 +3,9 @@
 // Cada escenario arranca con una carga completa (`?escenario=`); dentro de él se navega SIN recargar,
 // porque el estado de prueba vive solo en memoria de la pestaña.
 const assert = require('node:assert/strict');
-const { createServer } = require('node:http');
-const { readFileSync, existsSync, statSync } = require('node:fs');
-const { join, extname } = require('node:path');
+const { join } = require('node:path');
+const { servir } = require('./servidor.cjs');
 const { chromium } = require('playwright');
-
-const RAIZ = join(__dirname, '..', 'out');
-const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.txt': 'text/plain' };
-
-function servir() {
-  return new Promise((ok) => {
-    const s = createServer((req, res) => {
-      let ruta = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-      let f = join(RAIZ, ruta);
-      if (existsSync(f) && statSync(f).isDirectory()) f = join(f, 'index.html');
-      if (!existsSync(f)) { res.writeHead(404); return res.end('no encontrado'); }
-      res.writeHead(200, { 'Content-Type': TIPOS[extname(f)] ?? 'application/octet-stream' });
-      res.end(readFileSync(f));
-    }).listen(0, () => ok(s));
-  });
-}
 
 const resultados = [];
 async function escenario(nombre, navegador, base, pasos, { ancho = 390, alto = 844, capturas = null } = {}) {
@@ -147,7 +130,7 @@ async function main() {
     await ver(p, 'Encendido: ves pedidos para otro día');
     await nav(p, 'Inicio');
     await p.getByRole('link', { name: 'Ver todos' }).click();
-    await ver(p, 'Plomería · Centro');
+    await ver(p, 'Cambiar el flexible del inodoro');
   }, { capturas });
 
   await escenario('B-opt-in-urgente-y-propuesta', nav_, base, async ({ p, foto }) => {
@@ -155,8 +138,8 @@ async function main() {
     await p.waitForURL('**/inicio/');
     await ver(p, 'Tu disponibilidad');
     await p.getByRole('link', { name: 'Ver todos' }).click();
-    await ver(p, 'Plomería · Centro');
-    assert.equal(await p.getByText('Plomería · La Perla').count(), 0, 'con "Ahora" apagado no hay urgentes');
+    await ver(p, 'Cambiar el flexible del inodoro');
+    assert.equal(await p.getByText('Pérdida debajo de la bacha').count(), 0, 'con "Ahora" apagado no hay urgentes');
     await ver(p, 'Tenés los pedidos urgentes apagados');
     // Encender "Ahora": aparecen los urgentes
     await p.getByRole('link', { name: 'Cambiarlo en mi disponibilidad' }).click();
@@ -164,7 +147,7 @@ async function main() {
     await ver(p, 'Encendido: te ofrecemos pedidos urgentes');
     await nav(p, 'Inicio');
     await p.getByRole('link', { name: 'Ver todos' }).click();
-    await ver(p, 'Plomería · La Perla');
+    await ver(p, 'Pérdida debajo de la bacha');
     // Detalle del urgente: nada de datos exactos, y se envía una propuesta
     await p.getByText('Pérdida debajo de la bacha').click();
     await ver(p, 'Todavía no ves el nombre ni la dirección exacta');
@@ -173,7 +156,7 @@ async function main() {
     await ver(p, 'Handy no te cobra tarifa (0 %)');
     await p.getByLabel('Qué incluye').fill('Reparación de la pérdida, materiales incluidos');
     await p.getByRole('button', { name: 'Enviar propuesta' }).click();
-    await ver(p, 'Vigencia');
+    await ver(p, 'Vence en');
     await ver(p, '$ 45.000');
     await foto('propuesta');
     // Revocar "Ahora" corta la oferta
@@ -307,7 +290,7 @@ async function main() {
     await p.goto(`${base}/`);
     await p.waitForURL('**/inicio/');
     await nav(p, 'Cuenta');
-    await ver(p, 'Tarifa de Handy: 0 % hasta el 10/12/2026');
+    await ver(p, 'Tarifa de Handy durante la demo');
     await ver(p, 'Quedan 23 días');
     await ver(p, 'no es un descuento sobre tu precio');
     // Último día y fin de la demo

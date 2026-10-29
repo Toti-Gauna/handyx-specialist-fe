@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { aInputLocal, centavosDesdeTexto, deInputLocal, fechaHora, haceCuanto, hora, nuevaClave, restante } from './formato.ts';
+import { aInputLocal, centavosDesdeTexto, deInputLocal, fechaHora, haceCuanto, hora, nuevaClave, plural, restante } from './formato.ts';
 
 describe('formato', () => {
   it('muestra las horas en Buenos Aires', () => {
@@ -28,6 +28,10 @@ describe('formato', () => {
     assert.equal(restante('2026-11-17T15:00:00Z', ahora), null);
     assert.equal(haceCuanto('2026-11-17T14:52:00Z', ahora), 'hace 8 min');
     assert.equal(haceCuanto('2026-11-15T15:00:00Z', ahora), 'hace 2 días');
+  });
+  it('concuerda el plural con la cantidad', () => {
+    assert.equal(plural(1, 'propuesta', 'propuestas'), '1 propuesta');
+    assert.equal(plural(0, 'propuesta', 'propuestas'), '0 propuestas');
   });
   it('genera claves de idempotencia únicas con forma de UUID', () => {
     const a = nuevaClave();

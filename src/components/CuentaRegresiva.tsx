@@ -8,7 +8,7 @@ import { Icono } from './Icono.tsx';
  * Tiempo que queda de una vigencia calculada por el servidor. Al llegar a cero avisa una vez (`alVencer`)
  * para volver a pedir el estado real: la pantalla nunca decide sola que algo venció.
  */
-export function CuentaRegresiva({ hasta, etiqueta, alVencer }: { hasta: string; etiqueta: string; alVencer?: () => void }) {
+export function CuentaRegresiva({ hasta, texto, terminado, alVencer }: { hasta: string; texto: string; terminado: string; alVencer?: () => void }) {
   const ahora = useAhora();
   const r = restante(hasta, ahora);
   const avisado = useRef(false);
@@ -22,11 +22,11 @@ export function CuentaRegresiva({ hasta, etiqueta, alVencer }: { hasta: string; 
 
   return r === null ? (
     <span className="cuenta cuenta--vencida">
-      <Icono nombre="reloj" /> {etiqueta}: venció
+      <Icono nombre="reloj" /> {terminado}
     </span>
   ) : (
     <span className="cuenta">
-      <Icono nombre="reloj" /> {etiqueta}: <strong>{r}</strong>
+      <Icono nombre="reloj" /> {texto} <strong>{r}</strong>
     </span>
   );
 }

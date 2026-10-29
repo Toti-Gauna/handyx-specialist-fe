@@ -52,11 +52,12 @@ function Asistente({ datos, alGuardar }: { datos: DatosAlta; alGuardar(): Promis
       {paso === 3 ? <PasoFoto perfil={perfil} alCambiar={recargar} /> : null}
       {paso === 4 ? <PasoAntecedentes perfil={perfil} /> : null}
       {paso === 5 ? <PasoResumen datos={datos} perfil={perfil} irA={setPaso} alEnviar={recargar} /> : null}
+      {/* Navegación secundaria: la acción principal de cada paso es la suya (guardar, cargar, enviar). */}
       <div className="botones botones--fila">
         <button type="button" className="boton boton--claro" disabled={paso === 0} onClick={() => setPaso((p) => Math.max(0, p - 1))}>
           <Icono nombre="izquierda" /> Atrás
         </button>
-        <button type="button" className="boton" disabled={paso === 5} onClick={() => setPaso((p) => Math.min(5, p + 1))}>
+        <button type="button" className="boton boton--claro" disabled={paso === 5} onClick={() => setPaso((p) => Math.min(5, p + 1))}>
           Siguiente <Icono nombre="derecha" />
         </button>
       </div>
@@ -357,7 +358,7 @@ function EstadoRevision({ perfil, datos }: { perfil: PerfilEspecialista; datos: 
   const info = ALTA[perfil.estadoAlta];
   const pasos: Array<{ texto: string; hecho: boolean }> = [
     { texto: 'Enviaste tu alta', hecho: true },
-    { texto: 'Operations revisa tus documentos', hecho: ['en_revision', 'habilitada', 'rechazada'].includes(perfil.estadoAlta) && perfil.documentos.dni !== 'cargado' },
+    { texto: 'Operations verifica tus documentos', hecho: (['dni', 'cuitCuil', 'fotoCara'] as const).every((k) => perfil.documentos[k] === 'verificado') },
     { texto: 'Verificación presencial de antecedentes', hecho: perfil.antecedentes === 'aprobada' },
     { texto: 'Alta habilitada', hecho: perfil.estadoAlta === 'habilitada' },
   ];
@@ -391,10 +392,9 @@ function EstadoRevision({ perfil, datos }: { perfil: PerfilEspecialista; datos: 
           <h2>Próximos pasos</h2>
           <ol className="linea-tiempo">
             {pasos.map((p) => (
-              <li key={p.texto}>
-                <span className={p.hecho ? '' : 'texto-suave'}>
-                  {p.hecho ? <Icono nombre="check" className="icono icono--chico" /> : null} {p.texto}
-                </span>
+              <li key={p.texto} className={p.hecho ? 'linea-tiempo__hecho' : 'linea-tiempo__pendiente'}>
+                {p.texto}
+                <span className="visualmente-oculto">{p.hecho ? ' (hecho)' : ' (pendiente)'}</span>
               </li>
             ))}
           </ol>

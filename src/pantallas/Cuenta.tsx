@@ -95,8 +95,8 @@ export function Cuenta() {
       <Seccion titulo="Políticas">
         <Tarjeta>
           <dl>
-            <Dato etiqueta="Términos aceptados" valor={TERMINOS_VERSION} />
-            <Dato etiqueta="Aviso de privacidad" valor={PRIVACIDAD_VERSION} />
+            <Dato etiqueta="Términos aceptados" valor={<span className="codigo">{TERMINOS_VERSION}</span>} />
+            <Dato etiqueta="Aviso de privacidad" valor={<span className="codigo">{PRIVACIDAD_VERSION}</span>} />
           </dl>
           <p className="texto-suave texto-chico">Textos provisorios, pendientes de aprobación de Legal.</p>
         </Tarjeta>

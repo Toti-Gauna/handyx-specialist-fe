@@ -10,13 +10,12 @@ import { FormPropuesta } from '../components/FormPropuesta.tsx';
 import { Icono } from '../components/Icono.tsx';
 import { TarjetaPropuesta } from '../components/TarjetaPropuesta.tsx';
 import { Volver } from '../components/Volver.tsx';
-import { Aviso, ChipTexto, Seccion, Tarjeta } from '../components/ui.tsx';
+import { Aviso, ChipTipo, Seccion, Tarjeta } from '../components/ui.tsx';
 import type { Propuesta } from '../contracts/dto.ts';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
 import { useCarga } from '../hooks/useCarga.ts';
 import { useIdDeUrl } from '../hooks/useIdDeUrl.ts';
-import { TIPO_PEDIDO } from '../lib/etiquetas.ts';
 import { fechaHora } from '../lib/formato.ts';
 import { tarifaTexto } from '../lib/tarifa.ts';
 
@@ -46,6 +45,8 @@ export function PedidoDetalle() {
   const abierto = pedido.estado === 'buscando';
   const pendienteMia = pedido.propuestas.some((p) => p.autorRol === 'especialista' && p.estado === 'pendiente' && Date.parse(p.venceEn) > api.ahora().getTime());
   const urgente = pedido.tipo === 'urgente';
+  const ahoraMs = api.ahora().getTime();
+  const delUsuarioVigente = pedido.propuestas.some((p) => p.autorRol === 'usuario' && p.estado === 'pendiente' && Date.parse(p.venceEn) > ahoraMs);
   const tarifa = tarifaTexto(fee.politica, api.ahora());
 
   async function abrirChat() {
@@ -57,23 +58,19 @@ export function PedidoDetalle() {
     <div className="pila">
       <Volver a={RUTAS.pedidos.ruta} texto="Pedidos" />
       {c.fallo ? <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} /> : null}
-      <Tarjeta tono={urgente ? 'noche' : undefined}>
-        <div className="fila-flex">
-          <ChipTexto tono={urgente ? 'aviso' : 'azul'} icono={urgente ? 'rayo' : 'calendario'}>
-            {TIPO_PEDIDO[pedido.tipo]}
-          </ChipTexto>
+      <Tarjeta className={urgente ? 'pedido--urgente' : ''}>
+        <div className="fila-flex fila-flex--entre">
+          <ChipTipo tipo={pedido.tipo} />
+          <span className="texto-suave texto-chico">Publicado {fechaHora(pedido.creadoEn)}</span>
         </div>
-        <h1 className="titulo" style={urgente ? { color: '#fff' } : undefined}>
-          {NOMBRE_RUBRO[pedido.rubro]}
-        </h1>
+        <h1 className="titulo">{NOMBRE_RUBRO[pedido.rubro]}</h1>
         <p>{pedido.descripcion}</p>
         <dl>
           <div className="dato"><dt>Zona</dt><dd>{pedido.zonaAproximada}</dd></div>
           {pedido.fechaSolicitada ? <div className="dato"><dt>Fecha pedida</dt><dd>{fechaHora(pedido.fechaSolicitada)}</dd></div> : null}
-          <div className="dato"><dt>Publicado</dt><dd>{fechaHora(pedido.creadoEn)}</dd></div>
         </dl>
-        {abierto && pedido.ventanaHasta ? <CuentaRegresiva hasta={pedido.ventanaHasta} etiqueta={urgente ? 'La búsqueda termina en' : 'Búsqueda abierta'} alVencer={() => void c.recargar()} /> : null}
-        {tarifa ? <p className="texto-chico">{tarifa}</p> : null}
+        {abierto && pedido.ventanaHasta ? <CuentaRegresiva hasta={pedido.ventanaHasta} texto="La búsqueda cierra en" terminado="La búsqueda terminó" alVencer={() => void c.recargar()} /> : null}
+        {tarifa ? <p className="texto-suave texto-chico">{tarifa}</p> : null}
       </Tarjeta>
 
       <Aviso tono="neutro" icono="candado">
@@ -104,12 +101,13 @@ export function PedidoDetalle() {
             ))}
           </ul>
         )}
-        {abierto && !pendienteMia ? (
+        {abierto && !pendienteMia && !delUsuarioVigente ? (
           <button type="button" className="boton boton--bloque" onClick={() => setForm({ abierta: true, base: null })}>
             <Icono nombre="enviar" /> Enviar una propuesta
           </button>
         ) : null}
         {pendienteMia ? <p className="texto-suave texto-chico">Tenés una propuesta esperando respuesta. Para cambiarla, retirala o esperá la contraoferta del usuario.</p> : null}
+        {delUsuarioVigente && !pendienteMia ? <p className="texto-suave texto-chico">Si no te sirve la propuesta del usuario, contraofertá con tu precio y horario.</p> : null}
       </Seccion>
 
       <Seccion titulo="Chat">

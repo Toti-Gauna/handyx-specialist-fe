@@ -1,7 +1,6 @@
 'use client';
 import { avisoFee, type AvisoFee, type PoliticaFee } from '../contracts/fee.ts';
 import { useAhora } from '../hooks/useAhora.ts';
-import { Icono } from './Icono.tsx';
 
 const FIN = '10/12/2026';
 const INICIO = '10/11/2026';
@@ -42,16 +41,16 @@ export function ContadorFee({ politica }: { politica: PoliticaFee }) {
   const ahora = useAhora(60_000);
   const a = avisoFee(ahora, politica);
   const numero = a.fase === 'antes' ? a.diasParaEmpezar : a.fase === 'vigente' ? a.diasRestantes : 0;
-  const rotulo = a.fase === 'antes' ? 'días para que empiece' : a.fase === 'vigente' ? (a.ultimoDia ? 'es el último día' : numero === 1 ? 'día restante' : 'días restantes') : 'la demo terminó';
+  const rotulo = a.fase === 'antes' ? (numero === 1 ? 'día para que empiece' : 'días para que empiece') : numero === 1 ? 'día restante' : 'días restantes';
   return (
     <div className="tarjeta tarjeta--noche">
-      <p className="tarjeta__titulo">
-        <Icono nombre="etiqueta" /> Tarifa de Handy: 0 % hasta el {FIN}
-      </p>
-      <div className="fila-flex">
-        {a.fase !== 'terminada' ? <span className="monto" style={{ color: '#fff', fontSize: '2.4rem' }}>{numero}</span> : null}
-        <span>{rotulo}</span>
-      </div>
+      <p className="sobre">Tarifa de Handy durante la demo</p>
+      {a.fase === 'antes' || (a.fase === 'vigente' && !a.ultimoDia) ? (
+        <p className="contador">
+          <span className="contador__numero">{numero}</span>
+          <span>{rotulo}</span>
+        </p>
+      ) : null}
       <TextoFee politica={politica} />
     </div>
   );

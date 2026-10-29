@@ -54,6 +54,7 @@ export function Pedidos() {
         </button>
       </div>
       <p className="texto-suave">Por orden de llegada. No tenés obligación de aceptar ninguno: abrilo para ver el detalle y decidir.</p>
+      {tarifa ? <p className="texto-suave texto-chico">{tarifa}</p> : null}
       {c.fallo ? <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} /> : null}
       {!disp.urgentesAhora ? (
         <Aviso tono="neutro" icono="rayo" titulo="Tenés los pedidos urgentes apagados">
@@ -80,7 +81,7 @@ export function Pedidos() {
         <ul className="lista-tarjetas">
           {lista.map((p) => (
             <li key={p.id}>
-              <TarjetaPedido pedido={p} tarifaHandy={tarifa} />
+              <TarjetaPedido pedido={p} />
             </li>
           ))}
         </ul>

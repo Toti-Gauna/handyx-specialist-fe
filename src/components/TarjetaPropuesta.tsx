@@ -63,16 +63,18 @@ export function TarjetaPropuesta({ propuesta: p, puedeActuar, alCambiar, alContr
   return (
     <div className={`propuesta${propia ? ' propuesta--propia' : ''}${!vigente && p.estado !== 'aceptada' ? ' propuesta--cerrada' : ''}`}>
       <div className="fila-flex fila-flex--entre">
-        <strong>{propia ? 'Tu propuesta' : 'Propuesta del usuario'}</strong>
+        <p className="sobre">{propia ? 'Tu propuesta' : 'Propuesta del usuario'}</p>
         <Chip e={etiqueta} />
       </div>
       <p className="monto">{pesos(p.monto)}</p>
-      <p>{p.alcance}</p>
-      <p className="texto-suave">
-        <Icono nombre="calendario" className="icono icono--chico" /> {fechaHora(p.horario.inicio)}
-        {p.horario.fin ? ` a ${hora(p.horario.fin)}` : ''}
-      </p>
-      {p.estado === 'pendiente' ? <CuentaRegresiva hasta={p.venceEn} etiqueta="Vigencia" alVencer={alCambiar} /> : null}
+      <div className="propuesta__datos">
+        <span>
+          <Icono nombre="calendario" className="icono icono--chico" /> {fechaHora(p.horario.inicio)}
+          {p.horario.fin ? ` a ${hora(p.horario.fin)}` : ''}
+        </span>
+        <span>{p.alcance}</span>
+      </div>
+      {p.estado === 'pendiente' ? <CuentaRegresiva hasta={p.venceEn} texto="Vence en" terminado="La propuesta venció" alVencer={alCambiar} /> : null}
       {p.reemplazaA ? <p className="texto-suave texto-chico">Reemplaza a una propuesta anterior.</p> : null}
 
       {vigente && puedeActuar && !propia ? (

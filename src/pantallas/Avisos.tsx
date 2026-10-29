@@ -5,7 +5,7 @@ import { RUTAS } from '../app/rutas.ts';
 import { Cargando, ErrorCaja, Vacio } from '../components/Estados.tsx';
 import { Icono, type NombreIcono } from '../components/Icono.tsx';
 import { Volver } from '../components/Volver.tsx';
-import { Aviso as Callout, ChipTexto } from '../components/ui.tsx';
+import { Aviso as Callout, ChipTexto, ChipTipo } from '../components/ui.tsx';
 import type { Aviso } from '../contracts/dto.ts';
 import { useAhora } from '../hooks/useAhora.ts';
 import { useCarga } from '../hooks/useCarga.ts';
@@ -63,8 +63,8 @@ export function Avisos() {
                 <div className="fila-flex fila-flex--entre">
                   <span className="fila-flex">
                     <Icono nombre={ICONO[a.tipo]} />
-                    {a.tipo === 'pedido_urgente' ? <ChipTexto tono="noche" icono="rayo">Urgente</ChipTexto> : null}
-                    {a.tipo === 'pedido_programado' ? <ChipTexto tono="azul" icono="calendario">Programado</ChipTexto> : null}
+                    {a.tipo === 'pedido_urgente' ? <ChipTipo tipo="urgente" /> : null}
+                    {a.tipo === 'pedido_programado' ? <ChipTipo tipo="programado" /> : null}
                     {!a.leido ? <ChipTexto tono="azul">Sin leer</ChipTexto> : null}
                   </span>
                   <span className="texto-suave texto-chico">{haceCuanto(a.creadoEn, ahora)}</span>

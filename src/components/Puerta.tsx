@@ -44,7 +44,7 @@ export function Puerta() {
           ? 'No pudimos conectarnos. Revisá tu conexión.'
           : 'No pudimos cargar tu cuenta.'}
       </p>
-      {fallo.requestId ? <p className="caja-error__ref">Referencia: {fallo.requestId}</p> : null}
+      {fallo.requestId ? <p className="texto-suave texto-chico">Referencia: {fallo.requestId}</p> : null}
       <button type="button" className="boton" onClick={() => void decidir()}>
         <Icono nombre="reintentar" /> Reintentar
       </button>

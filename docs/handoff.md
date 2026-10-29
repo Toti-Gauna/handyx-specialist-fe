@@ -1,19 +1,45 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` · Bloque 4 · **Fase 2 cerrada localmente (lotes 2.1–2.5)**; fase 1 más abajo.
-Modelos: fase 1 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1, abierto) · Bloque 4 · **Fase 3 en curso: lote 3.1 cerrado localmente.**
+Modelos: fase 1 y lote 3.1 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
 
-Estado: **mockup navegable completo con datos de prueba.** Todas las pantallas del mapa existen y se recorren sin backend. El
-adaptador HTTP cumple el mismo puerto y está probado con `fetch` simulado, pero **no hay API real**: nada está conectado ni desplegado.
+Estado: mockup navegable completo con datos de prueba y sistema visual refinado. **Nada conectado ni desplegado.**
 
-| Ítem | Decidido | Mock | Conectado | Probado | Desplegado |
-|---|---|---|---|---|---|
-| Contrato compartido v0.2.0 + OpenAPI (42 rutas) | ✔ | — | — | ✔ (unitarias + enums contra el YAML) | — |
-| Pantallas de alta, inicio, pedidos, propuestas, chat, trabajos, agenda, caja, soporte y cuenta | ✔ | ✔ | ✘ | ✔ (11 recorridos E2E) | — |
-| Reglas de servidor emuladas (elegibilidad, transiciones, idempotencia, vencimientos) | ✔ | ✔ | ✘ | ✔ (24 pruebas del mock) | — |
-| Cliente HTTP | ✔ | — | ✘ (no hay API) | ✔ (`fetch` simulado) | — |
-| Panel de prueba (escenarios, fallas, reloj, otras partes) | ✔ | ✔ | — | ✔ | — |
-| Producción sin fixtures ni panel | ✔ | — | — | ✔ (`verificar-bundle`) | — |
+## Fase 3 · Lote 3.1 (sistema visual y jerarquía de acción)
+
+- `globals.css` reescrito sobre la capa de tokens `--hd-*` de la demo de la landing: tarjetas blancas con sombra suave, chips en tinte,
+  montos con cifras tabulares, escala de espacios y tipografía únicas, texto legible sobre fondos oscuros, sin estilos inline.
+- **Tipo vs estado**: `ChipTipo` (urgente oscuro, programado y obra neutros) separado de los chips de estado; ningún estado usa `noche`.
+- **Jerarquía**: tarjeta de pedido tipo → rubro → zona y fecha → descripción → búsqueda; propuesta con rótulo, monto, horario,
+  alcance y vencimiento; una acción primaria por pantalla; en el alta "Atrás/Siguiente" pasan a secundarios.
+- **Decisiones**: con una propuesta del usuario vigente se esconde "Enviar una propuesta" (queda contraofertar); aceptar verde,
+  rechazar en contorno rojo, siempre con confirmación.
+- **Urgencia sin presión**: tiempos en texto neutro ("La búsqueda cierra en…", "Vence en…", "hasta las 21:00"); vencer se muestra en gris.
+  La tarifa de Handy aparece una vez por pantalla, no en cada tarjeta.
+- **Corregido**: "Operations verifica tus documentos" figuraba hecho con documentos en revisión; plurales ("1 propuesta espera"); texto
+  ilegible en el contador del fee; progreso del alta que se cortaba (ahora "Paso N de 6 · …" con barra segmentada).
+- Nuevo `e2e/capturas.cjs`: 28 capturas por pantalla y escenario, con control de desborde horizontal (`ANCHOS=` para otros tamaños).
+- Documento: `docs/diseno.md` (tokens, tipo vs estado, jerarquía de acción, urgencia sin dark patterns, claims).
+
+### Comandos del lote 3.1 (29/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 61 pruebas: 59 OK, 2 omitidas (sincronías con otros repos) |
+| `npm run build` | OK, 22 páginas |
+| `node e2e/flujos.cjs` | 11/11 recorridos OK |
+| `node e2e/capturas.cjs` (390×844) | 28/28 capturas, sin desborde horizontal |
+
+### Próximo paso
+
+Lote 3.2 (responsive y accesibilidad):
+
+- `ANCHOS=360x740,390x844,768x1024,820x1180,1280x800 node e2e/capturas.cjs`.
+- Foco y teclado, labels y contraste medido.
+- Áreas táctiles y estados que no dependan del color.
+
+---
 
 ## Fase 2 · qué se hizo
 

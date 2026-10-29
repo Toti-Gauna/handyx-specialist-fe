@@ -10,12 +10,12 @@ import { Hoja } from '../components/Hoja.tsx';
 import { Icono } from '../components/Icono.tsx';
 import { TarjetaPropuesta } from '../components/TarjetaPropuesta.tsx';
 import { Volver } from '../components/Volver.tsx';
-import { Aviso, Chip, ChipTexto, Dato, Seccion, Tarjeta } from '../components/ui.tsx';
+import { Aviso, Chip, ChipTipo, Dato, Seccion, Tarjeta } from '../components/ui.tsx';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
 import { useCarga } from '../hooks/useCarga.ts';
 import { useIdDeUrl } from '../hooks/useIdDeUrl.ts';
-import { TIPO_PEDIDO, TRABAJO } from '../lib/etiquetas.ts';
+import { TRABAJO } from '../lib/etiquetas.ts';
 import { fechaHora, hora, pesos } from '../lib/formato.ts';
 
 const ACTIVO = ['agendado', 'en_camino', 'en_sitio', 'en_curso'];
@@ -55,13 +55,15 @@ export function TrabajoDetalle() {
       {c.fallo ? <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} /> : null}
       <Tarjeta tono="gris">
         <div className="fila-flex fila-flex--entre">
-          <ChipTexto tono="azul" icono={t.tipo === 'urgente' ? 'rayo' : 'calendario'}>{TIPO_PEDIDO[t.tipo]}</ChipTexto>
+          <ChipTipo tipo={t.tipo} />
           <Chip e={TRABAJO[t.estado]} />
         </div>
         <h1 className="titulo">{NOMBRE_RUBRO[t.rubro]}</h1>
         <p className="monto">{pesos(t.acuerdo.monto)}</p>
         <p>
-          {contraparte} · {fechaHora(t.acuerdo.horario.inicio)}
+          <strong>{contraparte}</strong>
+          <br />
+          <Icono nombre="calendario" className="icono icono--chico" /> {fechaHora(t.acuerdo.horario.inicio)}
           {t.acuerdo.horario.fin ? ` a ${hora(t.acuerdo.horario.fin)}` : ''}
         </p>
         {t.direccion ? (
@@ -104,7 +106,7 @@ export function TrabajoDetalle() {
               <li key={e.nombre} className="tarjeta">
                 <div className="fila-flex fila-flex--entre">
                   <span className="tarjeta__titulo">{e.nombre}</span>
-                  <Chip e={e.estado === 'terminada' ? { texto: 'Terminada', tono: 'exito', icono: 'checkCirculo' } : e.estado === 'en_curso' ? { texto: 'En curso', tono: 'noche', icono: 'maletin' } : { texto: 'Pendiente', tono: 'neutro', icono: 'reloj' }} />
+                  <Chip e={e.estado === 'terminada' ? { texto: 'Terminada', tono: 'exito', icono: 'checkCirculo' } : e.estado === 'en_curso' ? { texto: 'En curso', tono: 'azul', icono: 'maletin' } : { texto: 'Pendiente', tono: 'neutro', icono: 'reloj' }} />
                 </div>
                 <p className="monto monto--chico">{pesos(e.monto)}</p>
               </li>

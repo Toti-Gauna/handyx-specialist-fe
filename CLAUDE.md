@@ -49,6 +49,8 @@ Español rioplatense con voseo; montos `$ 45.000`; "verificados" sí, "matricula
 ni "al instante". Tokens de `src/brand/tokens.ts` = copia byte a byte de la landing
 (`HANDY_LANDING_TOKENS=<ruta> npm test` lo verifica). Lenguaje visual de la demo de la landing (`demo-app.css`):
 mosaicos grises, botones con base que se hunde, Archivo 900 ensanchado + DM Sans, sin gradientes ni vidrio.
+Reglas de forma (tokens `--hd-*`, `ChipTipo` vs chips de estado, una acción primaria, aceptar verde / rechazar en contorno
+rojo, urgencia en texto neutro, sin estilos inline): `docs/diseno.md`. Capturas: `node e2e/capturas.cjs [carpeta]`.
 
 ## Comandos
 

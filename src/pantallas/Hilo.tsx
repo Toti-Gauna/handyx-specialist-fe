@@ -133,7 +133,7 @@ export function Hilo() {
               </>
             )}
             <textarea aria-label="Escribí un mensaje" rows={1} value={texto} maxLength={2000} placeholder="Escribí un mensaje" onChange={(e) => setTexto(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); mandarTexto(); } }} />
-            <button type="button" className="boton-icono" style={{ background: 'var(--color-azul)', color: '#fff' }} aria-label="Enviar mensaje" disabled={!texto.trim()} onClick={mandarTexto}>
+            <button type="button" className="boton-icono boton-icono--primario" aria-label="Enviar mensaje" disabled={!texto.trim()} onClick={mandarTexto}>
               <Icono nombre="enviar" />
             </button>
           </div>

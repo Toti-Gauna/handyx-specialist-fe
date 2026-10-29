@@ -1,5 +1,6 @@
 // Textos de cada estado del contrato, en español rioplatense. Cada estado dice QUÉ pasa y, cuando aplica, qué sigue.
 // El tono es solo apoyo visual: el significado siempre está en el texto y en el ícono.
+// El tono `noche` queda reservado al TIPO urgente (ChipTipo): ningún estado lo usa, para no confundir tipo con estado.
 import type { EstadoAlta, EstadoDocumento, EstadoPago, EstadoPresencial, EstadoPropuesta, EstadoSoporte, EstadoTrabajo } from '../contracts/maquinas.ts';
 import type { NombreIcono } from '../components/Icono.tsx';
 
@@ -59,7 +60,7 @@ export const TRABAJO: Record<EstadoTrabajo, Etiqueta> = {
   agendado: { texto: 'Agendado', tono: 'azul', icono: 'calendario' },
   en_camino: { texto: 'En camino', tono: 'azul', icono: 'pin' },
   en_sitio: { texto: 'En el lugar', tono: 'azul', icono: 'pin' },
-  en_curso: { texto: 'En curso', tono: 'noche', icono: 'maletin' },
+  en_curso: { texto: 'En curso', tono: 'azul', icono: 'maletin' },
   finalizado: { texto: 'Finalizado', tono: 'exito', icono: 'checkCirculo' },
   cancelado: { texto: 'Cancelado', tono: 'neutro', icono: 'cerrar' },
 };

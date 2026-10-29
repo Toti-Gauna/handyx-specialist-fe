@@ -147,16 +147,36 @@ export function Interruptor({ etiqueta, descripcion, activo, onCambio, deshabili
   );
 }
 
+/**
+ * Progreso de un flujo por pasos: "Paso 2 de 6 · Identidad" y una barra segmentada.
+ * El texto dice dónde estás (no depende del color) y no se corta en pantallas angostas.
+ */
 export function Pasos({ actual, pasos }: { actual: number; pasos: string[] }) {
   return (
-    <ol className="pasos" aria-label="Progreso del alta">
-      {pasos.map((p, i) => (
-        <li key={p} className={i === actual ? 'pasos__item pasos__item--actual' : i < actual ? 'pasos__item pasos__item--hecho' : 'pasos__item'} aria-current={i === actual ? 'step' : undefined}>
-          <span className="pasos__numero">{i < actual ? <Icono nombre="check" /> : i + 1}</span>
-          <span className="pasos__texto">{p}</span>
-        </li>
-      ))}
-    </ol>
+    <div className="progreso">
+      <p className="progreso__texto" aria-live="polite">
+        Paso {actual + 1} de {pasos.length} · {pasos[actual]}
+      </p>
+      <ol className="progreso__barra" aria-hidden="true">
+        {pasos.map((p, i) => (
+          <li key={p} className={`progreso__tramo${i < actual ? ' progreso__tramo--hecho' : i === actual ? ' progreso__tramo--actual' : ''}`} />
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+/**
+ * Tipo de pedido o trabajo. Va SIEMPRE en este chip (oscuro para urgente, neutro para el resto) para no
+ * confundirse con los chips de estado, que llevan color. La urgencia se ve sin colores de alarma.
+ */
+export function ChipTipo({ tipo }: { tipo: 'urgente' | 'programado' | 'obra' }) {
+  const icono: NombreIcono = tipo === 'urgente' ? 'rayo' : tipo === 'obra' ? 'ladrillos' : 'calendario';
+  return (
+    <span className={`chip ${tipo === 'urgente' ? 'chip--noche' : 'chip--neutro'}`}>
+      <Icono nombre={icono} />
+      {tipo === 'urgente' ? 'Urgente · Ahora' : tipo === 'obra' ? 'Obra' : 'Programado'}
+    </span>
   );
 }
 

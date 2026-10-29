@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { RUTAS } from '../app/rutas.ts';
 import { Cargando, ErrorCaja, Vacio } from '../components/Estados.tsx';
-import { Chip } from '../components/ui.tsx';
+import { Chip, ChipTexto, ChipTipo } from '../components/ui.tsx';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useCarga } from '../hooks/useCarga.ts';
-import { TIPO_PEDIDO, TRABAJO } from '../lib/etiquetas.ts';
+import { TRABAJO } from '../lib/etiquetas.ts';
 import { fechaHora, pesos } from '../lib/formato.ts';
 
 export function Trabajos() {
@@ -39,12 +39,15 @@ export function Trabajos() {
             <li key={t.id}>
               <Link className="tarjeta" href={`${RUTAS.trabajo.ruta}?id=${t.id}`}>
                 <div className="fila-flex fila-flex--entre">
-                  <span className="tarjeta__titulo">{NOMBRE_RUBRO[t.rubro]} · {contraparte}</span>
+                  <ChipTipo tipo={t.tipo} />
                   <Chip e={TRABAJO[t.estado]} />
                 </div>
-                <p>{fechaHora(t.acuerdo.horario.inicio)} · {TIPO_PEDIDO[t.tipo]}</p>
-                <p className="monto monto--chico">{pesos(t.acuerdo.monto)}</p>
-                {cambioPendiente ? <p className="chip chip--aviso">Hay un cambio esperando respuesta</p> : null}
+                <p className="pedido__titulo">{NOMBRE_RUBRO[t.rubro]} · {contraparte}</p>
+                <div className="fila-flex fila-flex--entre">
+                  <span className="texto-suave">{fechaHora(t.acuerdo.horario.inicio)}</span>
+                  <span className="monto monto--chico">{pesos(t.acuerdo.monto)}</span>
+                </div>
+                {cambioPendiente ? <ChipTexto tono="aviso" icono="reintentar">Hay un cambio esperando respuesta</ChipTexto> : null}
               </Link>
             </li>
           ))}

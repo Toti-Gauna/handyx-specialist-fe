@@ -53,7 +53,7 @@ export function CasoDetalle() {
       {k.trabajoId ? <Link href={`${RUTAS.trabajo.ruta}?id=${k.trabajoId}`}>Ver el trabajo relacionado</Link> : null}
       <ol className="chat" aria-label="Historial del caso">
         {k.eventos.map((e) => (
-          <li key={e.id} className={`burbuja${e.autor === 'vos' ? ' burbuja--propia' : ''}`} style={{ listStyle: 'none' }}>
+          <li key={e.id} className={`burbuja${e.autor === 'vos' ? ' burbuja--propia' : ''}`}>
             <strong>{e.autor === 'vos' ? 'Vos' : 'Handy'}</strong>
             <span>{e.texto}</span>
             {e.adjuntos > 0 ? <span className="burbuja__meta"><Icono nombre="imagen" className="icono icono--chico" /> {e.adjuntos} {e.adjuntos === 1 ? 'adjunto' : 'adjuntos'} (no se muestran acá)</span> : null}

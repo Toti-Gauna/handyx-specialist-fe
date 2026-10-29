@@ -107,7 +107,7 @@ export function Disponibilidad() {
           if (!f) return null;
           return (
             <div key={dia} className="tarjeta">
-              <div className="opcion" style={{ border: 0, padding: 0, background: 'none', minHeight: 44 }}>
+              <div className="opcion opcion--plana">
                 <input id={`dia-${dia}`} type="checkbox" checked={f.activo} onChange={(e) => setFranjas({ ...franjas, [dia]: { ...f, activo: e.target.checked } })} />
                 <label htmlFor={`dia-${dia}`}>{nombre}</label>
               </div>

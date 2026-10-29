@@ -8,11 +8,11 @@ import { usePerfil } from '../components/GuardiaApp.tsx';
 import { Icono } from '../components/Icono.tsx';
 import { ModalFee } from '../components/ModalFee.tsx';
 import { TarjetaPedido } from '../components/TarjetaPedido.tsx';
-import { Aviso, Chip, Seccion, Tarjeta } from '../components/ui.tsx';
+import { Aviso, Chip, ChipTipo, Seccion, Tarjeta } from '../components/ui.tsx';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useCarga } from '../hooks/useCarga.ts';
 import { ALTA, TRABAJO } from '../lib/etiquetas.ts';
-import { fechaHora, pesos } from '../lib/formato.ts';
+import { fechaHora, pesos, plural } from '../lib/formato.ts';
 import { tarifaTexto } from '../lib/tarifa.ts';
 
 export function Inicio() {
@@ -80,25 +80,30 @@ function PanelInicio() {
           <ul className="lista-tarjetas">
             {abiertos.map((p) => (
               <li key={p.id}>
-                <TarjetaPedido pedido={p} tarifaHandy={tarifa} />
+                <TarjetaPedido pedido={p} />
               </li>
             ))}
           </ul>
         )}
         <p className="texto-suave texto-chico">
-          {inicio.pedidosAbiertos} abiertos · {inicio.urgentesAbiertos} urgentes · {inicio.propuestasPendientes} propuestas esperando tu respuesta
+          {plural(inicio.pedidosAbiertos, 'pedido abierto', 'pedidos abiertos')} · {plural(inicio.urgentesAbiertos, 'urgente', 'urgentes')} ·{' '}
+          {plural(inicio.propuestasPendientes, 'propuesta espera', 'propuestas esperan')} tu respuesta
         </p>
+        {tarifa ? <p className="texto-suave texto-chico">{tarifa}</p> : null}
       </Seccion>
 
-      <Seccion titulo="Tu próximo trabajo" accion={<Link href={RUTAS.agenda.ruta}>Agenda</Link>}>
+      <Seccion titulo={inicio.proximoTrabajo && inicio.proximoTrabajo.estado !== 'agendado' ? 'Tu trabajo en curso' : 'Tu próximo trabajo'} accion={<Link href={RUTAS.agenda.ruta}>Agenda</Link>}>
         {inicio.proximoTrabajo ? (
           <Link className="tarjeta" href={`${RUTAS.trabajo.ruta}?id=${inicio.proximoTrabajo.id}`}>
             <div className="fila-flex fila-flex--entre">
-              <span className="tarjeta__titulo">{NOMBRE_RUBRO[inicio.proximoTrabajo.rubro]}</span>
+              <ChipTipo tipo={inicio.proximoTrabajo.tipo} />
               <Chip e={TRABAJO[inicio.proximoTrabajo.estado]} />
             </div>
-            <p>{fechaHora(inicio.proximoTrabajo.acuerdo.horario.inicio)}</p>
-            <p className="monto monto--chico">{pesos(inicio.proximoTrabajo.acuerdo.monto)}</p>
+            <p className="pedido__titulo">{NOMBRE_RUBRO[inicio.proximoTrabajo.rubro]}</p>
+            <div className="fila-flex fila-flex--entre">
+              <span className="texto-suave">{fechaHora(inicio.proximoTrabajo.acuerdo.horario.inicio)}</span>
+              <span className="monto monto--chico">{pesos(inicio.proximoTrabajo.acuerdo.monto)}</span>
+            </div>
           </Link>
         ) : (
           <Vacio icono="calendario" titulo="No tenés trabajos agendados" />
@@ -108,7 +113,7 @@ function PanelInicio() {
       <Seccion titulo="Lo cobrado este mes" accion={<Link href={RUTAS.caja.ruta}>Caja</Link>}>
         <Tarjeta tono="gris">
           <p className="monto">{pesos(inicio.cobradoMes)}</p>
-          <p className="texto-suave">{inicio.trabajosCobrados} {inicio.trabajosCobrados === 1 ? 'trabajo cobrado' : 'trabajos cobrados'} y verificados.</p>
+          <p className="texto-suave">{plural(inicio.trabajosCobrados, 'trabajo cobrado y verificado', 'trabajos cobrados y verificados')}.</p>
           <p className="texto-suave texto-chico">Es plata que te pagaron directamente a vos. Handy no guarda ni te transfiere dinero.</p>
         </Tarjeta>
       </Seccion>
@@ -117,7 +122,7 @@ function PanelInicio() {
         <Link className="tarjeta tarjeta--amarillo" href={RUTAS.notificaciones.ruta}>
           <span className="fila-flex fila-flex--entre">
             <strong>
-              <Icono nombre="campana" /> Tenés {inicio.avisosSinLeer} {inicio.avisosSinLeer === 1 ? 'aviso sin leer' : 'avisos sin leer'}
+              <Icono nombre="campana" className="icono icono--chico" /> Tenés {plural(inicio.avisosSinLeer, 'aviso sin leer', 'avisos sin leer')}
             </strong>
             <Icono nombre="derecha" />
           </span>

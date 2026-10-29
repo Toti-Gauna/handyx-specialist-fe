@@ -1,6 +1,6 @@
 # Plan · PWA Especialista de Handyx (Bloque 4)
 
-Estado: **fases 1 y 2 cerradas localmente (29/10/2026)**; fases 3–5 pendientes. Los checks solo se marcan con resultado observable.
+Estado: **fases 1 y 2 y lote 3.1 cerrados localmente (29/10/2026)**; lotes 3.2–3.3 y fases 4–5 pendientes. Los checks solo se marcan con resultado observable.
 Seguimiento de avance, comandos y bloqueos: `docs/handoff.md`.
 Cada entrega distingue: decidido · mock · conectado · probado · desplegado.
 
@@ -50,9 +50,10 @@ Fixtures sintéticos rotulados; el mock permite éxito, rechazo, expiración y c
 - Escenarios obligatorios (todos cubiertos, ver `docs/qa.md`): registro incompleto; documento faltante; rubro habilitado/no; verificación pendiente/corrección; antecedentes presenciales pendientes; disponible/revocado; urgente con opt-in apagado; propuesta vencida/rechazada; contrapropuesta; acuerdo; mensaje fallido; doble aceptación; programado/obra; efectivo reportado; MP pendiente/verificado/fallido; reclamo; baja; sesión expirada.
 
 ### Fase 3 · Refinación de diseño — Opus 5.5 / high
-- [ ] **3.1 Sistema visual y jerarquía de acción:** pedido/urgencia/vigencia/monto; enviar, aceptar y rechazar inequívocos; sin dark patterns.
+- [x] **3.1 Sistema visual y jerarquía de acción:** pedido/urgencia/vigencia/monto; enviar, aceptar y rechazar inequívocos; sin dark patterns.
 - [ ] **3.2 Responsive y accesibilidad:** 360/390/768/820/desktop, una mano, teclado, labels, foco, contraste, estados no solo por color.
 - [ ] **3.3 Motion y QA visual:** microinteracciones, `prefers-reduced-motion`, manifest/íconos/offline visual, capturas sanitizadas, catálogo de componentes. Sellos de habilitación solo con verificación del backend.
+- Evidencia del 3.1: `docs/diseno.md` y `e2e/capturas.cjs` (28 capturas a 390×844).
 
 ### Fase 4 · Backend y DB conectados — Opus 5.5 / high
 - [ ] **4.1 Modelo y migraciones:** ERD y diccionario (tipo, nulabilidad, sensibilidad, FK, índice, retención, dueño); importes en centavos ≥ 0; un acuerdo activo por pedido; login e idempotency keys únicos; sin cascadas que rompan retenciones.
