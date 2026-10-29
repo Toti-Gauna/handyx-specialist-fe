@@ -12,6 +12,10 @@ export interface Ruta {
 }
 
 export const RUTAS = {
+  puerta: { ruta: '/', titulo: 'Entrada', lote: '1.1', descripcion: 'Decide a dónde ir según la sesión y el estado del alta.' },
+  baja: { ruta: '/baja/', titulo: 'Baja de tu cuenta', lote: '2.1', descripcion: 'Estado real de la solicitud de baja.' },
+  disponibilidad: { ruta: '/disponibilidad/', titulo: 'Tu disponibilidad', lote: '2.2', descripcion: 'Urgentes Ahora, programados, franjas y zonas.' },
+  casoSoporte: { ruta: '/soporte/detalle/', titulo: 'Caso de ayuda', lote: '2.4', descripcion: 'Respuestas y estado de un caso.' },
   acceso: { ruta: '/acceso/', titulo: 'Entrar', lote: '2.1', descripcion: 'Ingreso con tu cuenta de especialista.' },
   registro: { ruta: '/registro/', titulo: 'Crear cuenta', lote: '2.1', descripcion: 'Cuenta, términos y privacidad versionados.' },
   recuperar: { ruta: '/recuperar/', titulo: 'Recuperar acceso', lote: '2.1', descripcion: 'Recuperación de contraseña.' },

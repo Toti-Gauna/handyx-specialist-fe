@@ -16,6 +16,8 @@ export interface OpcionesCliente {
 
 export interface OpcionesPedido {
   cuerpo?: unknown;
+  /** Carga de archivos (multipart): el navegador pone el Content-Type con su separador. */
+  formulario?: FormData;
   idempotencyKey?: string;
   /** Para GET de sesión: 401 devuelve null en vez de fallar. */
   nuloSi401?: boolean;
@@ -41,7 +43,7 @@ export class ClienteHttp {
 
   async pedir<S extends z.ZodType>(metodo: Metodo, ruta: string, esquema: S, o: OpcionesPedido = {}): Promise<z.infer<S>> {
     const headers: Record<string, string> = { Accept: 'application/json' };
-    if (o.cuerpo !== undefined) headers['Content-Type'] = 'application/json';
+    if (o.cuerpo !== undefined && o.formulario === undefined) headers['Content-Type'] = 'application/json';
     if (metodo !== 'GET') {
       if (this.#csrf) headers['X-CSRF-Token'] = this.#csrf;
       if (o.idempotencyKey) headers['Idempotency-Key'] = o.idempotencyKey;
@@ -54,7 +56,7 @@ export class ClienteHttp {
       r = await this.#fetch(`${this.#baseUrl}${ruta}`, {
         method: metodo,
         headers,
-        body: o.cuerpo === undefined ? undefined : JSON.stringify(o.cuerpo),
+        body: o.formulario ?? (o.cuerpo === undefined ? undefined : JSON.stringify(o.cuerpo)),
         credentials: 'include',
         cache: 'no-store',
         redirect: 'error',
@@ -72,11 +74,16 @@ export class ClienteHttp {
       const error = ErrorApiSchema.safeParse(cuerpo);
       throw new FalloApi(tipoPorStatus(r.status), r.status, error.success ? error.data.error : null);
     }
-    if (r.status === 204) return undefined as z.infer<S>;
-
-    const datos = await r.json().catch(() => {
+    // Sin cuerpo (204, o 202 de una respuesta neutra): el esquema decide si eso es válido.
+    const texto = await r.text().catch(() => {
       throw new FalloApi('contrato', r.status);
     });
+    let datos: unknown;
+    try {
+      datos = texto === '' ? undefined : JSON.parse(texto);
+    } catch {
+      throw new FalloApi('contrato', r.status);
+    }
     const ok = esquema.safeParse(datos);
     if (!ok.success) throw new FalloApi('contrato', r.status);
     return ok.data;

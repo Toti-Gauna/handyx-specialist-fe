@@ -4,6 +4,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { colores, variablesCss } from '../brand/tokens.ts';
+import { Proveedor } from './contexto.tsx';
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -34,7 +35,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <a className="saltar" href="#contenido">
           Ir al contenido
         </a>
-        {children}
+        <Proveedor>{children}</Proveedor>
       </body>
     </html>
   );

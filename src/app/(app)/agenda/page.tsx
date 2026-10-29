@@ -1,5 +1,5 @@
 import { PantallaPendiente } from '../../../components/PantallaPendiente.tsx';
 
-export default function Agenda() {
+export default function Pagina() {
   return <PantallaPendiente clave="agenda" />;
 }

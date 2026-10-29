@@ -486,7 +486,7 @@ components:
               type: string
               enum:
                 [validacion, no_autenticado, sin_permiso, no_encontrado, conflicto_version, propuesta_no_disponible,
-                 pedido_no_elegible, tipo_archivo_prohibido, limite, servicio_no_disponible, interno]
+                 transicion_invalida, pedido_no_elegible, tipo_archivo_prohibido, limite, servicio_no_disponible, interno]
             mensaje: { type: string }
             requestId: { type: string }
             campos:

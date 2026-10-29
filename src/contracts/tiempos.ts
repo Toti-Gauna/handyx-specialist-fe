@@ -31,3 +31,16 @@ export function fechaLocal(instante: Date): string {
 export function diasEntre(a: string, b: string): number {
   return Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86_400_000);
 }
+
+/** Vigencia de una propuesta de un pedido programado u obra. PENDIENTE: PROD-21 deja [H] horas sin valor. */
+export const VIGENCIA_PROPUESTA_PROGRAMADO_MS = 24 * 60 * MINUTO;
+
+/** Hora de Buenos Aires de un instante, "HH:MM" (America/Argentina/Buenos_Aires, UTC−3 sin horario de verano). */
+export function horaLocal(instante: Date): string {
+  return new Intl.DateTimeFormat('es-AR', {
+    timeZone: ZONA_HORARIA,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(instante);
+}

@@ -1,5 +1,5 @@
 import { PantallaPendiente } from '../../../components/PantallaPendiente.tsx';
 
-export default function Mensajes() {
+export default function Pagina() {
   return <PantallaPendiente clave="mensajes" />;
 }

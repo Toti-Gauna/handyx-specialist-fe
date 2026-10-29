@@ -34,6 +34,7 @@ export const CODIGOS_ERROR = [
   'no_encontrado', // también para recursos ajenos: no se revela si existen
   'conflicto_version',
   'propuesta_no_disponible', // vencida, reemplazada, retirada o ya respondida
+  'transicion_invalida', // el estado actual no permite la acción (alta en revisión, trabajo ya cerrado…)
   'pedido_no_elegible',
   'tipo_archivo_prohibido',
   'limite',
@@ -67,12 +68,18 @@ export const SesionSchema = z.strictObject({
 export type Sesion = z.infer<typeof SesionSchema>;
 
 // ── Perfil y alta ────────────────────────────────────────────────────────────────────────────────
-export const EstadoRubroSchema = z.enum(['habilitado', 'requiere_matricula', 'en_revision', 'no_habilitado']);
+/** `elegido`: lo marcó el especialista y todavía no se revisó. Solo `habilitado` recibe pedidos. */
+export const EstadoRubroSchema = z.enum(['elegido', 'habilitado', 'requiere_matricula', 'en_revision', 'no_habilitado']);
+
+/** Qué le falta al alta para poder enviarse a revisión (lo calcula el servidor). */
+export const FALTANTES_ENVIO = ['datos', 'dni', 'cuitCuil', 'fotoCara', 'rubros', 'matricula'] as const;
+export type FaltanteEnvio = (typeof FALTANTES_ENVIO)[number];
 
 export const PerfilEspecialistaSchema = z.strictObject({
   id: IdSchema,
-  nombre: z.string(),
-  apellido: z.string(),
+  email: z.string(),
+  nombre: z.string().nullable(),
+  apellido: z.string().nullable(),
   estadoAlta: z.enum(ESTADOS_ALTA),
   /** Motivo seguro para mostrar cuando `requiere_correccion` o `rechazada` (sin datos sensibles). */
   motivoRevision: z.string().nullable(),
@@ -89,6 +96,7 @@ export const PerfilEspecialistaSchema = z.strictObject({
       matricula: z.enum(ESTADOS_DOCUMENTO).nullable(),
     }),
   ),
+  faltantesEnvio: z.array(z.enum(FALTANTES_ENVIO)),
   baja: z.enum(ESTADOS_BAJA).nullable(),
   version: z.int().nonnegative(),
 });
@@ -208,6 +216,10 @@ export const MensajeSchema = z.strictObject({
 export const PagoSchema = z.strictObject({
   id: IdSchema,
   trabajoId: IdSchema,
+  descripcion: z.string(),
+  /** Tarifa de Handy sobre este pago (0 durante la demo) y lo que cobra el especialista. */
+  feeHandy: MontoSchema,
+  neto: MontoSchema,
   metodo: z.enum(['mercado_pago', 'efectivo']),
   monto: MontoSchema,
   estado: z.enum(ESTADOS_PAGO),
@@ -220,6 +232,7 @@ export const PagoSchema = z.strictObject({
 // ── Soporte ──────────────────────────────────────────────────────────────────────────────────────
 export const CasoSoporteSchema = z.strictObject({
   id: IdSchema,
+  asunto: z.string(),
   trabajoId: IdSchema.nullable(),
   pedidoId: IdSchema.nullable(),
   categoria: z.enum(['asistencia', 'reclamo', 'pago', 'cuenta']),
@@ -248,3 +261,245 @@ export const FeeVigenteSchema = z.strictObject({
   avisoAceptadoEn: InstanteSchema.nullable(),
 });
 export type FeeVigente = z.infer<typeof FeeVigenteSchema>;
+
+// ═══ Contrato 0.2.0: lo que necesitan las pantallas de la fase 2 ═════════════════════════════════
+
+// ── Alta: datos base (se guardan y se retoman; DNI y CUIT/CUIL nunca vuelven completos) ─────────
+// PENDIENTE: opciones de género según PROD-15 y base legal del dato (aviso aprobado) antes de producción.
+export const GENEROS = ['mujer', 'varon', 'otro', 'prefiero_no_decir'] as const;
+
+export const DatosAltaSchema = z.strictObject({
+  nombre: z.string().nullable(),
+  apellido: z.string().nullable(),
+  fechaNacimiento: z.iso.date().nullable(),
+  nacionalidad: z.string().nullable(),
+  genero: z.enum(GENEROS).nullable(),
+  ciudad: z.string().nullable(),
+  barrio: z.string().nullable(),
+  /** Últimos dígitos, para reconocer lo cargado sin exponerlo. */
+  dniUltimos: z.string().nullable(),
+  cuitCuilUltimos: z.string().nullable(),
+  version: z.int().nonnegative(),
+});
+export type DatosAlta = z.infer<typeof DatosAltaSchema>;
+
+export const GuardarDatosAltaSchema = z.strictObject({
+  nombre: z.string().trim().min(1).max(60).optional(),
+  apellido: z.string().trim().min(1).max(60).optional(),
+  fechaNacimiento: z.iso.date().optional(),
+  nacionalidad: z.string().trim().min(2).max(60).optional(),
+  genero: z.enum(GENEROS).optional(),
+  ciudad: z.string().trim().min(2).max(80).optional(),
+  barrio: z.string().trim().max(80).optional(),
+  dni: z.string().regex(/^\d{7,8}$/).optional(),
+  cuitCuil: z.string().regex(/^\d{11}$/).optional(),
+  version: z.int().nonnegative(),
+});
+export type GuardarDatosAlta = z.infer<typeof GuardarDatosAltaSchema>;
+
+export const TIPOS_DOCUMENTO = ['dni', 'cuit_cuil', 'foto_cara', 'matricula'] as const;
+export type TipoDocumento = (typeof TIPOS_DOCUMENTO)[number];
+
+/** Cómo te ve el usuario del hogar (nunca documentos ni datos del staff). */
+export const PerfilPublicoSchema = z.strictObject({
+  nombrePublico: z.string().nullable(),
+  rubrosHabilitados: z.array(z.enum(RUBROS)),
+  /** Sello de verificación: solo `true` si el backend verificó el alta completa. */
+  verificado: z.boolean(),
+});
+export type PerfilPublico = z.infer<typeof PerfilPublicoSchema>;
+
+// ── Cuenta ───────────────────────────────────────────────────────────────────────────────────────
+export const PreferenciasSchema = z.strictObject({
+  avisosUrgentes: z.boolean(),
+  avisosProgramados: z.boolean(),
+  avisosMensajes: z.boolean(),
+  avisosPagos: z.boolean(),
+  /** Avisos del dispositivo: opt-in contextual, la entrega no está garantizada (sobre todo en iOS web). */
+  push: z.enum(['sin_pedir', 'activado', 'rechazado', 'no_disponible']),
+});
+export type Preferencias = z.infer<typeof PreferenciasSchema>;
+
+export const BajaSchema = z.strictObject({
+  estado: z.enum(ESTADOS_BAJA),
+  solicitadaEn: InstanteSchema,
+  /** Texto honesto del estado real (qué se borró, qué se retiene por obligación legal y hasta cuándo). */
+  mensaje: z.string(),
+});
+export type Baja = z.infer<typeof BajaSchema>;
+
+// ── Avisos dentro de la app (consultables aunque el push no llegue) ──────────────────────────────
+export const TIPOS_AVISO = [
+  'pedido_urgente',
+  'pedido_programado',
+  'propuesta',
+  'mensaje',
+  'trabajo',
+  'pago',
+  'soporte',
+  'cuenta',
+] as const;
+
+export const AvisoSchema = z.strictObject({
+  id: IdSchema,
+  tipo: z.enum(TIPOS_AVISO),
+  titulo: z.string(),
+  /** Sin datos personales: el detalle se abre dentro de la app. */
+  cuerpo: z.string(),
+  creadoEn: InstanteSchema,
+  leido: z.boolean(),
+  destino: z.strictObject({
+    ruta: z.enum(['pedido', 'trabajo', 'hilo', 'caja', 'soporte', 'cuenta', 'alta']),
+    id: IdSchema.nullable(),
+  }),
+});
+export type Aviso = z.infer<typeof AvisoSchema>;
+
+// ── Inicio ───────────────────────────────────────────────────────────────────────────────────────
+// Nunca tasa de aceptación, tiempos de respuesta ni puntualidad (PROD-06 §3).
+export const InicioSchema = z.strictObject({
+  estadoAlta: z.enum(ESTADOS_ALTA),
+  urgentesAhora: z.boolean(),
+  pedidosAbiertos: z.int().nonnegative(),
+  urgentesAbiertos: z.int().nonnegative(),
+  propuestasPendientes: z.int().nonnegative(),
+  avisosSinLeer: z.int().nonnegative(),
+  proximoTrabajo: TrabajoSchema.nullable(),
+  cobradoMes: MontoSchema,
+  trabajosCobrados: z.int().nonnegative(),
+});
+export type Inicio = z.infer<typeof InicioSchema>;
+
+// ── Detalle de pedido (con el hilo de propuestas) ────────────────────────────────────────────────
+export const PedidoDetalleSchema = PedidoElegibleSchema.extend({
+  /** Chat disponible desde la primera cotización, antes de contratar. */
+  conversacionId: IdSchema.nullable(),
+  propuestas: z.array(PropuestaSchema),
+});
+export type PedidoDetalle = z.infer<typeof PedidoDetalleSchema>;
+
+// ── Trabajo: detalle, historial y obra por etapas ────────────────────────────────────────────────
+export const EtapaObraSchema = z.strictObject({
+  nombre: z.string(),
+  monto: MontoSchema,
+  estado: z.enum(['pendiente', 'en_curso', 'terminada']),
+});
+
+export const TrabajoDetalleSchema = z.strictObject({
+  trabajo: TrabajoSchema,
+  contraparte: z.string(),
+  eventos: z.array(
+    z.strictObject({
+      estado: z.enum(ESTADOS_TRABAJO),
+      en: InstanteSchema,
+      actor: z.enum(['especialista', 'usuario', 'operations', 'sistema']),
+    }),
+  ),
+  etapas: z.array(EtapaObraSchema),
+  /** Propuesta de cambio (fecha/monto/alcance) pendiente: el acuerdo vigente no cambia hasta que se acepte. */
+  cambioPendiente: PropuestaSchema.nullable(),
+  pagoId: IdSchema.nullable(),
+});
+export type TrabajoDetalle = z.infer<typeof TrabajoDetalleSchema>;
+
+export const NuevoCambioSchema = z.strictObject({
+  horario: z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() }),
+  alcance: z.string().trim().min(1).max(2000),
+  monto: MontoSchema.nullable(),
+});
+export type NuevoCambio = z.infer<typeof NuevoCambioSchema>;
+
+// ── Agenda ───────────────────────────────────────────────────────────────────────────────────────
+export const AgendaItemSchema = z.strictObject({
+  id: IdSchema,
+  trabajoId: IdSchema.nullable(),
+  titulo: z.string(),
+  inicio: InstanteSchema,
+  fin: InstanteSchema.nullable(),
+  estado: z.enum(['confirmado', 'cambio_pendiente', 'oferta_pendiente']),
+  /** Una oferta (propuesta enviada o recibida) que se superpone con un trabajo confirmado. */
+  superpuesto: z.boolean(),
+});
+export type AgendaItem = z.infer<typeof AgendaItemSchema>;
+
+// ── Mensajes ─────────────────────────────────────────────────────────────────────────────────────
+export const ConversacionSchema = z.strictObject({
+  id: IdSchema,
+  pedidoId: IdSchema,
+  trabajoId: IdSchema.nullable(),
+  contraparte: z.string(),
+  etapa: z.enum(['cotizando', 'trabajo', 'cerrada']),
+  ultimoMensaje: z.string().nullable(),
+  noLeidos: z.int().nonnegative(),
+  actualizadoEn: InstanteSchema,
+});
+export type Conversacion = z.infer<typeof ConversacionSchema>;
+
+export const EnviarMensajeSchema = z.strictObject({
+  tipo: z.enum(['texto', 'foto']),
+  texto: z.string().trim().max(2000).nullable(),
+});
+export type EnviarMensaje = z.infer<typeof EnviarMensajeSchema>;
+
+// ── Caja ─────────────────────────────────────────────────────────────────────────────────────────
+// Los pagos van directo del usuario al especialista. No hay saldo "de Handy" ni retiros.
+export const CajaResumenSchema = z.strictObject({
+  pendiente: MontoSchema,
+  reportado: MontoSchema,
+  verificado: MontoSchema,
+  feeHandyPeriodo: MontoSchema,
+});
+export type CajaResumen = z.infer<typeof CajaResumenSchema>;
+
+// ── Soporte ──────────────────────────────────────────────────────────────────────────────────────
+export const CasoSoporteDetalleSchema = CasoSoporteSchema.extend({
+  detalle: z.string(),
+  eventos: z.array(
+    z.strictObject({
+      id: IdSchema,
+      autor: z.enum(['vos', 'handy']),
+      texto: z.string(),
+      adjuntos: z.int().nonnegative(),
+      creadoEn: InstanteSchema,
+    }),
+  ),
+});
+export type CasoSoporteDetalle = z.infer<typeof CasoSoporteDetalleSchema>;
+
+export const NuevoCasoSchema = z.strictObject({
+  categoria: z.enum(['asistencia', 'reclamo', 'pago', 'cuenta']),
+  trabajoId: IdSchema.nullable(),
+  pedidoId: IdSchema.nullable(),
+  asunto: z.string().trim().min(3).max(120),
+  detalle: z.string().trim().min(1).max(4000),
+  adjuntos: z.int().min(0).max(3),
+});
+export type NuevoCaso = z.infer<typeof NuevoCasoSchema>;
+
+export const AceptacionSchema = z.strictObject({
+  propuesta: PropuestaSchema,
+  trabajo: TrabajoSchema.nullable(),
+});
+export type Aceptacion = z.infer<typeof AceptacionSchema>;
+
+// ── Acceso ───────────────────────────────────────────────────────────────────────────────────────
+export const REGLAS_CLAVE = { minimo: 12, maximo: 128 } as const;
+
+export const RegistroSchema = z.strictObject({
+  email: z.email().max(254),
+  password: z.string().min(REGLAS_CLAVE.minimo).max(REGLAS_CLAVE.maximo),
+  /** Ids de las versiones aceptadas (explícitas, sin tildar por defecto). */
+  terminos: z.string(),
+  privacidad: z.string(),
+});
+export type Registro = z.infer<typeof RegistroSchema>;
+
+export const IngresoSchema = z.strictObject({ email: z.email(), password: z.string().min(1) });
+export type Ingreso = z.infer<typeof IngresoSchema>;
+
+// Tipos de los esquemas que antes no los exportaban
+export type Mensaje = z.infer<typeof MensajeSchema>;
+export type Pago = z.infer<typeof PagoSchema>;
+export type CasoSoporte = z.infer<typeof CasoSoporteSchema>;
+export type NuevaPropuesta = z.infer<typeof NuevaPropuestaSchema>;
+export type RespuestaPropuesta = z.infer<typeof RespuestaPropuestaSchema>;

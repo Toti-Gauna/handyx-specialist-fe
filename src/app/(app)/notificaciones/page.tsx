@@ -1,5 +1,5 @@
 import { PantallaPendiente } from '../../../components/PantallaPendiente.tsx';
 
-export default function Notificaciones() {
+export default function Pagina() {
   return <PantallaPendiente clave="notificaciones" />;
 }

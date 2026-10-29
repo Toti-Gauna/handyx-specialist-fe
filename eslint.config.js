@@ -7,6 +7,11 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.strict,
   {
+    // En las pruebas la aserción de no nulo es una afirmación sobre el dato de prueba, no una conversión insegura.
+    files: ['**/*.test.ts'],
+    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
+  },
+  {
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
     rules: {
       // Nada de almacenamiento del navegador para datos de la app (ver src/security/no-storage.test.ts).
