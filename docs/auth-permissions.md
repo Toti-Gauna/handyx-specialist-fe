@@ -44,7 +44,13 @@ Estado: **decidido para implementar en 4.2**. Nada implementado en backend.
 7. **Campos de servidor**: `verificado`, `estadoAlta`, `venceEn`, fee y montos derivados nunca se aceptan del cliente
    (los esquemas estrictos rechazan campos extra con `400 validacion`).
 8. **Uploads**: tipos y tamaños limitados (imágenes); cualquier tipo "antecedentes" o PDF de antecedentes →
-   `415/400 tipo_archivo_prohibido`.
+   `415/400 tipo_archivo_prohibido`. El DNI llega con `archivo` (frente) y `dorso` (0.5.0).
+9. **Alta y disponibilidad (0.5.0)**: durante el alta solo se guardan zonas y franjas; `urgentesAhora` y `programados` →
+   `403 sin_permiso` hasta la habilitación.
+10. **Turnos de antecedentes (0.5.0)**: reservar o cambiar solo con la verificación sin resultado y el alta no rechazada ni
+    suspendida; un turno ocupado o pasado → `409 transicion_invalida`. El resultado lo registra solo Operations.
+11. **Cámara (lote 4.4)**: la PWA pide la cámara solo dentro del paso del alta y la apaga al salir. La foto queda en memoria
+    hasta mandarla, sin almacenamiento del navegador. En la vista previa (mock) la cámara es simulada y nunca se abre.
 
 ## Matriz de permisos por endpoint
 

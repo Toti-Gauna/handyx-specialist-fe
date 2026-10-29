@@ -238,6 +238,13 @@ Sin entrada por teléfono ni SMS. En el mock, Google y Apple se simulan con un b
 
 ### 4.4 · Alta guiada
 
+**Estado: cerrado localmente (29/10/2026).**
+- Las pantallas están en `src/pantallas/alta/` y viven en el grupo de rutas `(flujo)`, a pantalla completa.
+- El contrato sube a 0.5.0.
+- La cámara es real con la API y simulada en la vista previa.
+- Se arregló la contradicción del resumen en corrección: el escenario no recalculaba lo que faltaba.
+- "¡Estás habilitado!" quedó como "¡Tu alta está habilitada!": dice lo mismo sin asumir el género de la persona.
+
 1. **Inicio del alta**: lista de pasos con anillo de progreso, al estilo "Completá tu perfil" de las apps de reparto.
 2. **Datos personales**: un dato por pantalla en el celular, con el teclado correcto en cada campo.
 3. **Identidad**:

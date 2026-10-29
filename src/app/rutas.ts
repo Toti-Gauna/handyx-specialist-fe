@@ -24,7 +24,7 @@ export const RUTAS = {
   recuperarNueva: { ruta: '/recuperar/nueva/', titulo: 'Contraseña nueva', lote: '4.2', descripcion: 'Elegir una contraseña con el enlace del email, o enlace vencido.' },
   registro: { ruta: '/registro/', titulo: 'Crear cuenta', lote: '4.2', descripcion: 'Cuenta, términos y privacidad versionados.' },
   recuperar: { ruta: '/recuperar/', titulo: 'Recuperar acceso', lote: '4.2', descripcion: 'Recuperación de contraseña.' },
-  alta: { ruta: '/alta/', titulo: 'Tu alta', lote: '2.1', descripcion: 'Datos, identidad, rubros, foto y envío a revisión.' },
+  alta: { ruta: '/alta/', titulo: 'Tu alta', lote: '4.4', descripcion: 'Alta guiada: datos, DNI y CUIT, selfie, rubros, zonas y horarios, turno de antecedentes, resumen y estados.' },
   inicio: {
     ruta: '/inicio/',
     titulo: 'Inicio',

@@ -19,6 +19,7 @@ import type {
   Posicion,
   Punto,
   Trayecto,
+  TurnoAntecedentes,
 } from '../../contracts/dto.ts';
 import { FalloApi, type TipoFallo } from '../errores.ts';
 import type { ErrorApi } from '../../contracts/dto.ts';
@@ -143,6 +144,8 @@ export interface EstadoMock {
   baja: Baja | null;
   feeAvisoEn: string | null;
   viajes: Map<string, ViajeInterno>;
+  /** Turnos de antecedentes de la oficina de prueba (lote 4.4). */
+  turnos: TurnoAntecedentes[];
   gps: GpsSimulado;
   /** Para devolver el mismo resultado ante una repetición con la misma Idempotency-Key. */
   idempotencia: Map<string, unknown>;

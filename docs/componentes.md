@@ -1,4 +1,4 @@
-# Catálogo de componentes · PWA Especialista (lotes 3.3, 4.1, 4.2 y 4.3)
+# Catálogo de componentes · PWA Especialista (lotes 3.3 y 4.1 a 4.4)
 
 Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila dice dónde verlo en
 `docs/capturas/390x844/` (todas con datos sintéticos; ver `docs/capturas/README.md`).
@@ -68,7 +68,7 @@ Para las pantallas de la fase 4. Se ven en uso en `/catalogo/` (solo en la vista
 | `ProveedorIsla` / `useIsla` | `Efectos.tsx` | Avisos que bajan desde arriba (te eligieron, pedido nuevo, cobro) | `role="status"`; se cierran y no se van con el foco o el dedo encima |
 | `useConfeti` | `Efectos.tsx` | Confeti de mosaicos para celebrar | `aria-hidden`; nada con "reducir movimiento" |
 | `BotonFijo` | `Piezas.tsx` | La acción principal fija abajo, con una nota opcional | — |
-| `Mosaico` | `Piezas.tsx` | Rubros, zonas, franjas: azul con tilde cuando está elegido | `aria-pressed` |
+| `Mosaico` | `Piezas.tsx` | Rubros, zonas, franjas: azul con tilde cuando está elegido. Las palabras largas cortan con guion si no entran (texto al 200 %) | `aria-pressed` |
 | `ChipOpcion` | `Piezas.tsx` | Franjas, filtros y motivos; en fila o en carril con desplazamiento lateral (`hx-chips--carril`) | `aria-pressed`, 44 px de alto |
 | `TiraDias` | `Fechas.tsx` | Días seguidos para elegir con el pulgar; los anteriores al mínimo, deshabilitados | El nombre completo del día ("jueves 19 de noviembre, hoy") |
 | `CalendarioMes` | `Fechas.tsx` | Mes con hoy en amarillo, días con eventos (puntitos) y el elegido en azul | Cada día dice la fecha y la cantidad de eventos |
@@ -95,6 +95,14 @@ Para las pantallas de la fase 4. Se ven en uso en `/catalogo/` (solo en la vista
 | `BotonesProveedor` | `BotonesProveedor.tsx` | "Continuar con Google" siempre y "Continuar con Apple" solo en dispositivos Apple (`lib/dispositivo.ts`) | Hoy solo en el mock (cuentas de prueba en una hoja). En producción no aparecen hasta conectar los SDK (lote 5.2) |
 
 `useAccion({ publica: true })`: en entrar y con Google o Apple, un 401 es "credenciales incorrectas", no "tu sesión expiró".
+
+## Alta guiada (lote 4.4)
+
+| Componente | Archivo | Para qué | Notas |
+|---|---|---|---|
+| `Camara` | `components/Camara.tsx` + `camara.css` | Foto con marco: rectángulo del DNI o óvalo de la selfie, consejos, vista previa con "Repetir" | Producción: cámara en vivo (`getUserMedia`, la trasera para el DNI y la frontal para la selfie) y, sin cámara o sin permiso, elegir una foto. La foto vive en memoria hasta mandarla y la cámara se apaga al salir. **Vista previa: visor simulado, nunca abre la cámara** |
+| `AnilloProgreso` | `kit/Piezas.tsx` | "N de M listos" con el arco en azul | El número y el texto se leen; el dibujo es decorativo |
+| Pasos del alta | `pantallas/alta/*` | `InicioAlta` (lista), `PasoDatos` (una pregunta por pantalla), `PasoIdentidad`, `PasoSelfie`, `PasoRubros` (mosaicos), `PasoZonas` (mapa y bloques de horario), `PasoAntecedentes` (turnos), `ResumenAlta` y `EstadosAlta` | Estado de cada paso en `lib/alta.ts` (con pruebas). `Alta.tsx` elige qué mostrar según el estado del alta y `?paso=` |
 
 ## Mapa (lote 4.3)
 

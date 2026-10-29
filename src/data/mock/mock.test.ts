@@ -5,7 +5,7 @@ import {
   AceptacionSchema, AgendaItemSchema, AvisoSchema, BajaSchema, CajaResumenSchema, CasoSoporteDetalleSchema, CasoSoporteSchema, ConversacionSchema,
   DatosAltaSchema, DisponibilidadSchema, FeeVigenteSchema, InicioSchema, MensajeSchema, PagoSchema, PedidoDetalleSchema, PedidoElegibleSchema,
   PerfilEspecialistaSchema, PerfilPublicoSchema, PreferenciasSchema, PropuestaSchema, SesionSchema, TrabajoDetalleSchema, TrabajoSchema,
-  BarrioSchema, ViajeSchema,
+  BarrioSchema, ViajeSchema, TurnoAntecedentesSchema,
 } from '../../contracts/dto.ts';
 import type { FalloApi } from '../errores.ts';
 import { desplazar, distanciaM } from '../../lib/geo.ts';
@@ -537,5 +537,50 @@ describe('mapa y viaje (lote 4.3)', () => {
     } finally {
       usarGrafo(null);
     }
+  });
+});
+
+describe('alta guiada (lote 4.4)', () => {
+  it('turnos de antecedentes: se reserva uno libre, cambiarlo libera el anterior y nunca hay archivo', async () => {
+    const { api } = nuevo('incompleto');
+    const turnos = await api.turnosAntecedentes();
+    turnos.forEach((t) => assert.ok(TurnoAntecedentesSchema.safeParse(t).success));
+    assert.ok(turnos.every((t) => Date.parse(t.inicio) > api.ahora().getTime()), 'solo turnos futuros');
+    const libres = turnos.filter((t) => t.disponible);
+    const ocupado = turnos.find((t) => !t.disponible)!;
+    await assert.rejects(api.reservarTurno(ocupado.id), (e: FalloApi) => e.status === 409);
+    let p = await api.reservarTurno(libres[0]!.id);
+    assert.equal(p.antecedentes, 'cita_coordinada');
+    assert.equal(p.citaAntecedentes?.turnoId, libres[0]!.id);
+    p = await api.reservarTurno(libres[1]!.id);
+    assert.equal(p.citaAntecedentes?.turnoId, libres[1]!.id);
+    const despues = await api.turnosAntecedentes();
+    assert.equal(despues.find((t) => t.id === libres[0]!.id)?.disponible, true, 'el turno anterior se libera');
+    assert.equal(despues.find((t) => t.id === libres[1]!.id)?.disponible, false);
+    assert.ok(PerfilEspecialistaSchema.safeParse(p).success);
+  });
+
+  it('con la verificación ya resuelta no se reserva otro turno', async () => {
+    const { api } = nuevo('habilitado');
+    const libre = (await api.turnosAntecedentes()).find((t) => t.disponible)!;
+    await assert.rejects(api.reservarTurno(libre.id), (e: FalloApi) => e.status === 409);
+  });
+
+  it('durante el alta se declaran zonas y horarios, pero no se activan pedidos', async () => {
+    const { api } = nuevo('incompleto');
+    const d = await api.disponibilidad();
+    const nueva = await api.actualizarDisponibilidad({ urgentesAhora: false, programados: false, zonas: ['Centro', 'Güemes'], franjas: [{ dia: 1, desde: '08:00', hasta: '12:00' }], version: d.version });
+    assert.deepEqual(nueva.zonas, ['Centro', 'Güemes']);
+    await assert.rejects(api.actualizarDisponibilidad({ urgentesAhora: true, programados: false, version: nueva.version }), (e: FalloApi) => e.status === 403);
+    await assert.rejects(api.actualizarDisponibilidad({ urgentesAhora: false, programados: true, version: nueva.version }), (e: FalloApi) => e.status === 403);
+  });
+
+  it('en corrección, el resumen no dice "todo cargado" con un documento rechazado', async () => {
+    const { api } = nuevo('correccion');
+    const p = await api.perfil();
+    assert.equal(p.documentos.dni, 'rechazado');
+    assert.deepEqual(p.faltantesEnvio, ['dni']);
+    await api.cargarDocumento('dni');
+    assert.deepEqual((await api.perfil()).faltantesEnvio, []);
   });
 });

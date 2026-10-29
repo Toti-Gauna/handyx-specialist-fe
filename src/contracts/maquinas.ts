@@ -91,11 +91,12 @@ export const MAQUINA_PRESENCIAL: Maquina<EstadoPresencial> = {
   estados: ESTADOS_PRESENCIAL,
   inicial: 'pendiente_cita',
   transiciones: [
-    t('pendiente_cita', 'cita_coordinada', 'operations'),
+    // Desde 0.5.0 el especialista reserva el turno él mismo (o lo coordina Operations). Cambiar de turno no cambia el estado.
+    t('pendiente_cita', 'cita_coordinada', 'especialista', 'operations'),
     t('cita_coordinada', 'aprobada', 'operations'),
     t('cita_coordinada', 'no_aprobada', 'operations'),
     t('cita_coordinada', 'no_asistio', 'operations'),
-    t('no_asistio', 'cita_coordinada', 'operations'),
+    t('no_asistio', 'cita_coordinada', 'especialista', 'operations'),
   ],
 };
 

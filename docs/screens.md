@@ -30,13 +30,15 @@ habilitada → disponibilidad declarada (urgentes "Ahora" opt-in, programados, f
 | A2c | Un paso más | `/registro/aceptar/` | 4.2 | cuenta nueva de Google o Apple | Email ya verificado por el proveedor; aceptaciones sin tildar |
 | A3 | Recuperar acceso | `/recuperar/` · `/recuperar/nueva/?token=` | 4.2 | enviado (respuesta neutra), contraseña nueva, cambiada, enlace vencido o usado | No revela si la cuenta existe; el token sale de la URL al leerlo |
 | A4 | Fee 0 % post-registro | (paso de `/registro/`) | 2.1 | antes / vigente / último día | "Handyx no te cobra tarifa hasta el 10/12/2026". No es descuento sobre tu precio |
-| B1 | Alta · datos base | `/alta/?paso=datos` | 2.1 | incompleto, guardado, error | Nombre, apellido, fecha de nacimiento, nacionalidad, ubicación real, género (PROD-15). Sin campos comerciales obligatorios |
-| B2 | Alta · identidad | `/alta/?paso=identidad` | 2.1 | faltante, cargado, en revisión, rechazado con motivo | DNI y CUIT/CUIL. CUIL no equivale a habilitación fiscal: queda capturado pero no habilita si Legal exige CUIT |
-| B3 | Alta · rubros y matrícula | `/alta/?paso=rubros` | 2.1 | por rubro: habilitado, requiere matrícula, en revisión, no habilitado | Gas y aire acondicionado exigen matrícula/certificación revisada. Una foto no autoverifica |
-| B4 | Alta · foto de cara | `/alta/?paso=foto` | 2.1 | faltante, cargada, en revisión, rechazada | Almacenamiento privado; solo staff autorizado |
-| B5 | Alta · antecedentes | `/alta/?paso=antecedentes` | 2.1 | pendiente de cita, cita coordinada, aprobada, no aprobada, no asistió | **Sin upload**: se explica que se verifican en persona con Operations y cómo coordinar. No hay input de archivo |
-| B6 | Alta · resumen y envío | `/alta/?paso=resumen` | 2.1 | qué falta (sin exponer el contenido del documento), enviado | Enviar pasa `borrador → enviada`. Guardar y reanudar |
-| B7 | Estado de revisión | `/alta/` (con alta enviada) | 2.1 | enviada, en revisión, requiere corrección (motivo seguro), rechazada, habilitada | Próximos pasos reales; sello "verificado" solo si el servidor lo dice |
+| B0 | Alta · inicio | `/alta/` | 4.4 | anillo de progreso (N de 6 listos); cada paso con "Listo", "Falta", "Corregir", "En revisión" o "Cuando quieras"; corrección con acceso directo a lo marcado | Lo que falta lo decide el servidor (`faltantesEnvio`). Pantalla completa, con Ayuda y Cuenta arriba |
+| B1 | Alta · tus datos | `/alta/?paso=datos` | 4.4 | una pregunta por pantalla (7), error y foco en el campo, guardado en cada "Siguiente" | Nombre, apellido, fecha de nacimiento, nacionalidad, género (PROD-15), ciudad y barrio opcional. Sin dirección |
+| B2 | Alta · DNI y CUIT o CUIL | `/alta/?paso=identidad` | 4.4 | números; DNI con cámara y marco (frente y dorso); constancia de CUIT o CUIL; rechazado con motivo | La foto vive solo en memoria hasta que se manda. En la vista previa la cámara es simulada. CUIL no equivale a habilitación fiscal |
+| B3 | Alta · tu foto | `/alta/?paso=selfie` | 4.4 | cámara con óvalo y consejos de luz; vista previa con "Repetir"; en revisión, verificada, rechazada | Privada; se ve en el perfil solo si Operations la verificó |
+| B4 | Alta · rubros | `/alta/?paso=rubros` | 4.4 | 6 rubros en mosaico; Gas y aire piden matrícula; matrícula cargada, en revisión, rechazada | Una foto no autoverifica |
+| B5 | Alta · zonas y horarios | `/alta/?paso=zonas` | 4.4 | barrios en el mapa y en mosaico; horarios en bloques (mañana, tarde, noche por día) | Opcional para enviar. Durante el alta no se activan pedidos (solo zonas y franjas) |
+| B6 | Alta · antecedentes | `/alta/?paso=antecedentes` | 4.4 | elegir día y horario; ocupado; turno reservado con lugar; cambiar el turno; resultado | **Sin upload**: el certificado se muestra en persona. Se puede elegir también con el alta en revisión |
+| B7 | Alta · resumen | `/alta/?paso=resumen` | 4.4 | cada paso con "Ver", "Completar" o "Corregir"; qué falta para enviar; enviar o volver a enviar | El botón queda deshabilitado hasta que no falte nada (se arregló la contradicción del resumen en corrección) |
+| B8 | Alta en revisión, rechazada y habilitada | `/alta/` | 4.4 | línea de tiempo con un Handy esperando; rechazada con motivo y Ayuda; "¡Tu alta está habilitada!" con celebración al verse el cambio y "Empezar" | Sello "verificado" solo si el servidor lo dice. Después de habilitada: Inicio con el modal del fee 0 % |
 | C1 | Inicio | `/inicio/` | 2.2 | sin alta habilitada, disponible/no disponible, ofertas abiertas, próximo trabajo, cobrado del mes y trabajos cobrados | **Nunca** tasa de aceptación, tiempos de respuesta ni puntualidad (PROD-06 §3). Inicio ≠ Mis trabajos |
 | C2 | Disponibilidad | (hoja desde Inicio y Cuenta) | 2.2 | urgentes "Ahora" on/off, programados on/off, franjas, zonas | Opt-in revocable al instante; revocar no penaliza. No se deduce de tener la app abierta |
 | C3 | Bandeja de pedidos | `/pedidos/` | 2.2 | vacía, urgentes vs programados/obra, con mi propuesta enviada, vencidos | Orden de llegada. Datos mínimos: rubro, tipo, descripción, barrio/zona aproximada y **cuánto cobra Handy** (0 % en demo, LEG-43). Sin nombre ni dirección exacta |
@@ -99,7 +101,7 @@ Escenarios y cómo reproducirlos: `docs/qa.md`.
 | Pantallas | Archivo | Estado |
 |---|---|---|
 | A1 Entrar · A2 Crear cuenta · A3 Recuperar · A4 Fee post-registro | `src/pantallas/{Acceso,Registro,Recuperar}.tsx`, `components/FeeAvisoRegistro.tsx` | mock |
-| B1–B7 Alta por pasos y estados de revisión | `src/pantallas/Alta.tsx`, `components/Documento.tsx` | mock |
+| B0–B8 Alta guiada y estados de revisión | `src/pantallas/Alta.tsx` + `src/pantallas/alta/*`, `components/{Camara,Documento}.tsx` | mock |
 | C1 Inicio · C2 Disponibilidad · C3 Bandeja · C4 Avisos | `Inicio`, `Disponibilidad`, `Pedidos`, `Avisos` | mock |
 | D1 Detalle de pedido y propuestas · D2 Mensajes · D3 Conversación | `PedidoDetalle`, `Mensajes`, `Hilo`, `TarjetaPropuesta`, `FormPropuesta` | mock |
 | E1 Mis trabajos · E2 Detalle · E3 Agenda · E4 Ayuda y reclamos | `Trabajos`, `TrabajoDetalle`, `Agenda`, `Soporte`, `CasoDetalle`, `AccionTrabajo`, `FormCambio` | mock |

@@ -30,8 +30,13 @@ menos un rubro habilitado. El especialista no puede llegar a `habilitada` por ni
 
 ## Antecedentes (presencial)
 
-`pendiente_cita → cita_coordinada → aprobada | no_aprobada | no_asistio` y `no_asistio → cita_coordinada`, todo por
-Operations. No existe estado ni campo para archivos.
+`pendiente_cita → cita_coordinada → aprobada | no_aprobada | no_asistio` y `no_asistio → cita_coordinada`.
+- Desde 0.5.0 (lote 4.4), el especialista reserva el turno él mismo (`pendiente_cita` o `no_asistio` → `cita_coordinada`), o
+  se lo coordina Operations.
+- Cambiar de turno no cambia el estado.
+- El resultado (aprobada, no aprobada, no asistió) lo registra solo Operations.
+
+No existe estado ni campo para archivos: la app guarda el turno (`citaAntecedentes`), nunca el certificado.
 
 ## Pedido (dueño: api-usuario)
 

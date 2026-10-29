@@ -87,7 +87,7 @@ la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote
   - Posición del especialista en vivo durante el viaje, simulada en el mock.
   - Trayecto dibujado hasta la casa del cliente, con tiempo estimado.
   - Carga diferida y respaldo sin mapa.
-- [ ] **4.4 Alta guiada:**
+- [x] **4.4 Alta guiada** (evidencia: recorridos A y H, `docs/screens.md` → B0–B8, contrato 0.5.0):
   - Lista de pasos con progreso.
   - DNI y selfie con marco de cámara.
   - Rubros en mosaico.

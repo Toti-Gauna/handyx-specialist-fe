@@ -10,8 +10,8 @@ estas pruebas demuestran la interfaz y las reglas emuladas del servidor, no el b
 | Unitarias y del mock | `npm test` | Contrato, máquinas de estado, fee, formato, mock con reglas de servidor (60+ pruebas) |
 | Recorridos de punta a punta | `npm run build && npm run e2e` | 22 recorridos en Chromium (390×844) sobre `out/`, incluidos J (sin conexión con service worker) y M1–M3 (mapa) |
 | Service worker | `npm test` (`src/pwa/politica.test.ts`) | Nunca intercepta la API, mutaciones ni otros sitios |
-| Accesibilidad | `npm run accesibilidad` (`ANCHO=1280x800`) | axe WCAG 2.2 AA en 39 pantallas, En camino compartiendo y 6 diálogos, áreas táctiles, teclado, foco al primer error y texto al 200 % |
-| Capturas | `npm run capturas -- [carpeta]` (`ANCHOS=360x740,…`) | 39 pantallas/escenarios (incluye cuenta, mapas, errores, sin conexión y 404) con control de desborde y de sanitización |
+| Accesibilidad | `npm run accesibilidad` (`ANCHO=1280x800`) | axe WCAG 2.2 AA en 46 pantallas, En camino compartiendo y 6 diálogos, áreas táctiles, teclado, foco al primer error y texto al 200 % |
+| Capturas | `npm run capturas -- [carpeta]` (`ANCHOS=360x740,…`) | 46 pantallas/escenarios (incluye cuenta, cada paso del alta, mapas, errores, sin conexión y 404) con control de desborde y de sanitización |
 | Catálogo en `docs/capturas/` | `npm run capturas:docs` (ImageMagick) | Las 32 a 390×844 y 6 a 1280×800 en webp |
 | Capturas de recorridos | `CAPTURAS=/ruta node e2e/flujos.cjs` | Una captura por estado clave (insumo de la fase 3 y de Handy Docs, sin datos reales) |
 | Recorrido manual | `npm run dev` y el **Panel de prueba** del banner amarillo | Escenarios, fallas, reloj y simulación de las otras partes |
@@ -35,11 +35,11 @@ el trayecto no se puede calcular (la app ofrece Google Maps o Waze).
 
 | Escenario | Cómo se ve | Cubierto por |
 |---|---|---|
-| Registro incompleto | Escenario *Alta incompleta*: faltan datos, CUIT/CUIL, foto y matrícula; el resumen lista qué falta | Panel · E2E A |
+| Registro incompleto | Escenario *Alta incompleta*: el anillo dice cuántos pasos están listos; el resumen lista qué falta y no deja enviar | Panel · E2E A |
 | Documento faltante | Cada documento muestra "Falta cargarlo"; no se puede enviar el alta | E2E A · `mock.test` |
 | Rubro habilitado vs no habilitado | Gas sin matrícula verificada queda "Falta la matrícula" y no recibe pedidos; aire acondicionado no elegido no existe para vos | `mock.test` · E2E B |
-| Verificación pendiente / corrección | Escenarios *En revisión* y *Requiere corrección* (solo se vuelve a cargar lo rechazado) | E2E H |
-| Antecedentes presenciales pendientes | Paso "Antecedentes": sin carga de archivos; estados de cita en el panel (Operations) | E2E A |
+| Verificación pendiente / corrección | Escenarios *En revisión* (línea de tiempo) y *Requiere corrección* (acceso directo a lo marcado, enviar bloqueado hasta corregir) | E2E H |
+| Antecedentes presenciales pendientes | Paso "Antecedentes": elegir turno, sin carga de archivos; resultado desde el panel (Operations) | E2E A · H |
 | Disponible / revocado | Interruptores de Inicio y Disponibilidad; apagar "Ahora" corta la oferta de urgentes | E2E B |
 | Pedido urgente con opt-in apagado | Panel › *Entra un pedido urgente nuevo*: la nota aclara que no lo ves | `mock.test` |
 | Propuesta vencida / rechazada | Panel › reloj (+5 min) y *Rechaza tu última propuesta*; chips "Venció" y "Rechazada" | `mock.test` |

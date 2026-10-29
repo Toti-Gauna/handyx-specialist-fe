@@ -1,10 +1,68 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.3) · Bloque 4 · **Fase 4 en curso: 4.1 y 4.2 cerrados localmente; 4.3 hecho salvo el mapa base (datos de OpenStreetMap bloqueados por la red).**
-Modelos: fases 1, 3 y lotes 4.1–4.3 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.4) · Bloque 4 · **Fase 4 en curso: 4.1, 4.2 y 4.4 cerrados localmente; 4.3 hecho salvo el mapa base (queda para el final: datos de OpenStreetMap bloqueados por la red).**
+Modelos: fases 1, 3 y lotes 4.1–4.4 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 4 · Lote 4.4 (alta guiada)
+
+- **Inicio del alta**:
+  - "Completá tu alta" con anillo de progreso (N de 6 listos) y la lista de pasos.
+  - Cada paso muestra "Listo", "Falta", "Corregir", "En revisión" o "Cuando quieras".
+  - En corrección, lo marcado por Operations va primero, con acceso directo.
+- **Pasos** (`?paso=`, pantalla completa en el grupo `(flujo)`, cada uno con su acción fija abajo):
+  1. **Tus datos**: una pregunta por pantalla (7), con el teclado y el autocompletado de cada dato. Se guarda en cada
+     "Siguiente"; con un error, el foco queda en el campo.
+  2. **DNI y CUIT o CUIL**: los números, el DNI con **cámara y marco (frente y dorso)** y la constancia.
+  3. **Tu foto**: selfie con **óvalo** y consejos de luz.
+  4. **Rubros** en mosaico (Gas y aire piden matrícula).
+  5. **Zonas** (en el mapa y en mosaico) y **horarios** en bloques de mañana, tarde y noche por día. No activa pedidos.
+  6. **Antecedentes**: elegir día y horario en la oficina de Operations (sin archivos), y cambiar el turno.
+- **Resumen**: cada paso con "Ver", "Completar" o "Corregir". Enviar queda deshabilitado mientras falte algo, y dice qué.
+- **Estados**:
+  - En revisión: línea de tiempo con un Handy esperando; el turno se puede elegir igual.
+  - Rechazada: Handy roto, motivo y Ayuda.
+  - **"¡Tu alta está habilitada!"**: celebración cuando se ve el cambio, después "Empezar" (Inicio con el modal del fee 0 %).
+- **Cámara** (`components/Camara.tsx`):
+  - Con la API real, cámara en vivo con `getUserMedia`; sin cámara o sin permiso, elegir una foto.
+  - La foto queda solo en memoria hasta mandarla, y la cámara se apaga al salir.
+  - En la vista previa el visor es **simulado** y nunca abre la cámara: no hay riesgo de capturar documentos reales.
+- **Contrato 0.5.0**:
+  - Turnos de antecedentes, con `citaAntecedentes` en el perfil.
+  - El especialista reserva el turno; el resultado sigue siendo de Operations.
+  - El DNI va con `dorso`.
+  - Durante el alta se guardan zonas y franjas, pero no se activan pedidos.
+- **`verificar-bundle` frenó una fuga**: el visor simulado de la cámara ("Foto de prueba") estaba en el componente que va a
+  producción. Pasó al mock (`data/mock/camara.tsx`, expuesto como `camaraPrueba`, null con la API real), y se sumaron las marcas
+  al control.
+- **Corregido**: el resumen del alta en corrección decía "Está todo cargado" con el DNI rechazado. El escenario de prueba no
+  recalculaba lo que faltaba; ahora sí, y una prueba lo fija.
+- **Accesibilidad**:
+  - Mosaicos con palabras largas que cortan con guion al 200 %.
+  - Tabla de horarios con columnas repartidas, sin desborde a 320 px.
+- **Pruebas**:
+  - 7 unitarias nuevas: pasos, progreso y horarios.
+  - 4 del mock: turnos, disponibilidad durante el alta y corrección.
+  - Recorridos A y H rehechos: alta completa con cámara y turno hasta "Empezar"; corrección con acceso directo y reenvío; turno
+    en revisión.
+  - 7 pantallas nuevas en accesibilidad y capturas.
+
+### Comandos del lote 4.4 (29/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 118 pruebas: 116 OK y 2 omitidas (sincronías con otros repos) |
+| `npm run build` | OK |
+| `npm run e2e` | 22/22 recorridos (A y H rehechos) |
+| `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento; solo días del calendario del catálogo por debajo de 44 px (≥ 30 px) |
+| `ANCHOS=` 7 tamaños `npm run capturas` | 322/322 sin desborde y sanitizadas |
+| `build:hostinger` con API ficticia | OK: 28 páginas, sin `/catalogo/`, fixtures ni la cámara simulada |
+
+**Próximo paso**: lote 4.5 (Inicio sobre el mapa, pedidos y "Handyx sugiere · Vos decidís"). El mapa base del 4.3 queda para el
+final.
 
 ## Fase 4 · Lote 4.3 (mapa, ubicación en vivo y trayectos)
 
@@ -67,9 +125,7 @@ Detalle completo en `docs/mapa.md`.
 **Pendiente de autorización (fase 5)**: el motor de trayectos real (OSRM o Valhalla propio en Render, o un servicio con plan
 gratis). No se contrató nada.
 
-**Próximo paso**:
-1. Con Overpass habilitado, generar el mapa base y cerrar el 4.3.
-2. Después, el lote 4.4 (alta guiada, con las zonas en el mapa).
+**Siguiente**: lote 4.4 (ver arriba). El mapa base queda para el final de la fase 4 (decisión de Ignacio).
 
 ## Fase 4 · Lote 4.2 (carga, bienvenida y cuenta)
 

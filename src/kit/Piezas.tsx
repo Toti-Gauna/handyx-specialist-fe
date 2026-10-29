@@ -164,3 +164,24 @@ export function useContador(hasta: number, desde = 0, ms = 900): number {
   }, [hasta, ms]);
   return valor;
 }
+
+/** Anillo de progreso (lote 4.4): "3 de 6" con el arco en azul. El texto se lee; el dibujo es decorativo. */
+export function AnilloProgreso({ hechos, total, etiqueta = 'listos' }: { hechos: number; total: number; etiqueta?: string }) {
+  const r = 34;
+  const largo = 2 * Math.PI * r;
+  const parte = total > 0 ? Math.min(1, hechos / total) : 0;
+  return (
+    <div className="hx-anillo">
+      <svg viewBox="0 0 80 80" aria-hidden="true">
+        <circle className="hx-anillo__fondo" cx="40" cy="40" r={r} />
+        <circle className="hx-anillo__arco" cx="40" cy="40" r={r} strokeDasharray={`${largo * parte} ${largo}`} />
+      </svg>
+      <p className="hx-anillo__texto">
+        <strong>{hechos}</strong>
+        <span>
+          de {total} {etiqueta}
+        </span>
+      </p>
+    </div>
+  );
+}

@@ -44,6 +44,7 @@ import type {
   Barrio,
   Posicion,
   Viaje,
+  TurnoAntecedentes,
 } from '../contracts/dto.ts';
 import type { Rubro } from '../contracts/rubros.ts';
 import type { EstadoTrabajo } from '../contracts/maquinas.ts';
@@ -91,7 +92,12 @@ export interface EspecialistaApi {
   datosAlta(): Promise<DatosAlta>;
   guardarDatosAlta(datos: GuardarDatosAlta): Promise<DatosAlta>;
   /** Queda `cargado`: solo Operations verifica. Antecedentes no existen como documento. */
-  cargarDocumento(tipo: TipoDocumento, rubro?: Rubro, archivo?: Blob): Promise<PerfilEspecialista>;
+  /** `dorso`: el DNI va con frente (`archivo`) y dorso (0.5.0). Con el mock no se manda ningún archivo. */
+  cargarDocumento(tipo: TipoDocumento, rubro?: Rubro, archivo?: Blob, dorso?: Blob): Promise<PerfilEspecialista>;
+  /** Turnos libres de la verificación presencial de antecedentes (0.5.0). */
+  turnosAntecedentes(): Promise<TurnoAntecedentes[]>;
+  /** Reserva (o cambia) el turno. Nunca se sube el certificado: se muestra en persona. */
+  reservarTurno(turnoId: string): Promise<PerfilEspecialista>;
   elegirRubros(rubros: Rubro[]): Promise<PerfilEspecialista>;
   enviarAlta(): Promise<PerfilEspecialista>;
 

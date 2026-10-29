@@ -1,7 +1,7 @@
 # Arquitectura · PWA Especialista de Handyx
 
 Estado: **fase 2 (mockup navegable)**. Todas las pantallas existen con datos de prueba (origen `mock`); el adaptador HTTP
-cumple el mismo puerto pero no hay API contra la cual probarlo. Contrato v0.4.0 (fase 4: rediseño y mapa). Nada desplegado.
+cumple el mismo puerto pero no hay API contra la cual probarlo. Contrato v0.5.0 (fase 4: rediseño, mapa y alta guiada). Nada desplegado.
 
 ## Decisiones
 
@@ -21,17 +21,17 @@ cumple el mismo puerto pero no hay API contra la cual probarlo. Contrato v0.4.0 
 
 ```
 src/
-  app/                 rutas (App Router). (publico): acceso/registro/recuperar/alta sin nav · (app): con nav
+  app/                 rutas (App Router). (cuenta): bienvenida y acceso · (flujo): el alta guiada · (viaje): En camino · (publico): baja · (app): con nav
     rutas.ts           mapa de rutas con el lote que construye cada pantalla
   brand/tokens.ts      copia de la landing → variables CSS (--color-*, --radio-*, --fuente*)
-  pantallas/           una por pantalla de negocio (Acceso, Alta, Inicio, Pedidos, Hilo, Trabajos, Caja…)
+  pantallas/           una por pantalla de negocio (Acceso, Alta, Inicio, Pedidos, Hilo, Trabajos, Caja…); los pasos del alta en pantallas/alta/
   components/          marco de la app, banner y panel de prueba, íconos, hojas, formularios y piezas compartidas
   hooks/               useCarga (con reintento y sin fallback), useAccion (idempotencia), useAhora
   lib/                 formato (Buenos Aires, pesos), etiquetas de estado, tarifa, textos legales provisorios, geo y ubicación
   mapa/                Mapa (React), motor MapLibre con carga diferida, estilo Handyx, datos de OSM y grafo (docs/mapa.md)
 e2e/                   recorridos de punta a punta con Playwright sobre out/
   config/entorno.ts    origen de datos (mock | http) validado; sin secretos
-  contracts/           CONTRATO COMPARTIDO v0.4.0 (borrador a transferir a handyx-client-be)
+  contracts/           CONTRATO COMPARTIDO v0.5.0 (borrador a transferir a handyx-client-be)
     dto.ts             esquemas Zod de requests/responses
     maquinas.ts        máquinas de estado con actor
     fee.ts             políticas de tarifa y contador del fee 0 %

@@ -1,0 +1,140 @@
+/* Cámara con marco (lote 4.4). Prefijo hx-camara. */
+
+.hx-camara {
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.hx-camara > * {
+  min-width: 0;
+}
+
+.hx-camara__titulo {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--hd-tinta);
+}
+
+.hx-camara__visor {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: 24px;
+  background: #10192b;
+}
+
+.hx-camara--selfie .hx-camara__visor {
+  aspect-ratio: 3 / 4;
+  max-height: 60dvh;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hx-camara__video,
+.hx-camara__foto,
+.hx-camara__simulada {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* La cámara frontal se ve como un espejo, como en las apps de fotos. */
+.hx-camara--selfie .hx-camara__video {
+  transform: scaleX(-1);
+}
+
+/* Marco: el rectángulo del DNI (85,6 × 54 mm) o el óvalo de la cara; afuera queda oscurecido. */
+.hx-camara__marco {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 84%;
+  aspect-ratio: 85.6 / 54;
+  border: 3px solid #fff;
+  border-radius: 18px;
+  box-shadow: 0 0 0 100vmax rgb(8 14 26 / 0.5);
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+.hx-camara--selfie .hx-camara__marco {
+  width: 62%;
+  aspect-ratio: 3 / 4;
+  border-radius: 50%;
+}
+
+.hx-camara__simulada {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(160deg, #2a3a5c, #12203a);
+}
+
+.hx-camara__dni-prueba {
+  display: grid;
+  place-items: center;
+  width: 70%;
+  aspect-ratio: 85.6 / 54;
+  border-radius: 12px;
+  background: repeating-linear-gradient(135deg, #dfe6f2 0 12px, #cdd7e8 12px 24px);
+  color: var(--hd-azul);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.hx-camara__cara-prueba {
+  width: 42%;
+  aspect-ratio: 3 / 4;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #cfd8e6 0 22%, transparent 23%), radial-gradient(ellipse at 50% 100%, #cfd8e6 0 45%, transparent 46%);
+}
+
+.hx-camara__aviso,
+.hx-camara__sello {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.hx-camara__aviso {
+  top: 10px;
+  background: var(--hd-amarillo);
+  color: var(--hd-tinta);
+}
+
+.hx-camara__sello {
+  bottom: 12px;
+  background: #fff;
+  color: var(--hd-exito);
+}
+
+.hx-camara__consejos {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--hd-texto);
+}
+
+.hx-camara__consejos li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.hx-camara__consejos .icono {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  color: var(--hd-exito);
+}

@@ -117,11 +117,12 @@ async function main() {
   for (const [nombre, ruta, boton, escenario] of [
     ['registro', '/registro/', 'Siguiente', 'nuevo'],
     ['verificar', '/verificar/', null, 'sin_verificar'],
-    ['alta-datos', '/alta/', 'Guardar y seguir', 'incompleto'],
+    ['alta-datos', '/alta/?paso=datos', 'Siguiente', 'incompleto'],
+    ['alta-identidad', '/alta/?paso=identidad', 'Guardar y seguir', 'incompleto'],
     ['caso', '/soporte/', 'Abrir un caso', 'habilitado'],
   ]) {
     const p = await ctx.newPage();
-    await p.goto(`${base}${ruta}?escenario=${escenario}`);
+    await p.goto(`${base}${ruta}${ruta.includes('?') ? '&' : '?'}escenario=${escenario}`);
     if (boton) await p.getByRole('button', { name: boton }).first().click();
     // Verificar: un código incorrecto deja el error y el foco en el campo del código
     if (nombre === 'verificar') await p.getByLabel('Código de 6 números').fill('000000');

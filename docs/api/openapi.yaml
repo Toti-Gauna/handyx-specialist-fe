@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: api-especialista (Handyx)
-  version: 0.4.0
+  version: 0.5.0
   description: |
     BORRADOR del contrato de api-especialista (TECH-20). Fuente de los esquemas: src/contracts/dto.ts
-    (contrato compartido v0.4.0, dueño handyx-client-be). Nada implementado todavía: lo construye
+    (contrato compartido v0.5.0, dueño handyx-client-be). Nada implementado todavía: lo construye
     handyx-specialist-be en la fase 4. Sesión por cookie HttpOnly; CSRF en X-CSRF-Token para mutaciones;
     Idempotency-Key (UUIDv4) donde se indica. Timestamps UTC; importes en centavos enteros.
 servers:
@@ -244,7 +244,8 @@ paths:
             schema:
               type: object
               properties:
-                archivo: { type: string, format: binary, description: 'image/jpeg|png|webp, tamaño máximo PENDIENTE' }
+                archivo: { type: string, format: binary, description: 'image/jpeg|png|webp, tamaño máximo PENDIENTE. En el DNI, el frente' }
+                dorso: { type: string, format: binary, description: 'Solo y obligatorio para el DNI (0.5.0): el dorso' }
                 rubro: { type: string, description: solo para matrícula }
       responses:
         '201':
@@ -253,6 +254,30 @@ paths:
         '400': { $ref: '#/components/responses/Error' }
         '413': { $ref: '#/components/responses/Error' }
         '415': { $ref: '#/components/responses/Error' }
+  /v1/especialista/antecedentes/turnos:
+    get:
+      tags: [perfil]
+      summary: Turnos de la verificación presencial de antecedentes (0.5.0). El certificado se muestra en persona, nunca se sube
+      responses:
+        '200':
+          description: Turnos futuros, libres u ocupados
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/TurnoAntecedentes' } } } }
+  /v1/especialista/antecedentes/turno:
+    put:
+      tags: [perfil]
+      summary: Reservar o cambiar el turno (0.5.0). Libera el anterior y deja la verificación en cita_coordinada
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: false, required: [turnoId], properties: { turnoId: { type: string, format: uuid } } }
+      responses:
+        '200':
+          description: Perfil con la cita
+          content: { application/json: { schema: { $ref: '#/components/schemas/PerfilEspecialista' } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /v1/especialista/alta/envio:
     post:
       tags: [perfil]
@@ -274,6 +299,9 @@ paths:
     put:
       tags: [disponibilidad]
       summary: Cambiar disponibilidad (revocar urgentes corta la oferta al instante)
+      description: >-
+        Durante el alta (borrador, corrección, enviada o en revisión) solo se pueden declarar zonas y franjas: urgentesAhora
+        y programados quedan en false hasta que el alta esté habilitada (403 sin_permiso). (0.5.0)
       parameters: [{ $ref: '#/components/parameters/Csrf' }]
       requestBody:
         required: true
@@ -1022,10 +1050,29 @@ components:
       required: [estado]
       properties:
         estado: { type: string, enum: [valido, vencido, usado] }
+    TurnoAntecedentes:
+      type: object
+      additionalProperties: false
+      required: [id, inicio, fin, lugar, disponible]
+      properties:
+        id: { type: string, format: uuid }
+        inicio: { $ref: '#/components/schemas/Instante' }
+        fin: { $ref: '#/components/schemas/Instante' }
+        lugar: { type: string, description: oficina de Operations (dato público) }
+        disponible: { type: boolean }
+    CitaAntecedentes:
+      type: object
+      additionalProperties: false
+      required: [turnoId, inicio, fin, lugar]
+      properties:
+        turnoId: { type: string, format: uuid }
+        inicio: { $ref: '#/components/schemas/Instante' }
+        fin: { $ref: '#/components/schemas/Instante' }
+        lugar: { type: string }
     PerfilEspecialista:
       type: object
       additionalProperties: false
-      required: [id, email, nombre, apellido, estadoAlta, motivoRevision, documentos, antecedentes, rubros, faltantesEnvio, baja, version]
+      required: [id, email, nombre, apellido, estadoAlta, motivoRevision, documentos, antecedentes, citaAntecedentes, rubros, faltantesEnvio, baja, version]
       properties:
         id: { type: string, format: uuid }
         email: { type: string }
@@ -1047,6 +1094,9 @@ components:
         antecedentes:
           type: string
           enum: [pendiente_cita, cita_coordinada, aprobada, no_aprobada, no_asistio]
+        citaAntecedentes:
+          description: Turno reservado para la verificación presencial (0.5.0)
+          oneOf: [{ $ref: '#/components/schemas/CitaAntecedentes' }, { type: 'null' }]
         rubros:
           type: array
           items:

@@ -1,4 +1,4 @@
-// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.4.0, borrador; versión en version.ts).
+// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.5.0, borrador; versión en version.ts).
 // El servidor valida con los mismos esquemas; el cliente valida cada respuesta y trata un desajuste
 // como error de contrato (nunca lo "arregla" con datos de muestra). OpenAPI: docs/api/openapi.yaml.
 import { z } from 'zod';
@@ -102,6 +102,28 @@ export const EstadoRubroSchema = z.enum(['elegido', 'habilitado', 'requiere_matr
 export const FALTANTES_ENVIO = ['datos', 'dni', 'cuitCuil', 'fotoCara', 'rubros', 'matricula'] as const;
 export type FaltanteEnvio = (typeof FALTANTES_ENVIO)[number];
 
+// ── Turnos de antecedentes (contrato 0.5.0) ─────────────────────────────────────────────────────
+// El certificado de antecedentes se muestra EN PERSONA a Operations: la app solo reserva el turno. Nunca un archivo.
+export const TurnoAntecedentesSchema = z.strictObject({
+  id: IdSchema,
+  inicio: InstanteSchema,
+  fin: InstanteSchema,
+  /** Oficina de Operations (dato público de Handyx, no de la persona). */
+  lugar: z.string(),
+  disponible: z.boolean(),
+});
+export type TurnoAntecedentes = z.infer<typeof TurnoAntecedentesSchema>;
+
+export const CitaAntecedentesSchema = z.strictObject({
+  turnoId: IdSchema,
+  inicio: InstanteSchema,
+  fin: InstanteSchema,
+  lugar: z.string(),
+});
+export type CitaAntecedentes = z.infer<typeof CitaAntecedentesSchema>;
+
+export const ReservaTurnoSchema = z.strictObject({ turnoId: IdSchema });
+
 export const PerfilEspecialistaSchema = z.strictObject({
   id: IdSchema,
   email: z.string(),
@@ -116,6 +138,8 @@ export const PerfilEspecialistaSchema = z.strictObject({
     fotoCara: z.enum(ESTADOS_DOCUMENTO),
   }),
   antecedentes: z.enum(ESTADOS_PRESENCIAL),
+  /** Turno elegido para la verificación presencial de antecedentes (0.5.0). Sin archivos: solo el turno. */
+  citaAntecedentes: CitaAntecedentesSchema.nullable(),
   rubros: z.array(
     z.strictObject({
       rubro: z.enum(RUBROS),

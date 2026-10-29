@@ -278,7 +278,9 @@
   font-weight: 700;
   line-height: 1.1;
   text-align: center;
-  overflow-wrap: break-word; /* corta solo si una palabra no entra; los rubros largos traen su guion opcional */
+  /* Con el texto agrandado, una palabra larga ("Electricidad") se corta con guion antes que desbordar. */
+  overflow-wrap: anywhere;
+  hyphens: auto;
   cursor: pointer;
   box-shadow: 0 var(--hx-base-boton) 0 var(--hd-mosaico-hondo);
   transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.25s ease, color 0.25s ease;
@@ -1320,5 +1322,66 @@
   /* Dos vaivenes y queda quieto: nada se mueve más de 5 s sin poder pararlo (WCAG 2.2.2). */
   .hx-vacio .handy {
     animation: hx-flotar 2.2s ease-in-out 2;
+  }
+}
+
+/* ── Anillo de progreso (lote 4.4) ─────────────────────────────────── */
+
+.hx-anillo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  flex: none;
+}
+
+.hx-anillo svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  rotate: -90deg;
+}
+
+.hx-anillo__fondo,
+.hx-anillo__arco {
+  fill: none;
+  stroke-width: 9;
+}
+
+.hx-anillo__fondo {
+  stroke: var(--hd-mosaico);
+}
+
+.hx-anillo__arco {
+  stroke: var(--hd-azul);
+  stroke-linecap: round;
+}
+
+.hx-anillo__texto {
+  display: grid;
+  justify-items: center;
+  margin: 0;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.hx-anillo__texto strong {
+  font-family: var(--fuente-titulos);
+  font-size: 1.9rem;
+  font-weight: 900;
+  color: var(--hd-tinta);
+}
+
+.hx-anillo__texto span {
+  color: var(--hd-suave);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hx-anillo__arco {
+    transition: stroke-dasharray 0.6s var(--hx-salida);
   }
 }

@@ -10,6 +10,7 @@ import { crearEstado, ID } from './fixtures.ts';
 import { agregarMensaje, aplicarAceptacion } from './propuestas.ts';
 import { destinoPrueba, zonaPrueba } from './mapa.ts';
 import { recalcular } from './reglas.ts';
+import { reservar } from './turnos.ts';
 
 export interface AccionPrueba {
   id: string;
@@ -126,7 +127,11 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         s.nota = 'Operations verificó los documentos. Falta la verificación presencial de antecedentes.';
         break;
       case 'ops_cita':
-        s.perfil.antecedentes = 'cita_coordinada';
+        {
+          const libre = s.turnos.find((t) => t.disponible && Date.parse(t.inicio) > ahoraMs(s));
+          if (libre) reservar(s, libre.id);
+          else s.perfil.antecedentes = 'cita_coordinada';
+        }
         s.nota = 'Operations coordinó una cita presencial.';
         break;
       case 'ops_aprobar':

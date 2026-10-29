@@ -1,8 +1,18 @@
 # Contrato compartido Usuario · Especialista · Portal (lote 1.3)
 
-Versión: **0.4.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+Versión: **0.5.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
 
-**0.3.0 → 0.4.0 (fase 4, lote 4.3, cambios para el dueño del contrato):** mapa, ubicación en vivo y trayectos (`docs/mapa.md`).
+**0.4.0 → 0.5.0 (fase 4, lote 4.4, cambios para el dueño del contrato):** alta guiada.
+- `PerfilEspecialista` suma `citaAntecedentes` (turno reservado o null). Es obligatorio y nullable.
+- Nuevos `TurnoAntecedentes`, `CitaAntecedentes` y `ReservaTurno`. Endpoints `GET /v1/especialista/antecedentes/turnos` y
+  `PUT /v1/especialista/antecedentes/turno`.
+- La máquina de verificación presencial deja que el especialista reserve el turno (`pendiente_cita` o `no_asistio` →
+  `cita_coordinada`). El resultado sigue siendo solo de Operations. **Nunca un archivo del certificado.**
+- `POST /v1/especialista/documentos/dni` suma el campo `dorso` (multipart): el DNI va con frente y dorso.
+- `PUT /v1/especialista/disponibilidad` durante el alta (borrador, corrección, enviada o en revisión) acepta zonas y franjas.
+  `urgentesAhora` y `programados` siguen en false hasta la habilitación (403 `sin_permiso`).
+
+**0.3.0 → 0.4.0 (fase 4, lote 4.3):** mapa, ubicación en vivo y trayectos (`docs/mapa.md`).
 - `PedidoElegible` suma `zonaMapa`: centro ya desplazado por el servidor y radio en metros. Antes del acuerdo, nunca el punto
   exacto.
 - `Trabajo` suma `destino`, con la misma regla que `direccion`.

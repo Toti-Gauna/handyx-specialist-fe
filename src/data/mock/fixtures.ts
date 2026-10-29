@@ -24,6 +24,8 @@ import {
   type TrabajoInterno,
 } from './estado.ts';
 import { BASE_PRUEBA, destinoPrueba, zonaPrueba } from './mapa.ts';
+import { calcularFaltantes } from './reglas.ts';
+import { turnosDePrueba } from './turnos.ts';
 
 const MIN = 60_000;
 const HORA = 60 * MIN;
@@ -75,6 +77,7 @@ const vacioPerfil = (): PerfilEspecialista => ({
   motivoRevision: null,
   documentos: { dni: 'faltante', cuitCuil: 'faltante', fotoCara: 'faltante' },
   antecedentes: 'pendiente_cita',
+  citaAntecedentes: null,
   rubros: [],
   faltantesEnvio: ['datos', 'dni', 'cuitCuil', 'fotoCara', 'rubros'],
   baja: null,
@@ -127,6 +130,7 @@ export function estadoBase(escenario: Escenario): EstadoMock {
     baja: null,
     feeAvisoEn: null,
     viajes: new Map(),
+    turnos: turnosDePrueba(),
     gps: { senal: 'normal', rapido: false, posicion: BASE_PRUEBA, desviar: false },
     idempotencia: new Map(),
     contador: 0,
@@ -224,6 +228,8 @@ export function crearEstado(escenario: Escenario): EstadoMock {
     s.disponibilidad.programados = false;
     s.disponibilidad.zonas = [];
     s.disponibilidad.franjas = [];
+    // Lo que falta lo calcula el servidor (antes quedaba vacío y el resumen decía "Está todo cargado" con el DNI rechazado).
+    s.perfil.faltantesEnvio = calcularFaltantes(s);
     s.avisos.push({
       id: idFijo(0x71),
       tipo: 'cuenta',

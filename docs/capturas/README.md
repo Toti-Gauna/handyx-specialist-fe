@@ -1,10 +1,10 @@
-# Capturas sanitizadas · PWA Especialista (lotes 3.3, 4.2 y 4.3)
+# Capturas sanitizadas · PWA Especialista (lotes 3.3 y 4.2 a 4.4)
 
 Generadas con `npm run build && npm run capturas:docs` (`scripts/capturas-docs.sh`). Datos **sintéticos** del mock, nunca de
 producción. `e2e/capturas.cjs` rechaza la captura si aparece un email que no sea `@example.test`, un DNI/CUIT que no sea de
 prueba, un teléfono o si falta el banner "Datos de prueba" (salvo en las dos pantallas sin datos de la cuenta).
 
-Celular 390×844 en `390x844/` (las 39) y escritorio 1280×800 en `1280x800/` (inicio, pedido, trabajo, agenda, caja y cuenta).
+Celular 390×844 en `390x844/` (las 46) y escritorio 1280×800 en `1280x800/` (inicio, pedido, trabajo, agenda, caja y cuenta).
 
 | Pantalla | Ruta | Escenario |
 |---|---|---|
@@ -17,6 +17,13 @@ Celular 390×844 en `390x844/` (las 39) y escritorio 1280×800 en `1280x800/` (i
 | [recuperar](390x844/recuperar.webp) | `/recuperar/` | `nuevo` |
 | [enlace-vencido](390x844/enlace-vencido.webp) | `/recuperar/nueva/?token=…vencido` | `nuevo` |
 | [alta-borrador](390x844/alta-borrador.webp) | `/alta/` | `incompleto` |
+| [alta-datos](390x844/alta-datos.webp) | `/alta/?paso=datos` | `incompleto` |
+| [alta-identidad](390x844/alta-identidad.webp) | `/alta/?paso=identidad` | `incompleto` |
+| [alta-selfie](390x844/alta-selfie.webp) | `/alta/?paso=selfie` | `incompleto` |
+| [alta-rubros](390x844/alta-rubros.webp) | `/alta/?paso=rubros` | `incompleto` |
+| [alta-zonas](390x844/alta-zonas.webp) | `/alta/?paso=zonas` | `incompleto` |
+| [alta-antecedentes](390x844/alta-antecedentes.webp) | `/alta/?paso=antecedentes` | `incompleto` |
+| [alta-resumen](390x844/alta-resumen.webp) | `/alta/?paso=resumen` | `incompleto` |
 | [alta-en-revision](390x844/alta-en-revision.webp) | `/alta/` | `en_revision` |
 | [alta-correccion](390x844/alta-correccion.webp) | `/alta/` | `correccion` |
 | [alta-rechazada](390x844/alta-rechazada.webp) | `/alta/` | `rechazado` |

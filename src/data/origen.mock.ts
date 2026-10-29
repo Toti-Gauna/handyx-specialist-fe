@@ -2,7 +2,8 @@
 import type { EspecialistaApi } from './api.ts';
 import { crearApiMockConEstado } from './mock/adaptador.ts';
 import { crearControles, type ControlesPrueba } from './mock/controles.ts';
-import type { AyudasPrueba } from './ayudas.ts';
+import type { AyudasPrueba, CamaraPrueba } from './ayudas.ts';
+import { camaraPrueba as camara } from './mock/camara.tsx';
 import type { FuenteUbicacion } from '../lib/ubicacion.ts';
 import { crearGpsSimulado } from './mock/gps.ts';
 import { CODIGO_PRUEBA, CREDENCIALES_PRUEBA, CUENTAS_PROVEEDOR_PRUEBA, ESCENARIOS, TOKEN_RECUPERACION_PRUEBA, TOKEN_VENCIDO_PRUEBA, type Escenario } from './mock/estado.ts';
@@ -32,3 +33,6 @@ export const ayudasPrueba: AyudasPrueba | null = {
   tokenVencido: TOKEN_VENCIDO_PRUEBA,
   cuentasProveedor: CUENTAS_PROVEEDOR_PRUEBA,
 };
+
+/** Cámara simulada del alta (lote 4.4). */
+export const camaraPrueba: CamaraPrueba | null = camara;

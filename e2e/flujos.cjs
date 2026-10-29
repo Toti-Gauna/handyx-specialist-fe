@@ -92,77 +92,113 @@ async function main() {
     await foto('04-cuenta-creada-fee');
     await p.getByRole('button', { name: 'Completar mi alta' }).click();
     await p.waitForURL('**/alta/');
-    // Paso 1: datos (primero con un campo vacío: el error se ve y no se avanza)
-    await p.getByLabel('Nombre', { exact: true }).fill('Persona');
-    await p.getByRole('button', { name: 'Guardar y seguir' }).click();
-    await ver(p, 'Completá este dato para poder enviar tu alta.');
-    await foto('05-alta-datos-error');
-    await p.getByLabel('Apellido').fill('De Prueba');
-    await p.locator('input[type=date]').fill('1990-01-31');
-    await p.getByLabel('Nacionalidad').fill('Argentina');
-    await p.getByLabel('Género').selectOption('otro');
-    await p.getByLabel('Ciudad donde vivís').fill('Mar del Plata');
-    await p.getByRole('button', { name: 'Guardar y seguir' }).click();
-    // Paso 2: identidad
-    await ver(p, 'Tu identidad');
+    // Alta guiada (lote 4.4): lista con anillo de progreso y un paso por pantalla
+    await ver(p, 'Completá tu');
+    await ver(p, 'de 6 listos');
+    await foto('05-alta-inicio');
+    // Paso 1: una pregunta por pantalla (vacía: error y foco en el campo)
+    await p.getByRole('button', { name: /Tus datos/ }).click();
+    await ver(p, '¿Cómo te llamás?');
+    await p.getByRole('button', { name: 'Siguiente' }).click();
+    await ver(p, 'Completá tu nombre.');
+    assert.equal(await p.evaluate(() => document.activeElement?.getAttribute('aria-invalid')), 'true', 'el foco queda en el campo con error');
+    await foto('05b-alta-datos-error');
+    const responder = async (etiqueta, valor) => {
+      await p.getByLabel(etiqueta, { exact: true }).fill(valor);
+      await p.getByRole('button', { name: 'Siguiente' }).click();
+    };
+    await responder('Nombre', 'Persona');
+    await responder('Apellido', 'De Prueba');
+    await responder('Fecha de nacimiento', '1990-01-31');
+    await responder('Nacionalidad', 'Argentina');
+    await p.getByLabel('Otro', { exact: true }).check();
+    await p.getByRole('button', { name: 'Siguiente' }).click();
+    await responder('Ciudad', 'Mar del Plata');
+    await ver(p, 'Pregunta 7 de 7');
+    await p.getByRole('button', { name: 'Listo' }).click();
+    await ver(p, 'de 6 listos');
+    // Paso 2: números, DNI con la cámara (frente y dorso, simulada) y constancia
+    await p.getByRole('button', { name: /DNI y CUIT/ }).click();
     await p.getByLabel('DNI', { exact: true }).fill('30111222');
     await p.getByLabel('CUIT o CUIL', { exact: true }).fill('20301112229');
-    await p.getByRole('button', { name: 'Guardar números' }).click();
-    await ver(p, 'Ya cargaste el número (••••222)');
-    await p.getByRole('button', { name: /Cargar un documento de prueba/ }).first().click();
-    await p.getByRole('button', { name: /Cargar un documento de prueba/ }).first().waitFor({ state: 'detached' }).catch(() => undefined);
-    await ver(p, 'Cargado, sin revisar');
-    await p.getByRole('button', { name: /Cargar un documento de prueba/ }).first().click();
-    await foto('06-alta-identidad');
-    await p.getByRole('button', { name: 'Siguiente' }).click();
-    // Paso 3: rubros con matrícula
-    await p.getByLabel(/Plomería/).check();
-    await p.getByLabel(/Gas/).check();
+    await p.getByRole('button', { name: 'Guardar y seguir' }).click();
+    await ver(p, 'Sacale una foto al frente del DNI');
+    await ver(p, 'Cámara simulada: no se usa la tuya');
+    await foto('06-alta-dni-frente');
+    await p.getByRole('button', { name: 'Sacar foto de prueba' }).click();
+    await p.getByRole('button', { name: 'Seguir con el dorso' }).click();
+    await ver(p, 'Ahora, el dorso');
+    await p.getByRole('button', { name: 'Sacar foto de prueba' }).click();
+    await p.getByRole('button', { name: 'Usar las dos fotos' }).click();
+    await ver(p, 'de CUIT o CUIL');
+    await p.getByRole('button', { name: /Cargar un documento de prueba/ }).click();
+    await p.getByRole('button', { name: /Cargar un documento de prueba/ }).waitFor({ state: 'detached' });
+    await foto('06b-alta-constancia');
+    await p.getByRole('button', { name: 'Listo' }).click();
+    // Paso 3: selfie con óvalo
+    await p.getByRole('button', { name: /Tu foto/ }).click();
+    await p.getByRole('button', { name: 'Sacar foto de prueba' }).click();
+    await foto('07-alta-selfie');
+    await p.getByRole('button', { name: 'Usar esta foto' }).click();
+    await ver(p, 'de 6 listos');
+    // Paso 4: rubros en mosaico; Gas pide matrícula
+    await p.getByRole('button', { name: /Tus rubros/ }).click();
+    await p.getByRole('button', { name: /Plomería/ }).click();
+    await p.getByRole('button', { name: /Gas/ }).click();
     await p.getByRole('button', { name: 'Guardar rubros' }).click();
-    await ver(p, 'Matrícula o certificación · Gas');
-    await foto('07-alta-rubros-matricula');
+    await ver(p, 'Matrícula o certificación');
     await p.getByRole('button', { name: /Cargar un documento de prueba/ }).click();
-    await p.getByRole('button', { name: 'Siguiente' }).click();
-    // Paso 4: foto
-    await p.getByRole('button', { name: /Cargar un documento de prueba/ }).click();
-    await ver(p, 'Cargado, sin revisar');
-    await foto('08-alta-foto');
-    await p.getByRole('button', { name: 'Siguiente' }).click();
-    // Paso 5: antecedentes, sin carga de archivos
-    await ver(p, 'Se verifican en persona');
-    await foto('09-alta-antecedentes');
+    await p.getByRole('button', { name: /Cargar un documento de prueba/ }).waitFor({ state: 'detached' });
+    await foto('08-alta-rubros');
+    await p.getByRole('button', { name: 'Listo' }).click();
+    // Paso 5: zonas en el mapa y horarios en bloques
+    await p.getByRole('button', { name: /Zonas y horarios/ }).click();
+    await p.getByRole('button', { name: 'Centro', exact: true }).click();
+    await p.getByRole('button', { name: 'La Perla', exact: true }).click();
+    await p.getByRole('button', { name: 'Lunes a la mañana' }).click();
+    await p.waitForFunction(() => !document.querySelector('[data-mapa="cargando"]'));
+    await foto('09-alta-zonas');
+    await p.getByRole('button', { name: 'Guardar zonas y horarios' }).click();
+    await ver(p, '2 barrios · 1 franja');
+    // Paso 6: turno de antecedentes, sin carga de archivos
+    await p.getByRole('button', { name: /Antecedentes en persona/ }).click();
+    await ver(p, 'No subas el certificado');
     assert.equal(await p.locator('input[type=file]').count(), 0, 'no hay carga de archivos de antecedentes');
-    await p.getByRole('button', { name: 'Siguiente' }).click();
-    // Paso 6: resumen y envío
-    await foto('10-alta-resumen');
+    await p.locator('.al-horas .hx-chip:not([disabled])').first().click();
+    await p.getByRole('button', { name: /^Reservar el/ }).click();
+    await ver(p, 'Tu turno');
+    await foto('10-alta-turno');
+    await p.getByRole('button', { name: 'Listo' }).click();
+    await ver(p, '6');
+    // Resumen y envío
+    await p.getByRole('button', { name: 'Revisar y enviar' }).click();
+    await ver(p, 'Está todo para enviar');
+    await foto('11-alta-resumen');
     await p.getByRole('button', { name: 'Enviar mi alta a revisión' }).click();
-    await ver(p, 'Alta enviada');
-    await foto('11-alta-enviada');
+    await ver(p, 'Estamos revisando');
+    await foto('12-alta-enviada');
+    assert.equal(await p.getByRole('button', { name: /Cargar/ }).count(), 0, 'enviada no se edita');
     // Operations: con documentos solo cargados no se puede habilitar
     await panel(p, 'Tomar el alta en revisión');
-    await ver(p, 'En revisión');
-    await foto('12-alta-en-revision');
     await panel(p, 'Habilitar');
     await p.getByRole('button', { name: 'Panel de prueba' }).click();
     await ver(p, 'No se puede habilitar');
     await p.keyboard.press('Escape');
-    await panel(p, 'Verificar documentos y matrículas', 'Coordinar cita presencial de antecedentes', 'Aprobar antecedentes (presencial)', 'Habilitar');
-    await ver(p, 'Alta habilitada', { exact: true });
+    // El turno ya está reservado: Operations solo registra el resultado
+    await panel(p, 'Verificar documentos y matrículas', 'Aprobar antecedentes (presencial)', 'Habilitar');
+    await ver(p, 'Tu alta está');
     await foto('13-alta-habilitada');
-    // Primer ingreso a Inicio: modal del fee 0 %
-    await nav(p, 'Inicio');
+    // Empezar → Inicio con el modal del fee 0 %
+    await ir(p, 'Empezar');
     await ver(p, 'Handyx no te cobra tarifa durante la demo');
     await foto('14-modal-fee');
     await p.getByRole('button', { name: 'Entendido' }).click();
     await p.getByRole('heading', { name: 'Handyx no te cobra tarifa durante la demo' }).waitFor({ state: 'detached' });
-    // Sin disponibilidad declarada no hay pedidos
+    // Zonas y horarios ya vienen del alta; recibir pedidos se activa recién ahora
     await ver(p, 'No hay pedidos abiertos ahora');
     await foto('15-inicio-sin-disponibilidad');
     await ir(p, 'Cobertura, días y horarios');
-    await p.getByLabel('Centro').check();
-    await p.getByLabel('La Perla').check();
-    await p.getByRole('button', { name: 'Guardar zonas y horarios' }).click();
-    await ver(p, 'Guardamos tu disponibilidad.');
+    assert.equal(await p.getByLabel('Centro').isChecked(), true, 'las zonas del alta quedaron guardadas');
     await foto('16-disponibilidad');
     await p.getByRole('switch', { name: /programados/i }).click();
     await ver(p, 'Encendido: ves pedidos para otro día');
@@ -432,19 +468,47 @@ async function main() {
     await foto('09-cuenta-preferencias');
   }, { capturas });
 
-  for (const [estado, texto] of [['en_revision', 'En revisión'], ['correccion', 'Hay que corregir algo'], ['rechazado', 'Alta rechazada']]) {
+  for (const [estado, texto] of [['en_revision', 'Estamos revisando'], ['correccion', 'Operations te pidió una corrección'], ['rechazado', 'No pudimos habilitar']]) {
     await escenario(`H-alta-${estado}`, nav_, base, async ({ p, foto }) => {
       await p.goto(`${base}/?escenario=${estado}`);
       // La puerta lleva al alta mientras no esté habilitada
       await p.waitForURL('**/alta/');
       await ver(p, texto);
-      await nav(p, 'Inicio');
+      await foto('01-estado');
+      if (estado === 'en_revision') {
+        assert.equal(await p.getByRole('button', { name: /Cargar/ }).count(), 0, 'en revisión no se edita');
+        // El turno de antecedentes se elige igual mientras Operations revisa
+        await p.getByRole('button', { name: 'Elegir mi turno de antecedentes' }).click();
+        await p.locator('.al-horas .hx-chip:not([disabled])').first().click();
+        await p.getByRole('button', { name: /^Reservar el/ }).click();
+        await ver(p, 'Tu turno');
+        await p.getByRole('button', { name: 'Listo' }).click();
+        await ver(p, 'Turno:');
+        await foto('02-con-turno');
+      }
+      if (estado === 'correccion') {
+        // Lo marcado va primero y con acceso directo; enviar queda bloqueado hasta corregirlo
+        await p.getByRole('button', { name: 'Revisar y volver a enviar' }).click();
+        await ver(p, 'Para enviarla todavía falta');
+        assert.equal(await p.getByRole('button', { name: 'Volver a enviar mi alta' }).isDisabled(), true);
+        await p.goBack();
+        await p.getByRole('button', { name: 'Corregir: DNI y CUIT o CUIL' }).click();
+        await ver(p, 'Sacale una foto al frente del DNI');
+        await ver(p, 'La foto del DNI se ve cortada');
+        await p.getByRole('button', { name: 'Sacar foto de prueba' }).click();
+        await p.getByRole('button', { name: 'Seguir con el dorso' }).click();
+        await p.getByRole('button', { name: 'Sacar foto de prueba' }).click();
+        await p.getByRole('button', { name: 'Usar las dos fotos' }).click();
+        await p.getByRole('button', { name: 'Listo' }).click();
+        await ver(p, 'Ya corregiste lo marcado');
+        await foto('02-corregido');
+        await p.getByRole('button', { name: 'Revisar y volver a enviar' }).click();
+        await p.getByRole('button', { name: 'Volver a enviar mi alta' }).click();
+        await ver(p, 'Estamos revisando');
+      }
+      // Inicio todavía no ofrece pedidos
+      await p.goto(`${base}/inicio/?escenario=${estado}`);
       await ver(p, 'Todavía no recibís pedidos');
-      await foto('01-inicio');
-      await p.getByRole('link', { name: /alta/i }).first().click();
-      await p.waitForURL('**/alta/');
-      await foto('02-estado');
-      if (estado === 'en_revision') assert.equal(await p.getByRole('button', { name: /Cargar/ }).count(), 0, 'en revisión no se edita');
     }, { capturas });
   }
 

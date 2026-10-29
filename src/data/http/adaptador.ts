@@ -3,6 +3,7 @@ import {
   AceptacionSchema,
   AgendaItemSchema,
   AvisoSchema,
+  TurnoAntecedentesSchema,
   BarrioSchema,
   ViajeSchema,
   BajaSchema,
@@ -89,14 +90,17 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
     perfilPublico: () => c.pedir('GET', '/v1/especialista/perfil/publico', PerfilPublicoSchema),
     datosAlta: () => c.pedir('GET', '/v1/especialista/alta/datos', DatosAltaSchema),
     guardarDatosAlta: (datos) => c.pedir('PUT', '/v1/especialista/alta/datos', DatosAltaSchema, { cuerpo: datos }),
-    cargarDocumento(tipo, rubro, archivo) {
+    cargarDocumento(tipo, rubro, archivo, dorso) {
       const f = new FormData();
       if (archivo) f.set('archivo', archivo);
+      if (dorso) f.set('dorso', dorso);
       if (rubro) f.set('rubro', rubro);
       return c.pedir('POST', `/v1/especialista/documentos/${id(tipo)}`, PerfilEspecialistaSchema, { formulario: f });
     },
     elegirRubros: (rubros) => c.pedir('PUT', '/v1/especialista/rubros', PerfilEspecialistaSchema, { cuerpo: { rubros } }),
     enviarAlta: () => c.pedir('POST', '/v1/especialista/alta/envio', PerfilEspecialistaSchema),
+    turnosAntecedentes: () => c.pedir('GET', '/v1/especialista/antecedentes/turnos', z.array(TurnoAntecedentesSchema)),
+    reservarTurno: (turnoId) => c.pedir('PUT', '/v1/especialista/antecedentes/turno', PerfilEspecialistaSchema, { cuerpo: { turnoId } }),
 
     disponibilidad: () => c.pedir('GET', '/v1/especialista/disponibilidad', DisponibilidadSchema),
     actualizarDisponibilidad: (cambio) => c.pedir('PUT', '/v1/especialista/disponibilidad', DisponibilidadSchema, { cuerpo: cambio }),
