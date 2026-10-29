@@ -69,6 +69,10 @@ export function Mapa({ etiqueta, alto = 'medio', interactivo = false, encuadre, 
     // El motor se crea una vez por mapa; las capas se actualizan en el efecto de abajo.
   }, []);
 
+  useEffect(() => {
+    if (estado === 'listo' && lienzo.current) motor.current?.margenAbajo(lienzo.current.clientHeight * tapadoAbajo);
+  }, [estado, tapadoAbajo]);
+
   const clave = JSON.stringify(capas);
   const encuadrePrevio = useRef(encuadre);
   useEffect(() => {

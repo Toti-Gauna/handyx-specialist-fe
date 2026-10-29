@@ -64,7 +64,7 @@ Para las pantallas de la fase 4. Se ven en uso en `/catalogo/` (solo en la vista
 |---|---|---|---|
 | `BarraSuperior` | `Navegacion.tsx` | Barra compacta con "atrás" y acciones; `grande` agrega el título grande que colapsa al bajar | Un solo h1 (el grande, o el de la barra) |
 | `PestanasFlotantes` | `Navegacion.tsx` | Las 4 pestañas raíz, flotantes, con insignia de no leídos | `nav` con `aria-current`; la insignia se lee "sin leer" |
-| `HojaArrastrable` | `HojaArrastrable.tsx` | Hoja no modal sobre el mapa con 3 alturas (34 %, 66 % y 94 %) | La manija es un botón: tocar cambia la altura y las flechas la suben o la bajan; `aria-expanded` |
+| `HojaArrastrable` | `HojaArrastrable.tsx` | Hoja no modal sobre el mapa con 3 alturas (34 %, 66 % y 94 %). `pedida` la mueve desde afuera (En camino la baja al compartir) y `alCambiar` avisa la altura al mapa | La manija es un botón: tocar cambia la altura y las flechas la suben o la bajan; `aria-expanded` |
 | `ProveedorIsla` / `useIsla` | `Efectos.tsx` | Avisos que bajan desde arriba (te eligieron, pedido nuevo, cobro) | `role="status"`; se cierran y no se van con el foco o el dedo encima |
 | `useConfeti` | `Efectos.tsx` | Confeti de mosaicos para celebrar | `aria-hidden`; nada con "reducir movimiento" |
 | `BotonFijo` | `Piezas.tsx` | La acción principal fija abajo, con una nota opcional | — |

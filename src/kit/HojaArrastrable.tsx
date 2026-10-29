@@ -3,7 +3,7 @@
 // No es modal: lo de atrás sigue usable. Tres alturas fijas (un tercio, dos tercios, casi completa).
 // Se mueve arrastrando la manija, tocándola (pasa a la siguiente altura) o con el teclado (flechas, Enter).
 // Las otras confirmaciones (aceptar, rechazar, terminar) siguen usando la Hoja modal de components/Hoja.tsx.
-import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { ALTURAS_HOJA, alturaAlSoltar, siguienteAltura, type AlturaHoja } from './logica.ts';
 
 const TEXTO_ALTURA = ['chica', 'mediana', 'grande'] as const;
@@ -17,8 +17,26 @@ interface Arrastre {
   movido: boolean;
 }
 
-export function HojaArrastrable({ titulo, inicial = 0, children }: { titulo: string; inicial?: AlturaHoja; children: ReactNode }) {
-  const [altura, setAltura] = useState<AlturaHoja>(inicial);
+interface PropsHoja {
+  titulo: string;
+  inicial?: AlturaHoja;
+  /** Cuando cambia, la hoja va a esa altura (por ejemplo, baja al empezar a compartir la ubicación). Se puede seguir moviendo. */
+  pedida?: AlturaHoja;
+  /** Avisa la altura actual (el mapa de atrás deja ese lugar libre al encuadrar). */
+  alCambiar?: (a: AlturaHoja) => void;
+  children: ReactNode;
+}
+
+export function HojaArrastrable({ titulo, inicial = 0, pedida, alCambiar, children }: PropsHoja) {
+  const [altura, setAltura] = useState<AlturaHoja>(pedida ?? inicial);
+  const [pedidaPrevia, setPedidaPrevia] = useState(pedida);
+  if (pedida !== pedidaPrevia) {
+    setPedidaPrevia(pedida);
+    if (pedida !== undefined) setAltura(pedida);
+  }
+  const aviso = useRef(alCambiar);
+  aviso.current = alCambiar;
+  useEffect(() => aviso.current?.(altura), [altura]);
   const [suelta, setSuelta] = useState(true);
   const hoja = useRef<HTMLElement>(null);
   const arrastre = useRef<Arrastre | null>(null);

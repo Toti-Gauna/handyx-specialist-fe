@@ -18,6 +18,7 @@ import { useCompartirUbicacion } from '../hooks/useCompartirUbicacion.ts';
 import { useIdDeUrl } from '../hooks/useIdDeUrl.ts';
 import { useIsla } from '../kit/Efectos.tsx';
 import { HojaArrastrable } from '../kit/HojaArrastrable.tsx';
+import { ALTURAS_HOJA, type AlturaHoja } from '../kit/logica.ts';
 import { BarraSuperior } from '../kit/Navegacion.tsx';
 import { hora } from '../lib/formato.ts';
 import { enlacesNavegacion, loQueFalta, textoDistancia, textoDuracion, type Senal } from '../lib/geo.ts';
@@ -42,6 +43,7 @@ export function EnCamino() {
     return { detalle, viaje: detalle.trabajo.destino ? await api.viaje(id) : null };
   }, [id]);
   const [viajeVivo, setViajeVivo] = useState<Viaje | null>(null);
+  const [alturaHoja, setAlturaHoja] = useState<AlturaHoja>(1);
   const versionTrayecto = useRef<number | null>(null);
 
   function alViaje(v: Viaje) {
@@ -97,11 +99,11 @@ export function EnCamino() {
           alto="completo"
           interactivo
           conCentrar
-          tapadoAbajo={0.66}
+          tapadoAbajo={ALTURAS_HOJA[alturaHoja]}
           destino={t.destino}
           posicion={posicion}
           trayecto={trayecto}
-          encuadre={`${v.trayecto?.version ?? 'sin'}-${posicion ? 'con' : 'sin'}`}
+          encuadre={`${v.trayecto?.version ?? 'sin'}-${posicion ? 'con' : 'sin'}-${alturaHoja}`}
           alternativa={
             <p>
               Destino: <strong>{t.direccion ?? 'dirección del trabajo'}</strong>
@@ -111,7 +113,8 @@ export function EnCamino() {
         />
       </div>
 
-      <HojaArrastrable titulo={enCamino ? 'Tu viaje' : 'El trabajo'} inicial={1}>
+      {/* Mientras explica el permiso, la hoja está alta; al compartir baja, para que se vea el mapa. */}
+      <HojaArrastrable titulo={enCamino ? 'Tu viaje' : 'El trabajo'} pedida={gps.activa ? 0 : 1} alCambiar={setAlturaHoja}>
         <div className="vj-hoja">
           <div className="vj-llegada" aria-live="polite">
             {enCamino && segundos !== null && v.distanciaRestanteM !== null ? (
