@@ -1,16 +1,4 @@
-/* Alta guiada (lote 4.4). Layout de los flujos a pantalla completa (.fl) y piezas del alta (prefijo al-). */
-
-.fl {
-  min-height: 100dvh;
-  background: var(--color-hueso);
-}
-
-.fl-cuerpo {
-  width: 100%;
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 0 var(--esp-4) var(--hx-seguro-abajo);
-}
+/* Alta guiada (lote 4.4). Piezas del alta (prefijo al-); el layout de los flujos está en app/(flujo)/flujo.css. */
 
 .al-inicio,
 .al-paso,

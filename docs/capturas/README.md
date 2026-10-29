@@ -1,10 +1,10 @@
-# Capturas sanitizadas · PWA Especialista (lotes 3.3 y 4.2 a 4.4)
+# Capturas sanitizadas · PWA Especialista (lotes 3.3 y 4.2 a 4.5)
 
 Generadas con `npm run build && npm run capturas:docs` (`scripts/capturas-docs.sh`). Datos **sintéticos** del mock, nunca de
 producción. `e2e/capturas.cjs` rechaza la captura si aparece un email que no sea `@example.test`, un DNI/CUIT que no sea de
 prueba, un teléfono o si falta el banner "Datos de prueba" (salvo en las dos pantallas sin datos de la cuenta).
 
-Celular 390×844 en `390x844/` (las 46) y escritorio 1280×800 en `1280x800/` (inicio, pedido, trabajo, agenda, caja y cuenta).
+Celular 390×844 en `390x844/` (las 48) y escritorio 1280×800 en `1280x800/` (inicio, pedido, trabajo, agenda, caja y cuenta).
 
 | Pantalla | Ruta | Escenario |
 |---|---|---|
@@ -32,6 +32,8 @@ Celular 390×844 en `390x844/` (las 46) y escritorio 1280×800 en `1280x800/` (i
 | [inicio](390x844/inicio.webp) | `/inicio/` | `habilitado` |
 | [disponibilidad](390x844/disponibilidad.webp) | `/disponibilidad/` | `habilitado` |
 | [pedidos](390x844/pedidos.webp) | `/pedidos/` | `habilitado` |
+| [tu-precio](390x844/tu-precio.webp) | `/pedidos/propuesta/?id=…b4` | `habilitado` |
+| [tu-contraoferta](390x844/tu-contraoferta.webp) | `/pedidos/propuesta/?id=…b2&base=…f1` | `habilitado` |
 | [avisos](390x844/avisos.webp) | `/notificaciones/` | `habilitado` |
 | [mensajes](390x844/mensajes.webp) | `/mensajes/` | `habilitado` |
 | [trabajos](390x844/trabajos.webp) | `/trabajos/` | `habilitado` |

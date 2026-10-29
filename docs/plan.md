@@ -95,7 +95,7 @@ la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote
   - Turno presencial de antecedentes.
   - Corrección con acceso directo a cada paso.
   - Celebración al quedar habilitado.
-- [ ] **4.5 Inicio, pedidos y propuesta:**
+- [x] **4.5 Inicio, pedidos y propuesta** (evidencia: recorridos B y N, `docs/screens.md` → C1, C3, C4, D1 y D1b, contrato 0.6.0):
   - Inicio sobre el mapa con "Disponible".
   - Pedido entrante.
   - Precio con **"Handyx sugiere · Vos decidís"** (sugerencia por rubro y tipo, siempre editable).

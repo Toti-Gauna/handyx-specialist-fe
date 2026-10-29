@@ -584,3 +584,39 @@ describe('alta guiada (lote 4.4)', () => {
     assert.deepEqual((await api.perfil()).faltantesEnvio, []);
   });
 });
+
+describe('pedidos, propuesta y avisos (lote 4.5)', () => {
+  it('el detalle trae la sugerencia de Handyx (una ayuda, no un mínimo) y sin trabajo hasta el acuerdo', async () => {
+    const { api } = nuevo();
+    const d = await api.pedido(ID.pProgramado);
+    assert.ok(PedidoDetalleSchema.safeParse(d).success);
+    assert.equal(d.precioSugerido?.monto.centavos, 3_800_000);
+    assert.equal(d.trabajoId, null);
+    // Una propuesta muy por debajo de la sugerencia igual se envía: Handyx sugiere, no impone
+    const p = await api.enviarPropuesta(nuevaPropuesta(api, ID.pObra, 100_000), clave());
+    assert.equal(p.estado, 'pendiente');
+  });
+
+  it('cuando el cliente acepta, llega el aviso "te eligieron" con el trabajo y el detalle lo enlaza', async () => {
+    const { api, controles } = nuevo();
+    await api.enviarPropuesta(nuevaPropuesta(api, ID.pObra), clave());
+    controles.ejecutar('usuario_acepta');
+    const aviso = (await api.avisos()).find((a) => a.tipo === 'te_eligieron');
+    assert.ok(aviso && AvisoSchema.safeParse(aviso).success);
+    assert.equal(aviso.destino.ruta, 'trabajo');
+    const d = await api.pedido(ID.pObra);
+    assert.equal(d.trabajoId, aviso.destino.id);
+    assert.ok(d.trabajoId);
+  });
+
+  it('los avisos se borran de a uno o todos', async () => {
+    const { api } = nuevo();
+    const antes = await api.avisos();
+    assert.ok(antes.length > 1);
+    await api.borrarAviso(antes[0]!.id);
+    assert.equal((await api.avisos()).length, antes.length - 1);
+    await api.borrarAviso('00000000-0000-4000-8000-0000000000ff');
+    await api.borrarAvisos();
+    assert.deepEqual(await api.avisos(), []);
+  });
+});

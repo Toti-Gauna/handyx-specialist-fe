@@ -1,0 +1,200 @@
+/* Inicio sobre el mapa (lote 4.5). Prefijo in-. */
+
+.in {
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.in > * {
+  min-width: 0;
+}
+
+/* Bloque azul con el saludo y "Disponible". */
+.in-hero {
+  display: grid;
+  gap: var(--esp-3);
+  padding: var(--esp-4);
+  border-radius: 28px;
+  background: var(--hd-azul);
+  color: #fff;
+}
+
+.in-hero__hola {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.6rem, 7vw, 2.1rem);
+  overflow-wrap: anywhere;
+}
+
+.in-hero__nota {
+  margin: 0;
+  color: rgb(255 255 255 / 0.85);
+  font-size: 0.9rem;
+}
+
+/* El interruptor grande: el estado se dice con palabras ("Disponible" / "No disponible"), además del color. */
+.in-disponible {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  width: 100%;
+  min-height: 72px;
+  padding: var(--esp-3) var(--esp-4);
+  border: 0;
+  border-radius: 22px;
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--hd-azul-hondo);
+}
+
+.in-disponible:active {
+  translate: 0 4px;
+  box-shadow: none;
+}
+
+.in-disponible[aria-checked='true'] {
+  background: var(--hd-amarillo);
+  color: var(--hd-tinta);
+  box-shadow: 0 4px 0 var(--hd-amarillo-hondo);
+}
+
+.in-disponible:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+.in-disponible__texto {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.in-disponible__texto strong {
+  font-family: var(--fuente-titulos);
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.in-disponible__texto span {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.in-disponible__perilla {
+  position: relative;
+  flex: none;
+  width: 64px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.35);
+}
+
+.in-disponible__perilla::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.in-disponible[aria-checked='true'] .in-disponible__perilla {
+  background: var(--hd-azul);
+}
+
+.in-disponible[aria-checked='true'] .in-disponible__perilla::after {
+  left: 32px;
+}
+
+/* La hoja de abajo se monta sobre el borde del mapa, como en las apps de reparto. */
+.in-hoja {
+  position: relative;
+  display: grid;
+  gap: var(--esp-4);
+  margin-top: calc(-1 * var(--esp-5));
+  padding: var(--esp-4);
+  border-radius: 28px 28px 0 0;
+  background: var(--color-hueso);
+  box-shadow: 0 -10px 24px -18px rgb(14 29 54 / 0.45);
+}
+
+.in-hoja > * {
+  min-width: 0;
+}
+
+.in-enlace {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque-min);
+}
+
+.in-seccion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--esp-2);
+  margin-bottom: var(--esp-2);
+}
+
+.in-seccion h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.in-seccion a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque-min);
+}
+
+.in-mosaicos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--esp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.in-mosaico {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  height: 100%;
+  padding: var(--esp-3);
+  border-radius: var(--hx-radio-mosaico);
+  background: var(--hd-mosaico);
+  color: var(--hd-tinta);
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 var(--hx-base-boton) 0 var(--hd-mosaico-hondo);
+  overflow-wrap: anywhere;
+}
+
+.in-mosaico__dato {
+  font-family: var(--fuente-titulos);
+  font-size: 1.4rem;
+  font-weight: 900;
+}
+
+.in-mosaico small {
+  color: var(--hd-suave);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .in-disponible__perilla::after {
+    transition: left 0.25s var(--hx-salida);
+  }
+  .in-disponible {
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+}

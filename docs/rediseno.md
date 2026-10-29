@@ -263,6 +263,9 @@ Sin entrada por teléfono ni SMS. En el mock, Google y Apple se simulan con un b
 
 ### 4.5 · Inicio, pedidos y propuesta
 
+**Estado: hecho (29/10/2026).** Las fotos del pedido quedan para cuando el contrato las tenga (hoy `PedidoElegible` no
+trae fotos): el detalle y el pedido entrante muestran la zona, la descripción y la fecha pedida.
+
 1. **Inicio sobre el mapa**:
    - Bloque azul con saludo e interruptor grande "Disponible" (urgentes Ahora).
    - Hoja con "Pedidos para vos" y "Tu próximo trabajo".

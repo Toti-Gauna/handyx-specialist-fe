@@ -1,0 +1,123 @@
+/* Pedidos y propuestas (lote 4.5): estado de mi propuesta, pedido entrante y bandeja. Prefijos mp-, pe-, ba-. */
+
+.mp {
+  display: grid;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.mp > * {
+  min-width: 0;
+}
+
+.mp p {
+  margin: 0;
+}
+
+.mp__titulo {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--hd-tinta);
+}
+
+.mp--esperando {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--esp-3);
+  background: var(--hd-azul-tinte);
+  box-shadow: none;
+}
+
+.mp--esperando > div {
+  display: grid;
+  gap: 6px;
+}
+
+.mp--eligieron {
+  justify-items: center;
+  text-align: center;
+}
+
+.mp--eligieron .mp__titulo {
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
+.mp--eligieron .boton {
+  justify-self: stretch;
+}
+
+/* "Esta vez no": en gris, sin rojo ni culpa. */
+.mp--cerrada {
+  background: var(--hd-mosaico);
+  box-shadow: none;
+  color: var(--hd-texto);
+}
+
+.pd-precio__texto {
+  display: grid;
+  justify-items: start;
+  text-align: left;
+}
+
+.pd-sugiere {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+/* ── Pedido entrante (hoja sobre el inicio) ───────────────────────── */
+
+.pe {
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.pe > * {
+  min-width: 0;
+}
+
+.pe__rubro {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--hd-tinta);
+}
+
+.pe__zona,
+.pe__vigencia {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--hd-suave);
+}
+
+.pe__descripcion {
+  margin: 0;
+}
+
+/* ── Bandeja ──────────────────────────────────────────────────────── */
+
+.ba-orden {
+  display: grid;
+  gap: 6px;
+}
+
+.ba-orden p {
+  margin: 0;
+}
+
+.ba-distancia {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--hd-azul);
+  font-size: 0.85rem;
+  font-weight: 700;
+}

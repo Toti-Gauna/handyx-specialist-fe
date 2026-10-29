@@ -110,6 +110,9 @@ export interface EspecialistaApi {
   pedido(id: string): Promise<PedidoDetalle>;
   avisos(): Promise<Aviso[]>;
   marcarAvisoLeido(id: string): Promise<void>;
+  /** Borrar un aviso o todos (0.6.0). Lo importante no se pierde: sigue en su pantalla (pedido, trabajo, caja…). */
+  borrarAviso(id: string): Promise<void>;
+  borrarAvisos(): Promise<void>;
 
   // Propuestas
   enviarPropuesta(datos: NuevaPropuesta, clave: ClaveIdempotencia): Promise<Propuesta>;

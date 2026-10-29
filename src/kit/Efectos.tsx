@@ -2,6 +2,7 @@
 // Isla de avisos y confeti (lote 4.1). La isla anuncia por lector de pantalla y se puede cerrar; si se apoya el dedo o
 // el foco encima, no se va. Todo lo que dice la isla también queda en Avisos: nada importante vive solo acá.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { Icono, type NombreIcono } from '../components/Icono.tsx';
 import { sinMovimiento } from './movimiento.ts';
@@ -11,6 +12,8 @@ export interface AvisoIsla {
   texto?: string;
   icono?: NombreIcono;
   tono?: 'azul' | 'exito' | 'amarillo';
+  /** Un enlace para ir directo (lote 4.5: "Ver el trabajo" cuando te eligieron). */
+  accion?: { texto: string; href: string };
 }
 
 const CtxIsla = createContext<((a: AvisoIsla) => void) | null>(null);
@@ -47,6 +50,11 @@ export function ProveedorIsla({ children }: { children: ReactNode }) {
             <span className="hx-isla__texto">
               <strong>{aviso.titulo}</strong>
               {aviso.texto ? <small>{aviso.texto}</small> : null}
+              {aviso.accion ? (
+                <Link className="hx-isla__accion" href={aviso.accion.href} onClick={() => setAviso(null)}>
+                  {aviso.accion.texto}
+                </Link>
+              ) : null}
             </span>
             <button type="button" className="hx-circulo" aria-label="Cerrar el aviso" onClick={() => setAviso(null)}>
               <Icono nombre="cerrar" />

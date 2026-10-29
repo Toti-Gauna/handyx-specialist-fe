@@ -1,4 +1,4 @@
-# Catálogo de componentes · PWA Especialista (lotes 3.3 y 4.1 a 4.4)
+# Catálogo de componentes · PWA Especialista (lotes 3.3 y 4.1 a 4.5)
 
 Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila dice dónde verlo en
 `docs/capturas/390x844/` (todas con datos sintéticos; ver `docs/capturas/README.md`).
@@ -45,7 +45,10 @@ Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila d
 | `Hoja` | Confirmación en `<dialog>` modal: foco atrapado y circular, Escape cierra si es cerrable, entra deslizando | (diálogos en `npm run accesibilidad`) |
 | `TarjetaPedido` | Enlace al detalle; nunca acepta. Tipo → rubro → zona y fecha → descripción → búsqueda | `pedidos`, `inicio` |
 | `TarjetaPropuesta` | Monto, horario, alcance y "Vence en" neutro; aceptar verde y rechazar en contorno rojo, con confirmación | `pedido-programado` |
-| `FormPropuesta` / `FormCambio` | Montos en centavos enteros, `Idempotency-Key` estable al reintentar | (hojas) |
+| `FormPropuesta` / `FormCambio` | Montos en centavos enteros, `Idempotency-Key` estable al reintentar. Desde el 4.5 la propuesta del pedido va por la pantalla Tu precio; `FormPropuesta` queda en el chat hasta su lote | (hojas) |
+| `EstadoMiPropuesta` (4.5) | Esperando al cliente (Handy, monto y "Vence en"); ¡El cliente te eligió! (confeti solo si se vio el cambio, abre el trabajo); no te eligieron, venció o retirada en gris, sin culpa | `tu-precio`, recorrido N |
+| `PedidoEntrante` (4.5) | Hoja con el urgente nuevo: rubro, zona aproximada, descripción y vigencia neutra. "Ver y cotizar" abre el detalle; "Ahora no" deja pasar los urgentes de ahora (en memoria) y nunca rechaza | recorrido B |
+| `VigiaAvisos` (4.5) | Consulta los avisos cada 20 s en la app y, ante un "te eligieron" nuevo, muestra la isla con "Ver el trabajo" y confeti | recorrido N |
 | `CuentaRegresiva` | Texto neutro; al llegar a cero pide el estado al servidor | `pedido-programado` |
 | `AccionTrabajo` | Una acción primaria por estado ("Salgo hacia el lugar", "Llegué", "Terminé el trabajo") | `trabajo-agendado` |
 | `ControlDisponibilidad` | "Ahora" y programados revocables al instante | `inicio`, `disponibilidad` |
@@ -65,7 +68,7 @@ Para las pantallas de la fase 4. Se ven en uso en `/catalogo/` (solo en la vista
 | `BarraSuperior` | `Navegacion.tsx` | Barra compacta con "atrás" y acciones; `grande` agrega el título grande que colapsa al bajar | Un solo h1 (el grande, o el de la barra) |
 | `PestanasFlotantes` | `Navegacion.tsx` | Las 4 pestañas raíz, flotantes, con insignia de no leídos | `nav` con `aria-current`; la insignia se lee "sin leer" |
 | `HojaArrastrable` | `HojaArrastrable.tsx` | Hoja no modal sobre el mapa con 3 alturas (34 %, 66 % y 94 %). `pedida` la mueve desde afuera (En camino la baja al compartir) y `alCambiar` avisa la altura al mapa | La manija es un botón: tocar cambia la altura y las flechas la suben o la bajan; `aria-expanded` |
-| `ProveedorIsla` / `useIsla` | `Efectos.tsx` | Avisos que bajan desde arriba (te eligieron, pedido nuevo, cobro) | `role="status"`; se cierran y no se van con el foco o el dedo encima |
+| `ProveedorIsla` / `useIsla` | `Efectos.tsx` | Avisos que bajan desde arriba (te eligieron, pedido nuevo, cobro); `accion` agrega un enlace ("Ver el trabajo") | `role="status"`; se cierran y no se van con el foco o el dedo encima |
 | `useConfeti` | `Efectos.tsx` | Confeti de mosaicos para celebrar | `aria-hidden`; nada con "reducir movimiento" |
 | `BotonFijo` | `Piezas.tsx` | La acción principal fija abajo, con una nota opcional | — |
 | `Mosaico` | `Piezas.tsx` | Rubros, zonas, franjas: azul con tilde cuando está elegido. Las palabras largas cortan con guion si no entran (texto al 200 %) | `aria-pressed` |

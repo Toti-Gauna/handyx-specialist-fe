@@ -40,7 +40,9 @@ el trayecto no se puede calcular (la app ofrece Google Maps o Waze).
 | Rubro habilitado vs no habilitado | Gas sin matrícula verificada queda "Falta la matrícula" y no recibe pedidos; aire acondicionado no elegido no existe para vos | `mock.test` · E2E B |
 | Verificación pendiente / corrección | Escenarios *En revisión* (línea de tiempo) y *Requiere corrección* (acceso directo a lo marcado, enviar bloqueado hasta corregir) | E2E H |
 | Antecedentes presenciales pendientes | Paso "Antecedentes": elegir turno, sin carga de archivos; resultado desde el panel (Operations) | E2E A · H |
-| Disponible / revocado | Interruptores de Inicio y Disponibilidad; apagar "Ahora" corta la oferta de urgentes | E2E B |
+| Disponible / revocado | Interruptor grande "Disponible" del inicio y Disponibilidad; prenderlo muestra el pedido entrante ("Ver y cotizar" / "Ahora no", que nunca acepta ni rechaza); apagar corta la oferta de urgentes | E2E B |
+| Precio sugerido y te eligieron | "Poner mi precio": Handyx sugiere (con su fuente), el precio lo decidís vos; panel › *Acepta tu última propuesta*: aviso "¡El cliente te eligió!", isla con "Ver el trabajo" y confeti solo en la transición | E2E B · N · `mock.test` |
+| Bandeja por cercanía y avisos | Bandeja › *Más cerca* (la ubicación no se manda); Avisos › borrar uno (deslizar o botón) y *Borrar todos* con confirmación | E2E N |
 | Pedido urgente con opt-in apagado | Panel › *Entra un pedido urgente nuevo*: la nota aclara que no lo ves | `mock.test` |
 | Propuesta vencida / rechazada | Panel › reloj (+5 min) y *Rechaza tu última propuesta*; chips "Venció" y "Rechazada" | `mock.test` |
 | Contrapropuesta | *Contraofertar* en la propuesta del usuario, o el panel › *Te contraoferta* | `mock.test` |

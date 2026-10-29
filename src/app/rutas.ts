@@ -33,7 +33,8 @@ export const RUTAS = {
     nav: { icono: 'casa', texto: 'Inicio' },
   },
   pedidos: { ruta: '/pedidos/', titulo: 'Pedidos', lote: '2.2', descripcion: 'Bandeja de pedidos urgentes y programados.' },
-  pedido: { ruta: '/pedidos/detalle/', titulo: 'Pedido', lote: '2.3', descripcion: 'Detalle, propuesta, contrapropuesta y vencimiento.' },
+  pedido: { ruta: '/pedidos/detalle/', titulo: 'Pedido', lote: '4.5', descripcion: 'Detalle con la zona, esperando al cliente, te eligió o no, y la propuesta del cliente.' },
+  tuPrecio: { ruta: '/pedidos/propuesta/', titulo: 'Tu precio', lote: '4.5', descripcion: 'Cuándo podés ir, "Handyx sugiere · Vos decidís", qué incluye y cuánto recibís (también para contraofertar).' },
   trabajos: {
     ruta: '/trabajos/',
     titulo: 'Mis trabajos',

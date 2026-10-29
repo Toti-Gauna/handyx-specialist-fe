@@ -71,7 +71,8 @@ async function main() {
   // Diálogos de decisión y formularios en hojas
   const dialogos = [
     ['hoja-aceptar', `/pedidos/detalle/?id=${id(0xb2)}`, 'Aceptar propuesta', '¿Aceptar esta propuesta?'],
-    ['hoja-propuesta', `/pedidos/detalle/?id=${id(0xb4)}`, 'Enviar una propuesta', 'Tu precio (en pesos)'],
+    ['hoja-borrar-avisos', '/notificaciones/', 'Borrar todos', '¿Borrar todos los avisos?'],
+    ['hoja-pedido-entrante', '/inicio/', 'No disponible', 'Pedido urgente para vos'],
     ['hoja-cancelar', `/trabajos/detalle/?id=${id(0xc1)}`, 'Cancelar este trabajo', '¿Cancelar este trabajo?'],
     ['hoja-cambio', `/trabajos/detalle/?id=${id(0xc1)}`, 'Proponer otra fecha o cambio', 'Nueva fecha y hora'],
     ['hoja-baja', '/cuenta/', 'Eliminar mi cuenta y mis datos', '¿Eliminar tu cuenta?'],
@@ -80,7 +81,8 @@ async function main() {
   for (const [nombre, ruta, boton, espera] of dialogos) {
     const p = await ctx.newPage();
     await p.goto(`${base}${ruta}`);
-    await p.getByRole('button', { name: boton }).first().click();
+    // El pedido entrante se abre al prender "Disponible", que es un interruptor (role=switch)
+    await p.getByRole('button', { name: boton }).or(p.getByRole('switch', { name: boton })).first().click();
     await p.getByText(espera).first().waitFor({ timeout: 8000 });
     await auditar(p, nombre, violaciones);
     await areas(p, nombre, tactiles);
@@ -137,7 +139,7 @@ async function main() {
   {
     const p = await ctx.newPage();
     await p.goto(`${base}/inicio/`);
-    await p.getByText('Tu disponibilidad').first().waitFor();
+    await p.getByText('Pedidos para vos').first().waitFor();
     const vistos = new Set();
     for (let i = 0; i < 40; i++) {
       await p.keyboard.press('Tab');

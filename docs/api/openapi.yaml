@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: api-especialista (Handyx)
-  version: 0.5.0
+  version: 0.6.0
   description: |
     BORRADOR del contrato de api-especialista (TECH-20). Fuente de los esquemas: src/contracts/dto.ts
-    (contrato compartido v0.5.0, dueño handyx-client-be). Nada implementado todavía: lo construye
+    (contrato compartido v0.6.0, dueño handyx-client-be). Nada implementado todavía: lo construye
     handyx-specialist-be en la fase 4. Sesión por cookie HttpOnly; CSRF en X-CSRF-Token para mutaciones;
     Idempotency-Key (UUIDv4) donde se indica. Timestamps UTC; importes en centavos enteros.
 servers:
@@ -685,6 +685,19 @@ paths:
         '200':
           description: Avisos
           content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Aviso' } } } }
+    delete:
+      tags: [pedidos]
+      summary: Borrar todos los avisos (0.6.0). Lo importante sigue en su pantalla (pedido, trabajo, caja)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '204': { description: Borrados }
+  /v1/especialista/avisos/{id}:
+    delete:
+      tags: [pedidos]
+      summary: Borrar un aviso (0.6.0). Uno ajeno o inexistente responde igual
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '204': { description: Borrado }
   /v1/especialista/avisos/{id}/leido:
     post:
       tags: [pedidos]
@@ -1358,7 +1371,7 @@ components:
       required: [id, tipo, titulo, cuerpo, creadoEn, leido, destino]
       properties:
         id: { type: string, format: uuid }
-        tipo: { type: string, enum: [pedido_urgente, pedido_programado, propuesta, mensaje, trabajo, pago, soporte, cuenta] }
+        tipo: { type: string, enum: [pedido_urgente, pedido_programado, propuesta, te_eligieron, mensaje, trabajo, pago, soporte, cuenta] }
         titulo: { type: string }
         cuerpo: { type: string, description: Sin datos personales }
         creadoEn: { $ref: '#/components/schemas/Instante' }
@@ -1388,10 +1401,22 @@ components:
       allOf:
         - { $ref: '#/components/schemas/PedidoElegible' }
         - type: object
-          required: [conversacionId, propuestas]
+          required: [conversacionId, propuestas, precioSugerido, trabajoId]
           properties:
             conversacionId: { type: [string, 'null'], format: uuid }
             propuestas: { type: array, items: { $ref: '#/components/schemas/Propuesta' } }
+            precioSugerido:
+              description: '"Handyx sugiere" por rubro y tipo (0.6.0). Una ayuda, nunca un mínimo ni un máximo'
+              oneOf: [{ $ref: '#/components/schemas/PrecioSugerido' }, { type: 'null' }]
+            trabajoId: { type: [string, 'null'], format: uuid, description: el trabajo que salió de MI propuesta aceptada (0.6.0) }
+    PrecioSugerido:
+      type: object
+      additionalProperties: false
+      required: [monto, fuente, version]
+      properties:
+        monto: { $ref: '#/components/schemas/Monto' }
+        fuente: { type: string }
+        version: { type: string }
     TrabajoDetalle:
       type: object
       additionalProperties: false

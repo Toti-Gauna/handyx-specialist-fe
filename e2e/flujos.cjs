@@ -212,44 +212,99 @@ async function main() {
   await escenario('B-opt-in-urgente-y-propuesta', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/`);
     await p.waitForURL('**/inicio/');
-    await ver(p, 'Tu disponibilidad');
+    await ver(p, 'Pedidos para vos');
+    await ver(p, 'No disponible');
+    await foto('00-inicio');
     await p.getByRole('link', { name: 'Ver todos' }).click();
     await p.waitForURL('**/pedidos/');
     await ver(p, 'Cambiar el flexible del inodoro');
-    assert.equal(await p.getByText('Pérdida debajo de la bacha').count(), 0, 'con "Ahora" apagado no hay urgentes');
-    await ver(p, 'Tenés los pedidos urgentes apagados');
+    assert.equal(await p.getByText('Pérdida debajo de la bacha').count(), 0, 'con "Disponible" apagado no hay urgentes');
+    await ver(p, 'No estás disponible para urgentes');
     await foto('01-pedidos-sin-urgentes');
-    // Encender "Ahora": aparecen los urgentes
-    await p.getByRole('link', { name: 'Cambiarlo en mi disponibilidad' }).click();
-    await p.getByRole('switch', { name: /urgentes/i }).click();
-    await ver(p, 'Encendido: te ofrecemos pedidos urgentes');
-    await foto('02-disponibilidad-ahora');
+    // Encender "Disponible" en el inicio: aparece el pedido entrante, que nunca acepta solo
     await nav(p, 'Inicio');
-    await p.getByRole('link', { name: 'Ver todos' }).click();
-    await p.waitForURL('**/pedidos/');
-    await ver(p, 'Pérdida debajo de la bacha');
-    await foto('03-pedidos-con-urgente');
-    // Detalle del urgente: nada de datos exactos, y se envía una propuesta
-    await p.getByText('Pérdida debajo de la bacha').click();
+    await p.getByRole('switch', { name: /urgentes/i }).first().click();
+    await ver(p, 'Pedido urgente para vos');
+    await ver(p, 'Búsqueda abierta · quedan');
+    await foto('02-pedido-entrante');
+    await p.getByRole('link', { name: 'Ver y cotizar' }).click();
+    await p.waitForURL('**/pedidos/detalle/**');
     await ver(p, 'Todavía no ves el nombre ni la dirección exacta');
-    await foto('04-pedido-urgente');
-    await p.getByRole('button', { name: 'Enviar una propuesta' }).click();
-    await p.getByLabel('Tu precio (en pesos)').fill('45.000');
-    await ver(p, 'Handyx no te cobra tarifa (0 %)');
-    await p.getByLabel('Qué incluye').fill('Reparación de la pérdida, materiales incluidos');
-    await foto('05-hoja-propuesta');
-    await p.getByRole('button', { name: 'Enviar propuesta' }).click();
+    await ver(p, 'Handyx sugiere $ 45.000');
+    await foto('03-pedido-urgente');
+    // Tu precio: cuándo, el sugerido con atajos, qué incluye y lo que recibís (fee 0 %)
+    await p.getByRole('link', { name: /Poner mi precio/ }).click();
+    await p.waitForURL('**/pedidos/propuesta/**');
+    await ver(p, '¿Cuándo podés ir?');
+    await p.getByRole('button', { name: /^En 1 hora/ }).click();
+    await p.getByRole('button', { name: '+ $ 2.000' }).click();
+    await ver(p, '$ 47.000');
+    await ver(p, 'Handyx no te cobra tarifa');
+    await p.getByRole('button', { name: 'Materiales incluidos' }).click();
+    await foto('04-tu-precio');
+    await p.getByRole('button', { name: 'Enviar propuesta de $ 47.000' }).click();
+    await p.waitForURL('**/pedidos/detalle/**');
+    await ver(p, 'Esperando al cliente');
     await ver(p, 'Vence en');
-    await ver(p, '$ 45.000');
-    await foto('06-propuesta-enviada');
-    // Revocar "Ahora" corta la oferta
+    await foto('05-esperando');
+    // Revocar "Disponible" corta la oferta
     await nav(p, 'Cuenta');
     await p.getByRole('link', { name: 'Mi disponibilidad y cobertura' }).click();
     await p.getByRole('switch', { name: /urgentes/i }).click();
     await ver(p, 'Apagado: no te ofrecemos pedidos urgentes');
-    await foto('07-ahora-apagado');
+    await foto('06-ahora-apagado');
     await nav(p, 'Inicio');
-    await ver(p, 'Tus pedidos urgentes están apagados').catch(() => undefined);
+    await ver(p, 'No disponible');
+  }, { capturas });
+
+  await escenario('N-te-eligieron-bandeja-y-avisos', nav_, base, async ({ p, foto }) => {
+    await p.goto(`${base}/pedidos/detalle/?id=00000000-0000-4000-8000-0000000000b4&escenario=habilitado`);
+    await p.getByRole('link', { name: /Poner mi precio/ }).click();
+    await p.waitForURL('**/pedidos/propuesta/**');
+    // Sin qué incluye no se manda: el foco va al campo
+    await p.locator('#tp-alcance textarea').fill('');
+    await p.getByRole('button', { name: /^Enviar propuesta/ }).click();
+    await p.waitForFunction(() => document.activeElement?.matches('#tp-alcance textarea'));
+    await p.locator('#tp-alcance textarea').fill('Visita para ver la medianera y presupuestar');
+    await p.getByRole('button', { name: /^Enviar propuesta/ }).click();
+    await p.waitForURL('**/pedidos/detalle/**');
+    await ver(p, 'Esperando al cliente');
+    // El cliente elige: isla con enlace, confeti solo en la transición y el trabajo se abre desde acá
+    await panel(p, 'Acepta tu última propuesta');
+    await ver(p, '¡El cliente te eligió!');
+    await p.getByRole('link', { name: 'Ver el trabajo' }).first().waitFor();
+    assert.equal(await p.getByText('La búsqueda terminó', { exact: true }).count(), 0, 'te eligieron: no se muestra "la búsqueda terminó"');
+    await foto('01-te-eligieron');
+    await p.locator('main').getByRole('link', { name: 'Ver el trabajo' }).click();
+    await p.waitForURL('**/trabajos/detalle/**');
+    await ver(p, 'Agendado');
+    await foto('02-trabajo');
+    // Bandeja: filtros en chips y orden por cercanía (calculada en el teléfono)
+    await nav(p, 'Inicio');
+    await p.getByRole('link', { name: 'Ver todos' }).click();
+    await p.waitForURL('**/pedidos/');
+    await p.getByRole('button', { name: 'Más cerca' }).click();
+    await ver(p, /A unos .* de vos/);
+    await ver(p, 'Tu ubicación se usa solo en el teléfono');
+    await foto('03-bandeja-cerca');
+    await p.getByRole('button', { name: /^Programados/ }).click();
+    assert.equal(await p.getByText('Revoque y pintura').count(), 0, 'el filtro Programados deja afuera las obras');
+    // Avisos: Nuevos / Antes, borrar uno (botón accesible) y "Borrar todos" con confirmación
+    await p.locator('header').getByRole('link', { name: /Avisos/ }).first().click();
+    await p.waitForURL('**/notificaciones/');
+    await ver(p, 'Nuevos', { exact: true });
+    await ver(p, 'Antes', { exact: true });
+    await foto('04-avisos');
+    const antes = await p.locator('.av-item').count();
+    await p.getByRole('button', { name: /^Borrar el aviso: ¡El cliente te eligió!/ }).click();
+    await ver(p, 'Borraste el aviso');
+    await p.waitForFunction((n) => document.querySelectorAll('.av-item').length === n - 1, antes);
+    await p.getByRole('button', { name: 'Borrar todos' }).click();
+    await ver(p, '¿Borrar todos los avisos?');
+    await foto('05-borrar-todos');
+    await p.getByRole('button', { name: 'Sí, borrar todos' }).click();
+    await ver(p, 'No tenés avisos');
+    await foto('06-sin-avisos');
   }, { capturas });
 
   await escenario('C-aceptar-propuesta-y-trabajo', nav_, base, async ({ p, foto }) => {

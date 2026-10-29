@@ -1,4 +1,4 @@
-// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.5.0, borrador; versión en version.ts).
+// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.6.0, borrador; versión en version.ts).
 // El servidor valida con los mismos esquemas; el cliente valida cada respuesta y trata un desajuste
 // como error de contrato (nunca lo "arregla" con datos de muestra). OpenAPI: docs/api/openapi.yaml.
 import { z } from 'zod';
@@ -388,6 +388,8 @@ export const TIPOS_AVISO = [
   'pedido_urgente',
   'pedido_programado',
   'propuesta',
+  /** El cliente aceptó tu propuesta (0.6.0): el destino es el trabajo nuevo. */
+  'te_eligieron',
   'mensaje',
   'trabajo',
   'pago',
@@ -426,10 +428,25 @@ export const InicioSchema = z.strictObject({
 export type Inicio = z.infer<typeof InicioSchema>;
 
 // ── Detalle de pedido (con el hilo de propuestas) ────────────────────────────────────────────────
+// "Handyx sugiere · Vos decidís" (0.6.0): una referencia por rubro y tipo de pedido. Es una ayuda: nunca un mínimo ni un
+// máximo, y el servidor no rechaza una propuesta por estar lejos de la sugerencia.
+export const PrecioSugeridoSchema = z.strictObject({
+  monto: MontoSchema,
+  /** De dónde sale (por ejemplo, la tabla de referencia de Handyx) para que se pueda explicar. */
+  fuente: z.string(),
+  /** Versión de la tabla: cambia cuando Handyx actualiza las referencias. */
+  version: z.string(),
+});
+export type PrecioSugerido = z.infer<typeof PrecioSugeridoSchema>;
+
 export const PedidoDetalleSchema = PedidoElegibleSchema.extend({
   /** Chat disponible desde la primera cotización, antes de contratar. */
   conversacionId: IdSchema.nullable(),
   propuestas: z.array(PropuestaSchema),
+  /** Null si no hay referencia para ese rubro y tipo (0.6.0). */
+  precioSugerido: PrecioSugeridoSchema.nullable(),
+  /** El trabajo que salió de MI propuesta aceptada (0.6.0); null en cualquier otro caso. */
+  trabajoId: IdSchema.nullable(),
 });
 export type PedidoDetalle = z.infer<typeof PedidoDetalleSchema>;
 

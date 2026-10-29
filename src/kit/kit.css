@@ -334,6 +334,10 @@
   list-style: none;
 }
 
+.hx-chips > li {
+  max-width: 100%;
+}
+
 .hx-chips--carril {
   flex-wrap: nowrap;
   margin-inline: calc(-1 * var(--esp-4));
@@ -360,13 +364,17 @@
   min-height: var(--toque-min);
   padding: 0 16px;
   border: 0;
-  border-radius: 999px;
   background: #fff;
   color: var(--hd-tinta);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
-  white-space: nowrap;
+  /* Un chip largo (o con el texto al 200 %) se parte en dos líneas en vez de salirse de la pantalla. */
+  max-width: 100%;
+  padding-block: 6px;
+  border-radius: 22px;
+  text-align: left;
+  overflow-wrap: anywhere;
   cursor: pointer;
   box-shadow: 0 3px 0 var(--hd-mosaico-hondo);
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.25s var(--hx-resorte), box-shadow 0.12s ease;
@@ -1110,6 +1118,20 @@
   color: rgb(255 255 255 / 0.78);
   font-size: 0.82rem;
   line-height: 1.3;
+}
+
+.hx-isla__accion {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque-min);
+  margin-top: 4px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--hd-tinta);
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .hx-isla .hx-circulo {

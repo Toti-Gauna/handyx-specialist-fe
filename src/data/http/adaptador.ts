@@ -112,6 +112,12 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
     async marcarAvisoLeido(aid) {
       await c.pedir('POST', `/v1/especialista/avisos/${id(aid)}/leido`, Nada);
     },
+    async borrarAviso(aid) {
+      await c.pedir('DELETE', `/v1/especialista/avisos/${id(aid)}`, Nada);
+    },
+    async borrarAvisos() {
+      await c.pedir('DELETE', '/v1/especialista/avisos', Nada);
+    },
 
     enviarPropuesta: (datos, clave) => c.pedir('POST', '/v1/especialista/propuestas', PropuestaSchema, { cuerpo: datos, idempotencyKey: clave }),
     responderPropuesta: (pid, accion, version, clave) =>

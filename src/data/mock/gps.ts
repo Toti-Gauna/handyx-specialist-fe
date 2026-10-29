@@ -47,9 +47,13 @@ export function crearGpsSimulado(s: EstadoMock): FuenteUbicacion {
         const punto = imprecisa ? desplazar(g.posicion, 120 + Math.random() * 120, Math.random() * 360) : g.posicion;
         alLeer({ punto, precisionM: imprecisa ? 250 : 8 + Math.random() * 6, enMs: Date.now() });
       };
-      paso();
+      // Como el GPS real, la primera lectura llega después de pedirla (nunca en el mismo instante).
+      const primera = setTimeout(paso, 0);
       const id = setInterval(paso, TICK_MS);
-      return () => clearInterval(id);
+      return () => {
+        clearTimeout(primera);
+        clearInterval(id);
+      };
     },
   };
 }

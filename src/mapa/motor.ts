@@ -10,6 +10,8 @@ import { COLORES_MAPA, estiloHandyx, type MetaTeselas } from './estilo.ts';
 
 export interface CapasMapa {
   zona?: ZonaMapa | null;
+  /** Varias zonas aproximadas a la vez (los pedidos abiertos en el inicio, lote 4.5). */
+  zonas?: readonly ZonaMapa[] | null;
   destino?: Punto | null;
   posicion?: { punto: Punto; precisionM: number } | null;
   trayecto?: readonly Punto[] | null;
@@ -174,7 +176,7 @@ export async function crearMotor(o: OpcionesMotor): Promise<Motor | null> {
     if (c.trayecto) pts.push(...c.trayecto);
     if (c.destino) pts.push(c.destino);
     if (c.posicion) pts.push(c.posicion.punto);
-    if (c.zona) pts.push(...circulo(c.zona.centro, c.zona.radioM, 8));
+    for (const z of [...(c.zona ? [c.zona] : []), ...(c.zonas ?? [])]) pts.push(...circulo(z.centro, z.radioM, 8));
     if (c.cobertura) for (const b of c.cobertura) pts.push(b.centro);
     if (c.radar) pts.push(c.radar);
     if (pts.length === 0) return null;
@@ -217,7 +219,7 @@ export async function crearMotor(o: OpcionesMotor): Promise<Motor | null> {
 
   return {
     actualizar(c, encuadrar) {
-      fuente('zona').setData(geo(c.zona ? [poligono(circulo(c.zona.centro, c.zona.radioM))] : []));
+      fuente('zona').setData(geo([...(c.zona ? [c.zona] : []), ...(c.zonas ?? [])].map((z) => poligono(circulo(z.centro, z.radioM)))));
       fuente('trayecto').setData(geo(c.trayecto && c.trayecto.length >= 2 ? [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: anillo(c.trayecto) } }] : []));
       fuente('precision').setData(geo(c.posicion && c.posicion.precisionM > 20 ? [poligono(circulo(c.posicion.punto, Math.min(c.posicion.precisionM, 2000)))] : []));
       fuente('cobertura').setData(geo((c.cobertura ?? []).map((b) => poligono(circulo(b.centro, 900)))));

@@ -174,6 +174,10 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         p.estado = 'aceptada';
         p.version += 1;
         aplicarAceptacion(s, p);
+        {
+          const t = s.trabajos.find((x) => x.trabajo.propuestaAceptadaId === p.id);
+          s.avisos.unshift({ id: idNuevo(s), tipo: 'te_eligieron', titulo: '¡El cliente te eligió!', cuerpo: 'Aceptó tu propuesta. Abrí el trabajo para ver la dirección y el horario.', creadoEn: iso(ahoraMs(s)), leido: false, destino: { ruta: 'trabajo', id: t?.trabajo.id ?? null } });
+        }
         s.nota = 'El usuario aceptó tu propuesta: se creó el trabajo.';
         break;
       }

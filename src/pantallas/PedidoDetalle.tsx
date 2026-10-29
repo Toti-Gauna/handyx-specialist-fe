@@ -2,21 +2,19 @@
 import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { RUTAS } from '../app/rutas.ts';
 import { CuentaRegresiva } from '../components/CuentaRegresiva.tsx';
 import { Cargando, ErrorCaja, Vacio } from '../components/Estados.tsx';
-import { FormPropuesta } from '../components/FormPropuesta.tsx';
+import { EstadoMiPropuesta } from '../components/EstadoMiPropuesta.tsx';
 import { Icono } from '../components/Icono.tsx';
 import { TarjetaPropuesta } from '../components/TarjetaPropuesta.tsx';
 import { Volver } from '../components/Volver.tsx';
 import { Aviso, ChipTipo, Seccion, Tarjeta } from '../components/ui.tsx';
-import type { Propuesta } from '../contracts/dto.ts';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
 import { useCarga } from '../hooks/useCarga.ts';
 import { useIdDeUrl } from '../hooks/useIdDeUrl.ts';
-import { fechaHora } from '../lib/formato.ts';
+import { fechaHora, pesos } from '../lib/formato.ts';
 import { tarifaTexto } from '../lib/tarifa.ts';
 import { Mapa } from '../mapa/Mapa.tsx';
 
@@ -28,7 +26,6 @@ export function PedidoDetalle() {
     const [pedido, fee] = await Promise.all([api.pedido(id), api.feeVigente()]);
     return { pedido, fee };
   }, [id]);
-  const [form, setForm] = useState<{ abierta: boolean; base: Propuesta | null }>({ abierta: false, base: null });
   const chat = useAccion();
 
   if (!id) return <Vacio icono="lupa" titulo="No indicaste qué pedido abrir"><Link href={RUTAS.pedidos.ruta}>Ver pedidos</Link></Vacio>;
@@ -74,6 +71,8 @@ export function PedidoDetalle() {
         {tarifa ? <p className="texto-suave texto-chico">{tarifa}</p> : null}
       </Tarjeta>
 
+      <EstadoMiPropuesta pedido={pedido} alCambiar={() => void c.recargar()} />
+
       {pedido.zonaMapa ? (
         <Mapa
           etiqueta={`Zona aproximada del pedido en ${pedido.zonaAproximada}`}
@@ -94,7 +93,7 @@ export function PedidoDetalle() {
           Una obra empieza con una visita de presupuesto, que se trata como un pedido programado. Después se presupuesta por etapas.
         </Aviso>
       ) : null}
-      {!abierto ? (
+      {!abierto && !pedido.trabajoId ? (
         <Aviso tono="aviso" icono="reloj" titulo="La búsqueda terminó" role="status">
           Ya no se pueden enviar propuestas nuevas para este pedido. Si el usuario lo relanza, te volvemos a avisar solo si no lo habías dejado pasar.
         </Aviso>
@@ -109,15 +108,19 @@ export function PedidoDetalle() {
           <ul className="lista-tarjetas">
             {[...pedido.propuestas].reverse().map((p) => (
               <li key={p.id}>
-                <TarjetaPropuesta propuesta={p} puedeActuar={abierto} alCambiar={() => void c.recargar()} alContraofertar={(base) => setForm({ abierta: true, base })} />
+                <TarjetaPropuesta propuesta={p} puedeActuar={abierto} alCambiar={() => void c.recargar()} alContraofertar={(base) => router.push(`${RUTAS.tuPrecio.ruta}?id=${pedido.id}&base=${base.id}`)} />
               </li>
             ))}
           </ul>
         )}
         {abierto && !pendienteMia && !delUsuarioVigente ? (
-          <button type="button" className="boton boton--bloque" onClick={() => setForm({ abierta: true, base: null })}>
-            <Icono nombre="enviar" /> Enviar una propuesta
-          </button>
+          <Link className="boton boton--bloque pd-precio" href={`${RUTAS.tuPrecio.ruta}?id=${pedido.id}`}>
+            <Icono nombre="etiqueta" />
+            <span className="pd-precio__texto">
+              Poner mi precio
+              {pedido.precioSugerido ? <span className="pd-sugiere">Handyx sugiere {pesos(pedido.precioSugerido.monto)}</span> : null}
+            </span>
+          </Link>
         ) : null}
         {pendienteMia ? <p className="texto-suave texto-chico">Tenés una propuesta esperando respuesta. Para cambiarla, retirala o esperá la contraoferta del usuario.</p> : null}
         {delUsuarioVigente && !pendienteMia ? <p className="texto-suave texto-chico">Si no te sirve la propuesta del usuario, contraofertá con tu precio y horario.</p> : null}
@@ -136,18 +139,6 @@ export function PedidoDetalle() {
           </button>
         )}
       </Seccion>
-
-      <FormPropuesta
-        abierta={form.abierta}
-        onCerrar={() => setForm((f) => ({ ...f, abierta: false }))}
-        pedido={{ id: pedido.id, tipo: pedido.tipo, fechaSolicitada: pedido.fechaSolicitada }}
-        base={form.base}
-        fee={fee.politica}
-        onEnviada={() => {
-          setForm({ abierta: false, base: null });
-          void c.recargar();
-        }}
-      />
     </div>
   );
 }

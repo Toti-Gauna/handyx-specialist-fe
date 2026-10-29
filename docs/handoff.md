@@ -1,10 +1,64 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.4) · Bloque 4 · **Fase 4 en curso: 4.1, 4.2 y 4.4 cerrados localmente; 4.3 hecho salvo el mapa base (queda para el final: datos de OpenStreetMap bloqueados por la red).**
-Modelos: fases 1, 3 y lotes 4.1–4.4 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.5) · Bloque 4 · **Fase 4 en curso: 4.1, 4.2, 4.4 y 4.5 cerrados localmente; 4.3 hecho salvo el mapa base (queda para el final: datos de OpenStreetMap bloqueados por la red).**
+Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 4 · Lote 4.5 (inicio, pedidos y propuesta)
+
+- **Inicio sobre el mapa**:
+  - Bloque azul con el saludo y el interruptor grande **"Disponible"** (urgentes ahora), que dice el estado con palabras.
+  - Mapa con tus zonas y las zonas aproximadas de los pedidos abiertos.
+  - Hoja con programados y obras, "Pedidos para vos", tu próximo trabajo, cobrado del mes y avisos sin leer.
+- **Pedido entrante**: un urgente nuevo aparece en una hoja con rubro, zona aproximada, descripción y vigencia en texto
+  neutro. "Ver y cotizar" abre el detalle; "Ahora no" deja pasar los urgentes de ese momento (en memoria, no rechaza nada).
+- **Tu precio** (`/pedidos/propuesta/`, pantalla completa):
+  - Cuándo podés ir: en 30 min, 1 o 2 horas (urgentes), el día que pidió (programados), lo que propuso el cliente
+    (contraoferta) u otro día y horario.
+  - **"Handyx sugiere $ X · Vos decidís"**, con atajos y "Recibís" con el fee 0 %. La sugerencia dice su fuente.
+  - Qué incluye, con frases rápidas.
+- **Estado de tu propuesta** en el detalle:
+  - Esperando al cliente.
+  - **¡El cliente te eligió!**: confeti solo si se vio el cambio, y abre el trabajo.
+  - No te eligieron, venció o la retiraste: en gris, sin culpa.
+- **Aviso "te eligieron"** (arregla el hallazgo de la fase 3): `VigiaAvisos` consulta cada 20 s y muestra la isla con
+  "Ver el trabajo" en cualquier pantalla de la app.
+- **Bandeja**: filtros en chips con cantidades y orden por llegada o **"Más cerca"**. Lee la ubicación una vez y calcula en el
+  teléfono: no se manda.
+- **Avisos**: Nuevos / Antes, deslizar a la izquierda o botón para borrar, y "Borrar todos" con confirmación.
+- **Contrato 0.6.0**: `precioSugerido` y `trabajoId` en el detalle del pedido, aviso `te_eligieron` y borrar avisos (uno o
+  todos). La tabla de precios del mock es de prueba; **la real la define Product**.
+- **Pendiente del 4.5**: las **fotos del pedido** no están en el contrato todavía. Se agregan cuando `handyx-client-be` las
+  defina (URL firmada de corta duración, como las del chat).
+- **Corregido en la revisión visual**:
+  - Los chips largos se salían de la pantalla con el texto al 200 %: ahora se parten en dos líneas.
+  - "Ahora no" encadenaba un urgente detrás de otro.
+  - El detalle con el trabajo ya acordado decía "La búsqueda terminó".
+  - La primera lectura del GPS simulado llegaba en el mismo instante en que se pedía.
+- **Pruebas**:
+  - 3 unitarias de la propuesta (cuándo, frases).
+  - 3 del mock: sugerencia y trabajo en el detalle, aviso "te eligieron" y borrar avisos.
+  - Recorrido B rehecho (Disponible → pedido entrante → Tu precio → esperando).
+  - Recorrido N nuevo (te eligieron, bandeja por cercanía, avisos).
+  - 2 pantallas y 2 hojas nuevas en accesibilidad y capturas.
+  - `verificar-bundle` suma las marcas de la tabla de prueba y del panel.
+
+### Comandos del lote 4.5 (29/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 124 pruebas: 122 OK y 2 omitidas (sincronías con otros repos) |
+| `npm run build` | OK |
+| `npm run e2e` | 23/23 recorridos (B rehecho, N nuevo) |
+| `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento (incluidas las hojas del pedido entrante y de borrar avisos); solo días del calendario (agenda y catálogo) por debajo de 44 px a 320 (≥ 30 px), como en el 4.4 |
+| `ANCHOS=` 7 tamaños `npm run capturas` | 336/336 sin desborde y sanitizadas |
+| `build:hostinger` con API ficticia | OK: 29 páginas (suma Tu precio), sin `/catalogo/`, fixtures, cámara simulada ni la tabla de precios de prueba |
+
+**Próximo paso**: lote 4.6 (trabajo de punta a punta: salgo, en camino con llegada automática, adicionales, ¡terminaste!).
+El mapa base del 4.3 queda para el final.
 
 ## Fase 4 · Lote 4.4 (alta guiada)
 
@@ -61,8 +115,7 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 | `ANCHOS=` 7 tamaños `npm run capturas` | 322/322 sin desborde y sanitizadas |
 | `build:hostinger` con API ficticia | OK: 28 páginas, sin `/catalogo/`, fixtures ni la cámara simulada |
 
-**Próximo paso**: lote 4.5 (Inicio sobre el mapa, pedidos y "Handyx sugiere · Vos decidís"). El mapa base del 4.3 queda para el
-final.
+**Siguiente**: lote 4.5 (cerrado, ver arriba).
 
 ## Fase 4 · Lote 4.3 (mapa, ubicación en vivo y trayectos)
 

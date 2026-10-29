@@ -1,6 +1,16 @@
 # Contrato compartido Usuario · Especialista · Portal (lote 1.3)
 
-Versión: **0.5.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+Versión: **0.6.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+
+**0.5.0 → 0.6.0 (fase 4, lote 4.5, cambios para el dueño del contrato):** pedidos, propuesta y avisos.
+- `PedidoDetalle` suma `precioSugerido` (`PrecioSugerido`: `monto`, `fuente` y `version`, o null) y `trabajoId` (el trabajo
+  que nació de este pedido para este especialista, o null). Los dos son obligatorios y nullables.
+- "Handyx sugiere" es una **referencia por rubro y tipo**: el especialista decide el precio y la propuesta no se valida
+  contra la sugerencia. La tabla real la define Product (la del mock es de prueba y dice su fuente).
+- `TIPOS_AVISO` suma `te_eligieron`: el servidor lo emite cuando el cliente acepta la propuesta del especialista, con destino
+  `trabajo` y el id del trabajo nuevo.
+- Endpoints nuevos: `DELETE /v1/especialista/avisos/{id}` y `DELETE /v1/especialista/avisos` (borrar uno o todos los avisos
+  del especialista). Borrar un aviso no toca el pedido, el trabajo ni el pago al que apunta.
 
 **0.4.0 → 0.5.0 (fase 4, lote 4.4, cambios para el dueño del contrato):** alta guiada.
 - `PerfilEspecialista` suma `citaAntecedentes` (turno reservado o null). Es obligatorio y nullable.
