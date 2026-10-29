@@ -9,7 +9,7 @@ import { Proveedor } from './contexto.tsx';
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 export const metadata: Metadata = {
-  title: 'Handyx · Especialistas',
+  title: { default: 'Handyx · Especialistas', template: '%s · Handyx Especialistas' },
   description: 'App de especialistas de Handyx: pedidos, propuestas, agenda y trabajos en Mar del Plata.',
   manifest: `${base}/manifest.webmanifest`,
   icons: { icon: `${base}/icono-app-192.png`, apple: `${base}/icono-app-180.png` },

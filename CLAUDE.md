@@ -57,7 +57,10 @@ rojo, urgencia en texto neutro, sin estilos inline): `docs/diseno.md`. Capturas:
 ```sh
 npm ci
 npm run dev | build | build:hostinger | lint | typecheck | test
+npm run e2e | accesibilidad | capturas   # después de npm run build (Playwright)
 ```
 
-Antes de cada PR: `lint`, `typecheck`, `test`, `build`, `node e2e/flujos.cjs` y `build:hostinger` con una API ficticia (el CI corre todo menos el E2E hasta el lote 5.1).
+Antes de cada PR: `lint`, `typecheck`, `test`, `build`, `npm run e2e`, `npm run accesibilidad` y `build:hostinger` con una API
+ficticia (el CI corre todo menos el E2E y la accesibilidad hasta el lote 5.1). Accesibilidad mínima: WCAG 2.2 AA con axe en 0,
+áreas táctiles ≥ 44 px, foco visible, foco al primer error y texto al 200 % sin desborde (`docs/diseno.md`).
 Mantener `docs/` (TECH-12) junto al código.

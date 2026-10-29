@@ -6,6 +6,7 @@ import type { NuevaPropuesta, Propuesta } from '../contracts/dto.ts';
 import type { PoliticaFee } from '../contracts/fee.ts';
 import { avisoFee } from '../contracts/fee.ts';
 import { useAccion } from '../hooks/useAccion.ts';
+import { enfocarPrimerError } from '../lib/foco.ts';
 import { aInputLocal, centavosDesdeTexto, deInputLocal, pesos } from '../lib/formato.ts';
 import { ErrorCaja } from './Estados.tsx';
 import { Hoja } from './Hoja.tsx';
@@ -46,8 +47,9 @@ export function FormPropuesta({ abierta, onCerrar, pedido, base, fee, onEnviada 
   const centavos = centavosDesdeTexto(importe);
   const bps = fee && avisoFee(api.ahora(), fee).fase !== 'terminada' ? fee.bpsEspecialista : null;
 
-  async function enviar(e: FormEvent) {
+  async function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     const err: Record<string, string> = {};
     const horario = deInputLocal(inicio);
     if (centavos === null || centavos <= 0) err.importe = 'Escribí un importe en pesos, por ejemplo 45.000.';
@@ -55,7 +57,7 @@ export function FormPropuesta({ abierta, onCerrar, pedido, base, fee, onEnviada 
     else if (Date.parse(horario) <= api.ahora().getTime()) err.inicio = 'La fecha y hora tienen que ser a futuro.';
     if (!alcance.trim()) err.alcance = 'Contá qué incluye tu propuesta.';
     setErrores(err);
-    if (Object.keys(err).length > 0 || centavos === null || !horario) return;
+    if (Object.keys(err).length > 0 || centavos === null || !horario) return enfocarPrimerError(form);
     const datos: NuevaPropuesta = { pedidoId: pedido.id, monto: monto(centavos), alcance: alcance.trim(), horario: { inicio: horario, fin: null }, reemplazaA: base?.id ?? null };
     const r = await ejecutar(() => api.enviarPropuesta(datos, clave()));
     if (r.ok) onEnviada(r.valor);

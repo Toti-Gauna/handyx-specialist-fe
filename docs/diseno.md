@@ -1,4 +1,4 @@
-# Sistema visual y jerarquía de acción · PWA Especialista (lote 3.1)
+# Sistema visual, jerarquía de acción y accesibilidad · PWA Especialista (lotes 3.1 y 3.2)
 
 Fuente única: la demo de la app de la landing (`Handy-landing-page-fe/src/styles/demo-app.css`) y sus tokens de marca
 (`src/brand/tokens.ts`, copia byte a byte). Implementación: `src/app/globals.css` (capa `--hd-*`) y los componentes de
@@ -82,3 +82,37 @@ Revisado en todo `src/` (29/10/2026):
 - Movimiento y feedback.
 - Íconos, manifest y service worker.
 - Catálogo final de componentes.
+
+## Responsive y accesibilidad (lote 3.2)
+
+### Tamaños
+
+| Rango | Disposición |
+|---|---|
+| 320–767 px (celular) | Una columna, barra inferior fija, hojas inferiores. Filas de botones que pasan a una por línea si no entran |
+| 768–1099 px (tablet, iPad vertical) | Columna de hasta 760 px; listas en dos columnas; hojas como diálogos centrados |
+| ≥ 1100 px (iPad horizontal, escritorio) | Riel de navegación lateral; contenido en una columna legible de hasta 820 px |
+
+Probado en 320×568, 360×740, 390×844, 768×1024, 820×1180, 1180×820 y 1280×800: 196/196 capturas, ninguna con desborde horizontal.
+
+### Checklist (WCAG 2.2 AA)
+
+| Criterio | Cómo se cumple | Verificación |
+|---|---|---|
+| Contraste (1.4.3, 1.4.11) | Tokens con contraste AA; texto claro sobre fondos oscuros | axe: 0 violaciones en 28 pantallas y 6 diálogos, en 320, 390 y 1280 px |
+| Uso sin depender del color (1.4.1) | Estados con ícono y texto; el interruptor dice "Sí"/"No"; "hoy" subrayado; historial con texto oculto "(hecho)"/"(pendiente)" | Revisión de capturas |
+| Nombre accesible = texto visible (2.5.3) | Logo con `alt`; los días del calendario agregan "de noviembre, 1 evento" como texto oculto | axe |
+| Áreas táctiles (2.5.8) | Botones, pestañas y enlaces sueltos de al menos 44 px de alto; ninguno por debajo de 24 px (días del calendario a 320 px: 38×46) | `npm run accesibilidad` |
+| Teclado y foco (2.1.1, 2.4.7) | Foco visible de 3 px en todo; las hojas atrapan y hacen circular el foco y se cierran con Escape | Recorrido con Tab en Inicio y en 6 diálogos |
+| Errores de formulario (3.3.1, 3.3.3) | Mensaje por campo con ícono, asociado con `aria-describedby`; al enviar, el foco va al primer campo con error | Registro, datos del alta y caso de soporte |
+| Título por pantalla (2.4.2) | `metadata.title` por ruta ("Pedido · Handyx Especialistas") | `out/*/index.html` |
+| Orientación (1.3.4) | El manifest ya no fuerza vertical | `public/manifest.webmanifest` |
+| Texto al 200 % y reflow (1.4.4, 1.4.10) | Corte de palabras largas solo cuando no entran; controles que bajan de línea | 28 pantallas al 200 % sin desborde (también a 320 px) |
+| Movimiento (2.3.3) | `prefers-reduced-motion` anula transiciones | CSS; el movimiento se revisa en el lote 3.3 |
+| Sin depender de audio | No hay sonidos; los avisos quedan en la pantalla Avisos | Diseño |
+
+### Límites conocidos
+
+- No se probó con lectores de pantalla reales (VoiceOver, TalkBack): axe y el teclado no lo reemplazan. Queda para la prueba en
+  dispositivos (lote 5.2).
+- La fecha de nacimiento usa el selector nativo del navegador: su formato depende del idioma del teléfono.

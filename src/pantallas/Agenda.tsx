@@ -63,16 +63,18 @@ export function Agenda() {
               type="button"
               className={`calendario__dia${clave === hoy ? ' calendario__dia--hoy' : ''}${clave === elegido ? ' calendario__dia--elegido' : ''}`}
               aria-pressed={clave === elegido}
-              aria-label={`${i + 1} de ${MESES[mes.m - 1]}${clave === hoy ? ', hoy' : ''}${cant ? `, ${cant} ${cant === 1 ? 'evento' : 'eventos'}` : ', sin eventos'}`}
               onClick={() => setElegido(clave)}
             >
               {i + 1}
+              <span className="visualmente-oculto">
+                {` de ${MESES[mes.m - 1]}${clave === hoy ? ', hoy' : ''}${cant ? `, ${cant} ${cant === 1 ? 'evento' : 'eventos'}` : ', sin eventos'}`}
+              </span>
               {cant > 0 ? <span className="calendario__marca" aria-hidden="true">{cant}</span> : null}
             </button>
           );
         })}
       </div>
-      <p className="texto-suave texto-chico">Borde naranja: hoy. El número es la cantidad de eventos del día. Cualquier día se puede tocar.</p>
+      <p className="texto-suave texto-chico">Hoy: número subrayado con borde naranja. El número chico es la cantidad de eventos del día. Cualquier día se puede tocar.</p>
 
       {!c.datos && !c.fallo ? <Cargando /> : null}
       <h2>{fechaLarga(`${elegido}T15:00:00.000Z`)}</h2>

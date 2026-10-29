@@ -11,6 +11,7 @@ import { Aviso, AreaTexto, Campo, Casilla, Chip, Seleccion } from '../components
 import { NuevoCasoSchema } from '../contracts/dto.ts';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
+import { enfocarPrimerError } from '../lib/foco.ts';
 import { useCarga } from '../hooks/useCarga.ts';
 import { CATEGORIA_SOPORTE, SOPORTE } from '../lib/etiquetas.ts';
 import { fechaHora } from '../lib/formato.ts';
@@ -80,15 +81,16 @@ function NuevoCaso({ abierta, onCerrar, trabajos, trabajoInicial, onCreado }: { 
     }
   }, [abierta, trabajoInicial, limpiar, nueva]);
 
-  async function enviar(e: FormEvent) {
+  async function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     const datos = { categoria, trabajoId: trabajoId || null, pedidoId: null, asunto, detalle, adjuntos: adjunto ? 1 : 0 };
     const ok = NuevoCasoSchema.safeParse(datos);
     if (!ok.success) {
       const err: Record<string, string> = {};
       for (const i of ok.error.issues) err[String(i.path[0])] = i.path[0] === 'asunto' ? 'Escribí un asunto de al menos 3 letras.' : 'Contanos qué pasó.';
       setErrores(err);
-      return;
+      return enfocarPrimerError(form);
     }
     setErrores({});
     const r = await ejecutar(() => api.abrirCaso(ok.data, clave()));

@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { monto } from '../contracts/dinero.ts';
 import type { Trabajo } from '../contracts/dto.ts';
 import { useAccion } from '../hooks/useAccion.ts';
+import { enfocarPrimerError } from '../lib/foco.ts';
 import { aInputLocal, centavosDesdeTexto, deInputLocal, pesos } from '../lib/formato.ts';
 import { ErrorCaja } from './Estados.tsx';
 import { Hoja } from './Hoja.tsx';
@@ -30,8 +31,9 @@ export function FormCambio({ abierta, onCerrar, trabajo, onEnviada }: { abierta:
     nueva();
   }, [abierta, trabajo, limpiar, nueva]);
 
-  async function enviar(e: FormEvent) {
+  async function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     const err: Record<string, string> = {};
     const horario = deInputLocal(inicio);
     const centavos = centavosDesdeTexto(importe);
@@ -39,7 +41,7 @@ export function FormCambio({ abierta, onCerrar, trabajo, onEnviada }: { abierta:
     if (centavos === null || centavos <= 0) err.importe = 'Escribí un importe en pesos.';
     if (!alcance.trim()) err.alcance = 'Contá qué incluye.';
     setErrores(err);
-    if (Object.keys(err).length > 0 || !horario || centavos === null) return;
+    if (Object.keys(err).length > 0 || !horario || centavos === null) return enfocarPrimerError(form);
     const igual = centavos === trabajo.acuerdo.monto.centavos;
     const r = await ejecutar(() => api.proponerCambio(trabajo.id, { horario: { inicio: horario, fin: null }, alcance: alcance.trim(), monto: igual ? null : monto(centavos) }, clave()));
     if (r.ok) onEnviada();

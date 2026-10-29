@@ -11,6 +11,7 @@ import { Aviso, Campo, Chip, Dato, Pasos, Seleccion, Tarjeta } from '../componen
 import { GENEROS, GuardarDatosAltaSchema, type DatosAlta, type FaltanteEnvio, type PerfilEspecialista } from '../contracts/dto.ts';
 import { RUBROS, NOMBRE_RUBRO, requiereMatricula, type Rubro } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
+import { enfocarPrimerError } from '../lib/foco.ts';
 import { useCarga } from '../hooks/useCarga.ts';
 import { ALTA, DOCUMENTO, FALTANTE, GENERO, PRESENCIAL, RUBRO_ESTADO } from '../lib/etiquetas.ts';
 
@@ -82,8 +83,9 @@ function PasoDatos({ datos, alGuardar }: { datos: DatosAlta; alGuardar(avanzar: 
   const [errores, setErrores] = useState<ErroresCampo>({});
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF((x) => ({ ...x, [k]: e.target.value }));
 
-  async function guardar(e: FormEvent) {
+  async function guardar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     const cuerpo = {
       ...(f.nombre.trim() ? { nombre: f.nombre } : {}),
       ...(f.apellido.trim() ? { apellido: f.apellido } : {}),
@@ -99,6 +101,7 @@ function PasoDatos({ datos, alGuardar }: { datos: DatosAlta; alGuardar(avanzar: 
     if (!ok.success) for (const i of ok.error.issues) err[String(i.path[0])] = ERR_GENERICO;
     for (const k of ['nombre', 'apellido', 'fechaNacimiento', 'nacionalidad', 'genero', 'ciudad'] as const) if (!f[k] && !err[k]) err[k] = 'Completá este dato para poder enviar tu alta.';
     setErrores(err);
+    if (Object.keys(err).length > 0) enfocarPrimerError(form);
     // Guarda lo válido aunque falte algo: se puede dejar el paso y retomarlo después.
     if (!ok.success) return;
     // El refresco de la versión va dentro de la acción: mientras no termina, el botón sigue deshabilitado
@@ -145,13 +148,15 @@ function PasoIdentidad({ datos, perfil, alCambiar }: { datos: DatosAlta; perfil:
   const [cuit, setCuit] = useState('');
   const [errores, setErrores] = useState<ErroresCampo>({});
 
-  async function guardar(e: FormEvent) {
+  async function guardar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     const err: ErroresCampo = {};
     if (dni && !/^\d{7,8}$/.test(dni)) err.dni = 'El DNI tiene 7 u 8 números, sin puntos.';
     if (cuit && !/^\d{11}$/.test(cuit)) err.cuitCuil = 'El CUIT o CUIL tiene 11 números, sin guiones.';
     setErrores(err);
-    if (Object.keys(err).length > 0 || (!dni && !cuit)) return;
+    if (Object.keys(err).length > 0) return enfocarPrimerError(form);
+    if (!dni && !cuit) return;
     const r = await ejecutar(() => api.guardarDatosAlta({ ...(dni ? { dni } : {}), ...(cuit ? { cuitCuil: cuit } : {}), version: datos.version }));
     if (r.ok) {
       setDni('');

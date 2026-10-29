@@ -13,7 +13,10 @@
     "start": "npx --yes serve@14.2.4 out",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "node --test --test-reporter=spec \"src/**/*.test.ts\""
+    "test": "node --test --test-reporter=spec \"src/**/*.test.ts\"",
+    "e2e": "node e2e/flujos.cjs",
+    "accesibilidad": "node e2e/accesibilidad.cjs",
+    "capturas": "node e2e/capturas.cjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "5.3.0",
@@ -28,6 +31,7 @@
     "@types/node": "^24.10.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "axe-core": "4.14.0",
     "eslint": "^9.39.1",
     "globals": "^16.5.0",
     "typescript": "5.9.3",

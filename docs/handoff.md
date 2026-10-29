@@ -1,9 +1,46 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1, abierto) · Bloque 4 · **Fase 3 en curso: lote 3.1 cerrado localmente.**
-Modelos: fase 1 y lote 3.1 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1, abierto) · Bloque 4 · **Fase 3 en curso: lotes 3.1 y 3.2 cerrados localmente.**
+Modelos: fase 1 y lotes 3.1–3.2 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
 
 Estado: mockup navegable completo con datos de prueba y sistema visual refinado. **Nada conectado ni desplegado.**
+
+## Fase 3 · Lote 3.2 (responsive y accesibilidad)
+
+- **Tamaños**: celular (320–767 px), tablet (768–1099: columna ancha, listas en dos columnas, hojas centradas) y escritorio (≥ 1100: riel
+  de navegación lateral). 196/196 capturas en 7 tamaños, sin desborde horizontal.
+- **Auditoría automática** `npm run accesibilidad` (axe-core 4.14.0, WCAG 2.2 A/AA): 0 violaciones en 28 pantallas y 6 diálogos, en 320, 390 y
+  1280 px. Además verifica áreas táctiles, foco visible, foco atrapado en las hojas, foco al primer error y texto al 200 % sin desborde.
+- **Corregido**:
+  - Nombre accesible del logo y de los días del calendario.
+  - Enlaces sueltos de 23 px.
+  - Tab que salía de las hojas (ahora el foco circula dentro).
+  - Desborde a 360 px por la fila Contraofertar/Rechazar, y a 320 px por las pestañas.
+  - Compositor del chat que tapaba botones en pantallas bajas.
+  - Botón "Cerrar" de las hojas que se angostaba a 39 px en 320 px.
+  - "Hoy" marcado solo con color.
+  - Historial sin distinción hecho/pendiente.
+  - Palabras largas que desbordaban con texto agrandado.
+  - Manifest que forzaba la orientación vertical.
+- **Nuevo**: título propio por pantalla (WCAG 2.4.2). El foco va al primer campo con error en registro, alta, propuestas, cambios y soporte.
+- Checklist completo en `docs/diseno.md` → "Responsive y accesibilidad".
+
+### Comandos del lote 3.2 (29/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` · `npm test` | OK · 59/61 (2 omitidas) |
+| `npm run build` | OK, 22 páginas |
+| `npm run e2e` | 11/11 recorridos |
+| `npm run accesibilidad` (390×844) y con `ANCHO=320x568` / `ANCHO=1280x800` | 0 violaciones axe, 0 áreas < 24 px, 0 problemas de teclado/foco/zoom |
+| (a 320×568) | 30 días del calendario de 38×46 px: por encima de 24 px (WCAG 2.5.8), documentado |
+| `build:hostinger` con API ficticia | OK, sin fixtures ni banner en `out/` |
+| `ANCHOS=320x568,…,1280x800 npm run capturas` | 196/196 sin desborde |
+
+**Límite**: sin lectores de pantalla reales ni dispositivos físicos (lote 5.2).
+
+**Próximo paso**: lote 3.3 (movimiento breve con reduced-motion, PWA instalable con íconos y service worker sin cachear datos
+privados, capturas sanitizadas y catálogo de componentes).
 
 ## Fase 3 · Lote 3.1 (sistema visual y jerarquía de acción)
 
@@ -30,14 +67,6 @@ Estado: mockup navegable completo con datos de prueba y sistema visual refinado.
 | `npm run build` | OK, 22 páginas |
 | `node e2e/flujos.cjs` | 11/11 recorridos OK |
 | `node e2e/capturas.cjs` (390×844) | 28/28 capturas, sin desborde horizontal |
-
-### Próximo paso
-
-Lote 3.2 (responsive y accesibilidad):
-
-- `ANCHOS=360x740,390x844,768x1024,820x1180,1280x800 node e2e/capturas.cjs`.
-- Foco y teclado, labels y contraste medido.
-- Áreas táctiles y estados que no dependan del color.
 
 ---
 

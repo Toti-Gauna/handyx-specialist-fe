@@ -119,7 +119,7 @@ export function TrabajoDetalle() {
       <Seccion titulo="Historial">
         <ol className="linea-tiempo">
           {[...eventos].reverse().map((e) => (
-            <li key={`${e.estado}-${e.en}`}>
+            <li key={`${e.estado}-${e.en}`} className="linea-tiempo__hecho">
               <strong>{TRABAJO[e.estado].texto}</strong>
               <span className="texto-suave"> · {ACTOR[e.actor]} · {fechaHora(e.en)}</span>
             </li>

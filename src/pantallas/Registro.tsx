@@ -10,6 +10,7 @@ import { Volver } from '../components/Volver.tsx';
 import { Aviso, Campo, Casilla } from '../components/ui.tsx';
 import { REGLAS_CLAVE } from '../contracts/dto.ts';
 import { useAccion } from '../hooks/useAccion.ts';
+import { enfocarPrimerError } from '../lib/foco.ts';
 import { AVISO_PROVISORIO, PRIVACIDAD, TERMINOS } from '../lib/legales.ts';
 import { PRIVACIDAD_VERSION, TERMINOS_VERSION } from '../lib/etiquetas.ts';
 
@@ -26,15 +27,16 @@ export function Registro() {
   const [lectura, setLectura] = useState<'terminos' | 'privacidad' | null>(null);
   const [resultado, setResultado] = useState<'creada' | 'neutra' | null>(null);
 
-  async function enviar(e: FormEvent) {
+  async function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     const err: Errores = {};
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) err.email = 'Escribí un email válido.';
     if (password.length < REGLAS_CLAVE.minimo) err.password = `Usá al menos ${REGLAS_CLAVE.minimo} caracteres.`;
     if (!terminos) err.terminos = 'Para crear tu cuenta tenés que aceptar los términos.';
     if (!privacidad) err.privacidad = 'Para crear tu cuenta tenés que aceptar el aviso de privacidad.';
     setErrores(err);
-    if (Object.keys(err).length > 0) return;
+    if (Object.keys(err).length > 0) return enfocarPrimerError(form);
     const r = await ejecutar(async () => {
       await api.registrar({ email: email.trim(), password, terminos: TERMINOS_VERSION, privacidad: PRIVACIDAD_VERSION });
       return api.sesion();

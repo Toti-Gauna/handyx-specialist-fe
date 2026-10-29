@@ -2,6 +2,8 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Icono } from './Icono.tsx';
 
+const ENFOCABLES = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 interface Props {
   abierta: boolean;
   titulo: string;
@@ -32,6 +34,21 @@ export function Hoja({ abierta, titulo, onCerrar, cerrable = true, children }: P
       }}
       onClick={(e) => {
         if (cerrable && e.target === ref.current) onCerrar();
+      }}
+      onKeyDown={(e) => {
+        // El foco circula dentro de la hoja (además de que el fondo queda inerte por showModal).
+        if (e.key !== 'Tab' || !ref.current) return;
+        const enfocables = [...ref.current.querySelectorAll<HTMLElement>(ENFOCABLES)].filter((x) => !x.hasAttribute('disabled') && x.offsetParent !== null);
+        const primero = enfocables[0];
+        const ultimo = enfocables[enfocables.length - 1];
+        if (!primero || !ultimo) return;
+        if (e.shiftKey && document.activeElement === primero) {
+          e.preventDefault();
+          ultimo.focus();
+        } else if (!e.shiftKey && document.activeElement === ultimo) {
+          e.preventDefault();
+          primero.focus();
+        }
       }}
     >
       {abierta ? (
