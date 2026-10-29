@@ -1,6 +1,6 @@
-# Plan · PWA Especialista de Handyx (Bloque 4)
+# Plan · PWA Especialista de Handyx (Bloque 4) · 6 fases
 
-Estado: **fases 1 y 2 cerradas; fase 3 reabierta (29/10/2026)** para el rediseño premium (lotes 3.4–3.11, `docs/rediseno.md`); fases 4–5 pendientes. Los checks solo se marcan con resultado observable.
+Estado: **fases 1, 2 y 3 cerradas localmente (29/10/2026)**. La fase 4 es el rediseño premium (`docs/rediseno.md`); siguen el backend (5) y el deploy (6). Los checks solo se marcan con resultado observable.
 Seguimiento de avance, comandos y bloqueos: `docs/handoff.md`.
 Cada entrega distingue: decidido · mock · conectado · probado · desplegado.
 
@@ -20,15 +20,22 @@ Notion verificado en el lote 1.3: TECH-03, TECH-20, PROD-21 (incluye PROD-03/13/
 
 - **FE (decidido por Ignacio):** React + Next.js + TypeScript, PWA para Hostinger. Hostinger sirve estático: Next.js con `output: 'export'` (sin SSR, sin Route Handlers ni middleware de Next; toda la lógica de servidor vive en el BE). Service worker y manifest propios (sin dependencia de runtime Node). Tokens y kit `.hd-*` de la landing portados a componentes; no se clonan pantallas de la demo.
 - **BE:** Node 22, TS ESM, Express 5, Prisma 7 sobre Neon; capas `routes → controllers → services → repositories`, Zod. El scaffold del BE se hace en 4.1, después del dueño del esquema (`handyx-client-be`), para no crear un esquema paralelo.
-- **Auth de consumidores:** cuenta con Argon2id, cookie HttpOnly/Secure/SameSite=Lax, CSRF, sesiones revocables, roles `usuario`/`especialista`. Sin OTP/SMS. Personal interno: `ADMIN_ACCOUNTS_JSON` vigente.
+- **Auth de consumidores:**
+  - Email y contraseña con Argon2id, con código de 6 dígitos al email para verificar.
+  - Google (en todos los dispositivos) y Apple (solo en dispositivos Apple), con OpenID Connect validado en el servidor.
+  - Cookie HttpOnly/Secure/SameSite=Lax, CSRF, sesiones revocables y roles `usuario`/`especialista`.
+  - Sin SMS.
+  - Personal interno: `ADMIN_ACCOUNTS_JSON` vigente.
 - **Esquema compartido (decidido por Ignacio):** `handyx-client-be` es el único dueño de migraciones y del esquema; `handyx-specialist-be` consume esa versión y no edita migraciones propias.
 - **Datos:** pre-registro (`growth`) y cuentas reales separados; no se migran interesados a cuentas activas.
 
 ## 3. Conflictos a resolver
 
 1. **Fee:** la landing muestra 5%/10%; este bloque fija 0% en la demo (10/11–10/12). La landing no se toca sin OK de Ignacio.
-2. **"Llegué":** la demo de la landing usa geocerca simulada sin confirmación manual; este bloque pide evento "Llegué". Propuesta: evento explícito, geolocalización opcional.
-3. **Cupones, mínimo $ 5.000, "Tu precio":** se traen como mock rotulado; lo no confirmado queda `PENDIENTE`.
+2. **Llegada (resuelto el 29/10/2026):** automática por geocerca con la app abierta, con un botón de respaldo cuando la ubicación
+   anda mal. Sigue pendiente el chequeo con LEG-46.
+3. **Cupones y camada fundadora:** no se muestran mientras el fee sea 0 %. "Tu precio" lleva la sugerencia de Handyx. El mínimo de
+   $ 5.000 queda `PENDIENTE`.
 4. **TECH-01 (React Native) vs PWA:** excepción documentada.
 
 ## 4. Fases y lotes
@@ -57,42 +64,161 @@ Fixtures sintéticos rotulados; el mock permite éxito, rechazo, expiración y c
 - Evidencia del 3.2: `npm run accesibilidad` (axe WCAG 2.2 AA en 0, teclado, foco, zoom 200 %) y 196 capturas en 7 tamaños; checklist en `docs/diseno.md`.
 - Evidencia del 3.3: `docs/pwa.md`, `docs/componentes.md`, `docs/capturas/` (sanitizadas), recorrido J de `npm run e2e` y control de movimiento en `npm run accesibilidad`.
 
-**Reapertura (29/10/2026):** Ignacio pidió rehacer el diseño. Hoy no está a la altura de la demo de la landing: le faltan
-pantallas, el mapa y la entrada de una app on demand, y la cabecera ocupa lugar. Detalle, decisiones pendientes e inventario de
-65 pantallas en `docs/rediseno.md`. La fase 4 empieza después del sí de diseño del 3.11.
-- [ ] **3.4 Sistema visual v2 y kit** (Opus / high): tokens v2 y kit `.hd-*` de la demo en React; catálogo solo en el mock.
-- [ ] **3.5 Carga, bienvenida y cuenta** (Opus / high): pantalla de carga nueva, bienvenida, entrar, crear cuenta, verificar
-  email, recuperar con contraseña nueva y enlace vencido.
-- [ ] **3.6 Mapa** (Opus / high): MapLibre con teselas propias de Mar del Plata, estilo Handyx, zonas aproximadas y carga diferida.
-- [ ] **3.7 Alta guiada** (Opus / high): lista de pasos, marcos de cámara, rubros en mosaico, zonas en el mapa, turno presencial y
-  corrección con acceso directo a cada paso.
-- [ ] **3.8 Inicio, pedidos y propuesta** (Opus / high): inicio sobre el mapa, pedido entrante, "Handy sugiere · Vos decidís",
-  "¡Te eligió!".
-- [ ] **3.9 Trabajo de punta a punta** (Opus / high): en camino con mapa, llegada, adicionales y "¡Terminaste!".
-- [ ] **3.10 Agenda, mensajes, cuenta, caja y ayuda** (Sonnet / high).
-- [ ] **3.11 QA premium y cierre** (Opus / high): E2E nuevos, axe en 0, lectores de pantalla, Lighthouse ≥ 90 y sí de diseño.
+### Fase 4 · Rediseño premium Handyx — Opus 5.5 / high (salvo indicación)
+Pedido de Ignacio del 29/10/2026. El diseño de la fase 3 no está a la altura de la demo de la landing: faltan pantallas, el mapa y
+la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote, inventario de pantallas y mapa de pantallas en
+`docs/rediseno.md`. Se rehace la capa visual y se conservan los datos, el mock, los contratos y las pruebas.
+- [ ] **4.1 Marca Handyx y sistema visual v2:**
+  - Todos los textos pasan de "Handy" a "Handyx" ("Tarifa de Handyx", "Handyx sugiere", "Verificado por Handyx"). Los personajes siguen siendo "los Handys".
+  - Tokens v2.
+  - Kit `.hd-*` de la demo portado a React: barra compacta, pestañas flotantes, hoja arrastrable, isla, stepper de precio, confeti y monto que sube.
+  - Catálogo solo en el mock.
+- [ ] **4.2 Arranque y cuenta:**
+  - Carga animada: colores que cambian, los Handys saltan y terminan de la mano bajo el logo.
+  - Bienvenida en 3 láminas.
+  - Entrar con email, con Google (Android, iPhone y computadora) o con Apple (solo en iPhone, iPad y Mac).
+  - Crear cuenta con **código de 6 dígitos al email**.
+  - Recuperar con contraseña nueva y enlace vencido.
+  - Sesión expirada.
+- [ ] **4.3 Mapa, ubicación en tiempo real y trayectos** (Opus / xhigh):
+  - MapLibre con teselas propias de Mar del Plata y Batán y estilo Handyx.
+  - Zonas aproximadas.
+  - Posición del especialista en vivo durante el viaje, simulada en el mock.
+  - Trayecto dibujado hasta la casa del cliente, con tiempo estimado.
+  - Carga diferida y respaldo sin mapa.
+- [ ] **4.4 Alta guiada:**
+  - Lista de pasos con progreso.
+  - DNI y selfie con marco de cámara.
+  - Rubros en mosaico.
+  - Zonas en el mapa.
+  - Turno presencial de antecedentes.
+  - Corrección con acceso directo a cada paso.
+  - Celebración al quedar habilitado.
+- [ ] **4.5 Inicio, pedidos y propuesta:**
+  - Inicio sobre el mapa con "Disponible".
+  - Pedido entrante.
+  - Precio con **"Handyx sugiere · Vos decidís"** (sugerencia por rubro y tipo, siempre editable).
+  - Esperando al cliente.
+  - "¡El cliente te eligió!" con aviso.
+  - Bandeja con filtros y avisos agrupados.
+- [ ] **4.6 Trabajo de punta a punta:**
+  - Salgo para allá.
+  - En camino, con trayecto y ubicación en vivo.
+  - **Llegada automática con la app abierta y botón de respaldo cuando la ubicación falla** (sin permiso, imprecisa o sin señal).
+  - En curso, con **adicionales** (repuestos y mano de obra que el cliente acepta).
+  - ¡Terminaste! e informar el cobro.
+  - Cambiar la fecha y cancelar.
+- [ ] **4.7 Obras de varios días:**
+  - Plan de obra por jornadas y etapas, en el calendario y en una línea de tiempo.
+  - Avance diario con fotos y notas.
+  - Adicionales por etapa.
+  - Cobro por etapa.
+  - Cambios de fecha de una jornada sin tocar el resto.
+  - Resumen de la obra completa.
+- [ ] **4.8 Agenda, mensajes, cuenta, caja y ayuda** (Sonnet 5.5 / high):
+  - Agenda mensual con jornadas de obra.
+  - Chat con respuestas rápidas y propuestas en el hilo.
+  - Contactos.
+  - Cuenta, cobros y notificaciones.
+  - Caja con filtros.
+  - Centro de ayuda.
+- [ ] **4.9 QA premium y sí de diseño:**
+  - E2E nuevos (más de 15 recorridos) y axe en 0 en 4 tamaños.
+  - Lectores de pantalla y "reducir movimiento".
+  - Lighthouse móvil ≥ 90.
+  - Página de flujos con capturas.
+  - Revisión de Ignacio.
 
-### Fase 4 · Backend y DB conectados — Opus 5.5 / high
-- [ ] **4.1 Modelo y migraciones:** ERD y diccionario (tipo, nulabilidad, sensibilidad, FK, índice, retención, dueño); importes en centavos ≥ 0; un acuerdo activo por pedido; login e idempotency keys únicos; sin cascadas que rompan retenciones.
-- [ ] **4.2 Alta, verificación y privacidad:** cuentas/roles/sesiones; DNI y CUIT/CUIL cifrados; fotos/documentos privados con URL firmada; verificación solo por Operations; rechazo de `verified=true` del cliente y de uploads de antecedentes; retención parametrizada (DNI 90 días, ubicación 30 días, evento inicial a confirmar); baja real con estado honesto.
-- [ ] **4.3 Pedidos elegibles y negociación:** filtro en servidor, opt-out urgente, propuestas bidireccionales con autor/rol, aceptación transaccional con versión e idempotencia; vencimientos en servidor (5 min propuesta ≠ 20 min búsqueda).
-- [ ] **4.4 Chat, agenda, trabajo y soporte:** hilo desde el pedido, media privada, eventos + outbox con reintento acotado, push nunca requisito, reclamos auditables.
-- [ ] **4.5 Caja, Mercado Pago y ledger:** `payment_records`, `fee_policies`, `fee_acceptances`; fee 0% en demo; reportado ≠ verificado; dinero del especialista no es ingreso de Handy; MP como adapter con pruebas sandbox y parte productiva inactiva hasta validar la ruta; comisiones inactivas hasta política aprobada.
-- [ ] **4.6 Integración y QA transversal:** adapter HTTP, contract tests, E2E, IDOR, opt-out, errores de red; sin fallback a fixtures en producción; analytics sin PII.
+### Fase 5 · Backend y DB conectados — Opus 5.5 / high (salvo indicación)
+Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `handyx-specialist-be`. Empieza con el sí de diseño del 4.9.
+- [ ] **5.1 Modelo y migraciones:**
+  - ERD y diccionario de datos: tipo, nulabilidad, sensibilidad, claves foráneas, índices, retención y dueño.
+  - Importes en centavos ≥ 0.
+  - Un acuerdo activo por pedido.
+  - Login y claves de idempotencia únicos.
+  - Sin cascadas que rompan las retenciones.
+  - Suma: obras por jornadas y etapas, adicionales, posiciones del viaje y tabla de precios sugeridos.
+- [ ] **5.2 Cuentas, sesiones y acceso** (Opus / xhigh):
+  - Email y contraseña con Argon2id.
+  - **Código de 6 dígitos por email**, con vencimiento, intentos limitados y reenvío con espera.
+  - **Google y Apple** con OpenID Connect, validando el token en el servidor y vinculando cuentas por email verificado.
+  - Recuperación con token de un solo uso.
+  - Cookie HttpOnly, CSRF y sesiones revocables.
+- [ ] **5.3 Alta, verificación y privacidad:**
+  - DNI y CUIT/CUIL cifrados.
+  - Fotos y documentos privados con URL firmada.
+  - Verificación solo por Operations.
+  - Rechazo de `verified=true` enviado por el cliente y de archivos de antecedentes.
+  - Turnos presenciales.
+  - Retenciones parametrizadas: DNI 90 días y ubicación 30 días.
+  - Baja real.
+- [ ] **5.4 Pedidos, negociación y precio sugerido:**
+  - Filtro en el servidor y opt-out de urgentes.
+  - Zona aproximada calculada por el servidor.
+  - Propuestas bidireccionales.
+  - Aceptación transaccional con versión e idempotencia.
+  - Vencimientos en el servidor.
+  - Precios sugeridos versionados.
+- [ ] **5.5 Ubicación en tiempo real y trayectos** (Opus / xhigh):
+  - Posiciones del viaje por una conexión en vivo (SSE), solo durante el viaje y solo para las dos partes.
+  - Geocerca de llegada en el servidor y respaldo manual auditado.
+  - Motor de trayectos (§5) y geocodificación de direcciones.
+  - Retención de 30 días.
+- [ ] **5.6 Trabajo, obras, chat, agenda y soporte:**
+  - Eventos del trabajo, obras por jornada y adicionales con aceptación.
+  - Chat con archivos privados.
+  - Outbox con reintento acotado.
+  - Push opcional, nunca requisito.
+  - Reclamos auditables.
+- [ ] **5.7 Caja, Mercado Pago y ledger:**
+  - `payment_records`, `fee_policies` y `fee_acceptances`, con fee 0 % en la demo.
+  - Reportado ≠ verificado.
+  - Mercado Pago como adaptador, primero en sandbox.
+  - Comisiones inactivas hasta que haya una política aprobada.
+- [ ] **5.8 Integración y QA transversal:**
+  - Adaptador HTTP y pruebas de contrato.
+  - E2E contra el backend.
+  - Pruebas de IDOR y opt-out.
+  - Errores de red.
+  - Nunca caer a fixtures.
+  - Analytics sin PII.
 
-### Fase 5 · Deploy — Sonnet 5.5 / high
-- [ ] **5.1 CI, staging y readiness:** lint/tipos/build/unit/integración/E2E, contract tests, base aislada con datos sintéticos, HTTPS/CORS/cookies, service worker sin cachear datos privados ni aceptar/pagar offline.
-- [ ] **5.2 Dos celulares:** ruta completa del alta al reclamo; casos de red, urgencia y permisos; rendimiento gama baja (ref. Moto E20) declarando qué fue emulado y qué en dispositivo.
-- [ ] **5.3 Deploy web y rollback:** Hostinger/Render/Neon existentes, backup, `migrate deploy`, smoke, guía de rollback; si falta acceso, pasos manuales marcados pendientes.
-- [ ] **5.4 Mapa final y Handy Docs:** PROD-26 con capturas sanitizadas, ERD, OpenAPI, setup, `env.example`, guía de alta/operación/pagos, QA ejecutado, deploy/rollback, handoff.
+### Fase 6 · Deploy — Sonnet 5.5 / high
+- [ ] **6.1 CI, staging y readiness:**
+  - Lint, tipos, build, unitarias, integración, E2E y pruebas de contrato en el CI.
+  - Base aislada con datos sintéticos.
+  - HTTPS, CORS y cookies.
+  - El service worker no guarda datos privados ni deja aceptar o pagar sin conexión.
+  - Teselas del mapa y `sw.js` con su caché correcta.
+- [ ] **6.2 Dos celulares (Android e iPhone):**
+  - Recorrido completo, del alta al reclamo.
+  - Ubicación en vivo, llegada y respaldo.
+  - Entrar con Google y con Apple.
+  - Red, permisos y rendimiento en gama baja (referencia: Moto E20), declarando qué fue emulado y qué en un teléfono real.
+- [ ] **6.3 Deploy web y rollback:**
+  - Hostinger, Render y Neon.
+  - Backup y `migrate deploy`.
+  - Smoke y guía de rollback.
+  - Lo que no tenga acceso queda como paso manual pendiente.
+- [ ] **6.4 Mapa final y Handyx Docs:**
+  - PROD-26 con capturas sanitizadas.
+  - ERD, OpenAPI, setup y `env.example`.
+  - Guías de alta, operación y pagos.
+  - QA ejecutado, deploy y rollback, y handoff.
 
 ## 5. Dependencias y límites
 
 - **Legal:** avisos provisionales; la landing-be responde 503 en producción salvo `PRIVACY_NOTICE_PROVISIONAL_OK=true`. Recolectar DNI, CUIT/CUIL, nacimiento y género en producción requiere aviso aprobado (LEG-39/40).
 - **Mercado Pago:** ruta no confirmada (checkout del especialista, enlace o referencia manual). Hasta entonces: sandbox y efectivo/manual.
-- **Modelo:** se informa el modelo real de cada sesión; Opus 5.5 recomendado en fases 1, 3 y 4 se elige en la interfaz.
+- **Modelo:** se informa el modelo real de cada sesión. El modelo recomendado (Opus 5.5 en las fases 1, 3, 4 y 5) se elige en la interfaz.
 - **Hardware:** pruebas en celulares y Moto E20 serán emuladas salvo dispositivo real disponible.
 - **Producción:** nada se despliega con secretos o permisos faltantes; sin servicios nuevos ni compras.
+- **Cuentas y costos que necesitan la autorización de Ignacio** (no se crea ni se compra nada sin su OK):
+  - Apple Developer Program (≈ USD 99 al año), para entrar con Apple.
+  - Proyecto de Google Cloud para entrar con Google (gratis).
+  - Proveedor de emails transaccionales para los códigos (plan gratis con cuenta).
+  - Motor de trayectos: servidor propio con datos de OpenStreetMap (una instancia paga chica en Render) o un servicio con plan gratis y cuenta.
+  - Las teselas del mapa se sirven desde Hostinger, sin costo extra.
 
 ## 6. Decisiones de Ignacio (29/10/2026)
 
@@ -103,4 +229,19 @@ pantallas, el mapa y la entrada de una app on demand, y la cabecera ocupa lugar.
    - contador en Cuenta (días hasta el 10/12, zona America/Argentina/Buenos_Aires);
    - pantalla posterior al registro, indicando que dura hasta el 10/12.
    Se muestra como fee 0% de Handy, no como descuento sobre el precio del especialista. No implica tarifa posterior: esa requiere política versionada y aceptación aprobadas. La landing no se modifica.
-4. "Llegué": evento explícito del especialista (geolocalización opcional). Confirmado junto con el punto 3.
+4. ~~"Llegué": evento explícito del especialista (geolocalización opcional).~~ Reemplazada por la decisión 5.
+
+### Decisiones del 29/10/2026 (rediseño)
+
+5. **Llegada**: automática con la app abierta, con botón de respaldo si la ubicación anda mal.
+6. **Mapa completo de Mar del Plata**:
+   - El cliente ve al especialista en vivo durante el viaje.
+   - Handyx dibuja el trayecto del especialista hasta la casa del cliente.
+7. **Verificación del email** con un código de 6 dígitos.
+8. **Entrar con Google y con Apple**: Apple solo se ofrece en dispositivos Apple.
+9. **Adicionales** durante el trabajo, y una vista ampliada de las **obras de varios días**.
+10. **Precio sugerido por Handyx**, y todos los textos de la marca pasan a **"Handyx"**.
+11. **Cupones y camada fundadora** fuera de la app mientras el fee sea 0 %.
+12. **Pantalla de carga**: los Handys terminan **todos de la mano** con el logo.
+13. **Imágenes nuevas de los Handys** en distintas poses, sobre fondo verde (`docs/handys-prompt.md`).
+14. El rediseño es la **fase 4**: el backend pasa a la fase 5 y el deploy a la 6.

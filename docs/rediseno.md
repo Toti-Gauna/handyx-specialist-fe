@@ -1,10 +1,11 @@
-# Re-plan · Rediseño premium de la app de especialistas (fase 3, lotes 3.4–3.11)
+# Fase 4 · Rediseño premium Handyx de la app de especialistas (lotes 4.1–4.9)
 
 Fecha: 29/10/2026 · Pedido de Ignacio: rehacer el diseño para que sea único, se sienta Handyx y esté a la altura de la demo
 de la landing (o mejor). Tiene que tener mapa, las pantallas de bienvenida, entrada y registro de una app on demand,
 una pantalla de carga nueva, y cabecera solo donde suma.
 
-Es una **reapertura de la fase 3**, no una fase nueva (el plan tiene 5 fases). La fase 4 (backend) arranca después del lote 3.11.
+Ignacio decidió el 29/10/2026 que el rediseño sea la **fase 4** del plan. El backend pasa a la **fase 5** y el deploy a la **6**
+(`docs/plan.md`). La fase 5 arranca después del sí de diseño del lote 4.9.
 
 ## 1. Diagnóstico: por qué hoy no convence
 
@@ -73,17 +74,14 @@ La landing tiene un contador hasta 100 con los Handys asomando. La app arranca d
 1. **Fondo que cambia de color** al ritmo de los saltos: azul Handy → amarillo → noche → azul.
 2. **Los cinco Handys saltan en fila** (gota, caño, engranaje, lamparita, llave). Cada salto tiene un pequeño aplaste al caer y
    una sombra que se achica y se agranda.
-3. **Final**: cae el logo "handyx" desde arriba y los Handys se agarran de las letras. La llave se engancha en la "x", la
-   lamparita se cuelga de la "h" y el resto queda sentado sobre la palabra. El logo rebota una vez y la pantalla se abre
-   hacia Inicio, o hacia la bienvenida si no hay sesión.
+3. **Final**: cae el logo "handyx" desde arriba. Los cinco Handys aterrizan debajo, en fila, y **se agarran de las manos todos
+   juntos**. Dan un último saltito al mismo tiempo, el logo rebota una vez y la pantalla se abre hacia Inicio, o hacia la
+   bienvenida si no hay sesión.
 4. Duración: 2,4 s si la app ya está lista; nunca más de 4 s. Se puede saltear tocando.
    - No se repite al navegar dentro de la app: solo en el arranque en frío, con un estado en memoria y sin sessionStorage.
    - Con "reducir movimiento", el logo aparece fijo con los Handys quietos durante 0,6 s.
-5. Se arma con las imágenes que ya existen en `public/handys/` y el logo. Si hacen falta Handys en pose de salto o colgados,
-   se piden a diseño. Mientras tanto se resuelve con rotación y aplaste de las imágenes actuales.
-
-**Supuesto a confirmar**: interpreté "al final agarramos de las o con el logo" como "los Handys terminan agarrados del logo
-handyx". Si la idea era otra (por ejemplo, que formen la "o" de algo), se ajusta en el lote 3.5.
+5. Usa las poses nuevas de los Handys: saltando, cayendo, de la mano a izquierda y a derecha, y celebrando. El prompt para
+   generarlas está en `docs/handys-prompt.md`. Mientras no estén, se resuelve con rotación y aplaste de las imágenes actuales.
 
 ## 4. Mapa (obligatorio)
 
@@ -100,10 +98,31 @@ handyx". Si la idea era otra (por ejemplo, que formen la "o" de algo), se ajusta
 - Atribución de OpenStreetMap visible (licencia ODbL).
 - El archivo de teselas se genera una vez con herramientas libres y se versiona fuera del repo. Peso estimado: 15–40 MB, que
   se descarga por partes, solo la zona visible.
-- **Cómo llegar**: botón "Abrir en Google Maps / Waze" que abre la app de navegación del teléfono (lo toca la persona). Sin
-  motor de rutas propio en la demo.
-- **Geocodificación** (dirección → punto): la hace el backend al crear el pedido (fase 4). La app de especialistas nunca
+- **Geocodificación** (dirección → punto): la hace el backend al crear el pedido (fase 5). La app de especialistas nunca
   geocodifica direcciones.
+
+### Ubicación en tiempo real y trayectos (decisión del 29/10/2026)
+
+**¿Se puede?** Sí, con un límite de las apps web.
+
+| Qué | Cómo | Límite |
+|---|---|---|
+| Mapa completo de Mar del Plata y Batán | Teselas propias desde el hosting | Ninguno: es solo un archivo estático |
+| El cliente ve al especialista en vivo | Durante el viaje, la app del especialista manda su posición cada 5–10 s. El servidor se la pasa solo al cliente de ese trabajo con una conexión en vivo (SSE) | En una PWA, **la ubicación se comparte solo con la app abierta y la pantalla encendida**. iPhone y Android cortan el GPS de una web en segundo plano |
+| El especialista ve al cliente | La **dirección exacta** del trabajo (fija) desde que hay acuerdo. No se sigue al cliente en vivo: está en su casa, y seguirlo sería un dato sensible sin necesidad | — |
+| Trayecto a la casa del cliente | Handyx dibuja el recorrido por las calles con tiempo y distancia, y se recalcula si te desviás. "Abrir en Google Maps / Waze" queda como atajo | El cálculo de recorridos necesita un **motor de trayectos** (§ costos) |
+| Llegada | Geocerca: llegada automática al entrar en el radio con la app abierta. **Botón de respaldo** "Ya llegué" cuando no hay permiso, la señal es imprecisa o no hay señal | La geocerca solo funciona con la app abierta (ver la fila del cliente) |
+
+- **En el mock** (fase 4): trayectos precalculados sobre calles reales de Mar del Plata, con un viaje simulado a lo largo del recorrido
+  y estados de señal desde el Panel de prueba.
+- **Motor de trayectos real** (fase 5, necesita autorización):
+  - Recomendado: servidor propio (OSRM o Valhalla) con datos de OpenStreetMap de la zona, en una instancia chica paga de Render.
+  - Alternativa: un servicio con plan gratis y cuenta (por ejemplo, OpenRouteService), con un límite de pedidos diarios.
+- **Privacidad**:
+  - Solo durante el viaje de un trabajo aceptado y con permiso explicado antes de pedirlo.
+  - Se deja de compartir al llegar o al cancelar.
+  - Solo lo ven las dos partes de ese trabajo.
+  - Retención de 30 días (lote 5.3).
 
 ### Dónde aparece el mapa
 
@@ -113,7 +132,7 @@ handyx". Si la idea era otra (por ejemplo, que formen la "o" de algo), se ajusta
 | Pedido entrante y detalle | Círculo aproximado del barrio y distancia aproximada | El servidor manda el centro ya desplazado y el radio. La app no recibe la dirección |
 | Cobertura y zonas | Barrios para tocar y elegir, y radio desde tu base | Tu base (dirección propia) es dato sensible: solo vos y Operations |
 | Trabajo acordado | Dirección exacta del cliente y "Cómo llegar" | Solo para las dos partes y solo en ese trabajo |
-| En camino | Tu posición (si la compartís) y el destino | Opt-in, solo durante el viaje. Se deja de compartir al llegar. Retención de 30 días (lote 4.2) |
+| En camino | Tu posición en vivo, el trayecto dibujado, el tiempo estimado y el destino | Opt-in, solo durante el viaje. Se deja de compartir al llegar. Retención de 30 días (lote 5.3) |
 | Agenda del día | Los trabajos del día en el mapa (opcional) | Solo trabajos acordados |
 
 ## 5. Pasos del re-plan (lotes)
@@ -123,30 +142,35 @@ de flujos (la del artifact) antes del siguiente.
 
 | Lote | Qué | Modelo / esfuerzo |
 |---|---|---|
-| 3.4 | Sistema visual v2 y kit de componentes | Opus 5.5 / high |
-| 3.5 | Carga, bienvenida, entrada, registro y recuperación | Opus 5.5 / high |
-| 3.6 | Mapa | Opus 5.5 / high |
-| 3.7 | Alta guiada premium | Opus 5.5 / high |
-| 3.8 | Inicio, pedidos y propuesta | Opus 5.5 / high |
-| 3.9 | Trabajo de punta a punta | Opus 5.5 / high |
-| 3.10 | Agenda, mensajes, cuenta, caja y ayuda | Sonnet 5.5 / high |
-| 3.11 | QA premium y cierre de diseño | Opus 5.5 / high |
+| 4.1 | Marca Handyx, sistema visual v2 y kit de componentes | Opus 5.5 / high |
+| 4.2 | Carga, bienvenida, entrada (email, Google, Apple), registro con código y recuperación | Opus 5.5 / high |
+| 4.3 | Mapa, ubicación en tiempo real y trayectos | Opus 5.5 / xhigh |
+| 4.4 | Alta guiada premium | Opus 5.5 / high |
+| 4.5 | Inicio, pedidos y propuesta con precio sugerido | Opus 5.5 / high |
+| 4.6 | Trabajo de punta a punta (llegada automática + respaldo, adicionales) | Opus 5.5 / high |
+| 4.7 | Obras de varios días | Opus 5.5 / high |
+| 4.8 | Agenda, mensajes, cuenta, caja y ayuda | Sonnet 5.5 / high |
+| 4.9 | QA premium y sí de diseño | Opus 5.5 / high |
 
-### 3.4 · Sistema visual v2 y kit
+### 4.1 · Marca Handyx, sistema visual v2 y kit
 
+- **Marca**: todos los textos visibles pasan de "Handy" a **"Handyx"**:
+  - "Tarifa de Handyx", "Handyx sugiere", "Verificado por Handyx" y "Handyx nunca te pide tu contraseña", entre otros.
+  - Los personajes siguen llamándose "los Handys".
+  - Los identificadores del contrato (`feeHandy`…) no cambian: son de `handyx-client-be`.
 - Tokens v2: elevaciones (3 niveles), radios de hoja (32 px), duraciones y curvas de movimiento, zona segura, alturas de
   barra y de pestañas.
 - Componentes (portados del kit `.hd-*` de la demo a React):
   - `BarraSuperior` (compacta y colapsable) y `PestanasFlotantes`.
   - `Hoja` arrastrable con alturas fijas (1/3, 2/3, completa).
   - `Isla` (aviso que baja), `BotonFijo`, `Mosaico`, `ChipFranja` y `TiraDias`.
-  - `Calendario`, `SelectorHora` (rueda), `PrecioStepper` ("Handy sugiere · Vos decidís") y `MontoGrande`.
+  - `Calendario`, `SelectorHora` (rueda), `PrecioStepper` ("Handyx sugiere · Vos decidís") y `MontoGrande`.
   - `Avatar` con iniciales, `LineaDeTiempo`, `Confeti`, `ContadorMonto` y `EstadoVacio` con Handy.
 - Catálogo navegable solo en el mock (`/catalogo/`, fuera del build de producción) con cada componente en sus estados.
 - Actualizar `docs/diseno.md` con las reglas de §2.
 - **Hecho cuando**: el catálogo está completo en claro, con "reducir movimiento" y al 200 %, y axe da 0.
 
-### 3.5 · Carga, bienvenida y cuenta
+### 4.2 · Carga, bienvenida y cuenta
 
 Pantallas:
 1. Carga animada (§3).
@@ -155,31 +179,47 @@ Pantallas:
    - "La plata va directo a vos".
    - "0 % de tarifa hasta el 10/12".
 3. Elegir: "Crear cuenta" / "Ya tengo cuenta".
-4. Entrar: email, contraseña con mostrar/ocultar y error genérico.
+4. Entrar:
+   - **Continuar con Google**, en todos los dispositivos.
+   - **Continuar con Apple**, solo en iPhone, iPad y Mac (se detecta el sistema; en Android y Windows no aparece).
+   - O email y contraseña, con mostrar/ocultar y error genérico.
+   - Si la cuenta de Google o Apple es nueva, sigue por las aceptaciones y la cuenta creada. Esas cuentas ya traen el email
+     verificado, así que no se pide el código.
 5. Crear cuenta en 3 pasos cortos:
    - Email.
    - Contraseña, con medidor de fuerza.
    - Términos y privacidad, sin tildar.
-6. **Verificar email** (código de 6 dígitos, si se aprueba en §8).
+6. **Verificar email con un código de 6 dígitos**:
+   - Seis casillas con pegado automático y el teclado numérico.
+   - Reenvío habilitado después de 60 s.
+   - Intentos limitados.
+   - "Cambiar el email".
 7. Cuenta creada, con fee 0 % y celebración.
 8. Recuperar (email) → Revisá tu correo → **Contraseña nueva** → **Listo**, más **enlace vencido**.
 9. Sesión expirada.
 10. Volver a entrar ("Hola de nuevo").
 
-Sin entrada con Google, Apple ni teléfono por ahora (§8). **Hecho cuando**: E2E de registro, verificación, entrada y
-recuperación, con capturas.
+Sin entrada por teléfono ni SMS. En el mock, Google y Apple se simulan con un botón "Cuenta de prueba"; el ingreso real va en la fase 5.
+**Hecho cuando**: hay E2E con capturas de registro con código, entrada con email, Google y Apple simulados, y recuperación.
 
-### 3.6 · Mapa
+### 4.3 · Mapa, ubicación en tiempo real y trayectos
 
 - MapLibre con estilo Handyx y teselas de prueba de Mar del Plata servidas por el servidor local de E2E.
 - Componente `Mapa` con capas para cobertura, zona aproximada, pin del trabajo, mi posición y radar.
 - Carga diferida.
 - Si el mapa no carga: mosaico con el barrio en texto. Nunca una pantalla rota.
 - Pedido de ubicación con explicación previa (solo durante el viaje, como la demo).
+- **Ubicación en vivo**, simulada en el mock: el punto del especialista avanza por el trayecto, con estados de señal (normal,
+  imprecisa, sin señal, sin permiso) que se cambian desde el Panel de prueba.
+- **Trayectos**:
+  - Líneas por calles reales de Mar del Plata, precalculadas para el mock.
+  - Tiempo y distancia estimados.
+  - Desvío con recálculo simulado.
+  - Atajo a Google Maps o Waze.
 - Datos de barrios para la cobertura: fuente a confirmar (datos abiertos del municipio u OpenStreetMap).
 - **Hecho cuando**: el mapa anda a 60 fps en un Android de gama media emulado, sin fallas con la red cortada y con la atribución visible.
 
-### 3.7 · Alta guiada
+### 4.4 · Alta guiada
 
 1. **Inicio del alta**: lista de pasos con anillo de progreso, al estilo "Completá tu perfil" de las apps de reparto.
 2. **Datos personales**: un dato por pantalla en el celular, con el teclado correcto en cada campo.
@@ -197,7 +237,7 @@ recuperación, con capturas.
 11. **Rechazada**.
 12. **¡Estás habilitado!**: celebración, luego el modal del fee 0 %, luego "Activá tu disponibilidad".
 
-### 3.8 · Inicio, pedidos y propuesta
+### 4.5 · Inicio, pedidos y propuesta
 
 1. **Inicio sobre el mapa**:
    - Bloque azul con saludo e interruptor grande "Disponible" (urgentes Ahora).
@@ -208,7 +248,7 @@ recuperación, con capturas.
 3. **Detalle del pedido**: mapa de la zona, fotos y fecha pedida.
 4. **Tu precio**:
    - Elegir cuándo podés ir (chips de franjas o "Elegir fecha/horario").
-   - Stepper de precio "Handy sugiere $ X · Vos decidís", con atajos de +$ 1.000 / 2.000 / 5.000.
+   - Stepper de precio "Handyx sugiere $ X · Vos decidís", con atajos de +$ 1.000 / 2.000 / 5.000.
    - Qué incluye.
    - "Recibís" con fee 0 %.
 5. **Esperando al cliente**: un Handy que espera; tu propuesta con su vencimiento.
@@ -219,21 +259,51 @@ recuperación, con capturas.
 9. **Bandeja**: filtros en chips que entran en 390 px, y orden por llegada o por cercanía.
 10. **Avisos**: agrupados en Nuevas / Antes, deslizar para borrar y "Borrar todas".
 
-### 3.9 · Trabajo de punta a punta
+### 4.6 · Trabajo de punta a punta
 
 1. **Trabajo acordado**: cliente, dirección exacta, mapa, "Cómo llegar", chat y llamada a través de la app (sin mostrar teléfonos).
 2. **Salgo para allá**.
 3. **En camino**: mapa con mi posición y el destino, y estados de la señal: normal, imprecisa, sin señal, sin permiso.
-4. **Llegada**, según la decisión de §8.
-5. **En curso**: cronómetro y "Agregar repuestos o mano de obra" (adicionales, si se aprueban en §8).
+4. **Llegada**:
+   - Automática al entrar en el radio con la app abierta, con aviso al cliente.
+   - **Botón de respaldo "Ya llegué"** solo cuando la ubicación anda mal: sin permiso, imprecisa o sin señal.
+5. **En curso**: cronómetro y **"Agregar repuestos o mano de obra"** (adicionales):
+   - Lista de opciones, con "Opción personalizada" primero.
+   - El cliente acepta o rechaza.
+   - Mientras tanto, rige el precio vigente.
 6. **Terminar** (con confirmación) y **¡Terminaste el trabajo!**: monto que sube, desglose y confeti.
 7. **Informar el cobro**.
 8. **Cambiar la fecha**: motivo en chips, tira de días y franja; queda como solicitud pendiente.
 9. **Cancelar**, con alternativas.
 10. **Reclamo**.
-11. **Obra por etapas**.
+11. **Obra de varios días**: ver el lote 4.7.
 
-### 3.10 · Agenda, mensajes, cuenta, caja y ayuda
+### 4.7 · Obras de varios días
+
+Una obra (pintura, revoque, instalación grande) dura días o semanas y hoy se ve como un trabajo más con etapas en una lista.
+
+1. **Resumen de la obra**:
+   - Anillo de avance (etapas hechas de las totales).
+   - Próxima jornada.
+   - Monto acordado, cobrado y pendiente.
+   - Accesos a jornadas, etapas, fotos y adicionales.
+2. **Plan de obra**: etapas en una línea de tiempo (Preparación → Revoque → Pintura → Terminación). Cada una tiene:
+   - Fechas y estado.
+   - Su importe.
+   - Lo que incluye.
+3. **Jornadas en el calendario**:
+   - Los días de trabajo marcados en la agenda, como una franja de varios días.
+   - Cambiar una jornada es una solicitud y no mueve el resto.
+4. **Diario de obra**: avance del día con fotos y una nota corta. El cliente lo ve.
+5. **Adicionales por etapa**: los aprueba el cliente, como en un trabajo de un día.
+6. **Cobro por etapa**:
+   - Al terminar una etapa, se informa su cobro.
+   - Reportado ≠ verificado, como en Caja.
+7. **Cierre de la obra**: resumen final con todas las etapas, los adicionales y los cobros.
+
+**Hecho cuando**: hay un E2E de una obra de 3 etapas en 5 jornadas, con un cambio de jornada, un adicional y el cobro de cada etapa.
+
+### 4.8 · Agenda, mensajes, cuenta, caja y ayuda
 
 1. **Agenda**: mes con marcas, lista del día y detalle del turno, igual que la demo.
 2. **Mensajes**: lista con avatares de iniciales y estado del pedido.
@@ -253,60 +323,73 @@ recuperación, con capturas.
 6. **Caja**: resumen del mes, filtros por estado y movimientos con su desglose.
 7. **Centro de ayuda**: temas en pastillas, casos y detalle del caso.
 
-### 3.11 · QA premium y cierre
+### 4.9 · QA premium y sí de diseño
 
 - E2E reescritos para los nuevos flujos (más de 15 recorridos) y la página de flujos con capturas actualizada.
 - axe en 0 en 4 tamaños, foco y lector de pantalla revisados a mano con VoiceOver en Safari y TalkBack en Chrome (emulado), y
   "reducir movimiento".
 - Rendimiento medido con Lighthouse móvil (≥ 90 en rendimiento y accesibilidad).
-- Revisión final con Ignacio, que da el **sí de diseño** para empezar la fase 4.
+- Revisión final con Ignacio, que da el **sí de diseño** para empezar la fase 5 (backend).
 
-## 6. Inventario de pantallas (65)
-
-**Nueva**: no existe hoy. **Rehacer**: existe y se rediseña.
+## 6. Inventario de pantallas (73)
 
 | Grupo | Pantallas | Lote |
 |---|---|---|
-| Arranque y cuenta (16) | Carga animada · Bienvenida 1/2/3 · Elegir crear o entrar · Entrar · Crear cuenta: email / contraseña / aceptaciones · Verificar email · Cuenta creada · Recuperar · Revisá tu correo · Contraseña nueva · Contraseña cambiada · Enlace vencido · Sesión expirada | 3.5 (12 nuevas) |
-| Alta (14) | Inicio del alta · Datos · Identidad (DNI frente/dorso, CUIT) · Selfie · Rubros · Matrícula · Zonas en el mapa · Horarios · Turno de antecedentes · Resumen · En revisión · Corrección · Rechazada · ¡Habilitado! | 3.7 (6 nuevas) |
-| Inicio y pedidos (12) | Inicio sobre el mapa · Modal fee · Pedido entrante · Bandeja · Detalle del pedido · Tu precio · Elegir fecha · Elegir horario · Esperando al cliente · ¡Te eligió! · Propuesta del cliente · Avisos | 3.8 (6 nuevas) |
-| Trabajo (11) | Trabajo acordado · En camino · Permiso de ubicación · Llegada · En curso · Adicionales · Terminar · ¡Terminaste! · Informar cobro · Cambiar fecha · Cancelar | 3.9 (6 nuevas) |
-| Agenda, chat y cuenta (12) | Agenda · Detalle del turno · Mensajes · Chat · Contactos · Cuenta · Datos personales · Rubros y zonas · Cobros · Notificaciones y configuración · Caja · Centro de ayuda y caso | 3.10 (5 nuevas) |
-| Transversales | Sin conexión · Error con Handy roto · 404 · Baja · Catálogo (solo mock) | 3.4–3.10 |
+| Arranque y cuenta (17) | Carga animada · Bienvenida 1/2/3 · Elegir crear o entrar · Entrar (Google, Apple según el dispositivo, email) · Crear cuenta: email / contraseña / aceptaciones · Verificar email (código) · Cuenta creada · Recuperar · Revisá tu correo · Contraseña nueva · Contraseña cambiada · Enlace vencido · Sesión expirada · Hola de nuevo | 4.2 (13 nuevas) |
+| Mapa (transversal) | Capas de cobertura, zona aproximada, trayecto, posición en vivo y radar · Permiso de ubicación · Mapa sin conexión | 4.3 |
+| Alta (14) | Inicio del alta · Datos · Identidad (DNI frente/dorso, CUIT) · Selfie · Rubros · Matrícula · Zonas en el mapa · Horarios · Turno de antecedentes · Resumen · En revisión · Corrección · Rechazada · ¡Habilitado! | 4.4 (6 nuevas) |
+| Inicio y pedidos (12) | Inicio sobre el mapa · Modal fee · Pedido entrante · Bandeja · Detalle del pedido · Tu precio (Handyx sugiere) · Elegir fecha · Elegir horario · Esperando al cliente · ¡Te eligió! · Propuesta del cliente · Avisos | 4.5 (6 nuevas) |
+| Trabajo (12) | Trabajo acordado · En camino (trayecto en vivo) · Permiso de ubicación · Llegada automática · Ya llegué (respaldo) · En curso · Adicionales · Terminar · ¡Terminaste! · Informar cobro · Cambiar fecha · Cancelar | 4.6 (7 nuevas) |
+| Obras de varios días (7) | Resumen de la obra · Plan de etapas · Jornadas en el calendario · Diario de obra · Adicionales por etapa · Cobro por etapa · Cierre de la obra | 4.7 (6 nuevas) |
+| Agenda, chat y cuenta (12) | Agenda · Detalle del turno · Mensajes · Chat · Contactos · Cuenta · Datos personales · Rubros y zonas · Cobros · Notificaciones y configuración · Caja · Centro de ayuda y caso | 4.8 (5 nuevas) |
+| Transversales | Sin conexión · Error con Handy roto · 404 · Baja · Catálogo (solo mock) | 4.1–4.8 |
 
 ## 7. Cambios de contrato a proponer a `handyx-client-be` (v0.3.0)
 
-Se piden antes de la fase 4. En el mock se emulan desde el lote donde aparecen.
+Se piden antes de la fase 5. En el mock se emulan desde el lote donde aparecen.
 
 | Cambio | Para qué | Lote |
 |---|---|---|
-| Verificación de email (enviar y confirmar un código) | Paso 6 de la cuenta | 3.5 |
-| Restablecer la contraseña con un token y estado del token | Contraseña nueva y enlace vencido | 3.5 |
-| Zona aproximada del pedido: centro desplazado por el servidor y radio en metros | Mapa sin dirección exacta | 3.6 |
-| Cobertura por barrios (ids) y radio desde la base | Zonas en el mapa | 3.6–3.7 |
-| Turnos de verificación presencial de antecedentes | Elegir turno sin archivos | 3.7 |
-| Precio sugerido por rubro y tipo, con su fuente | "Handy sugiere" | 3.8 |
-| Aviso "propuesta aceptada" con el id del trabajo | ¡Te eligió! | 3.8 |
-| Adicionales del trabajo: crear, y que el cliente acepte o rechace | Agregar repuestos o mano de obra | 3.9 |
-| Estados de la llegada (según la decisión de §8) | En camino y llegada | 3.9 |
+| Verificación de email: enviar y confirmar un código de 6 dígitos, con vencimiento e intentos | Crear cuenta | 4.2 |
+| Entrar con Google y con Apple (OpenID Connect) y vincular cuentas | Entrar | 4.2 |
+| Restablecer la contraseña con un token y el estado del token | Contraseña nueva y enlace vencido | 4.2 |
+| Zona aproximada del pedido: centro desplazado por el servidor y radio en metros | Mapa sin dirección exacta | 4.3 |
+| Posiciones del viaje (enviar y seguir en vivo con SSE), trayecto, tiempo estimado y estado de la señal | Ubicación en tiempo real | 4.3 / 4.6 |
+| Cobertura por barrios (ids) y radio desde la base | Zonas en el mapa | 4.3 / 4.4 |
+| Turnos de verificación presencial de antecedentes | Elegir turno sin archivos | 4.4 |
+| Precio sugerido por rubro y tipo, con su fuente y versión | "Handyx sugiere" | 4.5 |
+| Aviso "propuesta aceptada" con el id del trabajo | ¡Te eligió! | 4.5 |
+| Llegada: automática (geocerca) o de respaldo, con el motivo | Llegada | 4.6 |
+| Adicionales: crear, y que el cliente acepte o rechace | Repuestos y mano de obra | 4.6 / 4.7 |
+| Obras: etapas, jornadas, diario con fotos y cobro por etapa | Obras de varios días | 4.7 |
 
-## 8. Decisiones que necesito de Ignacio
+## 8. Decisiones de Ignacio (29/10/2026)
 
-| # | Tema | Opciones | Recomiendo |
-|---|---|---|---|
-| 1 | **Llegada** | (a) Automática por geocerca, como la demo de la landing, sin botón manual · (b) "Llegué" manual, como hoy · (c) Automática con la app abierta y manual de respaldo | (c): una PWA no puede seguir la ubicación con la app cerrada, así que la geocerca sola no alcanza. Hay que revisarlo con LEG-46 |
-| 2 | **Proveedor del mapa** | PMTiles propio · MapTiler · Google | PMTiles propio (gratis, sin cuentas, sin terceros) |
-| 3 | **Verificar email** | Código de 6 dígitos · enlace · no verificar | Código: se puede tipear o pegar sin salir de la app |
-| 4 | **Entrar con Google o Apple** | Sí · no por ahora | No por ahora: exige cuentas de desarrollador y proveedores nuevos |
-| 5 | **Adicionales durante el trabajo** | Incluir (como la demo) · dejar para después | Incluir: es de lo mejor de la demo y evita renegociar todo |
-| 6 | **"Handy sugiere" un precio** | Con tabla por rubro · sin sugerencia | Con tabla, siempre editable ("Vos decidís") |
-| 7 | **Cupones y camada fundadora** en la app | Mostrar · no mostrar durante la demo | No mostrar mientras el fee sea 0 %: se confunde con la tarifa |
-| 8 | **Pantalla de carga** | Mi interpretación de §3 · otra | Confirmar la interpretación |
-| 9 | **Imágenes nuevas de los Handys** (saltando, colgados, esperando, celebrando) | Pedirlas a diseño · resolver con las actuales | Pedirlas. Mientras tanto, las actuales animadas |
+| # | Tema | Decisión |
+|---|---|---|
+| 1 | Llegada | Automática por geocerca con la app abierta; botón de respaldo "Ya llegué" solo si la ubicación anda mal |
+| 2 | Mapa | Mapa completo propio de Mar del Plata y Batán. El cliente ve al especialista en vivo durante el viaje, y Handyx dibuja el trayecto hasta la casa del cliente (§4) |
+| 3 | Verificar el email | Código de 6 dígitos al email |
+| 4 | Google y Apple | Los dos. Google en todos los dispositivos; Apple solo en dispositivos Apple |
+| 5 | Adicionales | Se incluyen, y las obras de varios días tienen su propio lote (4.7) |
+| 6 | Precio | "Handyx sugiere · Vos decidís", y todos los textos de la marca pasan a "Handyx" |
+| 7 | Cupones y camada fundadora | No se muestran mientras el fee sea 0 % |
+| 8 | Pantalla de carga | Los Handys terminan todos juntos de la mano con el logo |
+| 9 | Imágenes de los Handys | Poses nuevas, una por personaje, sobre fondo verde (`docs/handys-prompt.md`) |
+
+**Cuentas y costos que hay que autorizar antes de la fase 5** (en la fase 4 todo es mock y no cuesta nada):
+
+| Qué | Para qué | Costo |
+|---|---|---|
+| Apple Developer Program | Entrar con Apple | ≈ USD 99 al año |
+| Proyecto de Google Cloud (OAuth) | Entrar con Google | Gratis |
+| Proveedor de emails transaccionales | Códigos de 6 dígitos y recuperación | Plan gratis con cuenta. Pago según el volumen |
+| Motor de trayectos (OSRM o Valhalla propio, o un servicio con plan gratis) | Trayectos y tiempo estimado | Una instancia chica paga en Render, o gratis con límite diario |
+| Teselas del mapa | Mapa | Sin costo extra (Hostinger) |
 
 ## 9. Mapa de pantallas
 
-Líneas punteadas: depende de una decisión de §8.
+Líneas punteadas: caminos alternativos (respaldo o según el dispositivo).
 
 ```mermaid
 flowchart TB
@@ -315,7 +398,7 @@ flowchart TB
     SES{¿Sesión?}
     BIEN[Bienvenida 1·2·3]
     ELEGIR[Crear cuenta o entrar]
-    ENTRAR[Entrar]
+    ENTRAR[Entrar: Google · Apple · email]
     C1[Email]
     C2[Contraseña]
     C3[Aceptaciones]
@@ -360,13 +443,23 @@ flowchart TB
     SALGO[Salgo para allá]
     PERM[Permiso de ubicación]
     CAMINO[En camino]
-    LLEGA[Llegada]
+    LLEGA[Llegada automática]
+    YA[Ya llegué · respaldo]
     CURSO[En curso]
     ADIC[Adicionales]
     FIN[¡Terminaste!]
     COBRO[Informar cobro]
     CAMBIO[Cambiar fecha]
     CANC[Cancelar]
+  end
+  subgraph Obra[Obras de varios días]
+    OBRA[Resumen de la obra]
+    PLAN[Plan de etapas]
+    JORN[Jornadas en el calendario]
+    DIARIO[Diario de obra]
+    ADICE[Adicionales por etapa]
+    COBROE[Cobro por etapa]
+    CIERRE[Cierre de la obra]
   end
   subgraph Pestanas[Pestañas: Agenda, Mensajes, Cuenta]
     AGENDA[Agenda]
@@ -387,8 +480,8 @@ flowchart TB
   SES -->|no| BIEN --> ELEGIR
   ELEGIR --> ENTRAR
   ELEGIR --> C1 --> C2 --> C3
-  C3 -.->|si se verifica| VER --> CREADA
-  C3 --> CREADA
+  C3 --> VER --> CREADA
+  ENTRAR -.->|Google o Apple, cuenta nueva| C3
   ENTRAR --> REC --> CORREO --> NUEVA --> LISTO
   CORREO --> VENC --> REC
   SES -->|alta sin habilitar| ALTA
@@ -413,12 +506,20 @@ flowchart TB
   PROPCLI -->|contraofertar| PRECIO
 
   ELIGIO --> ACORD --> SALGO --> PERM --> CAMINO
-  CAMINO -.->|según la decisión 1| LLEGA --> CURSO
-  CURSO -.->|si se aprueba| ADIC --> CURSO
+  CAMINO -->|geocerca| LLEGA --> CURSO
+  CAMINO -.->|la ubicación anda mal| YA --> CURSO
+  CURSO --> ADIC --> CURSO
   CURSO --> FIN --> COBRO --> CAJA
   ACORD --> CAMBIO
   ACORD --> CANC
   ACORD --> CHAT
+  ACORD -->|es una obra| OBRA
+  OBRA --> PLAN --> JORN
+  OBRA --> DIARIO
+  PLAN --> ADICE
+  PLAN --> COBROE --> CAJA
+  COBROE --> CIERRE
+  JORN --> CAMBIO
 
   AGENDA --> TURNO --> ACORD
   MENS --> CHAT --> CONT

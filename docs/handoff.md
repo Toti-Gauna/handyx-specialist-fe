@@ -1,6 +1,6 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado con fases 1–2 y 3.1; 3.2 y 3.3 sin PR) · Bloque 4 · **Fase 3 cerrada localmente.**
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3 y el plan de la fase 4) · Bloque 4 · **Fase 3 cerrada; fase 4 (rediseño) planificada.**
 Modelos: fases 1 y 3 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
@@ -59,18 +59,21 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 - iOS no muestra aviso de instalación: hay que usar "Agregar a inicio".
 - Para el deploy: servir `sw.js` con `Cache-Control: no-cache` y configurar `404.html` en el hosting (`docs/pwa.md`).
 
-**Próximo paso** (actualizado el 29/10/2026): **rediseño premium**, lotes 3.4–3.11 de `docs/rediseno.md`. Antes de empezar hacen falta
-las decisiones de §8:
-- Llegada.
-- Proveedor del mapa.
-- Verificación del email.
-- Adicionales.
-- Precio sugerido.
-- Cupones.
-- Interpretación de la pantalla de carga.
-- Imágenes nuevas de los Handys.
-
-La fase 4 queda para después del sí de diseño del lote 3.11.
+**Próximo paso** (actualizado el 29/10/2026):
+- Ignacio reorganizó el plan en 6 fases: **fase 4 = rediseño premium Handyx** (lotes 4.1–4.9, `docs/rediseno.md`), fase 5 =
+  backend y fase 6 = deploy.
+- Las decisiones del rediseño están tomadas (`docs/rediseno.md` §8):
+  - Llegada automática con botón de respaldo.
+  - Mapa propio con ubicación en vivo y trayectos.
+  - Código de 6 dígitos para verificar el email.
+  - Entrar con Google y con Apple (Apple solo en dispositivos Apple).
+  - Adicionales y obras de varios días.
+  - "Handyx sugiere" y marca Handyx en todos los textos.
+  - Sin cupones durante el fee 0 %.
+  - Pantalla de carga con los Handys de la mano.
+- Empieza el lote **4.1**: marca Handyx, sistema visual v2 y kit.
+- Las imágenes nuevas de los Handys se generan con `docs/handys-prompt.md`. Hasta que lleguen, se usan las actuales animadas.
+- Antes de la fase 5 hace falta autorizar las cuentas y costos de §8: Apple Developer, Google Cloud, emails y motor de trayectos.
 
 
 ## Fase 3 · Lote 3.2 (responsive y accesibilidad)
