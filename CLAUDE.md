@@ -55,6 +55,11 @@ Reglas de forma (tokens `--hd-*`, `ChipTipo` vs chips de estado, una acción pri
 rojo, urgencia en texto neutro, sin estilos inline, movimiento solo con `no-preference`, Handys decorativos): `docs/diseno.md`;
 catálogo en `docs/componentes.md`. Capturas sanitizadas: `npm run capturas` (catálogo: `npm run capturas:docs`).
 
+**Kit v2 (fase 4)** en `src/kit/`: las pantallas rediseñadas se arman con sus piezas (`BarraSuperior`, `PestanasFlotantes`,
+`HojaArrastrable`, `useIsla`, `useConfeti`, `PrecioStepper`, `TiraDias`, `CalendarioMes`, `SelectorHora`, `Mosaico`…), con estilos
+`hx-*` de `kit.css` y lógica pura con pruebas en `logica.ts`. Se ven en `/catalogo/`, que solo existe en el mock (`page.mock.tsx`
++ `pageExtensions`): no lo pongas en `RUTAS` ni en nada que entre a producción.
+
 **Service worker** (`docs/pwa.md`): `out/sw.js` lo genera `scripts/generar-sw.mjs` con la política de `src/pwa/politica.ts`. Solo
 archivos estáticos públicos; nunca la API, mutaciones ni otros sitios, y sin cola offline. Cambiar la política exige su prueba.
 

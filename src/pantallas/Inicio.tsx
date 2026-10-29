@@ -114,7 +114,7 @@ function PanelInicio() {
         <Tarjeta tono="gris">
           <p className="monto">{pesos(inicio.cobradoMes)}</p>
           <p className="texto-suave">{plural(inicio.trabajosCobrados, 'trabajo cobrado y verificado', 'trabajos cobrados y verificados')}.</p>
-          <p className="texto-suave texto-chico">Es plata que te pagaron directamente a vos. Handy no guarda ni te transfiere dinero.</p>
+          <p className="texto-suave texto-chico">Es plata que te pagaron directamente a vos. Handyx no guarda ni te transfiere dinero.</p>
         </Tarjeta>
       </Seccion>
 

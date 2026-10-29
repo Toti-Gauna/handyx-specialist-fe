@@ -35,6 +35,7 @@ const PANTALLAS = [
   ['error-servidor', '/caja/?falla=servidor', 'El servicio no está disponible por ahora', 'habilitado'],
   ['sin-conexion', '/sin-conexion/', 'Se nos cortó el caño', 'habilitado'],
   ['no-encontrada', '/no-existe/', 'No encontramos esta pantalla', 'habilitado'],
+  ['catalogo', '/catalogo/', 'Todavía no hay pedidos para vos', 'habilitado'],
 ];
 
 module.exports = { PANTALLAS, id };

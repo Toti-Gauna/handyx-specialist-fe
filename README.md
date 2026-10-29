@@ -35,7 +35,8 @@ Variables: `.env.example`. Todas son públicas (`NEXT_PUBLIC_*`): nunca secretos
 | `docs/auth-permissions.md` | Sesión, CSRF y matriz de permisos |
 | `docs/matriz.md` | Pantalla · API · permiso · QA |
 | `docs/diseno.md` | Sistema visual, tipo vs estado, jerarquía de acción, urgencia sin dark patterns, accesibilidad, movimiento y Handys |
-| `docs/componentes.md` | Catálogo de componentes |
+| `docs/componentes.md` | Catálogo de componentes y del kit Handyx v2 (`src/kit/`, en uso en `/catalogo/` con el mock) |
+| `docs/rediseno.md` | Fase 4: rediseño premium Handyx (lotes, mapa, decisiones y mapa de pantallas) |
 | `docs/capturas/` | Capturas sanitizadas por pantalla (celular y escritorio) |
 | `docs/pwa.md` | Manifest, service worker (qué guarda y qué nunca) y sin conexión |
 | `docs/qa.md` | Escenarios de prueba, cómo reproducirlos y qué NO demuestra la fase 2 |

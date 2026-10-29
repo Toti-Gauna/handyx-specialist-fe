@@ -54,7 +54,7 @@ export function CasoDetalle() {
       <ol className="chat" aria-label="Historial del caso">
         {k.eventos.map((e) => (
           <li key={e.id} className={`burbuja${e.autor === 'vos' ? ' burbuja--propia' : ''}`}>
-            <strong>{e.autor === 'vos' ? 'Vos' : 'Handy'}</strong>
+            <strong>{e.autor === 'vos' ? 'Vos' : 'Handyx'}</strong>
             <span>{e.texto}</span>
             {e.adjuntos > 0 ? <span className="burbuja__meta"><Icono nombre="imagen" className="icono icono--chico" /> {e.adjuntos} {e.adjuntos === 1 ? 'adjunto' : 'adjuntos'} (no se muestran acá)</span> : null}
             <span className="burbuja__meta">{fechaHora(e.creadoEn)}</span>

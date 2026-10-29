@@ -1,0 +1,1253 @@
+/* Kit Handyx v2 (fase 4, lote 4.1). Piezas portadas de la demo de la landing (demo-app.css, clases .hd-*) para las
+   pantallas rediseñadas. Prefijo hx-. Se apoya en los tokens --hd-* de globals.css y suma los de abajo.
+   Reglas (docs/diseno.md): cabecera solo en Inicio, barra compacta en el resto, pestañas flotantes solo en las raíz,
+   acción principal fija abajo, celebraciones solo al ganar o terminar un trabajo y al registrar un cobro.
+   Todo el movimiento va dentro de prefers-reduced-motion: no-preference. */
+
+/* ── Tokens v2 ──────────────────────────────────────────────────────── */
+
+:root {
+  --hx-elev-1: 0 1px 3px rgb(14 29 54 / 0.06), 0 8px 22px -8px rgb(14 29 54 / 0.16);
+  --hx-elev-2: 0 2px 6px rgb(14 29 54 / 0.08), 0 18px 40px -14px rgb(14 29 54 / 0.3);
+  --hx-elev-3: 0 -6px 18px -6px rgb(14 29 54 / 0.18), 0 24px 60px -20px rgb(14 29 54 / 0.45);
+  --hx-radio-hoja: 32px;
+  --hx-radio-boton: 16px;
+  --hx-radio-mosaico: 22px;
+  --hx-dur-corta: 0.15s;
+  --hx-dur-media: 0.3s;
+  --hx-dur-larga: 0.55s;
+  --hx-salida: cubic-bezier(0.32, 0.72, 0, 1);
+  --hx-resorte: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --hx-seguro-arriba: env(safe-area-inset-top, 0px);
+  --hx-seguro-abajo: env(safe-area-inset-bottom, 0px);
+  --hx-barra-alto: 56px;
+  --hx-pestanas-alto: 68px;
+  --hx-base-boton: 4px;
+}
+
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    /* Resorte con un rebote corto, el mismo de la demo. */
+    --hx-resorte: linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163 27%, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1);
+  }
+}
+
+.hx-titulo,
+.hx-monto,
+.hx-precio__valor {
+  /* Con el texto agrandado, una palabra o un monto largo se corta antes que desbordar la pantalla. */
+  overflow-wrap: anywhere;
+}
+
+.hx-titulo {
+  margin: 0;
+  color: var(--hd-tinta);
+  font-family: var(--fuente-titulos-app);
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* ==texto== de la marca: marcador amarillo debajo de las letras. */
+.hx-marca {
+  background: linear-gradient(transparent 56%, var(--hd-amarillo) 56% 92%, transparent 92%);
+  padding: 0 0.06em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ── Barra superior (compacta, con título grande que colapsa) ──────── */
+
+.hx-barra {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: var(--toque-min) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: calc(var(--hx-barra-alto) + var(--hx-seguro-arriba));
+  padding: var(--hx-seguro-arriba) var(--esp-3) 0;
+  background: color-mix(in srgb, var(--color-hueso) 92%, transparent);
+  transition: box-shadow var(--hx-dur-media) ease;
+}
+
+.hx-barra--sombra {
+  box-shadow: 0 1px 0 var(--hd-linea), 0 8px 20px -14px rgb(14 29 54 / 0.4);
+}
+
+.hx-barra__titulo {
+  margin: 0;
+  overflow: hidden;
+  color: var(--hd-tinta);
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-stretch: 112%;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity var(--hx-dur-media) ease, translate var(--hx-dur-media) var(--hx-salida);
+}
+
+/* Con título grande: el chico aparece recién cuando el grande sale de la vista. */
+.hx-barra--grande:not(.hx-barra--sombra) .hx-barra__titulo {
+  opacity: 0;
+  translate: 0 6px;
+}
+
+.hx-barra__acciones {
+  display: flex;
+  gap: var(--esp-1);
+  justify-content: flex-end;
+  min-width: var(--toque-min);
+}
+
+.hx-circulo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--toque-min);
+  height: var(--toque-min);
+  border: 0;
+  border-radius: 50%;
+  background: var(--hd-mosaico);
+  color: var(--hd-tinta);
+  text-decoration: none;
+  cursor: pointer;
+  flex: none;
+  transition: transform var(--hx-dur-corta) ease;
+}
+
+.hx-circulo:active {
+  transform: scale(0.9);
+}
+
+.hx-circulo--azul {
+  background: var(--hd-azul);
+  color: #fff;
+}
+
+.hx-circulo--blanco {
+  background: #fff;
+  color: var(--hd-tinta);
+  box-shadow: var(--hx-elev-1);
+}
+
+.hx-titulo-grande {
+  margin: var(--esp-2) 0 var(--esp-3);
+  font-size: clamp(1.9rem, 8vw, 2.35rem);
+}
+
+/* ── Pestañas flotantes (solo en las 4 pantallas raíz) ─────────────── */
+
+.hx-pestanas {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: calc(var(--esp-3) + var(--hx-seguro-abajo));
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  width: min(calc(100% - 2 * var(--esp-4)), 440px);
+  min-height: var(--hx-pestanas-alto);
+  padding: 6px;
+  border-radius: 26px;
+  background: var(--hd-azul);
+  box-shadow: 0 6px 0 var(--hd-azul-hondo), var(--hx-elev-2);
+  translate: -50% 0;
+}
+
+.hx-pestana {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  min-height: 56px;
+  border-radius: 20px;
+  color: rgb(255 255 255 / 0.78);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color var(--hx-dur-media) ease, background-color var(--hx-dur-media) ease;
+}
+
+.hx-pestana .icono {
+  width: 24px;
+  height: 24px;
+}
+
+.hx-pestana[aria-current='page'] {
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
+}
+
+/* El puntito amarillo de la pestaña activa (como en la app). */
+.hx-pestana::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  right: calc(50% - 18px);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--hd-amarillo);
+  scale: 0;
+  transition: scale 0.4s var(--hx-resorte);
+}
+
+.hx-pestana[aria-current='page']::after {
+  scale: 1;
+}
+
+.hx-pestana__insignia {
+  position: absolute;
+  top: 4px;
+  left: calc(50% + 6px);
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 2px solid var(--hd-azul);
+  border-radius: 999px;
+  background: var(--hd-amarillo);
+  color: var(--hd-tinta);
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+/* Espacio para que nada quede tapado por las pestañas o el botón fijo. */
+.hx-con-pestanas {
+  padding-bottom: calc(var(--hx-pestanas-alto) + var(--esp-6) + var(--hx-seguro-abajo));
+}
+
+/* ── Botón fijo abajo ──────────────────────────────────────────────── */
+
+.hx-boton-fijo {
+  position: sticky;
+  z-index: 15;
+  bottom: 0;
+  display: grid;
+  gap: var(--esp-2);
+  margin: var(--esp-4) calc(-1 * var(--esp-4)) 0;
+  padding: var(--esp-3) var(--esp-4) calc(var(--esp-3) + var(--hx-seguro-abajo));
+  background: linear-gradient(to top, var(--color-hueso) 72%, transparent);
+}
+
+.hx-boton-fijo__nota {
+  margin: 0;
+  color: var(--hd-suave);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ── Mosaicos ──────────────────────────────────────────────────────── */
+
+.hx-mosaicos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--esp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hx-mosaico {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  width: 100%;
+  aspect-ratio: 1 / 0.94; /* sin min-height: así el mosaico crece si el texto no entra (rubros largos, texto agrandado) */
+  padding: var(--esp-2);
+  border: 0;
+  border-radius: var(--hx-radio-mosaico);
+  background: var(--hd-mosaico);
+  color: var(--hd-tinta);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  overflow-wrap: break-word; /* corta solo si una palabra no entra; los rubros largos traen su guion opcional */
+  cursor: pointer;
+  box-shadow: 0 var(--hx-base-boton) 0 var(--hd-mosaico-hondo);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.25s ease, color 0.25s ease;
+}
+
+.hx-mosaico .icono {
+  width: 34px;
+  height: 34px;
+  stroke-width: 1.7;
+}
+
+.hx-mosaico:active {
+  transform: translateY(var(--hx-base-boton));
+  box-shadow: 0 0 0 var(--hd-mosaico-hondo);
+}
+
+.hx-mosaico[aria-pressed='true'] {
+  background: var(--hd-azul);
+  color: #fff;
+  box-shadow: 0 var(--hx-base-boton) 0 var(--hd-azul-hondo);
+}
+
+.hx-mosaico__nota {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* Tilde chiquito en el mosaico elegido (la forma, además del color). */
+.hx-mosaico[aria-pressed='true']::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--hd-amarillo)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230E1D36' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E")
+    center / 64% no-repeat;
+}
+
+/* ── Chips de franja y carril ──────────────────────────────────────── */
+
+.hx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hx-chips--carril {
+  flex-wrap: nowrap;
+  margin-inline: calc(-1 * var(--esp-4));
+  padding: 2px var(--esp-4) 8px;
+  overflow-x: auto;
+  scroll-padding-inline: var(--esp-4);
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.hx-chips--carril::-webkit-scrollbar {
+  display: none;
+}
+
+.hx-chips--carril > * {
+  flex: none;
+  scroll-snap-align: start;
+}
+
+.hx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--toque-min);
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--hd-tinta);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--hd-mosaico-hondo);
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.25s var(--hx-resorte), box-shadow 0.12s ease;
+}
+
+.hx-chip .icono {
+  width: 18px;
+  height: 18px;
+}
+
+.hx-chip:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 var(--hd-mosaico-hondo);
+}
+
+.hx-chip[aria-pressed='true'] {
+  background: var(--hd-azul);
+  color: #fff;
+  box-shadow: 0 3px 0 var(--hd-azul-hondo);
+}
+
+/* ── Tira de días ──────────────────────────────────────────────────── */
+
+.hx-tira {
+  display: grid;
+  grid-auto-columns: minmax(56px, 1fr);
+  grid-auto-flow: column;
+  gap: var(--esp-2);
+  margin: 0 calc(-1 * var(--esp-4));
+  padding: 2px var(--esp-4) 8px;
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.hx-tira::-webkit-scrollbar {
+  display: none;
+}
+
+.hx-tira__dia {
+  position: relative; /* el texto oculto para lectores queda dentro del carril y no ensancha la página */
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  width: 100%;
+  min-height: 68px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: 18px;
+  background: #fff;
+  color: var(--hd-tinta);
+  font: inherit;
+  cursor: pointer;
+  scroll-snap-align: start;
+  box-shadow: 0 3px 0 var(--hd-mosaico-hondo);
+  transition: background-color 0.2s ease, transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.hx-tira__dia small {
+  color: var(--hd-suave);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.hx-tira__dia b {
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.35rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.hx-tira__dia--hoy b {
+  text-decoration: underline 3px var(--hd-naranja);
+  text-underline-offset: 3px;
+}
+
+.hx-tira__dia[aria-pressed='true'] {
+  background: var(--hd-azul);
+  color: #fff;
+  box-shadow: 0 3px 0 var(--hd-azul-hondo);
+}
+
+.hx-tira__dia[aria-pressed='true'] small {
+  color: rgb(255 255 255 / 0.85);
+}
+
+.hx-tira__dia:disabled {
+  background: transparent;
+  box-shadow: none;
+  color: #8a93a6;
+  cursor: default;
+}
+
+/* ── Calendario del mes ────────────────────────────────────────────── */
+
+.hx-cal {
+  display: grid;
+  gap: var(--esp-2);
+}
+
+.hx-cal__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+}
+
+.hx-cal__mes {
+  margin: 0;
+  color: var(--hd-azul);
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.2rem;
+  font-weight: 900;
+  font-stretch: 115%;
+  text-transform: capitalize;
+}
+
+.hx-cal__semana,
+.hx-cal__grilla {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hx-cal__semana {
+  color: var(--hd-suave);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.hx-cal__dia {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: var(--toque-min);
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 14px;
+  background: var(--hd-mosaico);
+  color: var(--hd-tinta);
+  font: inherit;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--hd-mosaico-hondo);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.2s ease;
+}
+
+.hx-cal__dia:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+.hx-cal__dia--hoy {
+  background: var(--hd-amarillo);
+  box-shadow: 0 3px 0 var(--hd-amarillo-hondo);
+}
+
+.hx-cal__dia--con {
+  background: var(--hd-azul-tinte);
+  color: var(--hd-azul);
+}
+
+.hx-cal__dia[aria-pressed='true'] {
+  background: var(--hd-azul);
+  color: #fff;
+  box-shadow: 0 3px 0 var(--hd-azul-hondo);
+}
+
+.hx-cal__dia:disabled {
+  background: transparent;
+  box-shadow: none;
+  color: #8a93a6;
+  text-decoration: line-through;
+  cursor: default;
+}
+
+.hx-cal__puntos {
+  position: absolute;
+  bottom: 5px;
+  display: flex;
+  gap: 3px;
+}
+
+.hx-cal__puntos i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ── Selector de hora (ruedas) ─────────────────────────────────────── */
+
+.hx-ruedas {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  height: 200px;
+  border-radius: 22px;
+  background: var(--hd-fondo-2);
+}
+
+.hx-ruedas__banda {
+  position: absolute;
+  inset: 50% 12px auto;
+  height: 46px;
+  margin-top: -23px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+  pointer-events: none;
+}
+
+.hx-ruedas__dos {
+  position: relative;
+  color: var(--hd-azul);
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
+.hx-rueda {
+  position: relative;
+  width: 76px;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  outline: none;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+  mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+}
+
+.hx-rueda::-webkit-scrollbar {
+  display: none;
+}
+
+.hx-rueda:focus-visible {
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 3px var(--hd-azul-vivo);
+}
+
+.hx-rueda__relleno {
+  height: calc(50% - 23px);
+}
+
+.hx-rueda__op {
+  display: grid;
+  place-items: center;
+  height: 46px;
+  color: #6b7488;
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.3rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  scroll-snap-align: center;
+  cursor: pointer;
+  transition: color 0.2s ease, scale 0.2s ease;
+}
+
+.hx-rueda__op[aria-selected='true'] {
+  color: var(--hd-azul);
+  scale: 1.12;
+}
+
+/* ── Precio ("Handyx sugiere · Vos decidís") ───────────────────────── */
+
+.hx-precio {
+  display: grid;
+  justify-items: center;
+  gap: var(--esp-3);
+  padding: var(--esp-4) var(--esp-3) var(--esp-4);
+  border-radius: 26px;
+  background: var(--hd-fondo-2);
+}
+
+.hx-precio__sugerido {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.hx-precio__sugerido .handy {
+  height: 34px;
+}
+
+.hx-precio__decidis {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--hd-amarillo);
+  color: var(--hd-tinta);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.hx-precio__fila {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--esp-2);
+  width: 100%;
+}
+
+.hx-precio__paso {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--hd-azul);
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--hd-mosaico-hondo);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.hx-precio__paso:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.hx-precio__paso:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.hx-precio__valor {
+  margin: 0;
+  color: var(--hd-azul);
+  font-family: var(--fuente-titulos-app);
+  font-size: clamp(1.6rem, 8vw, 2.6rem);
+  font-weight: 900;
+  font-stretch: 112%;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.hx-precio__escribir {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+}
+
+.hx-precio__escribir input {
+  min-height: var(--toque-min);
+  padding: 0 14px;
+  border: 2px solid var(--hd-borde);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--hd-tinta);
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.hx-recibis {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 2px var(--esp-3);
+  width: 100%;
+  padding: var(--esp-3) var(--esp-4);
+  border-radius: 20px;
+  background: var(--hd-exito-tinte);
+  color: var(--hd-exito);
+}
+
+.hx-recibis__icono {
+  display: grid;
+  grid-row: span 2;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--hd-exito-boton);
+  color: #fff;
+}
+
+.hx-recibis__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px var(--esp-2);
+  font-weight: 800;
+}
+
+.hx-recibis__fila .hx-monto {
+  font-size: 1.45rem;
+}
+
+.hx-recibis small {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* ── Montos ────────────────────────────────────────────────────────── */
+
+.hx-monto {
+  font-family: var(--fuente-titulos-app);
+  font-weight: 900;
+  font-stretch: 112%;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.hx-monto--grande {
+  font-size: clamp(2.4rem, 12vw, 3.2rem);
+  color: var(--hd-exito);
+}
+
+/* ── Avatar ────────────────────────────────────────────────────────── */
+
+.hx-avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--hd-azul);
+  color: #fff;
+  font-family: var(--fuente-titulos-app);
+  font-size: 0.95rem;
+  font-weight: 900;
+  font-stretch: 110%;
+  flex: none;
+}
+
+.hx-avatar--t1 { background: #1d2c4a; }
+.hx-avatar--t2 { background: #2b5f8f; }
+.hx-avatar--t3 { background: #5b4b9a; }
+.hx-avatar--t4 { background: #13704a; }
+.hx-avatar--t5 { background: #8a4b12; }
+
+.hx-avatar--chico {
+  width: 34px;
+  height: 34px;
+  font-size: 0.78rem;
+}
+
+.hx-avatar--grande {
+  width: 84px;
+  height: 84px;
+  font-size: 1.8rem;
+}
+
+.hx-avatar__verificado {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: grid;
+  place-items: center;
+  width: 38%;
+  height: 38%;
+  min-width: 18px;
+  min-height: 18px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--hd-exito-boton);
+  color: #fff;
+}
+
+.hx-avatar__verificado .icono {
+  width: 70%;
+  height: 70%;
+  stroke-width: 3.4;
+}
+
+/* ── Filas de lista (Cuenta, ajustes) ──────────────────────────────── */
+
+.hx-lista {
+  margin: 0;
+  padding: 0 var(--esp-4);
+  list-style: none;
+  border-radius: var(--radio-tarjeta);
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.hx-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  width: 100%;
+  min-height: 60px;
+  padding: var(--esp-2) 0;
+  border: 0;
+  border-bottom: 1px solid var(--hd-linea);
+  background: none;
+  color: var(--hd-texto);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hx-lista > li:last-child .hx-fila {
+  border-bottom: 0;
+}
+
+.hx-fila__ico {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: var(--hd-fondo-2);
+  color: var(--hd-azul);
+  flex: none;
+}
+
+.hx-fila__texto {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.hx-fila__texto strong {
+  color: var(--hd-tinta);
+  font-weight: 700;
+}
+
+.hx-fila__texto small {
+  color: var(--hd-suave);
+  font-size: 0.85rem;
+}
+
+.hx-fila > .icono:last-child {
+  color: var(--hd-suave);
+  flex: none;
+}
+
+/* ── Línea de tiempo ───────────────────────────────────────────────── */
+
+.hx-linea {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hx-linea__paso {
+  position: relative;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: var(--esp-3);
+  padding-bottom: var(--esp-4);
+}
+
+/* La línea que une los pasos. */
+.hx-linea__paso:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 34px;
+  bottom: 2px;
+  left: 15px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--hd-linea);
+}
+
+.hx-linea__paso--hecho:not(:last-child)::before {
+  background: var(--hd-exito-boton);
+}
+
+.hx-linea__marca {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--hd-borde);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--hd-suave);
+}
+
+.hx-linea__marca .icono {
+  width: 18px;
+  height: 18px;
+}
+
+.hx-linea__paso--hecho .hx-linea__marca {
+  border-color: var(--hd-exito-boton);
+  background: var(--hd-exito-boton);
+  color: #fff;
+}
+
+.hx-linea__paso--actual .hx-linea__marca {
+  border-color: var(--hd-azul);
+  background: var(--hd-azul);
+  color: #fff;
+  box-shadow: 0 0 0 5px var(--hd-azul-tinte);
+}
+
+.hx-linea__texto {
+  display: grid;
+  gap: 2px;
+  padding-top: 4px;
+}
+
+.hx-linea__texto strong {
+  color: var(--hd-tinta);
+}
+
+.hx-linea__paso--pendiente .hx-linea__texto strong {
+  color: var(--hd-suave);
+  font-weight: 600;
+}
+
+.hx-linea__texto small {
+  color: var(--hd-suave);
+  font-size: 0.85rem;
+}
+
+/* ── Estado vacío y éxito ──────────────────────────────────────────── */
+
+.hx-vacio {
+  display: grid;
+  justify-items: center;
+  gap: var(--esp-2);
+  padding: var(--esp-6) var(--esp-4);
+  text-align: center;
+}
+
+.hx-vacio__titulo {
+  margin: var(--esp-2) 0 0;
+  font-size: 1.35rem;
+}
+
+.hx-vacio p {
+  max-width: 34ch;
+  margin: 0;
+  color: var(--hd-suave);
+}
+
+.hx-tilde {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--hd-exito-boton);
+  color: #fff;
+  box-shadow: 0 0 0 10px var(--hd-exito-tinte);
+}
+
+.hx-tilde svg {
+  width: 52%;
+  height: 52%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Isla (avisos que bajan desde arriba) ──────────────────────────── */
+
+.hx-isla-zona {
+  position: fixed;
+  z-index: 60;
+  inset: calc(var(--esp-2) + var(--hx-seguro-arriba)) 0 auto;
+  display: grid;
+  justify-items: center;
+  padding: 0 var(--esp-3);
+  pointer-events: none;
+}
+
+.hx-isla {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--esp-3);
+  width: min(100%, 420px);
+  min-height: 64px;
+  padding: 8px 8px 8px 10px;
+  border-radius: 28px;
+  background: #0b1220;
+  color: #fff;
+  box-shadow: var(--hx-elev-2);
+  pointer-events: auto;
+}
+
+.hx-isla__ico {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--hd-azul);
+  color: #fff;
+}
+
+.hx-isla--exito .hx-isla__ico {
+  background: var(--hd-exito-boton);
+}
+
+.hx-isla--amarillo .hx-isla__ico {
+  background: var(--hd-amarillo);
+  color: var(--hd-tinta);
+}
+
+.hx-isla__texto {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hx-isla__texto strong {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.hx-isla__texto small {
+  color: rgb(255 255 255 / 0.78);
+  font-size: 0.82rem;
+  line-height: 1.3;
+}
+
+.hx-isla .hx-circulo {
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+}
+
+/* ── Confeti (mosaicos de colores que saltan y caen) ───────────────── */
+
+.hx-confeti {
+  position: fixed;
+  z-index: 55;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hx-confeti i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 3px;
+  will-change: transform;
+}
+
+/* ── Hoja arrastrable (sobre el mapa o el contenido) ───────────────── */
+
+.hx-hoja {
+  position: fixed;
+  z-index: 25;
+  left: 50%;
+  bottom: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(100%, 560px);
+  /* La altura de referencia es la pantalla, o el marco del catálogo (data-hx-marco con --hx-alto-ref). */
+  height: calc(var(--hx-hoja-altura, 0.34) * var(--hx-alto-ref, 100dvh));
+  border-radius: var(--hx-radio-hoja) var(--hx-radio-hoja) 0 0;
+  background: #fff;
+  box-shadow: var(--hx-elev-3);
+  translate: -50% 0;
+  touch-action: none;
+}
+
+.hx-hoja--a0 {
+  --hx-hoja-altura: 0.34;
+}
+
+.hx-hoja--a1 {
+  --hx-hoja-altura: 0.66;
+}
+
+.hx-hoja--a2 {
+  --hx-hoja-altura: 0.94;
+}
+
+.hx-hoja--suelta {
+  transition: height var(--hx-dur-larga) var(--hx-salida);
+}
+
+.hx-hoja__manija {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: var(--toque-min);
+  padding: 10px var(--esp-4) 4px;
+  border: 0;
+  border-radius: var(--hx-radio-hoja) var(--hx-radio-hoja) 0 0;
+  background: none;
+  color: var(--hd-tinta);
+  font: inherit;
+  cursor: grab;
+}
+
+.hx-hoja__manija::before {
+  content: '';
+  width: 44px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--hd-mosaico-hondo);
+}
+
+.hx-hoja__titulo {
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.1rem;
+  font-weight: 900;
+  font-stretch: 115%;
+}
+
+.hx-hoja__cuerpo {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--esp-2) var(--esp-4) calc(var(--esp-5) + var(--hx-seguro-abajo));
+  touch-action: pan-y;
+}
+
+/* ── Movimiento (solo sin "reducir movimiento") ────────────────────── */
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes hx-salto {
+    0%, 100% { scale: 1; }
+    35% { scale: 1.18; }
+    60% { scale: 0.94; }
+  }
+  @keyframes hx-isla-baja {
+    from { translate: 0 -24px; scale: 0.6 0.5; opacity: 0; }
+    60% { opacity: 1; }
+  }
+  @keyframes hx-pop {
+    from { scale: 0.4; opacity: 0; }
+  }
+  @keyframes hx-dibujar {
+    from { stroke-dashoffset: 30; }
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes hx-flotar {
+    50% { translate: 0 -5px; }
+  }
+
+  .hx-mosaico[aria-pressed='true'] .icono,
+  .hx-chip[aria-pressed='true'] .icono,
+  .hx-pestana[aria-current='page'] .icono,
+  .hx-cal__dia[aria-pressed='true'],
+  .hx-tira__dia[aria-pressed='true'] b {
+    animation: hx-salto 0.5s var(--hx-resorte);
+  }
+  .hx-isla {
+    animation: hx-isla-baja 0.55s var(--hx-resorte);
+    transform-origin: top center;
+  }
+  .hx-tilde {
+    animation: hx-pop 0.6s var(--hx-resorte) both;
+  }
+  .hx-tilde svg path {
+    stroke-dasharray: 30;
+    animation: hx-dibujar 0.5s 0.35s ease-out both;
+  }
+  /* Dos vaivenes y queda quieto: nada se mueve más de 5 s sin poder pararlo (WCAG 2.2.2). */
+  .hx-vacio .handy {
+    animation: hx-flotar 2.2s ease-in-out 2;
+  }
+}

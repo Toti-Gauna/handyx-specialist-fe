@@ -74,7 +74,7 @@ export function FormPropuesta({ abierta, onCerrar, pedido, base, fee, onEnviada 
         <Campo etiqueta="Tu precio (en pesos)" inputMode="decimal" value={importe} onChange={(e) => setImporte(e.target.value)} error={errores.importe} placeholder="45.000" />
         {centavos && centavos > 0 ? (
           <p className="texto-suave" role="status">
-            {bps === null ? `Vas a cobrar ${pesos(monto(centavos))} directo del usuario.` : bps === 0 ? `Cobrás ${pesos(monto(centavos))} directo del usuario. Handy no te cobra tarifa (0 %).` : `Cobrás ${pesos(monto(centavos))} y la tarifa de Handy es ${pesos(porcion(monto(centavos), bps))}.`}
+            {bps === null ? `Vas a cobrar ${pesos(monto(centavos))} directo del usuario.` : bps === 0 ? `Cobrás ${pesos(monto(centavos))} directo del usuario. Handyx no te cobra tarifa (0 %).` : `Cobrás ${pesos(monto(centavos))} y la tarifa de Handyx es ${pesos(porcion(monto(centavos), bps))}.`}
           </p>
         ) : null}
         <Campo etiqueta="Día y hora" type="datetime-local" value={inicio} onChange={(e) => setInicio(e.target.value)} error={errores.inicio} ayuda={pedido.fechaSolicitada ? 'El usuario pidió esta fecha: podés proponer otra.' : 'Hora de Mar del Plata.'} />

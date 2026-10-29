@@ -47,7 +47,7 @@ export function AccionTrabajo({ trabajo, alCambiar }: { trabajo: Trabajo; alCamb
       <p className="texto-suave texto-chico">{paso.nota}</p>
       <Hoja abierta={confirmar} titulo="¿Terminaste el trabajo?" onCerrar={() => { setConfirmar(false); limpiar(); }}>
         <p>Vas a marcar como terminado un trabajo de {pesos(trabajo.acuerdo.monto)}.</p>
-        <p className="texto-suave">Después te aparece el cobro en tu Caja. El pago es directo del usuario a vos (Mercado Pago o efectivo): Handy no recibe ese dinero.</p>
+        <p className="texto-suave">Después te aparece el cobro en tu Caja. El pago es directo del usuario a vos (Mercado Pago o efectivo): Handyx no recibe ese dinero.</p>
         {fallo ? <ErrorCaja fallo={fallo} onReintentar={() => void avanzar()} /> : null}
         <div className="botones">
           <button type="button" className="boton boton--exito" disabled={pendiente} onClick={() => void avanzar()}>

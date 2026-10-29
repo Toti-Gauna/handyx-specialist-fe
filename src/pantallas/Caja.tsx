@@ -60,7 +60,7 @@ export function Caja() {
     <div className="pila">
       <h1 className="titulo">Caja</h1>
       <Aviso tono="azul" icono="info" titulo="El pago va directo a vos">
-        Los usuarios te pagan a vos, con Mercado Pago o en efectivo. Handy no recibe, guarda ni te transfiere ese dinero, así que acá no hay saldo para retirar de Handy. Handy nunca te pide tu contraseña de Mercado Pago.
+        Los usuarios te pagan a vos, con Mercado Pago o en efectivo. Handyx no recibe, guarda ni te transfiere ese dinero, así que acá no hay saldo para retirar de Handyx. Handyx nunca te pide tu contraseña de Mercado Pago.
       </Aviso>
       {c.fallo ? <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} /> : null}
 
@@ -82,7 +82,7 @@ export function Caja() {
           </Tarjeta>
         </div>
         <p className="texto-suave">
-          Tarifa de Handy en este período: <strong>{pesos(resumen.feeHandyPeriodo)}</strong>. {tarifaTexto(fee.politica, api.ahora())}
+          Tarifa de Handyx en este período: <strong>{pesos(resumen.feeHandyPeriodo)}</strong>. {tarifaTexto(fee.politica, api.ahora())}
         </p>
       </Seccion>
 
@@ -100,7 +100,7 @@ export function Caja() {
                 <p className="texto-suave">{METODO_PAGO[p.metodo]}</p>
                 <dl>
                   <Dato etiqueta="Importe" valor={pesos(p.monto)} />
-                  <Dato etiqueta="Tarifa de Handy" valor={pesos(p.feeHandy)} />
+                  <Dato etiqueta="Tarifa de Handyx" valor={pesos(p.feeHandy)} />
                   <Dato etiqueta="Para vos" valor={<strong>{pesos(p.neto)}</strong>} />
                 </dl>
                 <p className="texto-suave texto-chico">{PAGO[p.estado].detalle} · {fechaHora(p.actualizadoEn)}</p>
@@ -121,7 +121,7 @@ export function Caja() {
           {simulacion ? (
             <div className="simulacion pila">
               <Aviso tono="aviso" icono="alerta" titulo="SIMULACIÓN · no vigente">{simulacion.rotulo}</Aviso>
-              <p className="texto-suave">Así se vería una comisión sobre cobros en efectivo si más adelante Handy aprueba una tarifa. El porcentaje de la simulación es ilustrativo. No se cobra ni se descuenta nada en el piloto.</p>
+              <p className="texto-suave">Así se vería una comisión sobre cobros en efectivo si más adelante Handyx aprueba una tarifa. El porcentaje de la simulación es ilustrativo. No se cobra ni se descuenta nada en el piloto.</p>
               {simulacion.entradas.length === 0 ? <p>No hay cobros en efectivo para simular.</p> : (
                 <ul className="lista-tarjetas">
                   {simulacion.entradas.map((e) => (

@@ -27,7 +27,7 @@ export function ModalFee() {
   }
 
   return (
-    <Hoja abierta titulo="Handy no te cobra tarifa durante la demo" cerrable={false} onCerrar={() => undefined}>
+    <Hoja abierta titulo="Handyx no te cobra tarifa durante la demo" cerrable={false} onCerrar={() => undefined}>
       <TextoFee politica={politica} />
       {fallo ? <ErrorCaja fallo={fallo} /> : null}
       <button type="button" className="boton boton--bloque" disabled={pendiente} onClick={() => void entendido()}>

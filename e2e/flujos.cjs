@@ -140,10 +140,10 @@ async function main() {
     await foto('13-alta-habilitada');
     // Primer ingreso a Inicio: modal del fee 0 %
     await nav(p, 'Inicio');
-    await ver(p, 'Handy no te cobra tarifa durante la demo');
+    await ver(p, 'Handyx no te cobra tarifa durante la demo');
     await foto('14-modal-fee');
     await p.getByRole('button', { name: 'Entendido' }).click();
-    await p.getByRole('heading', { name: 'Handy no te cobra tarifa durante la demo' }).waitFor({ state: 'detached' });
+    await p.getByRole('heading', { name: 'Handyx no te cobra tarifa durante la demo' }).waitFor({ state: 'detached' });
     // Sin disponibilidad declarada no hay pedidos
     await ver(p, 'No hay pedidos abiertos ahora');
     await foto('15-inicio-sin-disponibilidad');
@@ -188,7 +188,7 @@ async function main() {
     await foto('04-pedido-urgente');
     await p.getByRole('button', { name: 'Enviar una propuesta' }).click();
     await p.getByLabel('Tu precio (en pesos)').fill('45.000');
-    await ver(p, 'Handy no te cobra tarifa (0 %)');
+    await ver(p, 'Handyx no te cobra tarifa (0 %)');
     await p.getByLabel('Qué incluye').fill('Reparación de la pérdida, materiales incluidos');
     await foto('05-hoja-propuesta');
     await p.getByRole('button', { name: 'Enviar propuesta' }).click();
@@ -239,7 +239,7 @@ async function main() {
     await foto('07-confirmar-terminar');
     await p.getByRole('button', { name: 'Sí, terminé' }).click();
     await ver(p, 'Trabajo terminado');
-    await ver(p, 'pagó directamente a vos, no a Handy');
+    await ver(p, 'pagó directamente a vos, no a Handyx');
     await foto('08-terminado');
     // Caja: el cobro nuevo está pendiente; informarlo no lo verifica
     await p.getByRole('link', { name: 'Caja', exact: true }).click();
@@ -353,17 +353,17 @@ async function main() {
     await p.goto(`${base}/`);
     await p.waitForURL('**/inicio/');
     await nav(p, 'Cuenta');
-    await ver(p, 'Tarifa de Handy durante la demo');
+    await ver(p, 'Tarifa de Handyx durante la demo');
     await ver(p, 'Quedan 23 días');
     await ver(p, 'no es un descuento sobre tu precio');
     await foto('01-contador-fee');
     // Último día y fin de la demo
     await panel(p, '10/12 22:00 · último día de fee 0 %');
-    await ver(p, 'Hoy es el último día sin tarifa de Handy');
+    await ver(p, 'Hoy es el último día sin tarifa de Handyx');
     await foto('02-ultimo-dia');
     await panel(p, '11/12 12:00 · la demo terminó');
     await ver(p, 'La demo terminó el 10/12/2026. No hay ninguna tarifa definida.');
-    await ver(p, 'Handy no aplica ninguna tarifa sin una política aprobada');
+    await ver(p, 'Handyx no aplica ninguna tarifa sin una política aprobada');
     await foto('03-demo-terminada');
   }, { capturas });
 
@@ -397,16 +397,16 @@ async function main() {
     await ver(p, 'Reclamo de prueba');
     await ver(p, 'Abierto');
     await foto('05-caso-abierto');
-    await panel(p, 'Handy responde un caso de soporte');
+    await panel(p, 'Handyx responde un caso de soporte');
     await ver(p, 'Esperando tu respuesta');
     await foto('06-caso-respondido');
     // Caja: pagos de todos los estados y simulación rotulada
     await nav(p, 'Cuenta');
     await p.getByRole('link', { name: 'Caja: pagos directos' }).click();
     for (const t of ['Pendiente', 'Reportado, sin verificar', 'Verificado', 'Falló']) await ver(p, t, { exact: true });
-    await ver(p, 'Handy nunca te pide tu contraseña de Mercado Pago');
+    await ver(p, 'Handyx nunca te pide tu contraseña de Mercado Pago');
     await foto('07-caja');
-    assert.equal(await p.getByText('retirar', { exact: false }).filter({ hasText: /^Retirar/ }).count(), 0, 'no hay retiros de Handy');
+    assert.equal(await p.getByText('retirar', { exact: false }).filter({ hasText: /^Retirar/ }).count(), 0, 'no hay retiros de Handyx');
     await p.getByRole('button', { name: 'Ver la simulación posterior a la demo' }).click();
     await ver(p, 'SIMULACIÓN · no vigente');
     await foto('08-caja-simulacion');
@@ -432,6 +432,67 @@ async function main() {
       if (estado === 'en_revision') assert.equal(await p.getByRole('button', { name: /Cargar/ }).count(), 0, 'en revisión no se edita');
     }, { capturas });
   }
+
+  await escenario('K-kit-catalogo', nav_, base, async ({ p, foto }) => {
+    await p.goto(`${base}/catalogo/`);
+    await ver(p, 'Catálogo del kit');
+    await foto('01-catalogo');
+    // Mosaico: elegir y sacar un rubro
+    const electricidad = p.getByRole('button', { name: /^Electricidad/ });
+    await electricidad.click();
+    assert.equal(await electricidad.getAttribute('aria-pressed'), 'true');
+    await electricidad.click();
+    assert.equal(await electricidad.getAttribute('aria-pressed'), 'false');
+    // Precio: − / +, sugerido, atajos, monto escrito y mínimo
+    const precio = p.locator('.hx-precio__valor');
+    await p.getByRole('button', { name: 'Subir $ 500' }).click();
+    await precio.getByText('$ 44.500').waitFor();
+    await p.getByRole('button', { name: 'Dejar el sugerido' }).click();
+    await precio.getByText('$ 44.000').waitFor();
+    await p.getByRole('button', { name: '+ $ 5.000' }).click();
+    await precio.getByText('$ 49.000').waitFor();
+    await ver(p, 'Handyx no te cobra tarifa durante la demo (0 %)');
+    await p.getByRole('button', { name: 'Escribir otro monto' }).click();
+    await p.getByLabel('Escribí tu precio (en pesos)').fill('3.000');
+    await p.getByRole('button', { name: 'Usar este precio' }).click();
+    await precio.getByText('$ 3.000').waitFor();
+    await ver(p, 'Ese valor es muy bajo');
+    // Días: los pasados no se tocan; elegir el jueves 19
+    assert.equal(await p.locator('.hx-tira').getByRole('button', { name: 'domingo 15 de noviembre' }).isDisabled(), true, 'día pasado habilitado');
+    const jueves = p.locator('.hx-tira').getByRole('button', { name: 'jueves 19 de noviembre' });
+    await jueves.click();
+    assert.equal(await jueves.getAttribute('aria-pressed'), 'true');
+    // Calendario: pasar de mes
+    await p.getByRole('button', { name: 'Ver diciembre' }).click();
+    await p.getByRole('heading', { name: 'diciembre 2026' }).waitFor();
+    // Ruedas: con el teclado
+    await p.getByRole('listbox', { name: 'Hora' }).focus();
+    await p.keyboard.press('ArrowDown');
+    await p.keyboard.press('ArrowDown');
+    await ver(p, '12:00 h');
+    // Isla: se anuncia y se cierra
+    await p.getByRole('button', { name: 'Te eligieron' }).click();
+    await p.getByRole('status').filter({ hasText: '¡El cliente te eligió!' }).waitFor();
+    await foto('02-isla');
+    await p.getByRole('button', { name: 'Cerrar el aviso' }).click();
+    await p.getByText('¡El cliente te eligió!').waitFor({ state: 'detached' });
+    // Hoja arrastrable: tocar la manija la agranda; con las flechas vuelve
+    const manija = p.locator('.hx-hoja__manija');
+    await manija.click();
+    await manija.click();
+    assert.equal(await manija.getAttribute('aria-expanded'), 'true');
+    await manija.press('ArrowDown');
+    assert.equal(await manija.getAttribute('aria-expanded'), 'false');
+    // Barra con título grande: al bajar dentro de la pantalla aparece el título chico
+    const marco = p.locator('.cat-marco__pantalla').first();
+    assert.equal(await p.locator('.hx-barra--grande.hx-barra--sombra').count(), 0, 'la barra arranca sin sombra');
+    await marco.evaluate((el) => el.scrollTo(0, 300));
+    await p.locator('.hx-barra--grande.hx-barra--sombra').waitFor();
+    // Celebrar: con "reducir movimiento" no hay confeti, pero el monto llega a su valor
+    await p.getByRole('button', { name: 'Probar la celebración' }).click();
+    await ver(p, '$ 47.700');
+    assert.equal(await p.locator('.hx-confeti').count(), 0, 'confeti con reducir movimiento');
+  }, { capturas });
 
   await escenario('J-sin-conexion-service-worker', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/?escenario=habilitado`);

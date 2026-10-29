@@ -1,10 +1,54 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3 y el plan de la fase 4) · Bloque 4 · **Fase 3 cerrada; fase 4 (rediseño) planificada.**
-Modelos: fases 1 y 3 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y el lote 4.1) · Bloque 4 · **Fase 4 en curso: lote 4.1 cerrado localmente.**
+Modelos: fases 1, 3 y lote 4.1 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 4 · Lote 4.1 (marca Handyx, sistema visual v2 y kit)
+
+- **Marca**: todos los textos visibles dicen Handyx ("Tarifa de Handyx", "Verificado por Handyx", "Handyx no te cobra tarifa…",
+  "Handyx responde…"). Son 49 textos en 17 archivos, más los selectores de los E2E. Los personajes siguen siendo "los Handys". Los
+  identificadores del contrato (`feeHandy`…) no cambian: son de `handyx-client-be`.
+- **Kit v2** en `src/kit/`:
+  - Estilos en `kit.css` (tokens v2, prefijo `hx-`) y lógica pura con 13 pruebas en `logica.ts`.
+  - Barra superior con título grande que colapsa, pestañas flotantes y hoja arrastrable con 3 alturas.
+  - Isla de avisos y confeti.
+  - Botón fijo, mosaicos, chips, tira de días, calendario del mes y selector de hora con ruedas.
+  - "Handyx sugiere · Vos decidís", monto que sube, avatar con iniciales, filas, línea de tiempo, estado vacío y tilde.
+  - Handys contentos nuevos en `public/handys/`.
+  - Detalle en `docs/componentes.md` y reglas en `docs/diseno.md` → "Kit Handyx v2".
+- `ProveedorIsla` y `kit.css` ya están en el layout raíz. Las pantallas actuales todavía no usan el kit: se rehacen en los lotes
+  4.2–4.8.
+- **Catálogo** `/catalogo/`:
+  - Solo existe en el mock, porque `page.mock.tsx` se vuelve página por `pageExtensions` en `next.config.ts`.
+  - `verificar-bundle` agrega la marca "Catálogo del kit" y detectó una fuga real: el título del catálogo estaba en `RUTAS`, que
+    entra al bundle de producción. Se sacó.
+- **Corregido en el camino**:
+  - Textos ocultos de la tira de días que ensanchaban la página (botón sin posicionar).
+  - Error de hidratación del contador de montos.
+  - Montos con decimales mientras suben.
+  - El "$" que quedaba solo en una línea.
+  - Mosaicos que no crecían con el texto.
+- **E2E**: recorrido K (kit en el catálogo: mosaicos, precio, días, calendario, ruedas con teclado, isla, hoja, barra que
+  colapsa, celebración sin confeti con "reducir movimiento"). `npm run accesibilidad` también comprueba que el confeti aparezca
+  sin esa preferencia.
+
+### Comandos del lote 4.1 (29/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 79 pruebas: 77 OK y 2 omitidas (sincronías con otros repos) |
+| `npm run build` | OK, 24 páginas (con `/catalogo/`) + `out/sw.js` |
+| `npm run e2e` | 13/13 recorridos (nuevo: K) |
+| `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento; solo días de calendario por debajo de 44 px (≥ 30 px) |
+| `ANCHOS=` 7 tamaños `npm run capturas` | 231/231 sin desborde y sanitizadas |
+| `build:hostinger` con API ficticia | OK: 23 páginas, sin `/catalogo/` ni fixtures |
+
+**Próximo paso**: lote 4.2 (pantalla de carga con los Handys de la mano, bienvenida, entrar con Google, Apple o email, crear cuenta
+con código de 6 dígitos y recuperación), armado con el kit.
 
 ## Fase 3 · Lote 3.3 (movimiento, PWA y QA visual)
 
@@ -30,7 +74,7 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 - Nuevas pantallas en la auditoría y las capturas: error de red, error del servidor, sin conexión y 404. `?falla=red|servidor`
   arranca el mock con esa falla.
 - El servidor de pruebas devuelve `404.html` con estado 404, como tiene que hacerlo el hosting.
-- **Sellos de habilitación**: "Verificado por Handy" solo con `verificado` del servidor (sin cambios: se revisó).
+- **Sellos de habilitación**: "Verificado por Handyx" solo con `verificado` del servidor (sin cambios: se revisó).
 - **Revisión de flujos** (después del lote): `CAPTURAS=/ruta npm run e2e` guarda una captura por paso (≈70, numeradas), con la
   barra fija abajo y las hojas a la vista.
   - Bug corregido: en Caja, al avanzar y al cancelar un trabajo, la hoja se cerraba antes de refrescar los datos. Ahora el refresco va

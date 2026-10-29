@@ -144,6 +144,12 @@ async function main() {
     const animaciones = await p.evaluate(() => document.getAnimations().filter((a) => a instanceof CSSAnimation).length);
     if (preferencia === 'reduce' && animaciones > 0) movimiento.push(`con "reducir movimiento" hay ${animaciones} animaciones`);
     if (preferencia === 'no-preference' && animaciones === 0) movimiento.push('sin preferencia no anima nada (¿se rompió el CSS?)');
+    // Confeti del kit: solo sin "reducir movimiento" (las celebraciones se prueban en el catálogo del mock).
+    await p.goto(`${base}/catalogo/`);
+    await p.getByRole('button', { name: 'Probar la celebración' }).click();
+    const confeti = await p.locator('.hx-confeti').count();
+    if (preferencia === 'reduce' && confeti > 0) movimiento.push('hay confeti con "reducir movimiento"');
+    if (preferencia === 'no-preference' && confeti === 0) movimiento.push('sin preferencia no aparece el confeti');
     await c.close();
   }
   teclado.push(...movimiento);

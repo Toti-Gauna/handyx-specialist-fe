@@ -83,7 +83,7 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       p('pago_mp_ok', 'Mercado Pago confirma un pago (webhook)');
       p('pago_mp_falla', 'Mercado Pago informa un pago fallido');
       p('pago_ops_verifica', 'Operations verifica un cobro reportado');
-      p('soporte_responde', 'Handy responde un caso de soporte');
+      p('soporte_responde', 'Handyx responde un caso de soporte');
     }
     if (s.baja?.estado === 'solicitada' || s.baja?.estado === 'en_proceso') a.push({ id: 'baja_procesar', etiqueta: 'Avanzar el proceso de baja', grupo: 'Cuenta' });
     a.push({ id: 'sesion_expira', etiqueta: 'Expirar la sesión ahora', grupo: 'Cuenta' });
@@ -231,7 +231,7 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         c.eventos.push({ id: idNuevo(s), autor: 'handy', texto: 'Revisamos tu caso. ¿Podés confirmarnos si el problema sigue?', adjuntos: 0, creadoEn: iso(ahoraMs(s)) });
         c.estado = 'esperando_respuesta';
         c.actualizadoEn = iso(ahoraMs(s));
-        s.nota = 'Handy respondió un caso.';
+        s.nota = 'Handyx respondió un caso.';
         break;
       }
       case 'baja_procesar':

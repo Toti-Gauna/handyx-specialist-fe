@@ -1,10 +1,12 @@
 import '@fontsource-variable/archivo/wdth.css';
 import '@fontsource-variable/dm-sans/index.css';
 import './globals.css';
+import '../kit/kit.css';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { colores, variablesCss } from '../brand/tokens.ts';
 import { RegistrarSw } from '../components/RegistrarSw.tsx';
+import { ProveedorIsla } from '../kit/Efectos.tsx';
 import { Proveedor } from './contexto.tsx';
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
@@ -36,7 +38,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <a className="saltar" href="#contenido">
           Ir al contenido
         </a>
-        <Proveedor>{children}</Proveedor>
+        <ProveedorIsla>
+          <Proveedor>{children}</Proveedor>
+        </ProveedorIsla>
         <RegistrarSw />
       </body>
     </html>

@@ -267,7 +267,7 @@ describe('trabajo, caja y soporte', () => {
     assert.equal((await api.pagos()).items.length, pagosAntes); // t1 ya tenía su pago pendiente
   });
 
-  it('la caja: reportado no es verificado, Handy no cobra nada en la demo y el dinero no es de Handy', async () => {
+  it('la caja: reportado no es verificado, Handyx no cobra nada en la demo y el dinero no es de Handyx', async () => {
     const { api, controles } = nuevo();
     const antes = await api.cajaResumen();
     assert.equal(antes.feeHandyPeriodo.centavos, 0);

@@ -68,7 +68,7 @@ Fixtures sintéticos rotulados; el mock permite éxito, rechazo, expiración y c
 Pedido de Ignacio del 29/10/2026. El diseño de la fase 3 no está a la altura de la demo de la landing: faltan pantallas, el mapa y
 la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote, inventario de pantallas y mapa de pantallas en
 `docs/rediseno.md`. Se rehace la capa visual y se conservan los datos, el mock, los contratos y las pruebas.
-- [ ] **4.1 Marca Handyx y sistema visual v2:**
+- [x] **4.1 Marca Handyx y sistema visual v2** (evidencia: `/catalogo/` en el mock, recorrido K, `docs/diseno.md` → "Kit Handyx v2" y `docs/componentes.md`):
   - Todos los textos pasan de "Handy" a "Handyx" ("Tarifa de Handyx", "Handyx sugiere", "Verificado por Handyx"). Los personajes siguen siendo "los Handys".
   - Tokens v2.
   - Kit `.hd-*` de la demo portado a React: barra compacta, pestañas flotantes, hoja arrastrable, isla, stepper de precio, confeti y monto que sube.

@@ -61,9 +61,9 @@ Así "Programado" (tipo) y "Agendado" (estado) ya no se ven iguales, y la urgenc
 Revisado en todo `src/` (29/10/2026):
 
 - Sin "inmediato", "al instante", "en minutos", "matriculados", "despachamos", "garantizado" ni "te asignamos".
-- El sello "Verificado por Handy" aparece solo con estado `verificado`/`habilitada` del servidor. "Cargado" se lee
+- El sello "Verificado por Handyx" aparece solo con estado `verificado`/`habilitada` del servidor. "Cargado" se lee
   "Cargado, sin revisar".
-- La tarifa de Handy se muestra una sola vez por pantalla ("Tarifa de Handy: 0 % durante la demo (hasta el 10/12)") y en el
+- La tarifa de Handy se muestra una sola vez por pantalla ("Tarifa de Handyx: 0 % durante la demo (hasta el 10/12)") y en el
   detalle del pedido antes de ofertar (LEG-43). Sin política vigente dice "sin tarifa definida".
 
 ## Comprobación del lote 3.1
@@ -129,8 +129,13 @@ dentro de `@media (prefers-reduced-motion: no-preference)`. Con "reducir movimie
 | Esqueleto de carga | Late mientras carga (es la única repetición; se va al cargar) | 1,2 s por ciclo |
 | Chips de estado y barra del alta | Cambio de color suave | 0,2–0,3 s |
 
-Prohibido: parpadeos, rebotes que pidan atención, contadores animados de plata, confeti en aceptaciones, movimiento que
-acompañe un vencimiento (la cuenta regresiva es texto quieto) y cualquier animación de más de 5 s sin forma de pararla.
+Prohibido:
+- Parpadeos y rebotes que pidan atención.
+- Movimiento que acompañe un vencimiento: la cuenta regresiva es texto quieto.
+- Cualquier animación de más de 5 s sin forma de pararla.
+
+El monto que sube y el confeti, que acá estaban prohibidos, pasan a estar permitidos en el kit v2, pero solo en las
+celebraciones (ver más abajo).
 
 ### Los Handys
 
@@ -142,3 +147,48 @@ Los mismos personajes de la landing (`public/handys/`, copia de `Handy-landing-p
 - **Sin conexión**: la lamparita rota en la franja, y el caño roto en `/sin-conexion/`. La llave rota en la 404.
 - Son decorativos (`alt=""`): el texto de al lado dice lo que pasa. No van en tarjetas de pedido, montos ni decisiones, para no
   restarles peso.
+
+## Kit Handyx v2 (fase 4, lote 4.1)
+
+El rediseño premium (`docs/rediseno.md`) se arma con el kit de `src/kit/`, que porta a React las piezas de la demo de la landing.
+Para verlo en uso, abrí `/catalogo/` en la vista previa. Solo existe en el mock: `page.mock.tsx` con `pageExtensions`, y
+`verificar-bundle` comprueba que no llegue a producción. El detalle de cada pieza está en `docs/componentes.md`.
+
+### Reglas de forma v2 (reemplazan a las del lote 3.1 donde chocan)
+
+| Regla | Cómo |
+|---|---|
+| Marca | Los textos visibles dicen **Handyx** ("Tarifa de Handyx", "Handyx sugiere", "Verificado por Handyx"). Los personajes siguen siendo "los Handys" |
+| Cabecera | La cabecera con logo va **solo en Inicio**. El resto de las pantallas usa `BarraSuperior`: en las raíz, título grande que colapsa al bajar; en los detalles, barra compacta con "atrás". Los flujos (cuenta, alta, propuesta, en camino) van a pantalla completa |
+| Pestañas | `PestanasFlotantes`, solo en las 4 raíz: Inicio, Agenda, Mensajes y Cuenta. La activa tiene fondo, `aria-current` y el puntito amarillo |
+| Acción principal | Una por pantalla, en `BotonFijo` abajo, sobre el área segura. No tapa contenido |
+| Hojas | Hay dos: `Hoja` (modal, para confirmar aceptar, rechazar, terminar o cancelar) y `HojaArrastrable` (no modal, sobre el mapa, con tres alturas) |
+| Elegido | Mosaicos, chips, días: azul **y** con tilde, subrayado o `aria-pressed`. Nunca solo el color |
+| Celebraciones | `useConfeti` y `MontoGrande` (monto que sube) **solo** al ganar un trabajo, terminarlo o registrar un cobro. Nunca en decisiones pendientes, vencimientos ni urgencia |
+| Isla | Avisos que bajan desde arriba (`useIsla`). Se anuncian, se cierran y no se van mientras los tocás o tienen el foco. Todo lo que dicen queda también en Avisos |
+| Montos | Los grandes usan un espacio que no se corta ("$ 44.000" nunca deja el "$" solo). Mientras suben, se muestran en pesos enteros |
+| Precio | "Handyx sugiere · Vos decidís": la sugerencia es una ayuda, siempre editable. La tarifa de Handyx se muestra aparte ("Recibís") y no es un descuento sobre el precio |
+| Estilos | Sin estilos inline en JSX. Lo dinámico va por clases (tonos del avatar) o por una variable que se fija desde código solo mientras se arrastra (`HojaArrastrable`) |
+
+### Movimiento del kit
+
+Todo va dentro de `prefers-reduced-motion: no-preference`. El confeti y el contador se apagan desde JS (`src/kit/movimiento.ts`).
+
+| Qué | Cómo | Duración |
+|---|---|---|
+| Elegir un mosaico, chip, día o pestaña | El ícono o el número da un salto con resorte | 0,5 s |
+| Isla | Baja desde arriba y se abre | 0,55 s |
+| Hoja arrastrable | Sigue al dedo y, al soltarla, se acomoda a la altura más cercana (o a la siguiente con impulso) | 0,55 s |
+| Celebración | Tilde que se dibuja, monto que sube y confeti de mosaicos | 0,6 s · 0,9 s · hasta 3 s, una vez |
+| Estado vacío | El Handy flota dos veces y queda quieto | 4,4 s en total |
+
+### Comprobación del lote 4.1
+
+| Comprobación | Resultado |
+|---|---|
+| axe WCAG 2.2 AA en `/catalogo/` (320, 390 y 1280 px) | 0 violaciones |
+| Teclado | Ruedas con flechas, Inicio y Fin; hoja con flechas y Enter; isla con "Cerrar"; foco visible en todo |
+| Texto al 200 % | Sin desborde en 320 px: los montos y títulos largos se cortan antes que desbordar |
+| "Reducir movimiento" | Sin animaciones CSS ni confeti; el monto aparece directo (`npm run accesibilidad`) |
+| Áreas táctiles | Todo ≥ 44 px, salvo los días del calendario cuando el ancho no da (≥ 30 px a 320, por encima de los 24 de WCAG 2.5.8) |
+| Producción | `/catalogo/` no existe en `build:hostinger` y su texto no está en el bundle |

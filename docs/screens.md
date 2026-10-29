@@ -26,7 +26,7 @@ habilitada → disponibilidad declarada (urgentes "Ahora" opt-in, programados, f
 | A1 | Entrar | `/acceso/` | 2.1 | vacío, error de credenciales, bloqueo por intentos, sin red | Sin OTP/SMS. Mensaje genérico ante credenciales inválidas |
 | A2 | Crear cuenta | `/registro/` | 2.1 | validación de campos, cuenta existente (respuesta neutra) | Términos y privacidad versionados con aceptación explícita (sin tildar) |
 | A3 | Recuperar acceso | `/recuperar/` | 2.1 | enviado (respuesta neutra), token vencido | No revela si la cuenta existe |
-| A4 | Fee 0 % post-registro | (paso de `/registro/`) | 2.1 | antes / vigente / último día | "Handy no te cobra tarifa hasta el 10/12/2026". No es descuento sobre tu precio |
+| A4 | Fee 0 % post-registro | (paso de `/registro/`) | 2.1 | antes / vigente / último día | "Handyx no te cobra tarifa hasta el 10/12/2026". No es descuento sobre tu precio |
 | B1 | Alta · datos base | `/alta/?paso=datos` | 2.1 | incompleto, guardado, error | Nombre, apellido, fecha de nacimiento, nacionalidad, ubicación real, género (PROD-15). Sin campos comerciales obligatorios |
 | B2 | Alta · identidad | `/alta/?paso=identidad` | 2.1 | faltante, cargado, en revisión, rechazado con motivo | DNI y CUIT/CUIL. CUIL no equivale a habilitación fiscal: queda capturado pero no habilita si Legal exige CUIT |
 | B3 | Alta · rubros y matrícula | `/alta/?paso=rubros` | 2.1 | por rubro: habilitado, requiere matrícula, en revisión, no habilitado | Gas y aire acondicionado exigen matrícula/certificación revisada. Una foto no autoverifica |

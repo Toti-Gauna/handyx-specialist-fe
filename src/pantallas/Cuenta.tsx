@@ -69,14 +69,14 @@ export function Cuenta() {
               <dl>
                 <Dato etiqueta="Tu nombre" valor={publico.datos.nombrePublico ?? '—'} />
                 <Dato etiqueta="Rubros habilitados" valor={publico.datos.rubrosHabilitados.map((r) => NOMBRE_RUBRO[r]).join(', ') || 'Ninguno todavía'} />
-                <Dato etiqueta="Sello de verificación" valor={publico.datos.verificado ? <ChipTexto tono="exito" icono="verificado">Verificado por Handy</ChipTexto> : 'Sin sello'} />
+                <Dato etiqueta="Sello de verificación" valor={publico.datos.verificado ? <ChipTexto tono="exito" icono="verificado">Verificado por Handyx</ChipTexto> : 'Sin sello'} />
               </dl>
-              {!publico.datos.verificado ? <p className="texto-suave texto-chico">El sello aparece solo cuando Handy verificó tu alta completa.</p> : null}
+              {!publico.datos.verificado ? <p className="texto-suave texto-chico">El sello aparece solo cuando Handyx verificó tu alta completa.</p> : null}
             </>
           ) : (
             <Cargando />
           )}
-          <p className="tarjeta__titulo">Solo el personal autorizado de Handy ve</p>
+          <p className="tarjeta__titulo">Solo el personal autorizado de Handyx ve</p>
           <p className="texto-suave">Tu DNI, tu CUIT o CUIL, tu foto de cara, tu fecha de nacimiento, tu nacionalidad, tu género y tu ubicación real. Los antecedentes no se guardan: solo el resultado de la verificación presencial.</p>
         </Tarjeta>
       </Seccion>

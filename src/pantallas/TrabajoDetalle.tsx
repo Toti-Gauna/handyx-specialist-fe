@@ -19,7 +19,7 @@ import { TRABAJO } from '../lib/etiquetas.ts';
 import { fechaHora, hora, pesos } from '../lib/formato.ts';
 
 const ACTIVO = ['agendado', 'en_camino', 'en_sitio', 'en_curso'];
-const ACTOR = { especialista: 'Vos', usuario: 'El usuario', operations: 'Handy', sistema: 'La app' } as const;
+const ACTOR = { especialista: 'Vos', usuario: 'El usuario', operations: 'Handyx', sistema: 'La app' } as const;
 
 export function TrabajoDetalle() {
   const id = useIdDeUrl();
@@ -76,7 +76,7 @@ export function TrabajoDetalle() {
       {activo ? <AccionTrabajo trabajo={t} alCambiar={c.recargar} /> : null}
       {t.estado === 'finalizado' ? (
         <Aviso tono="exito" icono="checkCirculo" titulo="Trabajo terminado">
-          {pagoId ? <>El cobro está en tu <Link href={RUTAS.caja.ruta}>Caja</Link>: pagó directamente a vos, no a Handy.</> : 'Todavía no hay un cobro registrado.'}
+          {pagoId ? <>El cobro está en tu <Link href={RUTAS.caja.ruta}>Caja</Link>: pagó directamente a vos, no a Handyx.</> : 'Todavía no hay un cobro registrado.'}
         </Aviso>
       ) : null}
       {t.estado === 'cancelado' ? <Aviso tono="neutro" icono="cerrar">Este trabajo fue cancelado.</Aviso> : null}
@@ -148,7 +148,7 @@ export function TrabajoDetalle() {
 
       <FormCambio abierta={cambio} onCerrar={() => setCambio(false)} trabajo={t} onEnviada={() => { setCambio(false); void c.recargar(); }} />
       <Hoja abierta={cancelar} titulo="¿Cancelar este trabajo?" onCerrar={() => { setCancelar(false); cancelacion.limpiar(); cancelacion.nueva(); }}>
-        <p>Le avisamos al usuario y el pedido puede volver a ofrecerse. Handy no aplica ninguna penalización automática por cancelar.</p>
+        <p>Le avisamos al usuario y el pedido puede volver a ofrecerse. Handyx no aplica ninguna penalización automática por cancelar.</p>
         <p className="texto-suave">Si el problema es la fecha, podés proponer otra en lugar de cancelar.</p>
         {cancelacion.fallo ? <ErrorCaja fallo={cancelacion.fallo} onReintentar={() => void confirmarCancelacion()} /> : null}
         <div className="botones">

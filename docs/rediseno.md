@@ -154,6 +154,8 @@ de flujos (la del artifact) antes del siguiente.
 
 ### 4.1 · Marca Handyx, sistema visual v2 y kit
 
+**Estado: cerrado localmente (29/10/2026).** El kit está en `src/kit/` y se ve en `/catalogo/` (solo mock).
+
 - **Marca**: todos los textos visibles pasan de "Handy" a **"Handyx"**:
   - "Tarifa de Handyx", "Handyx sugiere", "Verificado por Handyx" y "Handyx nunca te pide tu contraseña", entre otros.
   - Los personajes siguen llamándose "los Handys".

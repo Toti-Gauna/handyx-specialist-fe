@@ -164,7 +164,7 @@ function Burbuja({ m, propuesta, abierto, alCambiar, alContraofertar }: { m: Men
       ) : null}
       {m.texto ? <span>{m.texto}</span> : null}
       <span className="burbuja__meta">
-        {m.autorRol === 'operations' ? 'Handy · ' : ''}
+        {m.autorRol === 'operations' ? 'Handyx · ' : ''}
         {fechaHora(m.enviadoEn).split(' · ')[0]} {hora(m.enviadoEn)}
       </span>
     </div>
