@@ -288,6 +288,13 @@ trae fotos): el detalle y el pedido entrante muestran la zona, la descripción y
 
 ### 4.6 · Trabajo de punta a punta
 
+**Estado: hecho (29/10/2026).** Supuestos del lote:
+- Sin compartir la ubicación, "Ya llegué" también está disponible: sin ubicación no hay geocerca.
+- La llamada por la app está en el contrato y simulada en el mock. El proveedor real se paga y se autoriza en la fase 5;
+  hasta entonces la llamada no conecta y queda el chat.
+- Los adicionales que el cliente no respondió se retiran al terminar, y la confirmación avisa.
+- La geocerca es de 80 m con precisión de 50 m o mejor. Son valores provisorios, para ajustar con pruebas en la calle.
+
 1. **Trabajo acordado**: cliente, dirección exacta, mapa, "Cómo llegar", chat y llamada a través de la app (sin mostrar teléfonos).
 2. **Salgo para allá**.
 3. **En camino**: mapa con mi posición y el destino, y estados de la señal: normal, imprecisa, sin señal, sin permiso.
@@ -413,6 +420,7 @@ Se piden antes de la fase 5. En el mock se emulan desde el lote donde aparecen.
 | Proveedor de emails transaccionales | Códigos de 6 dígitos y recuperación | Plan gratis con cuenta. Pago según el volumen |
 | Motor de trayectos (OSRM o Valhalla propio, o un servicio con plan gratis) | Trayectos y tiempo estimado | Una instancia chica paga en Render, o gratis con límite diario |
 | Teselas del mapa | Mapa | Sin costo extra (Hostinger) |
+| Proveedor de telefonía con números puente (agregado en el 4.6) | Llamar por la app sin mostrar teléfonos | Pago por minuto y por número; hay que cotizarlo. Hasta tenerlo, queda el chat |
 
 ## 9. Mapa de pantallas
 

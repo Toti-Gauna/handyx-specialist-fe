@@ -81,20 +81,20 @@ function Formulario({ datos, baseId }: { datos: { pedido: Awaited<ReturnType<typ
   }
 
   return (
-    <div className="tp">
+    <div className="fl-pantalla">
       <BarraSuperior titulo={base ? 'Contraofertar' : 'Tu precio'} atras={volver} textoAtras="Volver al pedido" acciones={null} />
-      <div className="tp-pedido">
+      <div className="fl-ficha">
         <ChipTipo tipo={pedido.tipo} />
-        <p className="tp-pedido__rubro">{NOMBRE_RUBRO[pedido.rubro]}</p>
-        <p className="tp-pedido__zona">
+        <p className="fl-ficha__titulo">{NOMBRE_RUBRO[pedido.rubro]}</p>
+        <p className="fl-ficha__linea">
           <Icono nombre="pin" /> {pedido.zonaAproximada}
           {pedido.fechaSolicitada ? ` · pidió ${fechaHora(pedido.fechaSolicitada)}` : ''}
         </p>
         {base ? <p className="texto-suave texto-chico">Respondés a la propuesta del cliente de {pesosDesdeCentavos(base.monto.centavos)}. La suya queda reemplazada.</p> : null}
       </div>
 
-      <section className="tp-bloque" aria-labelledby="tp-cuando">
-        <h2 id="tp-cuando" className="tp-bloque__titulo" tabIndex={-1}>
+      <section className="fl-bloque" aria-labelledby="tp-cuando">
+        <h2 id="tp-cuando" className="fl-bloque__titulo" tabIndex={-1}>
           ¿Cuándo podés ir?
         </h2>
         <ul className="hx-chips" aria-label="Opciones de horario">
@@ -129,8 +129,8 @@ function Formulario({ datos, baseId }: { datos: { pedido: Awaited<ReturnType<typ
         ) : null}
       </section>
 
-      <section className="tp-bloque" aria-labelledby="tp-precio">
-        <h2 id="tp-precio" className="tp-bloque__titulo" tabIndex={-1}>
+      <section className="fl-bloque" aria-labelledby="tp-precio">
+        <h2 id="tp-precio" className="fl-bloque__titulo" tabIndex={-1}>
           Tu precio
         </h2>
         <PrecioStepper valor={precio} onCambio={setPrecio} sugerido={sugerido} tarifaBps={tarifaBps} />
@@ -142,8 +142,8 @@ function Formulario({ datos, baseId }: { datos: { pedido: Awaited<ReturnType<typ
         ) : null}
       </section>
 
-      <section id="tp-alcance" className="tp-bloque" aria-labelledby="tp-alcance-t">
-        <h2 id="tp-alcance-t" className="tp-bloque__titulo">
+      <section id="tp-alcance" className="fl-bloque" aria-labelledby="tp-alcance-t">
+        <h2 id="tp-alcance-t" className="fl-bloque__titulo">
           Qué incluye
         </h2>
         <ul className="hx-chips" aria-label="Agregar al texto">

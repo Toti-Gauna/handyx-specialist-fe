@@ -102,6 +102,27 @@
   color: var(--hd-texto);
 }
 
+/* Lote 4.6: con buena señal la llegada es automática (se dice con texto); si la ubicación anda mal, "Ya llegué". */
+.vj-nota--auto {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-2);
+  padding: var(--esp-3);
+  border-radius: 16px;
+  background: var(--hd-exito-tinte);
+  color: var(--hd-exito);
+  font-weight: 600;
+}
+
+.vj-nota--auto .icono {
+  flex: none;
+}
+
+.vj-respaldo {
+  display: grid;
+  gap: var(--esp-2);
+}
+
 .vj-permiso {
   display: grid;
   gap: var(--esp-2);

@@ -1,6 +1,6 @@
 // Viaje de un trabajo (lote 4.3): emula lo que hará api-especialista con las posiciones del especialista. Calcula el
 // trayecto con la primera posición, lo recalcula si te desviás dos veces seguidas y deja de compartir al llegar o cancelar.
-import { PosicionSchema, type Barrio, type Viaje } from '../../contracts/dto.ts';
+import { PRECISION_MAX_LLEGADA_M, PosicionSchema, RADIO_LLEGADA_M, type Barrio, type Llegada, type Viaje } from '../../contracts/dto.ts';
 import { distanciaM, fueraDelTrayecto, largoM, proyectar } from '../../lib/geo.ts';
 import { ahoraMs, fallo, iso, type EstadoMock, type TrabajoInterno, type ViajeInterno } from './estado.ts';
 import { barriosPrueba, rutaPrueba } from './mapa.ts';
@@ -78,6 +78,10 @@ export const viajes = (s: EstadoMock) => ({
       v.desvios += 1;
       if (v.desvios >= 2) recalcular();
     } else v.desvios = 0;
+    // Geocerca (0.7.0): dentro del radio y con buena precisión, el servidor marca la llegada solo y avisa al usuario.
+    if (distanciaM(pos.punto, t.trabajo.destino) <= RADIO_LLEGADA_M && pos.precisionM <= PRECISION_MAX_LLEGADA_M) {
+      registrarLlegada(s, t, { modo: 'automatica', motivo: null, en: iso(ahoraMs(s)) }, 'sistema');
+    }
     return vista(s, t, v);
   },
 
@@ -88,6 +92,15 @@ export const viajes = (s: EstadoMock) => ({
     return vista(s, t, v);
   },
 });
+
+/** Llegada (automática o de respaldo): en el lugar, con fecha y actor, y deja de compartir la ubicación. */
+export function registrarLlegada(s: EstadoMock, t: TrabajoInterno, llegada: Llegada, actor: 'sistema' | 'especialista'): void {
+  t.trabajo.estado = 'en_sitio';
+  t.trabajo.llegada = llegada;
+  t.trabajo.version += 1;
+  t.eventos.push({ estado: 'en_sitio', en: llegada.en, actor });
+  terminarViaje(s, t.trabajo.id);
+}
 
 /** Al llegar, empezar, terminar o cancelar, el servidor deja de compartir la ubicación. */
 export function terminarViaje(s: EstadoMock, trabajoId: string): void {

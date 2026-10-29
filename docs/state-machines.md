@@ -74,7 +74,7 @@ resultado.
 stateDiagram-v2
   [*] --> agendado
   agendado --> en_camino: especialista
-  en_camino --> en_sitio: especialista ("Llegué")
+  en_camino --> en_sitio: sistema (geocerca) / especialista ("Ya llegué")
   en_sitio --> en_curso: especialista
   en_curso --> finalizado: especialista
   agendado --> cancelado: usuario / especialista / operations
@@ -85,6 +85,18 @@ stateDiagram-v2
 
 Cambiar monto, alcance u horario no es una transición: requiere una nueva propuesta aceptada por la otra parte, que
 reemplaza el snapshot y queda en el historial. Confirmación del usuario al finalizar: PENDIENTE.
+
+**Llegada (0.7.0, decisión del 29/10/2026).** La marca el servidor (`sistema`) cuando una posición del viaje entra en
+el radio de 80 m del destino con una precisión de 50 m o mejor (geocerca: solo con la app abierta). "Ya llegué"
+(`especialista`) es el respaldo cuando la ubicación anda mal, con el motivo (`sin_permiso`, `imprecisa`, `sin_senal` o
+`sin_ubicacion`); va por `POST /trabajos/{id}/llegada`, no por `eventos`. `Trabajo.llegada` guarda el modo, el motivo y
+la hora. Cancelar va por `POST /trabajos/{id}/cancelacion`, siempre con motivo.
+
+## Adicional (0.7.0)
+
+`pendiente → aceptado | rechazado` (solo el **usuario**) · `pendiente → retirado` (el **especialista**, o el
+**sistema** al terminar el trabajo). Se crean solo con el trabajo `en_curso`. Mientras están pendientes rige el precio
+vigente (`totalVigente` = lo acordado + los aceptados); el cobro al terminar va por ese total.
 
 ## Pago directo
 

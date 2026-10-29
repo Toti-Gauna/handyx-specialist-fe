@@ -70,10 +70,11 @@ export function aplicarAceptacion(s: EstadoMock, p: Propuesta): Trabajo {
     direccion: pedido.direccion,
     destino: pedido.destino,
     estado: 'agendado',
+    llegada: null,
     conversacionId,
     version: 0,
   };
-  s.trabajos.unshift({ trabajo, contraparte: pedido.cliente, eventos: [{ estado: 'agendado', en: iso(ahoraMs(s)), actor: 'sistema' }], etapas: [], cambioPendienteId: null, pagoId: null, metodoPago: pedido.metodoPago });
+  s.trabajos.unshift({ trabajo, contraparte: pedido.cliente, eventos: [{ estado: 'agendado', en: iso(ahoraMs(s)), actor: 'sistema' }], etapas: [], cambioPendienteId: null, pagoId: null, metodoPago: pedido.metodoPago, adicionales: [] });
   const conv = s.conversaciones.find((c) => c.id === conversacionId);
   if (conv) {
     conv.trabajoId = trabajo.id;

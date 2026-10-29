@@ -164,13 +164,32 @@ export const MAQUINA_TRABAJO: Maquina<EstadoTrabajo> = {
   inicial: 'agendado',
   transiciones: [
     t('agendado', 'en_camino', 'especialista'),
-    t('en_camino', 'en_sitio', 'especialista'),
+    // Llegada (0.7.0): `sistema` la marca sola al entrar en el radio con la app abierta (geocerca); `especialista` solo con
+    // "Ya llegué", el respaldo cuando la ubicación anda mal, y siempre con el motivo.
+    t('en_camino', 'en_sitio', 'especialista', 'sistema'),
     t('en_sitio', 'en_curso', 'especialista'),
     t('en_curso', 'finalizado', 'especialista'), // confirmación del usuario: PENDIENTE de definir
     t('agendado', 'cancelado', 'usuario', 'especialista', 'operations'),
     t('en_camino', 'cancelado', 'usuario', 'especialista', 'operations'),
     t('en_sitio', 'cancelado', 'usuario', 'especialista', 'operations'),
     t('en_curso', 'cancelado', 'operations'),
+  ],
+};
+
+// ── Adicional de un trabajo (0.7.0): repuestos o mano de obra que se suman durante el trabajo ──────
+// Lo propone el especialista con el trabajo en curso; lo acepta o rechaza el usuario. Mientras está pendiente rige el
+// precio vigente. Al terminar el trabajo, los pendientes los retira el sistema (no se cobran).
+export const ESTADOS_ADICIONAL = ['pendiente', 'aceptado', 'rechazado', 'retirado'] as const;
+export type EstadoAdicional = (typeof ESTADOS_ADICIONAL)[number];
+
+export const MAQUINA_ADICIONAL: Maquina<EstadoAdicional> = {
+  nombre: 'adicional',
+  estados: ESTADOS_ADICIONAL,
+  inicial: 'pendiente',
+  transiciones: [
+    t('pendiente', 'aceptado', 'usuario'),
+    t('pendiente', 'rechazado', 'usuario'),
+    t('pendiente', 'retirado', 'especialista', 'sistema'),
   ],
 };
 

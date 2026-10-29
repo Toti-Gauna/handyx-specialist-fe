@@ -313,6 +313,8 @@ export function crearEstado(escenario: Escenario): EstadoMock {
       direccion: 'Dirección de prueba 100 (ficticia)',
       destino: destinoPrueba(id, 'Güemes'),
       estado,
+      // Los que ya llegaron, con la llegada automática (geocerca) salvo que el escenario diga otra cosa.
+      llegada: ['en_sitio', 'en_curso', 'finalizado'].includes(estado) ? { modo: 'automatica', motivo: null, en: iso(inicio) } : null,
       conversacionId,
       version: 1,
     },
@@ -322,6 +324,7 @@ export function crearEstado(escenario: Escenario): EstadoMock {
     cambioPendienteId: null,
     pagoId: null,
     metodoPago: 'mercado_pago',
+    adicionales: [],
     ...extra,
   });
 
@@ -331,6 +334,7 @@ export function crearEstado(escenario: Escenario): EstadoMock {
   t2.eventos.push({ estado: 'en_camino', en: iso(T0 - DIA - 3 * HORA), actor: 'especialista' }, { estado: 'en_sitio', en: iso(T0 - DIA - 2.6 * HORA), actor: 'especialista' }, { estado: 'en_curso', en: iso(T0 - DIA - 2.5 * HORA), actor: 'especialista' }, { estado: 'finalizado', en: iso(T0 - DIA - 1.5 * HORA), actor: 'especialista' });
   t2.trabajo.direccion = null;
   t2.trabajo.destino = null;
+  t2.trabajo.llegada = { modo: 'respaldo', motivo: 'sin_senal', en: iso(T0 - DIA - 2.6 * HORA) };
   const t3 = trab(ID.t3, idFijo(0xb9), ID.pr4, 'finalizado', 'electricidad', 'programado', 52000, 'Cambio de tablero y térmicas.', T0 - 5 * DIA, idFijo(0xd4), 'Cliente de prueba 7', { pagoId: ID.pg3 });
   t3.eventos.push({ estado: 'finalizado', en: iso(T0 - 5 * DIA + 4 * HORA), actor: 'especialista' });
   t3.trabajo.direccion = null;

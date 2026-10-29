@@ -102,7 +102,7 @@ la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote
   - Esperando al cliente.
   - "¡El cliente te eligió!" con aviso.
   - Bandeja con filtros y avisos agrupados.
-- [ ] **4.6 Trabajo de punta a punta:**
+- [x] **4.6 Trabajo de punta a punta** (evidencia: recorridos C, D, M2 y O, `docs/screens.md` → E2 a E2f, contrato 0.7.0):
   - Salgo para allá.
   - En camino, con trayecto y ubicación en vivo.
   - **Llegada automática con la app abierta y botón de respaldo cuando la ubicación falla** (sin permiso, imprecisa o sin señal).

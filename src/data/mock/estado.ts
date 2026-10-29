@@ -1,6 +1,7 @@
 // Estado en memoria del mock (nada en localStorage, cookies ni IndexedDB) y su reloj controlable.
 // Todo es SINTÉTICO: nombres de prueba, correos @example.test e ids 00000000-….
 import type {
+  Adicional,
   Aviso,
   CasoSoporteDetalle,
   Conversacion,
@@ -76,6 +77,8 @@ export interface TrabajoInterno {
   cambioPendienteId: string | null;
   pagoId: string | null;
   metodoPago: 'mercado_pago' | 'efectivo';
+  /** Adicionales del trabajo (0.7.0), en el orden en que se crearon. */
+  adicionales: Adicional[];
 }
 
 /** Viaje de un trabajo (lote 4.3). `desvios`: posiciones seguidas lejos del trayecto (con 2 se recalcula). */

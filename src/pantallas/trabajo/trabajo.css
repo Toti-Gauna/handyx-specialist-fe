@@ -1,0 +1,320 @@
+/* Trabajo de punta a punta (lote 4.6): detalle, en curso, adicionales, cambiar la fecha, cancelar y ¡Terminaste!. Prefijo tr-. */
+
+.tr > * {
+  min-width: 0;
+}
+
+.tr-hero .titulo {
+  margin: 4px 0 0;
+}
+
+.tr-hero__cliente {
+  margin: 0;
+  font-weight: 700;
+  color: var(--hd-tinta);
+  overflow-wrap: anywhere;
+}
+
+.tr-hero__linea,
+.tr-direccion {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  color: var(--hd-suave);
+  overflow-wrap: anywhere;
+}
+
+.tr-hero__linea .icono,
+.tr-direccion .icono {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.tr-direccion {
+  color: var(--hd-tinta);
+  font-weight: 700;
+}
+
+/* Filas de acciones (contacto, más acciones, alternativas a cancelar) en una tarjeta blanca. */
+.tr-filas {
+  display: grid;
+  padding: 0 var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.tr-filas > .hx-fila:last-of-type {
+  border-bottom: 0;
+}
+
+.tr-estado {
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.tr-llegada {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-2);
+  margin: 0;
+  padding: var(--esp-3);
+  border-radius: 18px;
+  background: var(--hd-exito-tinte);
+  color: var(--hd-exito);
+  font-weight: 600;
+}
+
+.tr-llegada .icono {
+  flex: none;
+}
+
+/* En curso: cronómetro grande y adicionales. */
+.tr-curso {
+  display: grid;
+  gap: var(--esp-3);
+  padding: var(--esp-4);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.tr-curso > * {
+  min-width: 0;
+}
+
+.tr-cronometro {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  margin: 0;
+  padding: var(--esp-3);
+  border-radius: 18px;
+  background: var(--hd-azul);
+  color: #fff;
+}
+
+.tr-cronometro__rotulo {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.tr-cronometro > * {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.tr-cronometro__valor {
+  font-family: var(--fuente-titulos-app);
+  font-size: clamp(2rem, 11vw, 2.8rem);
+  font-weight: 900;
+  font-stretch: 112%;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.tr-adicionales {
+  display: grid;
+  gap: var(--esp-2);
+}
+
+.tr-adicionales > * {
+  min-width: 0;
+}
+
+.tr-adicionales__titulo {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.tr-adicionales__lista {
+  display: grid;
+  gap: var(--esp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tr-adicional {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-2);
+  padding: var(--esp-3);
+  border-radius: 16px;
+  background: var(--hd-fondo-2);
+}
+
+.tr-adicional__texto {
+  display: grid;
+  flex: 1 1 160px;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.tr-adicional__texto small {
+  color: var(--hd-suave);
+  font-weight: 600;
+}
+
+.tr-adicional--rechazado .tr-adicional__texto strong,
+.tr-adicional--retirado .tr-adicional__texto strong {
+  color: var(--hd-suave);
+  text-decoration: line-through;
+}
+
+/* Desglose de plata: concepto a la izquierda, importe a la derecha. */
+.tr-desglose {
+  display: grid;
+  gap: var(--esp-2);
+  margin: 0;
+}
+
+.tr-desglose > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--esp-1) var(--esp-3);
+}
+
+.tr-desglose dt {
+  min-width: 0;
+  color: var(--hd-suave);
+  overflow-wrap: anywhere;
+}
+
+.tr-desglose dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--hd-tinta);
+}
+
+.tr-desglose__total {
+  padding-top: var(--esp-2);
+  border-top: 1px solid var(--hd-linea);
+}
+
+.tr-desglose__total dt,
+.tr-desglose__total dd {
+  color: var(--hd-tinta);
+  font-weight: 800;
+}
+
+.tr-desglose--tarjeta {
+  padding: var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+/* Opciones de adicionales: "Opción personalizada" primero. */
+.tr-opciones {
+  display: grid;
+  gap: var(--esp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tr-opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  width: 100%;
+  min-height: 60px;
+  padding: var(--esp-2) var(--esp-3);
+  border: 2px solid transparent;
+  border-radius: 18px;
+  background: #fff;
+  color: var(--hd-tinta);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--hd-mosaico-hondo);
+}
+
+.tr-opcion > .icono {
+  flex: none;
+  color: var(--hd-azul);
+}
+
+.tr-opcion span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.tr-opcion small {
+  color: var(--hd-suave);
+}
+
+.tr-opcion[aria-pressed='true'] {
+  border-color: var(--hd-azul);
+  background: var(--hd-azul-tinte);
+}
+
+.tr-opcion:focus-visible {
+  outline: 3px solid var(--hd-azul);
+  outline-offset: 2px;
+}
+
+.tr-resumen {
+  margin: 0;
+  padding: var(--esp-3);
+  border-radius: 16px;
+  background: #fff;
+}
+
+/* ¡Terminaste! */
+.tr-fin__hero {
+  display: grid;
+  justify-items: center;
+  gap: var(--esp-2);
+  padding: var(--esp-5) var(--esp-4);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+  text-align: center;
+}
+
+.tr-fin__titulo {
+  margin: 0;
+  font-size: clamp(1.6rem, 7vw, 2.1rem);
+  overflow-wrap: anywhere;
+}
+
+.tr-fin__sub {
+  margin: 0;
+  color: var(--hd-suave);
+  overflow-wrap: anywhere;
+}
+
+.tr-cobro {
+  display: grid;
+  justify-items: start;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.tr-cobro > * {
+  max-width: 100%;
+}
+
+.tr-cobro p {
+  margin: 0;
+}
+
+.tr-cobro .enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque-min);
+}

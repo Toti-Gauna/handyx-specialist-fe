@@ -1,4 +1,4 @@
-# Catálogo de componentes · PWA Especialista (lotes 3.3 y 4.1 a 4.5)
+# Catálogo de componentes · PWA Especialista (lotes 3.3 y 4.1 a 4.6)
 
 Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila dice dónde verlo en
 `docs/capturas/390x844/` (todas con datos sintéticos; ver `docs/capturas/README.md`).
@@ -45,12 +45,12 @@ Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila d
 | `Hoja` | Confirmación en `<dialog>` modal: foco atrapado y circular, Escape cierra si es cerrable, entra deslizando | (diálogos en `npm run accesibilidad`) |
 | `TarjetaPedido` | Enlace al detalle; nunca acepta. Tipo → rubro → zona y fecha → descripción → búsqueda | `pedidos`, `inicio` |
 | `TarjetaPropuesta` | Monto, horario, alcance y "Vence en" neutro; aceptar verde y rechazar en contorno rojo, con confirmación | `pedido-programado` |
-| `FormPropuesta` / `FormCambio` | Montos en centavos enteros, `Idempotency-Key` estable al reintentar. Desde el 4.5 la propuesta del pedido va por la pantalla Tu precio; `FormPropuesta` queda en el chat hasta su lote | (hojas) |
+| `FormPropuesta` | Montos en centavos enteros, `Idempotency-Key` estable al reintentar. Desde el 4.5 la propuesta del pedido va por la pantalla Tu precio; `FormPropuesta` queda en el chat hasta su lote. `FormCambio` se reemplazó por la pantalla Cambiar la fecha (4.6) | (hojas) |
 | `EstadoMiPropuesta` (4.5) | Esperando al cliente (Handy, monto y "Vence en"); ¡El cliente te eligió! (confeti solo si se vio el cambio, abre el trabajo); no te eligieron, venció o retirada en gris, sin culpa | `tu-precio`, recorrido N |
 | `PedidoEntrante` (4.5) | Hoja con el urgente nuevo: rubro, zona aproximada, descripción y vigencia neutra. "Ver y cotizar" abre el detalle; "Ahora no" deja pasar los urgentes de ahora (en memoria) y nunca rechaza | recorrido B |
 | `VigiaAvisos` (4.5) | Consulta los avisos cada 20 s en la app y, ante un "te eligieron" nuevo, muestra la isla con "Ver el trabajo" y confeti | recorrido N |
 | `CuentaRegresiva` | Texto neutro; al llegar a cero pide el estado al servidor | `pedido-programado` |
-| `AccionTrabajo` | Una acción primaria por estado ("Salgo hacia el lugar", "Llegué", "Terminé el trabajo") | `trabajo-agendado` |
+| `AccionTrabajo` | Una acción primaria por estado ("Salgo para allá", "Empezar el trabajo", "Terminé el trabajo" con el desglose y el aviso de adicionales sin respuesta). La llegada no está acá: geocerca o "Ya llegué" en En camino (4.6) | `trabajo-agendado` |
 | `ControlDisponibilidad` | "Ahora" y programados revocables al instante | `inicio`, `disponibilidad` |
 | `Documento` | "Cargado, sin revisar" ≠ verificado; los antecedentes no tienen carga de archivo | `alta-borrador` |
 | `FeeAviso`, `ContadorFee`, `ModalFee` | Fee 0 % hasta el 10/12 (modal del primer ingreso, post-registro y contador en Cuenta) | `cuenta` |

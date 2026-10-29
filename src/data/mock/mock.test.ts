@@ -224,11 +224,11 @@ describe('propuestas y acuerdos', () => {
     const { api } = nuevo();
     const antes = (await api.trabajo(ID.t1)).trabajo.acuerdo;
     const nuevaFecha = futuro(api, 60 * 48);
-    const p = await api.proponerCambio(ID.t1, { horario: { inicio: nuevaFecha, fin: null }, alcance: antes.alcance, monto: null }, clave());
+    const p = await api.proponerCambio(ID.t1, { horario: { inicio: nuevaFecha, fin: null }, alcance: antes.alcance, monto: null, motivo: 'otro_trabajo' }, clave());
     const detalle = await api.trabajo(ID.t1);
     assert.equal(detalle.cambioPendiente?.id, p.id);
     assert.deepEqual(detalle.trabajo.acuerdo, antes); // sigue igual
-    await assert.rejects(api.proponerCambio(ID.t1, { horario: { inicio: nuevaFecha, fin: null }, alcance: 'x', monto: null }, clave()), { tipo: 'conflicto' });
+    await assert.rejects(api.proponerCambio(ID.t1, { horario: { inicio: nuevaFecha, fin: null }, alcance: 'x', monto: null, motivo: null }, clave()), { tipo: 'conflicto' });
   });
 
   it('si el usuario pide mover la fecha y el especialista acepta, el acuerdo cambia con historial; si rechaza, queda igual', async () => {
@@ -257,12 +257,12 @@ describe('propuestas y acuerdos', () => {
 });
 
 describe('trabajo, caja y soporte', () => {
-  it('las transiciones respetan la máquina: no se salta "Llegué" ni se reabre un trabajo cerrado', async () => {
+  it('las transiciones respetan la máquina: no se salta la llegada ni se reabre un trabajo cerrado', async () => {
     const { api } = nuevo();
     const t = (await api.trabajo(ID.t1)).trabajo;
     await assert.rejects(api.avanzarTrabajo(t.id, 'en_curso', t.version, clave()), { tipo: 'conflicto' });
     let x = await api.avanzarTrabajo(t.id, 'en_camino', t.version, clave());
-    x = await api.avanzarTrabajo(t.id, 'en_sitio', x.version, clave());
+    x = await api.marcarLlegada(t.id, 'sin_senal', x.version, clave());
     x = await api.avanzarTrabajo(t.id, 'en_curso', x.version, clave());
     await assert.rejects(api.avanzarTrabajo(t.id, 'en_curso', 0, clave()), { tipo: 'conflicto' }); // versión vieja
     const pagosAntes = (await api.pagos()).items.length;
@@ -507,8 +507,17 @@ describe('mapa y viaje (lote 4.3)', () => {
     assert.ok(v.llegadaEstimada);
     v = await api.dejarDeCompartir(ID.t1);
     assert.equal(v.estado, 'sin_compartir');
-    await api.enviarPosicion(ID.t1, pos(api, v.destino));
-    await api.avanzarTrabajo(ID.t1, 'en_sitio', t.version, clave());
+    // Fuera del radio no llega; con una posición imprecisa dentro del radio, tampoco (la geocerca exige precisión).
+    await api.enviarPosicion(ID.t1, pos(api, desplazar(v.destino, 300, 0)));
+    await api.enviarPosicion(ID.t1, pos(api, desplazar(v.destino, 30, 0), 250));
+    assert.equal((await api.trabajo(ID.t1)).trabajo.estado, 'en_camino');
+    v = await api.enviarPosicion(ID.t1, pos(api, desplazar(v.destino, 30, 0)));
+    assert.equal(v.estado, 'terminado');
+    const llegado = await api.trabajo(ID.t1);
+    assert.equal(llegado.trabajo.estado, 'en_sitio');
+    assert.equal(llegado.trabajo.llegada?.modo, 'automatica');
+    assert.equal(llegado.eventos.at(-1)?.actor, 'sistema');
+    assert.ok(llegado.trabajo.version > t.version);
     assert.equal((await api.viaje(ID.t1)).estado, 'terminado');
     await assert.rejects(api.enviarPosicion(ID.t1, pos(api, v.destino)), (e: FalloApi) => e.status === 409);
     await assert.rejects(api.viaje(ID.t2), (e: FalloApi) => e.status === 409, 'un trabajo sin dirección no tiene destino');
@@ -618,5 +627,84 @@ describe('pedidos, propuesta y avisos (lote 4.5)', () => {
     await api.borrarAviso('00000000-0000-4000-8000-0000000000ff');
     await api.borrarAvisos();
     assert.deepEqual(await api.avisos(), []);
+  });
+});
+
+describe('trabajo de punta a punta (lote 4.6)', () => {
+  const enCurso = async (api: Awaited<ReturnType<typeof nuevo>>['api']) => {
+    let x = (await api.trabajo(ID.t1)).trabajo;
+    x = await api.avanzarTrabajo(ID.t1, 'en_camino', x.version, clave());
+    x = await api.marcarLlegada(ID.t1, 'sin_permiso', x.version, clave());
+    return api.avanzarTrabajo(ID.t1, 'en_curso', x.version, clave());
+  };
+
+  it('"Ya llegué" va con motivo, solo en camino, y la llegada y la cancelación no pasan por avanzarTrabajo', async () => {
+    const { api } = nuevo();
+    let x = (await api.trabajo(ID.t1)).trabajo;
+    await assert.rejects(api.marcarLlegada(ID.t1, 'sin_senal', x.version, clave()), { tipo: 'conflicto' }); // todavía no salió
+    x = await api.avanzarTrabajo(ID.t1, 'en_camino', x.version, clave());
+    await assert.rejects(api.avanzarTrabajo(ID.t1, 'en_sitio' as never, x.version, clave()), { tipo: 'conflicto' });
+    await assert.rejects(api.avanzarTrabajo(ID.t1, 'cancelado' as never, x.version, clave()), { tipo: 'conflicto' });
+    await assert.rejects(api.marcarLlegada(ID.t1, 'porque_si' as never, x.version, clave()), { tipo: 'validacion' });
+    x = await api.marcarLlegada(ID.t1, 'imprecisa', x.version, clave());
+    assert.equal(x.estado, 'en_sitio');
+    assert.deepEqual({ modo: x.llegada?.modo, motivo: x.llegada?.motivo }, { modo: 'respaldo', motivo: 'imprecisa' });
+    assert.equal((await api.trabajo(ID.t1)).eventos.at(-1)?.actor, 'especialista');
+  });
+
+  it('adicionales: solo en curso, rige el precio vigente hasta que el cliente acepta, y los pendientes no se cobran', async () => {
+    const { api, controles } = nuevo();
+    const base = (await api.trabajo(ID.t1)).trabajo.acuerdo.monto;
+    await assert.rejects(api.crearAdicional(ID.t1, { tipo: 'repuesto', descripcion: 'Flexible', monto: monto(800000) }, clave()), { tipo: 'conflicto' });
+    const x = await enCurso(api);
+    await assert.rejects(api.crearAdicional(ID.t1, { tipo: 'repuesto', descripcion: 'Flexible', monto: monto(0) }, clave()), { tipo: 'validacion' });
+    const k = clave();
+    const a = await api.crearAdicional(ID.t1, { tipo: 'repuesto', descripcion: 'Flexible de 40 cm', monto: monto(800000) }, k);
+    assert.equal((await api.crearAdicional(ID.t1, { tipo: 'repuesto', descripcion: 'Flexible de 40 cm', monto: monto(800000) }, k)).id, a.id); // misma clave, mismo adicional
+    let d = await api.trabajo(ID.t1);
+    assert.equal(d.adicionales[0]?.estado, 'pendiente');
+    assert.deepEqual(d.totalVigente, base); // pendiente: no suma
+    controles.ejecutar('usuario_acepta_adicional');
+    d = await api.trabajo(ID.t1);
+    assert.equal(d.totalVigente.centavos, base.centavos + 800000);
+    const b = await api.crearAdicional(ID.t1, { tipo: 'mano_de_obra', descripcion: 'Una hora más', monto: monto(1500000) }, clave());
+    const c = await api.crearAdicional(ID.t1, { tipo: 'mano_de_obra', descripcion: 'Otra cosa', monto: monto(500000) }, clave());
+    assert.equal((await api.retirarAdicional(ID.t1, c.id)).estado, 'retirado');
+    await assert.rejects(api.retirarAdicional(ID.t1, a.id), { tipo: 'conflicto' }); // ya lo aceptó el cliente
+    const fin = await api.avanzarTrabajo(ID.t1, 'finalizado', x.version, clave());
+    d = await api.trabajo(ID.t1);
+    assert.equal(d.adicionales.find((y) => y.id === b.id)?.estado, 'retirado', 'al terminar, lo pendiente se retira');
+    assert.equal(fin.estado, 'finalizado');
+    assert.equal(d.totalVigente.centavos, base.centavos + 800000);
+  });
+
+  it('terminar cobra el total vigente (con los adicionales aceptados), también si ya había un cobro pendiente', async () => {
+    for (const conPrevio of [false, true]) {
+      const { api, controles, estado } = nuevo();
+      if (!conPrevio) estado.trabajos.find((t) => t.trabajo.id === ID.t1)!.pagoId = null;
+      const x = await enCurso(api);
+      await api.crearAdicional(ID.t1, { tipo: 'repuesto', descripcion: 'Canilla', monto: monto(1200000) }, clave());
+      controles.ejecutar('usuario_acepta_adicional');
+      await api.avanzarTrabajo(ID.t1, 'finalizado', x.version, clave());
+      const d = await api.trabajo(ID.t1);
+      const pago = (await api.pagos()).items.find((p) => p.id === d.pagoId);
+      assert.deepEqual(pago?.monto, d.totalVigente, conPrevio ? 'el cobro pendiente se actualiza' : 'el cobro nuevo');
+      assert.deepEqual(pago?.neto, d.totalVigente);
+      assert.equal(pago?.feeHandy.centavos, 0);
+    }
+  });
+
+  it('cancelar exige motivo y no vale una vez empezado; la llamada puente solo con el trabajo activo', async () => {
+    const { api } = nuevo();
+    const t = (await api.trabajo(ID.t1)).trabajo;
+    const ll = await api.llamada(ID.t1);
+    assert.match(ll.telefono, /^\+0+$/, 'el número de prueba no llama a nadie');
+    await assert.rejects(api.cancelarTrabajo(ID.t1, 'sin_motivo' as never, t.version, clave()), { tipo: 'validacion' });
+    const c = await api.cancelarTrabajo(ID.t1, 'no_puedo_ir', t.version, clave());
+    assert.equal(c.estado, 'cancelado');
+    await assert.rejects(api.llamada(ID.t1), { tipo: 'conflicto' });
+    const w = nuevo();
+    const x = await enCurso(w.api);
+    await assert.rejects(w.api.cancelarTrabajo(ID.t1, 'otro', x.version, clave()), { tipo: 'conflicto' }); // en curso cancela solo Operations
   });
 });

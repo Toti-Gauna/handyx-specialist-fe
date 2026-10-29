@@ -56,6 +56,9 @@ el trayecto no se puede calcular (la app ofrece Google Maps o Waze).
 | Baja | Cuenta › *Eliminar mi cuenta*: sesión cerrada, estado real y cancelación | E2E F |
 | Sesión expirada | Panel › *Expirar la sesión ahora*: aviso modal con salida a Entrar | E2E F |
 | Red caída / error del servidor | Panel › *Sin conexión* / *El servidor responde con error*: error con Reintentar, sin datos de muestra | E2E F |
+| Llegada automática y "Ya llegué" | Compartiendo con buena señal, la llegada se marca sola al entrar en la cuadra; con señal imprecisa, sin señal, sin permiso o sin compartir aparece "Ya llegué" con el motivo | E2E M2 · C · O · `mock.test` |
+| Adicionales | En curso › *Agregar repuestos o mano de obra*; panel › *Acepta / Rechaza tu último adicional*; los pendientes se retiran al terminar y el cobro va por el total vigente | E2E O · `mock.test` |
+| Cambiar la fecha y cancelar | Trabajo › *Cambiar la fecha* (motivo, día y franja) y *Cancelar este trabajo* (alternativas, motivo y confirmación) | E2E D · O |
 | Ubicación en vivo (señal, permiso, desvío) | En camino › *Compartir mi ubicación*; panel › señal imprecisa, sin señal, permiso negado o desviarme | E2E M2 · `mock.test` |
 | Mapa que no carga | Sin WebGL (o sin conexión al abrirlo): queda el texto con el barrio o el destino | E2E M3 |
 

@@ -1,9 +1,10 @@
-// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.6.0, borrador; versión en version.ts).
+// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.7.0, borrador; versión en version.ts).
 // El servidor valida con los mismos esquemas; el cliente valida cada respuesta y trata un desajuste
 // como error de contrato (nunca lo "arregla" con datos de muestra). OpenAPI: docs/api/openapi.yaml.
 import { z } from 'zod';
 import { MONEDAS } from './dinero.ts';
 import {
+  ESTADOS_ADICIONAL,
   ESTADOS_ALTA,
   ESTADOS_BAJA,
   ESTADOS_DOCUMENTO,
@@ -232,6 +233,36 @@ export const RespuestaPropuestaSchema = z.strictObject({
 });
 
 // ── Trabajos ─────────────────────────────────────────────────────────────────────────────────────
+/**
+ * Llegada (0.7.0). `automatica`: la marca el servidor (actor `sistema`) cuando una posición del viaje entra en el radio
+ * del destino con buena precisión (geocerca, solo con la app abierta). `respaldo`: "Ya llegué", solo cuando la ubicación
+ * anda mal, con el motivo. En los dos casos el usuario recibe el aviso de que llegaste.
+ */
+export const MODOS_LLEGADA = ['automatica', 'respaldo'] as const;
+/** `sin_ubicacion`: no compartís la ubicación o el teléfono no la da. */
+export const MOTIVOS_RESPALDO_LLEGADA = ['sin_permiso', 'imprecisa', 'sin_senal', 'sin_ubicacion'] as const;
+export type MotivoRespaldoLlegada = (typeof MOTIVOS_RESPALDO_LLEGADA)[number];
+/** Radio de la geocerca alrededor del destino y precisión mínima de la posición para marcar la llegada sola. */
+export const RADIO_LLEGADA_M = 80;
+export const PRECISION_MAX_LLEGADA_M = 50;
+
+export const LlegadaSchema = z.strictObject({
+  modo: z.enum(MODOS_LLEGADA),
+  motivo: z.enum(MOTIVOS_RESPALDO_LLEGADA).nullable(),
+  en: InstanteSchema,
+});
+export type Llegada = z.infer<typeof LlegadaSchema>;
+
+export const MarcarLlegadaSchema = z.strictObject({
+  motivo: z.enum(MOTIVOS_RESPALDO_LLEGADA),
+  version: z.int().nonnegative(),
+});
+export type MarcarLlegada = z.infer<typeof MarcarLlegadaSchema>;
+
+/** Pasos que el especialista marca con `avanzarTrabajo`. La llegada y la cancelación tienen su propio endpoint (0.7.0). */
+export const AVANCES_TRABAJO = ['en_camino', 'en_curso', 'finalizado'] as const;
+export type AvanceTrabajo = (typeof AVANCES_TRABAJO)[number];
+
 export const TrabajoSchema = z.strictObject({
   id: IdSchema,
   pedidoId: IdSchema,
@@ -249,6 +280,8 @@ export const TrabajoSchema = z.strictObject({
   /** Punto exacto del destino (0.4.0): con la misma regla que la dirección. */
   destino: PuntoSchema.nullable(),
   estado: z.enum(ESTADOS_TRABAJO),
+  /** Cómo se marcó la llegada (0.7.0); null hasta llegar. */
+  llegada: LlegadaSchema.nullable(),
   conversacionId: IdSchema,
   version: z.int().nonnegative(),
 });
@@ -457,6 +490,30 @@ export const EtapaObraSchema = z.strictObject({
   estado: z.enum(['pendiente', 'en_curso', 'terminada']),
 });
 
+// ── Adicionales (0.7.0) ─────────────────────────────────────────────────────────────────────────
+export const TIPOS_ADICIONAL = ['repuesto', 'mano_de_obra'] as const;
+export type TipoAdicional = (typeof TIPOS_ADICIONAL)[number];
+
+export const AdicionalSchema = z.strictObject({
+  id: IdSchema,
+  trabajoId: IdSchema,
+  tipo: z.enum(TIPOS_ADICIONAL),
+  descripcion: z.string(),
+  monto: MontoSchema,
+  estado: z.enum(ESTADOS_ADICIONAL),
+  creadoEn: InstanteSchema,
+  respondidoEn: InstanteSchema.nullable(),
+  version: z.int().nonnegative(),
+});
+export type Adicional = z.infer<typeof AdicionalSchema>;
+
+export const NuevoAdicionalSchema = z.strictObject({
+  tipo: z.enum(TIPOS_ADICIONAL),
+  descripcion: z.string().trim().min(1).max(200),
+  monto: MontoSchema.refine((m) => m.centavos > 0, 'El importe tiene que ser mayor a cero'),
+});
+export type NuevoAdicional = z.infer<typeof NuevoAdicionalSchema>;
+
 export const TrabajoDetalleSchema = z.strictObject({
   trabajo: TrabajoSchema,
   contraparte: z.string(),
@@ -471,6 +528,10 @@ export const TrabajoDetalleSchema = z.strictObject({
   /** Propuesta de cambio (fecha/monto/alcance) pendiente: el acuerdo vigente no cambia hasta que se acepte. */
   cambioPendiente: PropuestaSchema.nullable(),
   pagoId: IdSchema.nullable(),
+  /** Adicionales del trabajo, del más nuevo al más viejo (0.7.0). */
+  adicionales: z.array(AdicionalSchema),
+  /** Lo acordado más los adicionales aceptados: el precio que rige (los pendientes no suman). */
+  totalVigente: MontoSchema,
 });
 export type TrabajoDetalle = z.infer<typeof TrabajoDetalleSchema>;
 
@@ -511,12 +572,38 @@ export const ViajeSchema = z.strictObject({
 });
 export type Viaje = z.infer<typeof ViajeSchema>;
 
+/** Por qué se pide mover la fecha (0.7.0). Se le muestra al usuario junto con la fecha nueva. */
+export const MOTIVOS_CAMBIO = ['otro_trabajo', 'imprevisto', 'falta_repuesto', 'pedido_del_cliente', 'clima', 'otro'] as const;
+export type MotivoCambio = (typeof MOTIVOS_CAMBIO)[number];
+
 export const NuevoCambioSchema = z.strictObject({
   horario: z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() }),
   alcance: z.string().trim().min(1).max(2000),
   monto: MontoSchema.nullable(),
+  motivo: z.enum(MOTIVOS_CAMBIO).nullable(),
 });
 export type NuevoCambio = z.infer<typeof NuevoCambioSchema>;
+
+/** Cancelar un trabajo (0.7.0): siempre con motivo. Sin penalización automática. */
+export const MOTIVOS_CANCELACION = ['no_puedo_ir', 'problema_personal', 'cliente_no_responde', 'trabajo_distinto', 'riesgo_en_el_lugar', 'otro'] as const;
+export type MotivoCancelacion = (typeof MOTIVOS_CANCELACION)[number];
+
+export const CancelarTrabajoSchema = z.strictObject({
+  motivo: z.enum(MOTIVOS_CANCELACION),
+  version: z.int().nonnegative(),
+});
+export type CancelarTrabajo = z.infer<typeof CancelarTrabajoSchema>;
+
+/**
+ * Llamada a través de la app (0.7.0): un número puente de Handyx, de corta duración, que conecta con la otra parte del
+ * trabajo. Ninguna de las dos partes ve el teléfono de la otra. Necesita un proveedor de telefonía (fase 5, con
+ * autorización).
+ */
+export const LlamadaPuenteSchema = z.strictObject({
+  telefono: z.string().regex(/^\+[0-9]{2,15}$/),
+  venceEn: InstanteSchema,
+});
+export type LlamadaPuente = z.infer<typeof LlamadaPuenteSchema>;
 
 // ── Agenda ───────────────────────────────────────────────────────────────────────────────────────
 export const AgendaItemSchema = z.strictObject({

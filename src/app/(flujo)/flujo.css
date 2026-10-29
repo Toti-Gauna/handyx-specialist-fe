@@ -1,4 +1,4 @@
-/* Flujos guiados a pantalla completa (lotes 4.4 y 4.5): alta y "Tu precio". Sin cabecera ni pestañas. */
+/* Flujos guiados a pantalla completa (lotes 4.4 a 4.6): alta, "Tu precio" y los pasos del trabajo. Sin cabecera ni pestañas. */
 
 .fl {
   min-height: 100dvh;
@@ -10,4 +10,66 @@
   max-width: 560px;
   margin: 0 auto;
   padding: 0 var(--esp-4) var(--hx-seguro-abajo);
+}
+
+/* Pantalla de un flujo: barra compacta, ficha de lo que se está haciendo, bloques y la acción fija abajo. */
+.fl-pantalla {
+  display: grid;
+  align-content: start;
+  gap: var(--esp-4);
+  min-height: calc(100dvh - 48px);
+}
+
+.fl-pantalla > * {
+  min-width: 0;
+}
+
+.fl-ficha {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  padding: var(--esp-4);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.fl-ficha__titulo {
+  margin: 4px 0 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--hd-tinta);
+}
+
+.fl-ficha__linea {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  color: var(--hd-suave);
+  overflow-wrap: anywhere;
+}
+
+.fl-ficha__linea .icono {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.fl-bloque {
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.fl-bloque > * {
+  min-width: 0;
+}
+
+.fl-bloque__titulo {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--hd-tinta);
 }

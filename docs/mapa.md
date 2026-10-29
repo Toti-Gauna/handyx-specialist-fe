@@ -27,7 +27,7 @@ No se inventó ningún dato del mapa.
 |---|---|---|
 | Detalle de pedido | Círculo de la zona aproximada (`zonaMapa`: el servidor ya corre el centro hasta 350 m; radio de 700 m en el mock) | Nunca un punto exacto antes del acuerdo, ni pin de destino |
 | Detalle de trabajo | Pin del destino, atajos a Google Maps y Waze, y "Ver el viaje en el mapa" cuando está en camino | Destino exacto solo con trabajo acordado y para sus partes |
-| En camino | Mapa a pantalla completa con destino, tu posición, el trayecto que falta, la llegada estimada, la señal en texto y "Llegué" | Ver abajo |
+| En camino | Mapa a pantalla completa con destino, tu posición, el trayecto que falta, la llegada estimada, la señal en texto, la llegada automática y "Ya llegué" de respaldo (4.6) | Ver abajo |
 | Catálogo (mock) | Las capas en uso, con un trayecto de muestra en línea recta (rotulado) | — |
 
 ## Compartir la ubicación
@@ -39,7 +39,10 @@ Antes de pedirle el permiso al navegador, la pantalla explica para qué es:
 
 Reglas:
 - Solo con el trabajo **en camino**: el servidor rechaza posiciones en cualquier otro estado (409).
-- Al marcar "Llegué", empezar, terminar o cancelar, el servidor deja de compartir. La app también suelta el GPS.
+- Al llegar (automática o con "Ya llegué"), empezar, terminar o cancelar, el servidor deja de compartir. La app también
+  suelta el GPS.
+- **Llegada automática (4.6)**: con una posición a 80 m o menos del destino y una precisión de 50 m o mejor, el servidor
+  marca la llegada, avisa al cliente y la app abre el trabajo. Solo funciona con la app abierta.
 - La posición va **en el cuerpo** del pedido, nunca en la URL.
 - Retención: 30 días (lote 5.3).
 - Señal en texto, nunca solo con color:
@@ -48,7 +51,8 @@ Reglas:
   - "Sin señal de ubicación", después de 30 s sin una lectura nueva o con un timeout.
   - "Sin permiso de ubicación".
   - "Tu teléfono no da la ubicación".
-- Sin permiso o sin señal se puede seguir igual: Google Maps o Waze y "Llegué" (la llegada automática es del lote 4.6).
+- Sin permiso, con señal imprecisa, sin señal o sin compartir se puede seguir igual: Google Maps o Waze y "Ya llegué",
+  que manda el motivo.
 - Desvío: con 2 posiciones seguidas a más de 60 m del trayecto (y precisión ≤ 100 m), el servidor lo recalcula, sube
   `trayecto.version` y la isla avisa "Recalculamos el trayecto".
 - En una PWA, la ubicación se comparte solo con la app abierta y la pantalla encendida. iPhone y Android cortan el GPS de una
@@ -134,7 +138,7 @@ Medido el 29/10/2026 con Chromium sin interfaz (WebGL por software):
     precisión.
 - E2E:
   - M1: zona del pedido sin pin.
-  - M2: cómo llegar, permiso, compartir, señal imprecisa, sin señal y sin permiso, dejar de compartir, seguir y "Llegué"
+  - M2: cómo llegar, permiso, compartir, señal imprecisa, sin señal y sin permiso, dejar de compartir, seguir y la llegada automática
     deja de compartir.
   - M3: sin WebGL queda el texto.
 - `npm run accesibilidad` suma En camino compartiendo.

@@ -1,9 +1,11 @@
 'use client';
-// En camino (lote 4.3): el mapa a pantalla completa con el destino, tu posición en vivo y el trayecto que dibuja Handyx.
-// La ubicación se comparte solo si la persona lo elige después de leer para qué, solo con esta pantalla abierta y solo
-// con el cliente de este trabajo. Sin permiso o sin señal se puede seguir igual: Google Maps o Waze y "Llegué".
+// En camino (lotes 4.3 y 4.6): el mapa a pantalla completa con el destino, tu posición en vivo y el trayecto que dibuja
+// Handyx. La ubicación se comparte solo si la persona lo elige después de leer para qué, solo con esta pantalla abierta y
+// solo con el cliente de este trabajo. La llegada se marca sola al entrar en la cuadra (geocerca del servidor); "Ya
+// llegué" aparece solo como respaldo cuando la ubicación anda mal (sin permiso, imprecisa, sin señal o sin compartir).
 import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { RUTAS } from '../app/rutas.ts';
 import { AccionTrabajo } from '../components/AccionTrabajo.tsx';
@@ -13,6 +15,7 @@ import { Aviso } from '../components/ui.tsx';
 import type { Viaje } from '../contracts/dto.ts';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAhora } from '../hooks/useAhora.ts';
+import { useAccion } from '../hooks/useAccion.ts';
 import { useCarga } from '../hooks/useCarga.ts';
 import { useCompartirUbicacion } from '../hooks/useCompartirUbicacion.ts';
 import { useIdDeUrl } from '../hooks/useIdDeUrl.ts';
@@ -22,6 +25,7 @@ import { ALTURAS_HOJA, type AlturaHoja } from '../kit/logica.ts';
 import { BarraSuperior } from '../kit/Navegacion.tsx';
 import { hora } from '../lib/formato.ts';
 import { enlacesNavegacion, loQueFalta, textoDistancia, textoDuracion, type Senal } from '../lib/geo.ts';
+import { MOTIVO_LLEGADA, motivoRespaldo } from '../lib/trabajo.ts';
 import { Mapa } from '../mapa/Mapa.tsx';
 
 const SENAL: Record<Senal, { texto: string; icono: NombreIcono; tono: 'exito' | 'aviso' | 'error' | 'neutro' }> = {
@@ -35,7 +39,9 @@ const SENAL: Record<Senal, { texto: string; icono: NombreIcono; tono: 'exito' | 
 
 export function EnCamino() {
   const id = useIdDeUrl();
+  const router = useRouter();
   const isla = useIsla();
+  const llegada = useAccion();
   const ahora = useAhora();
   const c = useCarga(async () => {
     if (!id) return null;
@@ -47,6 +53,12 @@ export function EnCamino() {
   const versionTrayecto = useRef<number | null>(null);
 
   function alViaje(v: Viaje) {
+    // El servidor marcó la llegada (geocerca): deja de compartir y abre el trabajo. El cliente ya recibió el aviso.
+    if (v.estado === 'terminado' && c.datos?.detalle.trabajo.estado === 'en_camino') {
+      isla({ titulo: '¡Llegaste!', texto: `Le avisamos a ${c.datos.detalle.contraparte}.`, icono: 'checkCirculo', tono: 'exito' });
+      router.replace(`${RUTAS.trabajo.ruta}?id=${v.trabajoId}`);
+      return;
+    }
     const antes = versionTrayecto.current;
     if (v.trayecto && antes !== null && v.trayecto.version > antes) {
       isla({ titulo: 'Recalculamos el trayecto', texto: 'Seguí la línea azul nueva.', icono: 'pin' });
@@ -89,6 +101,20 @@ export function EnCamino() {
   const nav = enlacesNavegacion(t.destino);
   const senal = SENAL[gps.senal];
   const sinTrayecto = gps.activa && v.estado === 'compartiendo' && !v.trayecto;
+  const motivo = enCamino ? motivoRespaldo(gps.senal, gps.activa) : null;
+
+  async function yaLlegue() {
+    if (!motivo) return;
+    const r = await llegada.ejecutar(() => api.marcarLlegada(t.id, motivo, t.version, llegada.clave()));
+    if (r.ok) {
+      gps.parar();
+      isla({ titulo: 'Avisaste que llegaste', texto: `Le avisamos a ${detalle.contraparte}.`, icono: 'checkCirculo', tono: 'exito' });
+      router.replace(volver);
+    } else if (r.fallo.tipo === 'conflicto') {
+      llegada.nueva();
+      await c.recargar();
+    }
+  }
 
   return (
     <div className="vj-pantalla">
@@ -161,7 +187,7 @@ export function EnCamino() {
                 ) : (
                   <Aviso tono="error" icono="prohibido" titulo={gps.senal === 'sin_permiso' ? 'No tenemos permiso para ver tu ubicación' : 'Tu teléfono no da la ubicación'} role="alert">
                     {gps.senal === 'sin_permiso' ? 'Podés activarlo en la configuración del navegador (Ubicación → Permitir) y volver a intentar. ' : ''}
-                    Igual podés ir: abrí Google Maps o Waze y avisá con «Llegué» cuando estés.
+                    Igual podés ir: abrí Google Maps o Waze y avisá con «Ya llegué» cuando estés.
                     <br />
                     <button type="button" className="enlace" onClick={gps.empezar}>
                       Volver a intentar
@@ -203,7 +229,22 @@ export function EnCamino() {
             </a>
           </div>
 
-          {t.estado === 'agendado' || enCamino ? <AccionTrabajo trabajo={t} alCambiar={c.recargar} /> : null}
+          {enCamino ? (
+            motivo ? (
+              <div className="vj-respaldo">
+                {llegada.fallo ? <ErrorCaja fallo={llegada.fallo} onReintentar={() => void yaLlegue()} /> : null}
+                <button type="button" className="boton boton--bloque" disabled={llegada.pendiente} onClick={() => void yaLlegue()}>
+                  <Icono nombre="pin" /> {llegada.pendiente ? 'Avisando…' : 'Ya llegué'}
+                </button>
+                <p className="vj-nota">Como estás {MOTIVO_LLEGADA[motivo]}, no podemos marcar la llegada sola: avisá vos cuando estés en la puerta.</p>
+              </div>
+            ) : (
+              <p className="vj-nota vj-nota--auto" role="status">
+                <Icono nombre="checkCirculo" /> La llegada se marca sola cuando entrás en la cuadra, y le avisamos a {detalle.contraparte}.
+              </p>
+            )
+          ) : null}
+          {t.estado === 'agendado' ? <AccionTrabajo detalle={detalle} alCambiar={c.recargar} /> : null}
           {!enCamino && t.estado !== 'agendado' ? (
             <Link className="boton boton--bloque" href={volver}>
               Ver el trabajo

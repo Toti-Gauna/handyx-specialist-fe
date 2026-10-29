@@ -1,10 +1,85 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.5) · Bloque 4 · **Fase 4 en curso: 4.1, 4.2, 4.4 y 4.5 cerrados localmente; 4.3 hecho salvo el mapa base (queda para el final: datos de OpenStreetMap bloqueados por la red).**
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.6) · Bloque 4 · **Fase 4 en curso: 4.1, 4.2, 4.4, 4.5 y 4.6 cerrados localmente; 4.3 hecho salvo el mapa base (queda para el final: datos de OpenStreetMap bloqueados por la red).**
 Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 4 · Lote 4.6 (trabajo de punta a punta)
+
+- **Trabajo acordado**:
+  - Cliente, fecha, total vigente, dirección exacta con el mapa y "Cómo llegar".
+  - Chat y **llamada por la app**: un número puente de Handyx, sin mostrar teléfonos.
+  - Una acción principal por estado.
+- **Salgo para allá** abre el viaje.
+- **Llegada**:
+  - **Automática**: el servidor la marca cuando una posición entra en 80 m del destino con precisión de 50 m o mejor
+    (geocerca, con la app abierta). Avisa al cliente y la app abre el trabajo.
+  - **"Ya llegué"** aparece solo con la ubicación mal (sin permiso, imprecisa, sin señal) o sin compartir, y manda el
+    motivo.
+- **En curso**:
+  - Cronómetro.
+  - **"Agregar repuestos o mano de obra"**, con "Opción personalizada" primero y lo habitual del rubro. El precio lo pone
+    el especialista.
+  - El cliente acepta o rechaza; mientras tanto rige el precio vigente. Se puede retirar lo que no respondió.
+- **Terminar**:
+  - La confirmación muestra el desglose y avisa si hay adicionales sin respuesta (se retiran y no se cobran).
+  - **¡Terminaste el trabajo!**: monto que sube, desglose con la tarifa 0 %, confeti solo si se vio terminar.
+  - **Informar el cobro** desde ahí: queda "reportado", nunca verificado.
+- **Cambiar la fecha** (pantalla completa): motivo en chips, tira de días y franja. Queda como pedido hasta que el
+  cliente acepte.
+- **Cancelar**:
+  - Primero las alternativas: cambiar la fecha, escribirle, pedir ayuda.
+  - Después el motivo y la confirmación. "No me siento a salvo" muestra el 911.
+  - Con el trabajo en curso, cancela Operations.
+- **Reclamo**: desde el trabajo, como antes (Ayuda con el trabajo elegido).
+- **Contrato 0.7.0**:
+  - Llegada, con su modo y motivo.
+  - Cancelación con motivo.
+  - Adicionales y total vigente.
+  - Motivo del cambio de fecha.
+  - Llamada puente.
+  - `eventos` queda para salir, empezar y terminar.
+- **Supuestos** (en `docs/rediseno.md` §4.6):
+  - Sin compartir la ubicación también hay "Ya llegué".
+  - La geocerca de 80 m y 50 m es provisoria.
+  - **La llamada puente necesita un proveedor de telefonía pago**: está en la lista de autorizaciones de la fase 5. Hasta
+    entonces queda el chat.
+- **Corregido en la revisión**:
+  - Un adicional aceptado no llegaba al cobro cuando el trabajo ya tenía un cobro pendiente: ahora se actualiza al total,
+    y una prueba lo fija.
+  - Los errores de Cambiar la fecha y de Cancelar quedaban a la vista después de corregirlos.
+  - Con el texto al 200 % a 320 px se salían el cronómetro y el bloque azul del inicio. Además, una obra en curso
+    mostraba "72:00:00": el cronómetro queda para los trabajos de un día (las jornadas de obra son del 4.7).
+  - "Ver la Caja" en ¡Terminaste! tenía 23 px de alto: ahora tiene el área táctil de 44 px.
+  - El ícono de llamar era el de "sin teléfono".
+  - "No me siento seguro" pasó a "No me siento a salvo" (texto neutro).
+- **Pruebas**:
+  - 4 unitarias: respaldo, cronómetro, opciones y franjas.
+  - 4 del mock: llegada con motivo, adicionales, cobro por el total vigente, cancelación y llamada.
+  - La geocerca, dentro de la prueba del viaje.
+  - Recorridos rehechos:
+    - C: "Ya llegué" sin compartir y ¡Terminaste!.
+    - D: Cambiar la fecha con el foco en el error.
+    - M2: llegada automática.
+  - Recorrido O nuevo: respaldo con señal imprecisa, llamada, adicional aceptado, ¡Terminaste! con el total, cobro
+    reportado y cancelar.
+  - 4 pantallas nuevas y la hoja de la llamada en accesibilidad y capturas.
+
+### Comandos del lote 4.6 (29/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 133 pruebas: 131 OK y 2 omitidas (sincronías con otros repos) |
+| `npm run build` | OK |
+| `npm run e2e` | 24/24 recorridos (C, D y M2 rehechos; O nuevo) |
+| `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento; solo días del calendario (agenda y catálogo) por debajo de 44 px a 320 (≥ 30 px), como antes |
+| `ANCHOS=` 7 tamaños `npm run capturas` | 357/357 sin desborde y sanitizadas |
+| `build:hostinger` con API ficticia | OK: 33 páginas (suma las 4 del trabajo), sin `/catalogo/`, fixtures ni las marcas del panel |
+
+**Próximo paso**: lote 4.7 (obras de varios días). El mapa base del 4.3 queda para el final.
 
 ## Fase 4 · Lote 4.5 (inicio, pedidos y propuesta)
 
@@ -57,8 +132,7 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 | `ANCHOS=` 7 tamaños `npm run capturas` | 336/336 sin desborde y sanitizadas |
 | `build:hostinger` con API ficticia | OK: 29 páginas (suma Tu precio), sin `/catalogo/`, fixtures, cámara simulada ni la tabla de precios de prueba |
 
-**Próximo paso**: lote 4.6 (trabajo de punta a punta: salgo, en camino con llegada automática, adicionales, ¡terminaste!).
-El mapa base del 4.3 queda para el final.
+**Siguiente**: lote 4.6 (cerrado, ver arriba).
 
 ## Fase 4 · Lote 4.4 (alta guiada)
 

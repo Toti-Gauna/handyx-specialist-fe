@@ -325,29 +325,30 @@ async function main() {
     await ver(p, 'Agendado');
     await ver(p, '$ 38.000');
     await foto('03-trabajo-agendado');
-    // Paso a paso, con "Llegué" explícito
-    await p.getByRole('button', { name: 'Salgo hacia el lugar' }).click();
-    // Al salir se abre el mapa del viaje (lote 4.3); compartir la ubicación es opcional para marcar "Llegué"
+    // Paso a paso. Sin compartir la ubicación no hay llegada automática: aparece el respaldo "Ya llegué" (lote 4.6)
+    await p.getByRole('button', { name: 'Salgo para allá' }).click();
     await p.waitForURL('**/en-camino/?id=*');
-    await ver(p, 'Compartir la ubicación del teléfono es opcional');
+    await ver(p, 'Como estás sin compartir la ubicación');
     await foto('04-en-camino');
-    await p.getByRole('button', { name: 'Llegué' }).click();
-    await ver(p, 'Ya llegaste');
-    await ir(p, 'Ver el trabajo');
+    await p.getByRole('button', { name: 'Ya llegué' }).click();
+    await p.waitForURL('**/trabajos/detalle/**');
     await ver(p, 'En el lugar');
+    await ver(p, 'Avisaste con «Ya llegué» (sin compartir la ubicación)');
     await foto('05-en-el-lugar');
     await p.getByRole('button', { name: 'Empezar el trabajo' }).click();
-    await p.getByRole('button', { name: 'Terminé el trabajo' }).waitFor();
+    await ver(p, 'Trabajando hace');
     await foto('06-en-curso');
     await p.getByRole('button', { name: 'Terminé el trabajo' }).click();
     await ver(p, '¿Terminaste el trabajo?');
+    await ver(p, 'Total a cobrar');
     await foto('07-confirmar-terminar');
     await p.getByRole('button', { name: 'Sí, terminé' }).click();
-    await ver(p, 'Trabajo terminado');
-    await ver(p, 'pagó directamente a vos, no a Handyx');
+    await p.waitForURL('**/trabajos/terminado/**');
+    await ver(p, '¡Terminaste el trabajo!');
+    await ver(p, 'directo del cliente a vos');
     await foto('08-terminado');
     // Caja: el cobro nuevo está pendiente; informarlo no lo verifica
-    await p.getByRole('link', { name: 'Caja', exact: true }).click();
+    await p.getByRole('link', { name: 'Ver la Caja' }).click();
     await ver(p, 'El pago va directo a vos');
     await p.getByRole('button', { name: /Informar cobro|Ya lo cobré/ }).first().click();
     await ver(p, 'Queda como reportado');
@@ -364,12 +365,21 @@ async function main() {
     await p.waitForURL('**/inicio/');
     await nav(p, 'Trabajos');
     await p.getByText('Plomería · Cliente de prueba 5').click();
-    await p.getByRole('button', { name: 'Proponer otra fecha o cambio' }).waitFor();
+    await p.getByRole('link', { name: /Cambiar la fecha/ }).waitFor();
     await foto('01-trabajo-agendado');
-    await p.getByRole('button', { name: 'Proponer otra fecha o cambio' }).click();
-    await p.getByRole('button', { name: 'Enviar propuesta de cambio' }).waitFor();
-    await foto('02-hoja-cambio');
-    await p.getByRole('button', { name: 'Enviar propuesta de cambio' }).click();
+    // Cambiar la fecha (lote 4.6): motivo, día y franja; sin motivo no se manda
+    await p.getByRole('link', { name: /Cambiar la fecha/ }).click();
+    await p.waitForURL('**/trabajos/cambio/**');
+    await p.getByRole('button', { name: 'Pedir el cambio' }).click();
+    await ver(p, 'Elegí el motivo: el cliente lo ve.');
+    await p.waitForFunction(() => document.activeElement?.id === 'cf-motivo');
+    await p.getByRole('button', { name: 'Me falta un repuesto' }).click();
+    await p.locator('.hx-tira__dia:not([disabled])').nth(1).click();
+    await p.getByRole('button', { name: /Tarde · 16 a 20/ }).click();
+    await ver(p, 'Le proponés el');
+    await foto('02-cambiar-fecha');
+    await p.getByRole('button', { name: 'Pedir el cambio' }).click();
+    await p.waitForURL('**/trabajos/detalle/**');
     await ver(p, 'Cambio esperando respuesta');
     await ver(p, 'Mientras tanto sigue valiendo el acuerdo de arriba');
     await ver(p, '$ 45.000');
@@ -757,7 +767,7 @@ async function main() {
     const google = await p.getByRole('link', { name: /Google Maps/ }).getAttribute('href');
     assert.match(google, /^https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=-38\.\d+,-57\.\d+&travelmode=driving$/);
     assert.equal(await p.getByRole('link', { name: /Waze/ }).getAttribute('target'), '_blank');
-    await p.getByRole('button', { name: 'Salgo hacia el lugar' }).click();
+    await p.getByRole('button', { name: 'Salgo para allá' }).click();
     await p.waitForURL('**/en-camino/?id=*');
     await ver(p, 'Compartí tu ubicación durante el viaje');
     await mapaListo(p);
@@ -786,9 +796,12 @@ async function main() {
     await ver(p, 'Tu ubicación está en pausa');
     await p.getByRole('button', { name: 'Seguir compartiendo' }).click();
     await chip(p, 'Ubicación precisa');
-    await p.getByRole('button', { name: 'Llegué' }).click();
-    await ver(p, 'Ya llegaste');
-    assert.equal(await p.locator('.vj-compartir').count(), 0, 'al llegar se deja de compartir');
+    // Con buena señal no hay "Ya llegué": la llegada se marca sola al entrar en la cuadra (geocerca, lote 4.6)
+    await ver(p, 'La llegada se marca sola');
+    assert.equal(await p.getByRole('button', { name: 'Ya llegué' }).count(), 0, 'con buena señal no hay respaldo');
+    await p.waitForURL('**/trabajos/detalle/**', { timeout: 120000 });
+    await ver(p, 'Llegada marcada sola al entrar en la cuadra');
+    await ver(p, 'le avisamos al cliente');
     await foto('04-llegaste');
   }, { capturas });
 
@@ -797,6 +810,71 @@ async function main() {
     await p.waitForSelector('[data-mapa="sin_mapa"]', { timeout: 20000 });
     await ver(p, 'Zona aproximada: Centro');
     await foto('01-respaldo');
+  }, { capturas });
+
+  await escenario('O-adicionales-terminaste-y-cancelar', nav_, base, async ({ p, foto }) => {
+    await p.goto(`${base}/en-camino/?id=00000000-0000-4000-8000-0000000000c1&escenario=habilitado`);
+    await p.getByRole('button', { name: 'Salgo para allá' }).click();
+    // Con la señal imprecisa la geocerca no sirve: aparece "Ya llegué" con el motivo
+    await panel(p, 'Señal imprecisa');
+    await p.getByRole('button', { name: 'Compartir mi ubicación' }).click();
+    await ver(p, 'Como estás ubicación imprecisa');
+    await foto('01-respaldo');
+    await p.getByRole('button', { name: 'Ya llegué' }).click();
+    await p.waitForURL('**/trabajos/detalle/**');
+    await ver(p, 'Avisaste con «Ya llegué» (ubicación imprecisa)');
+    // Llamar por la app: número puente, sin mostrar teléfonos
+    await p.getByRole('button', { name: /Llamar por la app/ }).click();
+    await ver(p, 'Ninguno de los dos ve el teléfono del otro');
+    assert.match(await p.getByRole('link', { name: 'Llamar' }).getAttribute('href'), /^tel:\+0+$/);
+    await p.keyboard.press('Escape');
+    await p.getByRole('button', { name: 'Empezar el trabajo' }).click();
+    await ver(p, 'Trabajando hace');
+    // Adicional: "Opción personalizada" primero; rige el precio vigente hasta que el cliente acepta
+    await p.getByRole('link', { name: /Agregar repuestos o mano de obra/ }).click();
+    await p.waitForURL('**/trabajos/adicional/**');
+    assert.equal((await p.locator('.tr-opcion').first().textContent()).includes('Opción personalizada'), true);
+    await p.getByRole('button', { name: /^Mandárselo al cliente/ }).click();
+    await ver(p, 'Elegí qué querés agregar.');
+    await p.getByRole('button', { name: /Flexible/ }).click();
+    await p.getByRole('button', { name: '+ $ 5.000' }).click();
+    await ver(p, 'Si lo acepta');
+    await foto('02-adicional');
+    await p.getByRole('button', { name: 'Mandárselo al cliente · $ 5.000' }).click();
+    await p.waitForURL('**/trabajos/detalle/**');
+    await ver(p, 'Esperando al cliente');
+    await ver(p, 'rige el precio vigente: $ 45.000');
+    await foto('03-adicional-pendiente');
+    await panel(p, 'Acepta tu último adicional');
+    await ver(p, 'Incluye los adicionales que aceptó el cliente');
+    await ver(p, '$ 50.000');
+    // Terminar: desglose con el adicional, ¡Terminaste! con el total e informar el cobro (queda reportado)
+    await p.getByRole('button', { name: 'Terminé el trabajo' }).click();
+    await ver(p, 'Total a cobrar');
+    await p.getByRole('button', { name: 'Sí, terminé' }).click();
+    await p.waitForURL('**/trabajos/terminado/**');
+    await ver(p, '¡Terminaste el trabajo!');
+    await ver(p, 'Total que paga el cliente');
+    assert.equal(await p.locator('.tr-desglose__total dd').textContent(), '$ 50.000');
+    await foto('04-terminaste');
+    await p.getByRole('button', { name: /Ya me pagó|Ya lo cobré/ }).click();
+    await p.getByRole('button', { name: 'Sí, ya lo cobré' }).click();
+    await ver(p, 'Reportado, sin verificar');
+    await foto('05-cobro-reportado');
+    // Cancelar otro trabajo: primero las alternativas, después el motivo y la confirmación
+    await p.goto(`${base}/trabajos/cancelar/?id=00000000-0000-4000-8000-0000000000c1&escenario=habilitado`);
+    await ver(p, 'Antes de cancelar');
+    await p.getByRole('button', { name: 'Cancelar el trabajo' }).click();
+    await ver(p, 'Elegí el motivo.');
+    await p.getByRole('button', { name: 'No me siento a salvo en el lugar' }).click();
+    await ver(p, 'llamá al 911');
+    await foto('06-cancelar');
+    await p.getByRole('button', { name: 'Cancelar el trabajo' }).click();
+    await ver(p, '¿Cancelar este trabajo?');
+    await p.getByRole('button', { name: 'Sí, cancelar' }).click();
+    await p.waitForURL('**/trabajos/detalle/**');
+    await ver(p, 'Este trabajo fue cancelado');
+    await foto('07-cancelado');
   }, { capturas });
 
   await escenario('J-sin-conexion-service-worker', nav_, base, async ({ p, foto }) => {

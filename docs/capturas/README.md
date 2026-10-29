@@ -1,10 +1,10 @@
-# Capturas sanitizadas · PWA Especialista (lotes 3.3 y 4.2 a 4.5)
+# Capturas sanitizadas · PWA Especialista (lotes 3.3 y 4.2 a 4.6)
 
 Generadas con `npm run build && npm run capturas:docs` (`scripts/capturas-docs.sh`). Datos **sintéticos** del mock, nunca de
 producción. `e2e/capturas.cjs` rechaza la captura si aparece un email que no sea `@example.test`, un DNI/CUIT que no sea de
 prueba, un teléfono o si falta el banner "Datos de prueba" (salvo en las dos pantallas sin datos de la cuenta).
 
-Celular 390×844 en `390x844/` (las 48) y escritorio 1280×800 en `1280x800/` (inicio, pedido, trabajo, agenda, caja y cuenta).
+Celular 390×844 en `390x844/` (las 51) y escritorio 1280×800 en `1280x800/` (inicio, pedido, trabajo, agenda, caja y cuenta).
 
 | Pantalla | Ruta | Escenario |
 |---|---|---|
@@ -38,6 +38,9 @@ Celular 390×844 en `390x844/` (las 48) y escritorio 1280×800 en `1280x800/` (i
 | [mensajes](390x844/mensajes.webp) | `/mensajes/` | `habilitado` |
 | [trabajos](390x844/trabajos.webp) | `/trabajos/` | `habilitado` |
 | [en-camino](390x844/en-camino.webp) | `/en-camino/?id=…c1` | `habilitado` |
+| [trabajo-cambiar-fecha](390x844/trabajo-cambiar-fecha.webp) | `/trabajos/cambio/?id=…c1` | `habilitado` |
+| [trabajo-cancelar](390x844/trabajo-cancelar.webp) | `/trabajos/cancelar/?id=…c1` | `habilitado` |
+| [trabajo-terminaste](390x844/trabajo-terminaste.webp) | `/trabajos/terminado/?id=…c2` | `habilitado` |
 | [agenda](390x844/agenda.webp) | `/agenda/` | `habilitado` |
 | [caja](390x844/caja.webp) | `/caja/` | `habilitado` |
 | [soporte](390x844/soporte.webp) | `/soporte/` | `habilitado` |

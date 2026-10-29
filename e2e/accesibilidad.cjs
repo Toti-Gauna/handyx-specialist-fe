@@ -73,8 +73,7 @@ async function main() {
     ['hoja-aceptar', `/pedidos/detalle/?id=${id(0xb2)}`, 'Aceptar propuesta', '¿Aceptar esta propuesta?'],
     ['hoja-borrar-avisos', '/notificaciones/', 'Borrar todos', '¿Borrar todos los avisos?'],
     ['hoja-pedido-entrante', '/inicio/', 'No disponible', 'Pedido urgente para vos'],
-    ['hoja-cancelar', `/trabajos/detalle/?id=${id(0xc1)}`, 'Cancelar este trabajo', '¿Cancelar este trabajo?'],
-    ['hoja-cambio', `/trabajos/detalle/?id=${id(0xc1)}`, 'Proponer otra fecha o cambio', 'Nueva fecha y hora'],
+    ['hoja-llamada', `/trabajos/detalle/?id=${id(0xc1)}`, 'Llamar por la app', 'Ninguno de los dos ve el teléfono del otro'],
     ['hoja-baja', '/cuenta/', 'Eliminar mi cuenta y mis datos', '¿Eliminar tu cuenta?'],
     ['hoja-caso', '/soporte/', 'Abrir un caso', '¿Sobre qué es?'],
   ];
@@ -102,7 +101,7 @@ async function main() {
   {
     const p = await ctx.newPage();
     await p.goto(`${base}/en-camino/?id=${id(0xc1)}&escenario=habilitado`);
-    await p.getByRole('button', { name: 'Salgo hacia el lugar' }).click();
+    await p.getByRole('button', { name: 'Salgo para allá' }).click();
     await p.getByRole('button', { name: 'Compartir mi ubicación' }).click();
     await p.getByText('Ubicación precisa').first().waitFor({ timeout: 8000 });
     await esperarMapas(p);

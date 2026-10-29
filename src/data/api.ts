@@ -45,9 +45,14 @@ import type {
   Posicion,
   Viaje,
   TurnoAntecedentes,
+  Adicional,
+  AvanceTrabajo,
+  LlamadaPuente,
+  MotivoCancelacion,
+  MotivoRespaldoLlegada,
+  NuevoAdicional,
 } from '../contracts/dto.ts';
 import type { Rubro } from '../contracts/rubros.ts';
-import type { EstadoTrabajo } from '../contracts/maquinas.ts';
 
 export interface Pagina<T> {
   items: T[];
@@ -122,8 +127,18 @@ export interface EspecialistaApi {
   // Trabajos y agenda
   trabajos(vista: 'activos' | 'historial'): Promise<Pagina<Trabajo>>;
   trabajo(id: string): Promise<TrabajoDetalle>;
-  avanzarTrabajo(id: string, hacia: Exclude<EstadoTrabajo, 'agendado'>, version: number, clave: ClaveIdempotencia): Promise<Trabajo>;
+  /** Salir, empezar y terminar. Terminar retira los adicionales pendientes y crea el cobro por el total vigente. */
+  avanzarTrabajo(id: string, hacia: AvanceTrabajo, version: number, clave: ClaveIdempotencia): Promise<Trabajo>;
+  /** "Ya llegué" (0.7.0): el respaldo de la llegada automática, solo cuando la ubicación anda mal y con el motivo. */
+  marcarLlegada(id: string, motivo: MotivoRespaldoLlegada, version: number, clave: ClaveIdempotencia): Promise<Trabajo>;
+  /** Cancelar con motivo (0.7.0). Sin penalización automática; el pedido puede volver a ofrecerse. */
+  cancelarTrabajo(id: string, motivo: MotivoCancelacion, version: number, clave: ClaveIdempotencia): Promise<Trabajo>;
   proponerCambio(id: string, cambio: NuevoCambio, clave: ClaveIdempotencia): Promise<Propuesta>;
+  /** Repuestos o mano de obra con el trabajo en curso (0.7.0): los acepta o rechaza el usuario. */
+  crearAdicional(trabajoId: string, adicional: NuevoAdicional, clave: ClaveIdempotencia): Promise<Adicional>;
+  retirarAdicional(trabajoId: string, adicionalId: string): Promise<Adicional>;
+  /** Número puente para llamar a la otra parte sin ver su teléfono (0.7.0). Dura unos minutos. */
+  llamada(trabajoId: string): Promise<LlamadaPuente>;
   agenda(desde: string, hasta: string): Promise<AgendaItem[]>;
 
   // Mapa y viaje (contrato 0.4.0)

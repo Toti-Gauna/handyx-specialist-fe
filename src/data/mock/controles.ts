@@ -86,6 +86,8 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       u('usuario_rechaza', 'Rechaza tu última propuesta');
       u('usuario_contraoferta', 'Te contraoferta (−10 %)');
       u('usuario_cambio', 'Pide mover la fecha de un trabajo');
+      u('usuario_acepta_adicional', 'Acepta tu último adicional');
+      u('usuario_rechaza_adicional', 'Rechaza tu último adicional');
       u('usuario_mensaje', 'Te escribe un mensaje');
       u('pedido_urgente', 'Entra un pedido urgente nuevo');
       const p = (id: string, etiqueta: string) => a.push({ id, etiqueta, grupo: 'Pagos y soporte' });
@@ -209,6 +211,19 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         s.propuestas.push(p);
         t.cambioPendienteId = p.id;
         s.nota = 'El usuario pidió mover la fecha un día. El acuerdo no cambia hasta que respondas.';
+        break;
+      }
+      case 'usuario_acepta_adicional':
+      case 'usuario_rechaza_adicional': {
+        const acepta = id === 'usuario_acepta_adicional';
+        const t = s.trabajos.find((x) => x.adicionales.some((a) => a.estado === 'pendiente'));
+        const ad = t ? [...t.adicionales].reverse().find((a) => a.estado === 'pendiente') : undefined;
+        if (!t || !ad) { s.nota = 'No hay un adicional esperando respuesta.'; break; }
+        ad.estado = acepta ? 'aceptado' : 'rechazado';
+        ad.respondidoEn = iso(ahoraMs(s));
+        ad.version += 1;
+        s.avisos.unshift({ id: idNuevo(s), tipo: 'trabajo', titulo: acepta ? 'Aceptó el adicional' : 'No aceptó el adicional', cuerpo: `${ad.descripcion}. ${acepta ? 'Ya se suma al total del trabajo.' : 'Sigue el precio vigente.'}`, creadoEn: iso(ahoraMs(s)), leido: false, destino: { ruta: 'trabajo', id: t.trabajo.id } });
+        s.nota = acepta ? 'El usuario aceptó el adicional: se suma al total.' : 'El usuario rechazó el adicional: sigue el precio vigente.';
         break;
       }
       case 'usuario_mensaje': {

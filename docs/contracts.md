@@ -1,6 +1,23 @@
 # Contrato compartido Usuario · Especialista · Portal (lote 1.3)
 
-Versión: **0.6.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+Versión: **0.7.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+
+**0.6.0 → 0.7.0 (fase 4, lote 4.6, cambios para el dueño del contrato):** trabajo de punta a punta.
+- **Llegada**: `Trabajo` suma `llegada` (`modo` automática o respaldo, `motivo` y hora; null hasta llegar). La automática
+  la marca el servidor (actor `sistema`) al recibir una posición dentro de `RADIO_LLEGADA_M` (80 m) con precisión de
+  `PRECISION_MAX_LLEGADA_M` (50 m) o mejor. El respaldo "Ya llegué" va por `POST /v1/especialista/trabajos/{id}/llegada`
+  con el motivo (`sin_permiso`, `imprecisa`, `sin_senal`, `sin_ubicacion`). En los dos casos el usuario recibe el aviso.
+- `POST /trabajos/{id}/eventos` queda para salir, empezar y terminar (`AVANCES_TRABAJO`). Cancelar pasa a
+  `POST /trabajos/{id}/cancelacion`, siempre con motivo (`MOTIVOS_CANCELACION`). Con el trabajo en curso cancela solo
+  Operations.
+- **Adicionales**: nuevos `Adicional` y `NuevoAdicional` (repuesto o mano de obra, descripción e importe mayor a cero) y
+  la máquina `MAQUINA_ADICIONAL`. Endpoints `POST /trabajos/{id}/adicionales` (con `Idempotency-Key`) y
+  `POST /trabajos/{id}/adicionales/{adicionalId}/retiro`. `TrabajoDetalle` suma `adicionales` y `totalVigente` (lo
+  acordado más los aceptados). Terminar retira los pendientes y crea (o actualiza, si estaba pendiente) el cobro por el
+  total vigente.
+- `NuevoCambio` suma `motivo` (`MOTIVOS_CAMBIO`, nullable), que se le muestra al usuario.
+- **Llamada por la app**: `POST /trabajos/{id}/llamada` devuelve un número puente de Handyx (`LlamadaPuente`, con
+  vencimiento). Ninguna parte ve el teléfono de la otra. Necesita un proveedor de telefonía (fase 5, con autorización).
 
 **0.5.0 → 0.6.0 (fase 4, lote 4.5, cambios para el dueño del contrato):** pedidos, propuesta y avisos.
 - `PedidoDetalle` suma `precioSugerido` (`PrecioSugerido`: `monto`, `fuente` y `version`, o null) y `trabajoId` (el trabajo
@@ -85,7 +102,7 @@ Una tabla tiene un solo servicio que la escribe por dominio; donde dos escriben,
 | `specialist_availability` / coverage | api-especialista | api-usuario (búsqueda) | |
 | `service_requests`, `request_media` | api-usuario | api-especialista (elegibles, datos mínimos) | Búsqueda manual: portal |
 | `proposals` | ambas: cada parte crea las suyas y responde las de la contraparte | ambas | Aceptación en transacción con versión; una sola aceptada activa por pedido |
-| `jobs`, `job_events` | se crea en la transacción de aceptación; eventos del especialista (en camino, Llegué, en curso, fin) desde api-especialista; cancelaciones de cada parte desde su API | ambas | Snapshot del acuerdo inmutable |
+| `jobs`, `job_events` | se crea en la transacción de aceptación; eventos del especialista (en camino, en curso, fin) desde api-especialista; llegada automática (geocerca) o de respaldo con motivo; cancelaciones con motivo de cada parte desde su API; adicionales (`job_extras`) con la respuesta del usuario | ambas | Snapshot del acuerdo inmutable |
 | `conversations`, `messages`, media | cada parte desde su API | participantes + staff | Hilo desde la primera cotización (prompt Bloque 4) — TECH-03 lo ataba a `job_id`: se agrega `request_id` y `job_id` opcional |
 | `support_cases`, `support_events` | cada parte abre desde su API; portal gestiona | partes + staff | |
 | `payment_records` | reportes: cada parte; verificación: webhook validado o portal | ambas | Reportado ≠ verificado; Handy no es receptor |
