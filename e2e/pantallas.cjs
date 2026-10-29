@@ -31,6 +31,10 @@ const PANTALLAS = [
   ['caso', `/soporte/detalle/?id=${id(0x52)}`, 'El usuario no estaba en el lugar', 'habilitado'],
   ['cuenta', '/cuenta/', 'Quién ve qué', 'habilitado'],
   ['baja', '/baja/', 'Baja de tu cuenta', 'baja'],
+  ['error-red', '/pedidos/?falla=red', 'No pudimos conectarnos', 'habilitado'],
+  ['error-servidor', '/caja/?falla=servidor', 'El servicio no está disponible por ahora', 'habilitado'],
+  ['sin-conexion', '/sin-conexion/', 'Se nos cortó el caño', 'habilitado'],
+  ['no-encontrada', '/no-existe/', 'No encontramos esta pantalla', 'habilitado'],
 ];
 
 module.exports = { PANTALLAS, id };

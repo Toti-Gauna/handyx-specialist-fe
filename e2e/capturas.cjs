@@ -8,6 +8,23 @@ const { servir } = require('./servidor.cjs');
 
 const { PANTALLAS } = require('./pantallas.cjs');
 
+// Sanitización: una captura solo puede mostrar datos sintéticos. Emails @example.test, los DNI/CUIT de prueba y,
+// en toda pantalla con datos de la cuenta, el banner amarillo "Datos de prueba".
+const DOCUMENTOS_DE_PRUEBA = new Set(['30111222', '20301112229']);
+const SIN_DATOS_DE_CUENTA = new Set(['sin-conexion', 'no-encontrada']);
+function problemasDeSanitizacion(nombre, texto) {
+  const problemas = [];
+  for (const email of texto.match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g) ?? []) if (!email.endsWith('@example.test')) problemas.push(`email ${email}`);
+  for (const m of texto.matchAll(/(\$\s*)?\b\d[\d.-]{5,}\d\b/g)) {
+    const cifras = m[0].replace(/\D/g, '');
+    const esFecha = /^\d{4}-\d{2}-\d{2}$/.test(m[0]);
+    if (!m[1] && !esFecha && [7, 8, 10, 11].includes(cifras.length) && !DOCUMENTOS_DE_PRUEBA.has(cifras)) problemas.push(`número ${m[0]}`);
+  }
+  if (/\+54/.test(texto)) problemas.push('teléfono');
+  if (!SIN_DATOS_DE_CUENTA.has(nombre) && !texto.includes('Datos de prueba')) problemas.push('falta el banner "Datos de prueba"');
+  return problemas;
+}
+
 async function main() {
   const carpeta = process.argv[2] ?? join(__dirname, '..', 'capturas');
   const anchos = (process.env.ANCHOS ?? '390x844').split(',').map((x) => x.split('x').map(Number));
@@ -31,6 +48,14 @@ async function main() {
         if (desborde > 0) {
           fallas++;
           console.log(`✘ ${w}x${h} ${nombre}: desborde horizontal de ${desborde}px`);
+        }
+        const visible = await p.evaluate(() => [document.body.innerText, ...[...document.querySelectorAll('input, textarea')].map((e) => e.value)].join('\n'));
+        const sucio = problemasDeSanitizacion(nombre, visible);
+        if (sucio.length) {
+          fallas++;
+          console.log(`✘ ${w}x${h} ${nombre}: sin sanitizar (${sucio.join(', ')})`);
+          await p.close();
+          continue;
         }
         await p.screenshot({ path: join(dir, `${nombre}.png`), fullPage: true });
       } catch (e) {

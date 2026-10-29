@@ -4,7 +4,7 @@ PWA de especialistas de **Handyx** (handyc.com · Mar del Plata): alta y verific
 propuestas, chat, agenda, trabajos, caja de pagos directos y soporte. Comparte identidad, contratos y estados con la
 app Usuario y el portal interno.
 
-Estado: **fase 2 (mockup navegable con datos de prueba)** del Bloque 4: sin backend conectado ni desplegado. Ver `docs/plan.md` y `docs/handoff.md`.
+Estado: **fases 1–3 (mockup navegable con datos de prueba, sistema visual, accesibilidad y PWA)** del Bloque 4: sin backend conectado ni desplegado. Ver `docs/plan.md` y `docs/handoff.md`.
 
 ## Uso
 
@@ -12,9 +12,11 @@ Estado: **fase 2 (mockup navegable con datos de prueba)** del Bloque 4: sin back
 npm ci
 npm run dev              # http://localhost:3000 con datos de prueba (banner amarillo + Panel de prueba)
 npm run lint | typecheck | test
-node e2e/flujos.cjs      # recorridos de punta a punta (después de npm run build)
-node e2e/capturas.cjs    # capturas por pantalla y escenario (carpeta capturas/, ignorada por git)
-npm run build            # exportación estática a out/ (vista previa, mock)
+npm run build            # exportación estática a out/ (vista previa, mock) + out/sw.js
+npm run e2e              # recorridos de punta a punta (después de npm run build)
+npm run accesibilidad    # axe WCAG 2.2 AA, áreas táctiles, teclado, foco y zoom
+npm run capturas         # capturas sanitizadas por pantalla (carpeta capturas/, ignorada por git)
+npm run capturas:docs    # regenera el catálogo de docs/capturas/ (ImageMagick)
 NEXT_PUBLIC_DATA_SOURCE=http NEXT_PUBLIC_API_BASE_URL=https://… npm run build:hostinger   # producción
 ```
 
@@ -32,6 +34,9 @@ Variables: `.env.example`. Todas son públicas (`NEXT_PUBLIC_*`): nunca secretos
 | `docs/state-machines.md` | Máquinas de estado con actor |
 | `docs/auth-permissions.md` | Sesión, CSRF y matriz de permisos |
 | `docs/matriz.md` | Pantalla · API · permiso · QA |
-| `docs/diseno.md` | Sistema visual, tipo vs estado, jerarquía de acción y urgencia sin dark patterns |
+| `docs/diseno.md` | Sistema visual, tipo vs estado, jerarquía de acción, urgencia sin dark patterns, accesibilidad, movimiento y Handys |
+| `docs/componentes.md` | Catálogo de componentes |
+| `docs/capturas/` | Capturas sanitizadas por pantalla (celular y escritorio) |
+| `docs/pwa.md` | Manifest, service worker (qué guarda y qué nunca) y sin conexión |
 | `docs/qa.md` | Escenarios de prueba, cómo reproducirlos y qué NO demuestra la fase 2 |
 | `docs/api/openapi.yaml` | Borrador de api-especialista v0.2.0 |

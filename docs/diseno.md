@@ -1,9 +1,9 @@
-# Sistema visual, jerarquía de acción y accesibilidad · PWA Especialista (lotes 3.1 y 3.2)
+# Sistema visual, jerarquía de acción, accesibilidad y movimiento · PWA Especialista (lotes 3.1–3.3)
 
 Fuente única: la demo de la app de la landing (`Handy-landing-page-fe/src/styles/demo-app.css`) y sus tokens de marca
 (`src/brand/tokens.ts`, copia byte a byte). Implementación: `src/app/globals.css` (capa `--hd-*`) y los componentes de
-`src/components/`. Esta página dice **cómo** se decide la forma de una pantalla; el catálogo final de componentes y
-las capturas por estado son del lote 3.3.
+`src/components/`. Esta página dice **cómo** se decide la forma de una pantalla. Catálogo de componentes:
+`docs/componentes.md`; capturas por pantalla: `docs/capturas/`; PWA y sin conexión: `docs/pwa.md`.
 
 ## Tokens
 
@@ -75,13 +75,7 @@ Revisado en todo `src/` (29/10/2026):
 | Aceptar y rechazar no son ambiguos | Ver la sección "Jerarquía de acción". Recorridos C y D (`e2e/flujos.cjs`) |
 | Coherente con Handyx | Tokens y piezas de la demo de la landing; capturas a 390×844 |
 
-**Pendiente de la fase 3 (lotes 3.2 y 3.3):**
-
-- Revisión en 360/768/820/desktop.
-- Foco, lector de pantalla y contraste medido.
-- Movimiento y feedback.
-- Íconos, manifest y service worker.
-- Catálogo final de componentes.
+Lo que quedaba pendiente (tamaños, accesibilidad, movimiento, PWA y catálogo) se resolvió en los lotes 3.2 y 3.3, más abajo.
 
 ## Responsive y accesibilidad (lote 3.2)
 
@@ -108,7 +102,7 @@ Probado en 320×568, 360×740, 390×844, 768×1024, 820×1180, 1180×820 y 1280�
 | Título por pantalla (2.4.2) | `metadata.title` por ruta ("Pedido · Handyx Especialistas") | `out/*/index.html` |
 | Orientación (1.3.4) | El manifest ya no fuerza vertical | `public/manifest.webmanifest` |
 | Texto al 200 % y reflow (1.4.4, 1.4.10) | Corte de palabras largas solo cuando no entran; controles que bajan de línea | 28 pantallas al 200 % sin desborde (también a 320 px) |
-| Movimiento (2.3.3) | `prefers-reduced-motion` anula transiciones | CSS; el movimiento se revisa en el lote 3.3 |
+| Movimiento (2.3.3, 2.2.2) | Las animaciones solo corren con `prefers-reduced-motion: no-preference`; nada dura más de 0,6 s ni se repite (salvo el esqueleto mientras carga) | CSS, sección "Movimiento" |
 | Sin depender de audio | No hay sonidos; los avisos quedan en la pantalla Avisos | Diseño |
 
 ### Límites conocidos
@@ -116,3 +110,35 @@ Probado en 320×568, 360×740, 390×844, 768×1024, 820×1180, 1180×820 y 1280�
 - No se probó con lectores de pantalla reales (VoiceOver, TalkBack): axe y el teclado no lo reemplazan. Queda para la prueba en
   dispositivos (lote 5.2).
 - La fecha de nacimiento usa el selector nativo del navegador: su formato depende del idioma del teléfono.
+
+## Movimiento y personajes (lote 3.3)
+
+### Movimiento
+
+El movimiento confirma lo que pasó; nunca apura, distrae ni decide. Todo está en `globals.css` (sección "Movimiento"),
+dentro de `@media (prefers-reduced-motion: no-preference)`. Con "reducir movimiento" no se anima nada.
+
+| Qué | Cómo | Duración |
+|---|---|---|
+| Botones | La base se hunde al tocar (ya en 3.1) | 0,12 s |
+| Tarjetas que son enlace | Se achican apenas al tocar; con mouse, sombra al pasar | 0,15 s |
+| Interruptor | La perilla se desliza | 0,15 s |
+| Avisos, errores, vacíos, tarjetas de una lista y franja sin conexión | Aparecen subiendo 6 px | 0,22 s |
+| Hojas de confirmación | Suben desde abajo y el fondo se oscurece | 0,28 s |
+| Handy roto en un error o en la 404 | Tambalea una vez | 0,6 s |
+| Esqueleto de carga | Late mientras carga (es la única repetición; se va al cargar) | 1,2 s por ciclo |
+| Chips de estado y barra del alta | Cambio de color suave | 0,2–0,3 s |
+
+Prohibido: parpadeos, rebotes que pidan atención, contadores animados de plata, confeti en aceptaciones, movimiento que
+acompañe un vencimiento (la cuenta regresiva es texto quieto) y cualquier animación de más de 5 s sin forma de pararla.
+
+### Los Handys
+
+Los mismos personajes de la landing (`public/handys/`, copia de `Handy-landing-page-fe/src/img`), con el componente `Handy`:
+
+- **Acceso**: el grupo, como bienvenida.
+- **Errores**: un Handy roto según la falla (lamparita: sin red; llave: no encontrado o sin permiso; engranaje: el resto), igual que
+  las pantallas de error de la demo de la landing.
+- **Sin conexión**: la lamparita rota en la franja, y el caño roto en `/sin-conexion/`. La llave rota en la 404.
+- Son decorativos (`alt=""`): el texto de al lado dice lo que pasa. No van en tarjetas de pedido, montos ni decisiones, para no
+  restarles peso.

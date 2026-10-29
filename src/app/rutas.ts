@@ -13,6 +13,7 @@ export interface Ruta {
 
 export const RUTAS = {
   puerta: { ruta: '/', titulo: 'Entrada', lote: '1.1', descripcion: 'Decide a dónde ir según la sesión y el estado del alta.' },
+  sinConexion: { ruta: '/sin-conexion/', titulo: 'Sin conexión', lote: '3.3', descripcion: 'Pantalla del service worker cuando no hay red (sin datos).' },
   baja: { ruta: '/baja/', titulo: 'Baja de tu cuenta', lote: '2.1', descripcion: 'Estado real de la solicitud de baja.' },
   disponibilidad: { ruta: '/disponibilidad/', titulo: 'Tu disponibilidad', lote: '2.2', descripcion: 'Urgentes Ahora, programados, franjas y zonas.' },
   casoSoporte: { ruta: '/soporte/detalle/', titulo: 'Caso de ayuda', lote: '2.4', descripcion: 'Respuestas y estado de un caso.' },

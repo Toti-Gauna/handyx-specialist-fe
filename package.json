@@ -8,15 +8,16 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "build:hostinger": "node scripts/verificar-build.mjs && next build && node scripts/verificar-bundle.mjs",
+    "build": "next build && node --disable-warning=ExperimentalWarning scripts/generar-sw.mjs",
+    "build:hostinger": "node scripts/verificar-build.mjs && next build && node --disable-warning=ExperimentalWarning scripts/generar-sw.mjs && node scripts/verificar-bundle.mjs",
     "start": "npx --yes serve@14.2.4 out",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "node --test --test-reporter=spec \"src/**/*.test.ts\"",
     "e2e": "node e2e/flujos.cjs",
     "accesibilidad": "node e2e/accesibilidad.cjs",
-    "capturas": "node e2e/capturas.cjs"
+    "capturas": "node e2e/capturas.cjs",
+    "capturas:docs": "bash scripts/capturas-docs.sh"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "5.3.0",

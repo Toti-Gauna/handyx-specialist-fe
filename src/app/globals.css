@@ -1021,6 +1021,33 @@ legend {
 .caja-error > .icono {
   color: var(--hd-error);
 }
+
+/* ── Handys (personajes de marca, siempre decorativos) ──────────────── */
+/* El alto sale del atributo height del componente; el ancho, de la proporción de la imagen. */
+.handy {
+  display: block;
+  width: auto;
+}
+.handy--grupo {
+  justify-self: center;
+  width: min(100%, 270px);
+  height: auto;
+}
+
+/* Sin conexión: franja bajo la cabecera, sin color de alarma. Los errores de cada acción lo repiten. */
+.sin-red__texto {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  margin: 0;
+  padding: var(--esp-2) var(--esp-4);
+  background: var(--hd-noche);
+  color: #fff;
+  font-size: 0.9rem;
+}
+.sin-red__texto .handy {
+  flex: none;
+}
 .caja-error p {
   margin: 0;
 }
@@ -1420,9 +1447,10 @@ legend {
     grid-template-areas:
       'banner banner'
       'cabecera cabecera'
+      'sinred sinred'
       'nav cuerpo';
     grid-template-columns: 232px minmax(0, 1fr);
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto auto 1fr;
     max-width: 1160px;
   }
   .app:not(.app--publico) .banner-prueba {
@@ -1431,6 +1459,9 @@ legend {
   .app:not(.app--publico) .app-cabecera {
     grid-area: cabecera;
     padding-inline: var(--esp-6);
+  }
+  .app:not(.app--publico) .sin-red {
+    grid-area: sinred;
   }
   .app:not(.app--publico) .app-cuerpo {
     grid-area: cuerpo;
@@ -1462,6 +1493,88 @@ legend {
 }
 
 /* ── Movimiento ─────────────────────────────────────────────────────── */
+
+/*
+ * Movimiento breve (lote 3.3): solo confirma lo que pasó, nunca apura ni distrae. Todo dura menos de 0,4 s,
+ * nada se repite salvo el esqueleto mientras carga, y nada de esto corre con "reducir movimiento".
+ * Los botones (base que se hunde), las tarjetas al tocarlas y el interruptor ya tienen su transición arriba.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes entra {
+    from {
+      opacity: 0;
+      translate: 0 6px;
+    }
+  }
+  @keyframes hoja-sube {
+    from {
+      translate: 0 40px;
+      opacity: 0.4;
+    }
+  }
+  @keyframes fondo-aparece {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes tambalea {
+    0%,
+    100% {
+      rotate: 0deg;
+    }
+    25% {
+      rotate: -6deg;
+    }
+    60% {
+      rotate: 4deg;
+    }
+  }
+  @keyframes late {
+    50% {
+      opacity: 0.55;
+    }
+  }
+
+  /* Lo que aparece en la pantalla: avisos, errores, vacíos y tarjetas de una lista. */
+  .aviso,
+  .caja-error,
+  .vacio,
+  .sin-red__texto,
+  .lista-tarjetas > * {
+    animation: entra 0.22s var(--hd-curva) both;
+  }
+  .hoja[open] {
+    animation: hoja-sube 0.28s var(--hd-curva);
+  }
+  .hoja[open]::backdrop {
+    animation: fondo-aparece 0.2s ease;
+  }
+  .handy--tambalea {
+    transform-origin: 50% 90%;
+    animation: tambalea 0.6s ease-in-out 0.15s;
+  }
+  .esqueleto__linea {
+    animation: late 1.2s ease-in-out infinite;
+  }
+  .progreso__tramo {
+    transition: background-color 0.3s ease;
+  }
+  .chip {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  @media (hover: hover) {
+    a.tarjeta {
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+    }
+    a.tarjeta:hover {
+      box-shadow: 0 6px 18px rgb(14 29 54 / 0.12);
+    }
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,

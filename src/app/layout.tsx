@@ -4,6 +4,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { colores, variablesCss } from '../brand/tokens.ts';
+import { RegistrarSw } from '../components/RegistrarSw.tsx';
 import { Proveedor } from './contexto.tsx';
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Ir al contenido
         </a>
         <Proveedor>{children}</Proveedor>
+        <RegistrarSw />
       </body>
     </html>
   );

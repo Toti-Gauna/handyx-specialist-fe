@@ -12,6 +12,10 @@ function escenarioInicial(): Escenario {
 
 const { api: apiMock, estado } = crearApiMockConEstado({ escenario: escenarioInicial() });
 
+// `?falla=red|servidor`: arranca con esa falla activa (capturas y auditoría de las pantallas de error).
+const fallaInicial = typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('falla');
+if (fallaInicial === 'red' || fallaInicial === 'servidor') estado.falla = fallaInicial;
+
 export const api: EspecialistaApi = apiMock;
 export const controles: ControlesPrueba | null = crearControles(estado, () => undefined);
 /** Para la ayuda de la pantalla de acceso en la vista previa. */

@@ -1,6 +1,6 @@
 # Plan · PWA Especialista de Handyx (Bloque 4)
 
-Estado: **fases 1 y 2 y lotes 3.1–3.2 cerrados localmente (29/10/2026)**; lote 3.3 y fases 4–5 pendientes. Los checks solo se marcan con resultado observable.
+Estado: **fases 1, 2 y 3 cerradas localmente (29/10/2026)**; fases 4–5 pendientes. Los checks solo se marcan con resultado observable.
 Seguimiento de avance, comandos y bloqueos: `docs/handoff.md`.
 Cada entrega distingue: decidido · mock · conectado · probado · desplegado.
 
@@ -52,9 +52,10 @@ Fixtures sintéticos rotulados; el mock permite éxito, rechazo, expiración y c
 ### Fase 3 · Refinación de diseño — Opus 5.5 / high
 - [x] **3.1 Sistema visual y jerarquía de acción:** pedido/urgencia/vigencia/monto; enviar, aceptar y rechazar inequívocos; sin dark patterns.
 - [x] **3.2 Responsive y accesibilidad:** 360/390/768/820/desktop, una mano, teclado, labels, foco, contraste, estados no solo por color.
-- [ ] **3.3 Motion y QA visual:** microinteracciones, `prefers-reduced-motion`, manifest/íconos/offline visual, capturas sanitizadas, catálogo de componentes. Sellos de habilitación solo con verificación del backend.
+- [x] **3.3 Motion y QA visual:** microinteracciones, `prefers-reduced-motion`, manifest/íconos/offline visual, capturas sanitizadas, catálogo de componentes. Sellos de habilitación solo con verificación del backend.
 - Evidencia del 3.1: `docs/diseno.md` y `e2e/capturas.cjs` (28 capturas a 390×844).
 - Evidencia del 3.2: `npm run accesibilidad` (axe WCAG 2.2 AA en 0, teclado, foco, zoom 200 %) y 196 capturas en 7 tamaños; checklist en `docs/diseno.md`.
+- Evidencia del 3.3: `docs/pwa.md`, `docs/componentes.md`, `docs/capturas/` (sanitizadas), recorrido J de `npm run e2e` y control de movimiento en `npm run accesibilidad`.
 
 ### Fase 4 · Backend y DB conectados — Opus 5.5 / high
 - [ ] **4.1 Modelo y migraciones:** ERD y diccionario (tipo, nulabilidad, sensibilidad, FK, índice, retención, dueño); importes en centavos ≥ 0; un acuerdo activo por pedido; login e idempotency keys únicos; sin cascadas que rompan retenciones.

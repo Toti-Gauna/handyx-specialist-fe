@@ -22,6 +22,7 @@ habilitada → disponibilidad declarada (urgentes "Ahora" opt-in, programados, f
 
 | # | Pantalla | Ruta | Lote | Estados que muestra | Reglas |
 |---|---|---|---|---|---|
+| Z1 | Sin conexión | `/sin-conexion/` | 3.3 | sin red y pantalla no guardada | HTML estático del service worker, sin datos de la cuenta (`docs/pwa.md`) |
 | A1 | Entrar | `/acceso/` | 2.1 | vacío, error de credenciales, bloqueo por intentos, sin red | Sin OTP/SMS. Mensaje genérico ante credenciales inválidas |
 | A2 | Crear cuenta | `/registro/` | 2.1 | validación de campos, cuenta existente (respuesta neutra) | Términos y privacidad versionados con aceptación explícita (sin tildar) |
 | A3 | Recuperar acceso | `/recuperar/` | 2.1 | enviado (respuesta neutra), token vencido | No revela si la cuenta existe |

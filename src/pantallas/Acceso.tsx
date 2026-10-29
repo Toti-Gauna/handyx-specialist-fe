@@ -7,6 +7,7 @@ import { RUTAS } from '../app/rutas.ts';
 import { Icono } from '../components/Icono.tsx';
 import { Aviso, Campo } from '../components/ui.tsx';
 import { useAccion } from '../hooks/useAccion.ts';
+import { Handy } from '../components/Handy.tsx';
 
 export function Acceso() {
   const router = useRouter();
@@ -36,6 +37,7 @@ export function Acceso() {
   return (
     <form className="pila" onSubmit={(e) => void enviar(e)} noValidate>
       <img className="logo-grande" src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/logo-handyx.webp`} alt="Handyx" />
+      <Handy nombre="grupo" alto={140} className="handy--grupo" />
       <h1 className="titulo">Entrá a tu cuenta</h1>
       <p className="texto-suave">App para especialistas del hogar de Mar del Plata.</p>
       {mensaje ? (

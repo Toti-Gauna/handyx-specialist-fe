@@ -8,9 +8,11 @@ estas pruebas demuestran la interfaz y las reglas emuladas del servidor, no el b
 | Qué | Comando | Qué cubre |
 |---|---|---|
 | Unitarias y del mock | `npm test` | Contrato, máquinas de estado, fee, formato, mock con reglas de servidor (60+ pruebas) |
-| Recorridos de punta a punta | `npm run build && node e2e/flujos.cjs` | 11 recorridos en Chromium (390×844) sobre `out/` |
-| Accesibilidad | `npm run accesibilidad` (`ANCHO=1280x800`) | axe WCAG 2.2 AA en 28 pantallas y 6 diálogos, áreas táctiles, teclado, foco al primer error y texto al 200 % |
-| Catálogo de capturas | `node e2e/capturas.cjs [carpeta]` (`ANCHOS=360x740,…`) | 28 pantallas/escenarios con control de desborde horizontal |
+| Recorridos de punta a punta | `npm run build && npm run e2e` | 12 recorridos en Chromium (390×844) sobre `out/`, incluido J: sin conexión con service worker |
+| Service worker | `npm test` (`src/pwa/politica.test.ts`) | Nunca intercepta la API, mutaciones ni otros sitios |
+| Accesibilidad | `npm run accesibilidad` (`ANCHO=1280x800`) | axe WCAG 2.2 AA en 32 pantallas y 6 diálogos, áreas táctiles, teclado, foco al primer error y texto al 200 % |
+| Capturas | `npm run capturas -- [carpeta]` (`ANCHOS=360x740,…`) | 32 pantallas/escenarios (incluye errores, sin conexión y 404) con control de desborde y de sanitización |
+| Catálogo en `docs/capturas/` | `npm run capturas:docs` (ImageMagick) | Las 32 a 390×844 y 6 a 1280×800 en webp |
 | Capturas de recorridos | `CAPTURAS=/ruta node e2e/flujos.cjs` | Una captura por estado clave (insumo de la fase 3 y de Handy Docs, sin datos reales) |
 | Recorrido manual | `npm run dev` y el **Panel de prueba** del banner amarillo | Escenarios, fallas, reloj y simulación de las otras partes |
 

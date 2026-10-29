@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { FalloApi } from '../data/errores.ts';
+import { Handy, type NombreHandy } from './Handy.tsx';
 import { Icono, type NombreIcono } from './Icono.tsx';
 
 export function Cargando({ texto = 'Cargando…' }: { texto?: string }) {
@@ -26,11 +27,19 @@ const TEXTOS: Record<string, string> = {
   sesion: 'Tu sesión expiró.',
 };
 
+// Un Handy roto por tipo de falla, como las pantallas de error de la demo de la landing.
+const HANDY_ROTO: Record<string, NombreHandy> = {
+  red: 'lamparita-rota',
+  timeout: 'lamparita-rota',
+  no_encontrado: 'llave-rota',
+  permiso: 'llave-rota',
+};
+
 /** Error con reintento. Muestra el mensaje seguro del servidor si lo hay y la referencia para soporte. */
 export function ErrorCaja({ fallo, onReintentar }: { fallo: FalloApi; onReintentar?: () => void }) {
   return (
     <div className="caja-error" role="alert">
-      <Icono nombre="alerta" />
+      <Handy nombre={HANDY_ROTO[fallo.tipo] ?? 'engranaje-roto'} alto={88} className="handy--tambalea" />
       <p>{fallo.detalle?.mensaje ?? TEXTOS[fallo.tipo] ?? TEXTOS.servidor}</p>
       {fallo.requestId ? <p className="texto-suave texto-chico">Referencia: {fallo.requestId}</p> : null}
       {onReintentar ? (

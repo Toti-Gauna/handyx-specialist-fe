@@ -50,14 +50,18 @@ ni "al instante". Tokens de `src/brand/tokens.ts` = copia byte a byte de la land
 (`HANDY_LANDING_TOKENS=<ruta> npm test` lo verifica). Lenguaje visual de la demo de la landing (`demo-app.css`):
 mosaicos grises, botones con base que se hunde, Archivo 900 ensanchado + DM Sans, sin gradientes ni vidrio.
 Reglas de forma (tokens `--hd-*`, `ChipTipo` vs chips de estado, una acción primaria, aceptar verde / rechazar en contorno
-rojo, urgencia en texto neutro, sin estilos inline): `docs/diseno.md`. Capturas: `node e2e/capturas.cjs [carpeta]`.
+rojo, urgencia en texto neutro, sin estilos inline, movimiento solo con `no-preference`, Handys decorativos): `docs/diseno.md`;
+catálogo en `docs/componentes.md`. Capturas sanitizadas: `npm run capturas` (catálogo: `npm run capturas:docs`).
+
+**Service worker** (`docs/pwa.md`): `out/sw.js` lo genera `scripts/generar-sw.mjs` con la política de `src/pwa/politica.ts`. Solo
+archivos estáticos públicos; nunca la API, mutaciones ni otros sitios, y sin cola offline. Cambiar la política exige su prueba.
 
 ## Comandos
 
 ```sh
 npm ci
 npm run dev | build | build:hostinger | lint | typecheck | test
-npm run e2e | accesibilidad | capturas   # después de npm run build (Playwright)
+npm run e2e | accesibilidad | capturas | capturas:docs   # después de npm run build (Playwright)
 ```
 
 Antes de cada PR: `lint`, `typecheck`, `test`, `build`, `npm run e2e`, `npm run accesibilidad` y `build:hostinger` con una API

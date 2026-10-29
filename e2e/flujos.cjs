@@ -361,6 +361,36 @@ async function main() {
     }, { capturas });
   }
 
+  await escenario('J-sin-conexion-service-worker', nav_, base, async ({ p, foto }) => {
+    await p.goto(`${base}/?escenario=habilitado`);
+    await p.waitForURL('**/inicio/');
+    await p.waitForFunction(() => Boolean(navigator.serviceWorker.controller), null, { timeout: 15000 });
+    // Una navegación con el service worker activo deja guardado el HTML de esa pantalla
+    await p.goto(`${base}/agenda/?escenario=habilitado`);
+    await ver(p, 'número subrayado');
+    await p.context().setOffline(true);
+    await ver(p, 'Lo que ves puede estar desactualizado');
+    await foto('franja');
+    // Pantalla nunca visitada: la del caño roto (estática, sin datos de la cuenta)
+    await p.goto(`${base}/caja/`);
+    await ver(p, 'Se nos cortó el caño');
+    await foto('pantalla');
+    // Pantalla ya visitada: se abre su copia
+    await p.goto(`${base}/agenda/?escenario=habilitado`);
+    await ver(p, 'número subrayado');
+    // En la caché solo hay archivos estáticos y públicos de la app: nada de la API ni de otros sitios
+    const guardado = await p.evaluate(async () => {
+      const urls = [];
+      for (const k of await caches.keys()) for (const r of await (await caches.open(k)).keys()) urls.push(r.url);
+      return urls;
+    });
+    assert.ok(guardado.length > 0, 'la caché está vacía');
+    const raro = guardado.filter((u) => !u.startsWith(base) || !/(\/|\.(js|css|txt|woff2|webp|png|webmanifest)(\?.*)?)$/.test(u));
+    assert.deepEqual(raro, [], 'archivos fuera de la lista permitida en la caché');
+    await p.context().setOffline(false);
+    await p.getByText('Lo que ves puede estar desactualizado').waitFor({ state: 'detached' });
+  }, { capturas });
+
   await nav_.close();
   srv.close();
   const mal = resultados.filter(([, r]) => r !== 'OK');

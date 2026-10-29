@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { NAV, RUTAS } from '../app/rutas.ts';
 import { BannerPrueba } from './BannerPrueba.tsx';
 import { Icono } from './Icono.tsx';
+import { AvisoSinConexion } from './SinConexion.tsx';
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -23,6 +24,7 @@ export function MarcoApp({ children }: { children: ReactNode }) {
           <Icono nombre="campana" />
         </Link>
       </header>
+      <AvisoSinConexion />
       <main id="contenido" className="app-cuerpo">
         {children}
       </main>

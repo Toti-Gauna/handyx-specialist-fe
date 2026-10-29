@@ -1,9 +1,57 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1, abierto) · Bloque 4 · **Fase 3 en curso: lotes 3.1 y 3.2 cerrados localmente.**
-Modelos: fase 1 y lotes 3.1–3.2 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado con fases 1–2 y 3.1; 3.2 y 3.3 sin PR) · Bloque 4 · **Fase 3 cerrada localmente.**
+Modelos: fases 1 y 3 con `claude-opus-5-5`; fase 2 con `claude-sonnet-5-5` (según el plan).
 
-Estado: mockup navegable completo con datos de prueba y sistema visual refinado. **Nada conectado ni desplegado.**
+Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
+**Nada conectado ni desplegado.**
+
+## Fase 3 · Lote 3.3 (movimiento, PWA y QA visual)
+
+- **Movimiento breve** (`docs/diseno.md` → "Movimiento"): avisos, errores, vacíos y listas aparecen; las hojas suben y el Handy roto
+  tambalea una vez. Todo dura 0,6 s o menos, dentro de `prefers-reduced-motion: no-preference`. `npm run accesibilidad` comprueba
+  que con "reducir movimiento" no corra ninguna animación.
+- **Los Handys** (`public/handys/`, copia de la landing; componente `Handy`, siempre decorativo):
+  - Acceso: el grupo.
+  - Errores (`ErrorCaja`): un Handy roto según la falla, como en la demo de la landing.
+  - Franja "Sin conexión": la lamparita rota.
+  - Pantalla `/sin-conexion/`: el caño roto.
+  - 404: la llave rota.
+- **PWA** (`docs/pwa.md`):
+  - Manifest con `id` e íconos `any`/`maskable` separados.
+  - `out/sw.js` generado en cada build desde `src/pwa/politica.ts` (con pruebas). Solo guarda archivos estáticos públicos; nunca la API,
+    mutaciones ni otros sitios, y no tiene cola offline.
+  - Sin red: copia de la pantalla (los datos fallan con el Handy roto y "Reintentar") o `/sin-conexion/`.
+  - Franja "Sin conexión" en el marco.
+- **QA visual**:
+  - `e2e/capturas.cjs` ahora rechaza capturas con datos no sintéticos (emails, DNI/CUIT, teléfonos) o sin el banner de prueba.
+  - Catálogo en `docs/capturas/`: 32 pantallas a 390×844 y 6 a 1280×800, en webp, con `npm run capturas:docs`.
+  - Catálogo de componentes en `docs/componentes.md`.
+- Nuevas pantallas en la auditoría y las capturas: error de red, error del servidor, sin conexión y 404. `?falla=red|servidor`
+  arranca el mock con esa falla.
+- El servidor de pruebas devuelve `404.html` con estado 404, como tiene que hacerlo el hosting.
+- **Sellos de habilitación**: "Verificado por Handy" solo con `verificado` del servidor (sin cambios: se revisó).
+
+### Comandos del lote 3.3 (29/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 66 pruebas: 64 OK, 2 omitidas (sincronías con otros repos); +5 de la política del service worker |
+| `npm run build` | OK, 23 páginas + `out/sw.js` (9 archivos precargados) |
+| `npm run e2e` | 12/12 recorridos, incluido J (sin conexión: franja, `/sin-conexion/`, copia de pantalla y caché solo con archivos permitidos) |
+| `npm run accesibilidad` (390×844, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe en 32 pantallas y 6 diálogos; 0 áreas < 24 px; 0 problemas de teclado, foco, zoom y movimiento |
+| `ANCHOS=` 7 tamaños `npm run capturas` | 224/224 sin desborde y sanitizadas |
+| `build:hostinger` con API ficticia | OK, sin fixtures ni banner; `sw.js` no menciona la API |
+
+**Límites**:
+- La instalación real (Android/iOS), el modo avión en un teléfono y los lectores de pantalla quedan para el lote 5.2.
+- iOS no muestra aviso de instalación: hay que usar "Agregar a inicio".
+- Para el deploy: servir `sw.js` con `Cache-Control: no-cache` y configurar `404.html` en el hosting (`docs/pwa.md`).
+
+**Próximo paso**: fase 4 (backend y DB conectados), bloqueada hasta que exista `handyx-client-be` (dueño del esquema y de las
+migraciones). Empieza por el lote 4.1 (modelo y migraciones) en ese repo.
+
 
 ## Fase 3 · Lote 3.2 (responsive y accesibilidad)
 
@@ -39,8 +87,6 @@ Estado: mockup navegable completo con datos de prueba y sistema visual refinado.
 
 **Límite**: sin lectores de pantalla reales ni dispositivos físicos (lote 5.2).
 
-**Próximo paso**: lote 3.3 (movimiento breve con reduced-motion, PWA instalable con íconos y service worker sin cachear datos
-privados, capturas sanitizadas y catálogo de componentes).
 
 ## Fase 3 · Lote 3.1 (sistema visual y jerarquía de acción)
 

@@ -134,6 +134,20 @@ async function main() {
     await p.close();
   }
 
+  // Movimiento (WCAG 2.3.3): con "reducir movimiento" no corre ninguna animación; sin esa preferencia, el error sí anima.
+  const movimiento = [];
+  for (const preferencia of ['reduce', 'no-preference']) {
+    const c = await nav.newContext({ viewport: { width: ancho, height: alto }, reducedMotion: preferencia });
+    const p = await c.newPage();
+    await p.goto(`${base}/pedidos/?falla=red&escenario=habilitado`);
+    await p.getByText('No pudimos conectarnos').first().waitFor({ timeout: 8000 });
+    const animaciones = await p.evaluate(() => document.getAnimations().filter((a) => a instanceof CSSAnimation).length);
+    if (preferencia === 'reduce' && animaciones > 0) movimiento.push(`con "reducir movimiento" hay ${animaciones} animaciones`);
+    if (preferencia === 'no-preference' && animaciones === 0) movimiento.push('sin preferencia no anima nada (¿se rompió el CSS?)');
+    await c.close();
+  }
+  teclado.push(...movimiento);
+
   await nav.close();
   srv.close();
 
@@ -142,7 +156,7 @@ async function main() {
   for (const v of violaciones) console.log(`  ✘ ${v.nombre} · ${v.id} (${v.impacto}): ${v.ayuda} → ${v.nodos.join(' | ')}`);
   console.log(`Áreas táctiles < 44 px: ${tactiles.length} (de ellas < 24 px: ${graves.length})`);
   for (const t of tactiles) console.log(`  ${t.grave ? '✘' : '·'} ${t.nombre} · ${t.el} ${t.w}×${t.h}`);
-  console.log(`Teclado y foco: ${teclado.length} problemas`);
+  console.log(`Teclado, foco y movimiento: ${teclado.length} problemas`);
   for (const t of teclado) console.log(`  ✘ ${t}`);
   process.exit(violaciones.length || graves.length || teclado.length ? 1 : 0);
 }
