@@ -916,6 +916,8 @@
   gap: 2px;
   flex: 1;
   min-width: 0;
+  /* Con el texto al 200 %, una palabra larga ("Notificaciones") se parte antes que salirse de la pantalla. */
+  overflow-wrap: anywhere;
 }
 
 .hx-fila__texto strong {

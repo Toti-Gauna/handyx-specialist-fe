@@ -1,10 +1,64 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.7) · Bloque 4 · **Fase 4 en curso: 4.1, 4.2 y 4.4 a 4.7 cerrados localmente; 4.3 hecho salvo el mapa base (queda para el final: datos de OpenStreetMap bloqueados por la red).**
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.8) · Bloque 4 · **Fase 4 en curso: 4.1, 4.2 y 4.4 a 4.8 cerrados localmente; 4.3 hecho salvo el mapa base (queda para el final: datos de OpenStreetMap bloqueados por la red).**
 Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 4 · Lote 4.8 (agenda, mensajes, cuenta, caja y ayuda)
+
+- **Agenda**, como la demo:
+  - El mes con los días marcados (una obra aparece jornada por jornada) y la lista del día, con la hora en un mosaico.
+  - Un día sin turnos muestra un Handy.
+  - El **detalle del turno** se abre en una hoja, con su estado y el acceso al trabajo o a la oferta.
+- **Mensajes**: avatar con iniciales, el estado del pedido, el último mensaje y los no leídos; accesos a Contactos y
+  al Centro de ayuda.
+- **Chat**:
+  - **Respuestas rápidas** según la etapa. Completan el texto y lo mandás vos: nunca se envían solas.
+  - **Agregar a contactos** y **Programar turno**: abre Tu precio y vuelve al chat; con trabajo, "Cambiar el turno".
+  - `FormPropuesta` se retiró: las propuestas y contraofertas van por Tu precio.
+- **Contactos**: solo los agregados desde un chat, guardados en el servidor, sin teléfonos. Sacar uno no borra la
+  conversación.
+- **Cuenta**:
+  - Perfil con iniciales, rubros y el sello verificado solo si lo dice el servidor, y el contador del fee.
+  - Filas a Datos personales (solo lectura), Rubros y zonas, Cómo te paga el cliente, Caja, Tu alta, Notificaciones,
+    Centro de ayuda y Privacidad y baja.
+- **Cómo te paga el cliente**: Mercado Pago, efectivo o los dos (al menos uno). La cuenta de Mercado Pago figura
+  vinculada o no; vincularla es de la fase 5, con Mercado Pago, y Handyx nunca pide la contraseña.
+- **Caja**:
+  - Lo cobrado en el mes, con lo verificado y lo informado aparte, y los totales por estado.
+  - **Filtros por estado** y movimientos con su **desglose**, que se abre con la franja gris.
+- **Centro de ayuda**:
+  - **Temas en pastillas** con preguntas que se abren. Las respuestas repiten reglas que la app ya cumple
+    (`lib/ayuda.ts`).
+  - Tus casos y "Abrir un caso".
+- **Contrato 0.9.0**: contactos (`Conversacion.contactoId`) y formas de cobro.
+- **Corregido en la revisión**:
+  - El desglose de la Caja se veía con la franja cerrada (el `display: grid` le ganaba a `hidden`).
+  - A 320 px con el texto al 200 %, una fila con una palabra larga ("Notificaciones") se salía de la pantalla: la fila
+    del kit ahora la parte.
+- **Pruebas**:
+  - Unitarias de la caja (el mes en hora de Buenos Aires y los filtros).
+  - 2 del mock: contactos y formas de cobro.
+  - Recorridos B, F, I y J actualizados.
+  - **Recorrido Q nuevo**: detalle del turno, chat (contacto, respuesta rápida que no se manda sola, programar turno y
+    volver), contactos, formas de cobro (al menos una), caja con filtro y desglose, y centro de ayuda.
+  - 5 pantallas y la hoja del turno en accesibilidad y capturas.
+
+### Comandos del lote 4.8 (30/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 144 pruebas: 142 OK y 2 omitidas (sincronías con otros repos) |
+| `npm run build` | OK |
+| `npm run e2e` | 26/26 recorridos (B, F, I y J actualizados; Q nuevo) |
+| `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento. A 320 px, los días de los calendarios miden 36 a 38 px de ancho, como antes (por encima de los 24 px de WCAG 2.5.8) |
+| `ANCHOS=` 7 tamaños `npm run capturas` | 413/413 sin desborde y sanitizadas |
+| `build:hostinger` con API ficticia | OK: 41 páginas (suma Contactos y las 4 de Cuenta), sin `/catalogo/`, fixtures ni las marcas del panel |
+
+**Próximo paso**: lote 4.9 (QA premium y sí de diseño). Antes, cerrar el mapa base del 4.3 si se habilita Overpass.
 
 ## Fase 4 · Lote 4.7 (obras de varios días)
 
@@ -65,7 +119,7 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 | `ANCHOS=` 7 tamaños `npm run capturas` | 378/378 sin desborde y sanitizadas |
 | `build:hostinger` con API ficticia | OK: 36 páginas (suma las 3 de la obra), sin `/catalogo/`, fixtures ni las marcas del panel |
 
-**Próximo paso**: lote 4.8 (agenda, mensajes, cuenta, caja y ayuda). El mapa base del 4.3 queda para el final.
+**Siguiente**: lote 4.8 (cerrado, ver arriba).
 
 ## Fase 4 · Lote 4.6 (trabajo de punta a punta)
 

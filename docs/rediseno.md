@@ -346,6 +346,14 @@ Una obra (pintura, revoque, instalación grande) dura días o semanas y hoy se v
 
 ### 4.8 · Agenda, mensajes, cuenta, caja y ayuda
 
+**Estado: hecho (30/10/2026).** Supuestos del lote:
+- Las respuestas rápidas completan el texto y lo mandás vos: nada se envía solo.
+- "Programar turno" en un chat abre Tu precio y vuelve al chat. Con trabajo, pasa a "Cambiar el turno".
+- Los contactos se guardan en el servidor, solo desde un chat y sin teléfonos.
+- "Cómo te paga el cliente" deja elegir Mercado Pago, efectivo o los dos. Vincular la cuenta de Mercado Pago es de la
+  fase 5.
+- Los datos personales son de solo lectura: un dato verificado se cambia con Operations.
+
 1. **Agenda**: mes con marcas, lista del día y detalle del turno, igual que la demo.
 2. **Mensajes**: lista con avatares de iniciales y estado del pedido.
 3. **Chat**:

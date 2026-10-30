@@ -4,7 +4,7 @@ import type { z } from 'zod';
 import {
   AceptacionSchema, AgendaItemSchema, AvisoSchema, BajaSchema, CajaResumenSchema, CasoSoporteDetalleSchema, CasoSoporteSchema, ConversacionSchema,
   DatosAltaSchema, DisponibilidadSchema, FeeVigenteSchema, InicioSchema, MensajeSchema, PagoSchema, PedidoDetalleSchema, PedidoElegibleSchema,
-  PerfilEspecialistaSchema, PerfilPublicoSchema, PreferenciasSchema, PropuestaSchema, SesionSchema, TrabajoDetalleSchema, TrabajoSchema,
+  MediosCobroSchema, PerfilEspecialistaSchema, PerfilPublicoSchema, PreferenciasSchema, PropuestaSchema, SesionSchema, TrabajoDetalleSchema, TrabajoSchema,
   BarrioSchema, ViajeSchema, TurnoAntecedentesSchema,
 } from '../../contracts/dto.ts';
 import type { FalloApi } from '../errores.ts';
@@ -799,5 +799,33 @@ describe('obras de varios días (lote 4.7)', () => {
     const d = await api.trabajo(ID.t6);
     assert.equal(d.diario[0]?.id, e.id);
     assert.equal(d.jornadas[0]?.estado, 'hecha');
+  });
+});
+
+describe('contactos y formas de cobro (lote 4.8)', () => {
+  it('los contactos se agregan solo desde un chat propio, sin duplicarse, y quitarlos no borra la conversación', async () => {
+    const { api } = nuevo();
+    const antes = await api.contactos();
+    assert.deepEqual(antes.map((k) => k.nombre), ['Cliente de prueba 5']);
+    assert.ok(antes.every((k) => !/\d{6,}/.test(k.detalle)), 'sin números de teléfono');
+    const k = await api.agregarContacto(ID.c2);
+    assert.equal((await api.agregarContacto(ID.c2)).id, k.id, 'agregar dos veces devuelve el mismo');
+    assert.equal((await api.conversacion(ID.c2)).contactoId, k.id);
+    assert.equal((await api.contactos()).length, 2);
+    await assert.rejects(api.agregarContacto(idFijo(0xdead)), { tipo: 'no_encontrado' });
+    await api.quitarContacto(k.id);
+    await api.quitarContacto(k.id); // de nuevo: responde igual
+    assert.equal((await api.conversacion(ID.c2)).contactoId, null);
+    assert.equal((await api.conversaciones()).some((c) => c.id === ID.c2), true, 'la conversación sigue');
+  });
+
+  it('las formas de cobro exigen al menos una y cuidan la versión', async () => {
+    const { api } = nuevo();
+    const m = await api.mediosCobro();
+    assert.ok(MediosCobroSchema.safeParse(m).success);
+    await assert.rejects(api.guardarMediosCobro({ efectivo: false, mercadoPago: false, version: m.version }), { tipo: 'validacion' });
+    const n = await api.guardarMediosCobro({ efectivo: false, mercadoPago: true, version: m.version });
+    assert.deepEqual([n.efectivo, n.mercadoPago, n.version], [false, true, m.version + 1]);
+    await assert.rejects(api.guardarMediosCobro({ efectivo: true, mercadoPago: true, version: m.version }), { tipo: 'conflicto' });
   });
 });

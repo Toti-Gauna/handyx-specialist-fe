@@ -1,6 +1,15 @@
 # Contrato compartido Usuario · Especialista · Portal (lote 1.3)
 
-Versión: **0.8.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+Versión: **0.9.0 (borrador)** · `src/contracts/version.ts` · fecha 30/10/2026.
+
+**0.8.0 → 0.9.0 (fase 4, lote 4.8, cambios para el dueño del contrato):** contactos y formas de cobro.
+- **Contactos**: `Contacto` (conversación, nombre, un detalle para reconocerlo y la fecha). Solo los que el especialista
+  agrega desde un chat; sin teléfonos. Endpoints `GET /v1/especialista/contactos`, `POST /v1/especialista/contactos`
+  (`conversacionId`; agregar dos veces devuelve el mismo) y `DELETE /v1/especialista/contactos/{id}` (la conversación
+  sigue). `Conversacion` suma `contactoId`.
+- **Cómo te paga el cliente**: `MediosCobro` (Mercado Pago, efectivo, la cuenta de Mercado Pago vinculada o no, y
+  `version`). `GET /v1/especialista/cobros` y `PUT /v1/especialista/cobros` (al menos una forma, con la versión). La
+  vinculación es con Mercado Pago (fase 5): Handyx nunca ve la contraseña ni las claves.
 
 **0.7.0 → 0.8.0 (fase 4, lote 4.7, cambios para el dueño del contrato):** obras de varios días.
 - `EtapaObra` pasa a tener `id`, `orden`, `incluye`, `terminadaEn` y `pagoId`, y `ESTADOS_ETAPA` con su máquina

@@ -55,6 +55,9 @@ import type {
   EntradaDiario,
   Jornada,
   NuevaEntradaDiario,
+  Contacto,
+  GuardarMediosCobro,
+  MediosCobro,
 } from '../contracts/dto.ts';
 import type { Rubro } from '../contracts/rubros.ts';
 
@@ -174,6 +177,10 @@ export interface EspecialistaApi {
   mensajes(conversacionId: string): Promise<Mensaje[]>;
   /** Presupuestos estructurados del hilo (mensajes de tipo `propuesta`). */
   propuestasConversacion(conversacionId: string): Promise<Propuesta[]>;
+  /** Contactos (0.9.0): solo los agregados desde un chat; agregar dos veces devuelve el mismo. */
+  contactos(): Promise<Contacto[]>;
+  agregarContacto(conversacionId: string): Promise<Contacto>;
+  quitarContacto(id: string): Promise<void>;
   /** `archivo`: solo para fotos con la API real; el mock nunca lee ni guarda una imagen. */
   enviarMensaje(conversacionId: string, mensaje: EnviarMensaje, clave: ClaveIdempotencia, archivo?: Blob): Promise<Mensaje>;
 
@@ -182,6 +189,9 @@ export interface EspecialistaApi {
   pagos(): Promise<Pagina<Pago>>;
   reportarCobro(pagoId: string, clave: ClaveIdempotencia): Promise<Pago>;
   marcarDiscrepancia(pagoId: string, clave: ClaveIdempotencia): Promise<Pago>;
+  /** Cómo te paga el cliente (0.9.0): Mercado Pago, efectivo o los dos. */
+  mediosCobro(): Promise<MediosCobro>;
+  guardarMediosCobro(m: GuardarMediosCobro): Promise<MediosCobro>;
 
   // Soporte
   casos(): Promise<CasoSoporte[]>;

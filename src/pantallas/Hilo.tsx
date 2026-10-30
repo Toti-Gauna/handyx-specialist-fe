@@ -1,18 +1,26 @@
 'use client';
+// Chat de un pedido (lote 4.8): avatar y estado arriba; "Agregar a contactos" y "Programar turno"; respuestas rápidas
+// que completan el texto (nunca se mandan solas); propuestas dentro del hilo y fotos. El teléfono del cliente no se
+// muestra. Las propuestas y contraofertas se arman en "Tu precio" y vuelven acá.
 import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { RUTAS } from '../app/rutas.ts';
 import { Cargando, ErrorCaja, Vacio } from '../components/Estados.tsx';
-import { FormPropuesta } from '../components/FormPropuesta.tsx';
 import { Icono } from '../components/Icono.tsx';
 import { TarjetaPropuesta } from '../components/TarjetaPropuesta.tsx';
 import { Volver } from '../components/Volver.tsx';
 import { Aviso, Chip } from '../components/ui.tsx';
-import type { Mensaje, Propuesta } from '../contracts/dto.ts';
+import type { Conversacion, Mensaje, Propuesta } from '../contracts/dto.ts';
+import { useAccion } from '../hooks/useAccion.ts';
 import { useCarga } from '../hooks/useCarga.ts';
 import { useIdDeUrl } from '../hooks/useIdDeUrl.ts';
 import { fechaHora, hora, nuevaClave } from '../lib/formato.ts';
+import { useIsla } from '../kit/Efectos.tsx';
+import { Avatar } from '../kit/Piezas.tsx';
+import { ETAPA_CHAT } from './Mensajes.tsx';
+import './mensajes.css';
 
 interface Saliente {
   clave: string;
@@ -22,25 +30,33 @@ interface Saliente {
   estado: 'enviando' | 'error';
 }
 
-const ETAPA = { cotizando: { texto: 'Cotizando', tono: 'azul', icono: 'etiqueta' }, trabajo: { texto: 'Trabajo agendado', tono: 'exito', icono: 'maletin' }, cerrada: { texto: 'Cerrada', tono: 'neutro', icono: 'check' } } as const;
+/** Respuestas rápidas: completan el texto para que lo revises y lo mandes vos. */
+export const RAPIDAS: Record<Conversacion['etapa'], readonly string[]> = {
+  cotizando: ['¿Me mandás una foto del problema?', '¿Qué día y horario te queda bien?', '¿Hay lugar para estacionar cerca?'],
+  trabajo: ['Salgo para allá', '¿Qué timbre toco?', '¿Dónde está la llave de paso?', 'Llego en 10 minutos'],
+  cerrada: [],
+};
 
 export function Hilo() {
   const id = useIdDeUrl();
+  const router = useRouter();
+  const isla = useIsla();
   const c = useCarga(
     async () => {
       if (!id) return null;
-      const [conv, mensajes, propuestas, fee] = await Promise.all([api.conversacion(id), api.mensajes(id), api.propuestasConversacion(id), api.feeVigente()]);
+      const [conv, mensajes, propuestas] = await Promise.all([api.conversacion(id), api.mensajes(id), api.propuestasConversacion(id)]);
       // El pedido puede no estar ya disponible (trabajo cerrado): entonces no se ofrece cotizar desde acá.
       const pedido = await api.pedido(conv.pedidoId).catch(() => null);
-      return { conv, mensajes, propuestas, fee, pedido };
+      return { conv, mensajes, propuestas, pedido };
     },
     [id],
     { cadaMs: 10_000 },
   );
   const [texto, setTexto] = useState('');
   const [salientes, setSalientes] = useState<Saliente[]>([]);
-  const [form, setForm] = useState<{ abierta: boolean; base: Propuesta | null }>({ abierta: false, base: null });
+  const contacto = useAccion();
   const fin = useRef<HTMLDivElement>(null);
+  const campo = useRef<HTMLTextAreaElement>(null);
   const foto = useRef<HTMLInputElement>(null);
 
   const cantidad = (c.datos?.mensajes.length ?? 0) + salientes.length;
@@ -51,10 +67,12 @@ export function Hilo() {
   if (!id) return <Vacio icono="chat" titulo="No indicaste qué conversación abrir"><Link href={RUTAS.mensajes.ruta}>Ver mensajes</Link></Vacio>;
   if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
-  const { conv, mensajes, propuestas, fee, pedido } = c.datos;
+  const { conv, mensajes, propuestas, pedido } = c.datos;
   const cerrada = conv.etapa === 'cerrada';
   const abierto = pedido?.estado === 'buscando';
   const pendienteMia = propuestas.some((p) => p.autorRol === 'especialista' && p.estado === 'pendiente' && Date.parse(p.venceEn) > api.ahora().getTime());
+  const aTuPrecio = (base?: Propuesta) => (pedido ? `${RUTAS.tuPrecio.ruta}?id=${pedido.id}${base ? `&base=${base.id}` : ''}&chat=${conv.id}` : null);
+  const programar = conv.etapa === 'cotizando' && abierto && !pendienteMia ? aTuPrecio() : conv.etapa === 'trabajo' && conv.trabajoId ? `${RUTAS.trabajoCambio.ruta}?id=${conv.trabajoId}` : null;
 
   async function enviar(s: Saliente) {
     setSalientes((x) => (x.some((y) => y.clave === s.clave) ? x.map((y) => (y.clave === s.clave ? { ...y, estado: 'enviando' } : y)) : [...x, s]));
@@ -75,26 +93,71 @@ export function Hilo() {
     void enviar({ clave: nuevaClave(), tipo: 'texto', texto: t, estado: 'enviando' });
   }
 
+  function usarRapida(r: string) {
+    setTexto(r);
+    campo.current?.focus();
+  }
+
+  async function agregarContacto() {
+    const r = await contacto.ejecutar(async () => {
+      await api.agregarContacto(conv.id);
+      await c.recargar();
+    });
+    if (r.ok) isla({ titulo: 'Lo agregaste a tus contactos', texto: `${conv.contraparte} queda en Contactos, sin su número.`, icono: 'contactos', tono: 'exito' });
+  }
+
   return (
-    <div className="pila">
+    <div className="pila me-chat">
       <Volver a={RUTAS.mensajes.ruta} texto="Mensajes" />
-      <div className="fila-flex fila-flex--entre">
-        <h1 className="titulo">{conv.contraparte}</h1>
-        <Chip e={ETAPA[conv.etapa]} />
+      <div className="me-chat__cabeza">
+        <Avatar nombre={conv.contraparte} />
+        <div className="me-chat__quien">
+          <h1 className="titulo">{conv.contraparte}</h1>
+          <Chip e={ETAPA_CHAT[conv.etapa]} />
+        </div>
       </div>
-      <div className="fila-flex">
+      <div className="me-chat__enlaces">
         {conv.trabajoId ? <Link href={`${RUTAS.trabajo.ruta}?id=${conv.trabajoId}`}>Ver el trabajo</Link> : null}
         {pedido ? <Link href={`${RUTAS.pedido.ruta}?id=${pedido.id}`}>Ver el pedido</Link> : null}
       </div>
+      {!cerrada ? (
+        <div className="me-chat__acciones" role="group" aria-label="Acciones del chat">
+          {conv.contactoId ? (
+            <Link className="hx-chip" href={RUTAS.contactos.ruta}>
+              <Icono nombre="check" /> En tus contactos
+            </Link>
+          ) : (
+            <button type="button" className="hx-chip" disabled={contacto.pendiente} onClick={() => void agregarContacto()}>
+              <Icono nombre="mas" /> Agregar a contactos
+            </button>
+          )}
+          {programar ? (
+            <Link className="hx-chip me-chip--azul" href={programar}>
+              <Icono nombre="calendario" /> {conv.etapa === 'trabajo' ? 'Cambiar el turno' : 'Programar turno'}
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
+      {contacto.fallo ? <ErrorCaja fallo={contacto.fallo} /> : null}
       <Aviso tono="neutro" icono="candado">
-        El teléfono del usuario no se muestra. Si querés pasarle el tuyo, es decisión tuya.
+        El teléfono del cliente no se muestra. Si querés pasarle el tuyo, es decisión tuya.
       </Aviso>
       {c.fallo ? <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} /> : null}
 
       <div className="chat" role="log" aria-label="Mensajes de la conversación">
         {mensajes.length === 0 && salientes.length === 0 ? <Vacio icono="chat" titulo="Todavía no hay mensajes">Escribí para consultar o cotizar. Podés pedir fotos del problema.</Vacio> : null}
         {mensajes.map((m) => (
-          <Burbuja key={m.id} m={m} propuesta={m.propuestaId ? propuestas.find((p) => p.id === m.propuestaId) : undefined} abierto={!!abierto} alCambiar={() => void c.recargar()} alContraofertar={(base) => setForm({ abierta: true, base })} />
+          <Burbuja
+            key={m.id}
+            m={m}
+            propuesta={m.propuestaId ? propuestas.find((p) => p.id === m.propuestaId) : undefined}
+            abierto={!!abierto}
+            alCambiar={() => void c.recargar()}
+            alContraofertar={(base) => {
+              const destino = aTuPrecio(base);
+              if (destino) router.push(destino);
+            }}
+          />
         ))}
         {salientes.map((s) => (
           <div key={s.clave} className={`burbuja burbuja--propia${s.estado === 'error' ? ' burbuja--error' : ''}`}>
@@ -111,16 +174,21 @@ export function Hilo() {
         <div ref={fin} />
       </div>
 
-      {abierto && !pendienteMia && conv.etapa === 'cotizando' ? (
-        <button type="button" className="boton boton--claro boton--bloque" onClick={() => setForm({ abierta: true, base: null })}>
-          <Icono nombre="etiqueta" /> Enviar un presupuesto en el chat
-        </button>
-      ) : null}
-
       {cerrada ? (
         <Aviso tono="neutro" icono="check">Esta conversación está cerrada: podés leerla pero no escribir.</Aviso>
       ) : (
         <div className="compositor">
+          {RAPIDAS[conv.etapa].length > 0 ? (
+            <ul className="hx-chips hx-chips--carril me-rapidas" aria-label="Respuestas rápidas (completan el texto)">
+              {RAPIDAS[conv.etapa].map((r) => (
+                <li key={r}>
+                  <button type="button" className="hx-chip" onClick={() => usarRapida(r)}>
+                    {r}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
           <div className="compositor__fila">
             {api.origen === 'mock' ? (
               <button type="button" className="boton-icono" aria-label="Enviar una foto de prueba" title="Enviar una foto de prueba" onClick={() => void enviar({ clave: nuevaClave(), tipo: 'foto', texto: null, estado: 'enviando' })}>
@@ -132,7 +200,7 @@ export function Hilo() {
                 <button type="button" className="boton-icono" aria-label="Enviar una foto" onClick={() => foto.current?.click()}><Icono nombre="camara" /></button>
               </>
             )}
-            <textarea aria-label="Escribí un mensaje" rows={1} value={texto} maxLength={2000} placeholder="Escribí un mensaje" onChange={(e) => setTexto(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); mandarTexto(); } }} />
+            <textarea ref={campo} aria-label="Escribí un mensaje" rows={1} value={texto} maxLength={2000} placeholder="Escribí un mensaje" onChange={(e) => setTexto(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); mandarTexto(); } }} />
             <button type="button" className="boton-icono boton-icono--primario" aria-label="Enviar mensaje" disabled={!texto.trim()} onClick={mandarTexto}>
               <Icono nombre="enviar" />
             </button>
@@ -140,10 +208,6 @@ export function Hilo() {
           <p className="texto-suave texto-chico">Un aviso nuevo llega al abrir la app; el chat se actualiza solo mientras lo tenés abierto.</p>
         </div>
       )}
-
-      {pedido ? (
-        <FormPropuesta abierta={form.abierta} onCerrar={() => setForm((f) => ({ ...f, abierta: false }))} pedido={{ id: pedido.id, tipo: pedido.tipo, fechaSolicitada: pedido.fechaSolicitada }} base={form.base} fee={fee.politica} onEnviada={() => { setForm({ abierta: false, base: null }); void c.recargar(); }} />
-      ) : null}
     </div>
   );
 }

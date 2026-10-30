@@ -116,7 +116,7 @@ la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote
   - Cobro por etapa.
   - Cambios de fecha de una jornada sin tocar el resto.
   - Resumen de la obra completa.
-- [ ] **4.8 Agenda, mensajes, cuenta, caja y ayuda** (Sonnet 5.5 / high):
+- [x] **4.8 Agenda, mensajes, cuenta, caja y ayuda** (evidencia: recorrido Q y los actualizados B, F, I y J; `docs/screens.md` → D2 a D4, E3, E4, F1 y G1 a G1d; contrato 0.9.0):
   - Agenda mensual con jornadas de obra.
   - Chat con respuestas rápidas y propuestas en el hilo.
   - Contactos.

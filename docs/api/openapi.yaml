@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: api-especialista (Handyx)
-  version: 0.8.0
+  version: 0.9.0
   description: |
     BORRADOR del contrato de api-especialista (TECH-20). Fuente de los esquemas: src/contracts/dto.ts
     (contrato compartido v0.6.0, dueño handyx-client-be). Nada implementado todavía: lo construye
@@ -939,6 +939,70 @@ paths:
           description: Items de agenda
           content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/AgendaItem' } } } }
 
+  /v1/especialista/contactos:
+    get:
+      tags: [mensajes]
+      summary: Contactos del especialista (0.9.0), solo los agregados desde un chat. Sin teléfonos
+      responses:
+        '200':
+          description: Contactos
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Contacto' } } } }
+    post:
+      tags: [mensajes]
+      summary: Agregar a contactos a la contraparte de una conversación propia (agregarla dos veces devuelve la misma)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [conversacionId]
+              properties:
+                conversacionId: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Contacto
+          content: { application/json: { schema: { $ref: '#/components/schemas/Contacto' } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /v1/especialista/contactos/{id}:
+    delete:
+      tags: [mensajes]
+      summary: Quitar un contacto (la conversación sigue). Uno ajeno o inexistente responde igual
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '204': { description: Quitado }
+  /v1/especialista/cobros:
+    get:
+      tags: [caja]
+      summary: Cómo te paga el cliente (0.9.0) y el estado de la cuenta de Mercado Pago
+      responses:
+        '200':
+          description: Formas de cobro
+          content: { application/json: { schema: { $ref: '#/components/schemas/MediosCobro' } } }
+    put:
+      tags: [caja]
+      summary: Elegir las formas de cobro (al menos una)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [efectivo, mercadoPago, version]
+              properties:
+                efectivo: { type: boolean }
+                mercadoPago: { type: boolean }
+                version: { type: integer, minimum: 0 }
+      responses:
+        '200':
+          description: Guardadas
+          content: { application/json: { schema: { $ref: '#/components/schemas/MediosCobro' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /v1/conversaciones:
     get:
       tags: [mensajes]
@@ -1706,7 +1770,7 @@ components:
     Conversacion:
       type: object
       additionalProperties: false
-      required: [id, pedidoId, trabajoId, contraparte, etapa, ultimoMensaje, noLeidos, actualizadoEn]
+      required: [id, pedidoId, trabajoId, contraparte, etapa, ultimoMensaje, noLeidos, actualizadoEn, contactoId]
       properties:
         id: { type: string, format: uuid }
         pedidoId: { type: string, format: uuid }
@@ -1716,6 +1780,32 @@ components:
         ultimoMensaje: { type: [string, 'null'] }
         noLeidos: { type: integer, minimum: 0 }
         actualizadoEn: { $ref: '#/components/schemas/Instante' }
+        contactoId: { type: [string, 'null'], format: uuid, description: si la contraparte ya está en tus contactos (0.9.0) }
+    Contacto:
+      type: object
+      additionalProperties: false
+      required: [id, conversacionId, nombre, detalle, agregadoEn]
+      properties:
+        id: { type: string, format: uuid }
+        conversacionId: { type: string, format: uuid }
+        nombre: { type: string }
+        detalle: { type: string, description: rubro y barrio del último pedido o trabajo (sin teléfono ni dirección) }
+        agregadoEn: { $ref: '#/components/schemas/Instante' }
+    MediosCobro:
+      type: object
+      additionalProperties: false
+      required: [efectivo, mercadoPago, cuentaMercadoPago, version]
+      properties:
+        efectivo: { type: boolean }
+        mercadoPago: { type: boolean }
+        cuentaMercadoPago:
+          type: object
+          additionalProperties: false
+          required: [estado, etiqueta]
+          properties:
+            estado: { type: string, enum: [sin_vincular, vinculada], description: 'la vinculación es con el proveedor (fase 5); Handyx nunca ve la contraseña ni las claves' }
+            etiqueta: { type: [string, 'null'] }
+        version: { type: integer, minimum: 0 }
     CajaResumen:
       type: object
       additionalProperties: false

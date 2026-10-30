@@ -76,7 +76,8 @@ async function main() {
     ['hoja-otro-dia', `/trabajos/obra/jornadas/?id=${id(0xc6)}`, 'Pedir otro día', 'Otro día para la jornada'],
     ['hoja-etapa', `/trabajos/obra/plan/?id=${id(0xc4)}`, 'Terminé esta etapa', '¿Terminaste la etapa 2?'],
     ['hoja-llamada', `/trabajos/detalle/?id=${id(0xc1)}`, 'Llamar por la app', 'Ninguno de los dos ve el teléfono del otro'],
-    ['hoja-baja', '/cuenta/', 'Eliminar mi cuenta y mis datos', '¿Eliminar tu cuenta?'],
+    ['hoja-baja', '/cuenta/privacidad/', 'Eliminar mi cuenta y mis datos', '¿Eliminar tu cuenta?'],
+    ['hoja-turno', '/agenda/', 'Obra · Cliente de prueba 8', 'Detalle del turno'],
     ['hoja-caso', '/soporte/', 'Abrir un caso', '¿Sobre qué es?'],
   ];
   for (const [nombre, ruta, boton, espera] of dialogos) {

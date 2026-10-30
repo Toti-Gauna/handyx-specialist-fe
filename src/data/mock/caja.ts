@@ -1,8 +1,9 @@
-import type { CajaResumen, Pago } from '../../contracts/dto.ts';
+import { GuardarMediosCobroSchema, type CajaResumen, type MediosCobro, type Pago } from '../../contracts/dto.ts';
 import { monto } from '../../contracts/dinero.ts';
 import { MAQUINA_PAGO, puedeTransicionar } from '../../contracts/maquinas.ts';
 import type { SimulacionPostDemo } from '../api.ts';
 import { ahoraMs, fallo, idempotente, iso, type EstadoMock } from './estado.ts';
+import { zodAFallo } from './validacion.ts';
 
 /** Porcentaje ILUSTRATIVO de la simulación post-demo (tarifa del especialista de la demo de la landing). No aprobado. */
 const BPS_ILUSTRATIVO = 1_000;
@@ -16,6 +17,14 @@ function buscar(s: EstadoMock, id: string): Pago {
 const suma = (pagos: Pago[]) => monto(pagos.reduce((n, p) => n + p.neto.centavos, 0));
 
 export const caja = (s: EstadoMock) => ({
+  mediosCobro: (): MediosCobro => structuredClone(s.mediosCobro),
+  guardarMediosCobro(m: unknown): MediosCobro {
+    const ok = GuardarMediosCobroSchema.safeParse(m);
+    if (!ok.success) throw zodAFallo(ok.error);
+    if (ok.data.version !== s.mediosCobro.version) throw fallo('conflicto', 409, 'conflicto_version', 'Tus formas de cobro cambiaron. Volvé a abrirlas.');
+    s.mediosCobro = { ...s.mediosCobro, efectivo: ok.data.efectivo, mercadoPago: ok.data.mercadoPago, version: s.mediosCobro.version + 1 };
+    return structuredClone(s.mediosCobro);
+  },
   cajaResumen: (): CajaResumen => ({
     pendiente: suma(s.pagos.filter((p) => p.estado === 'pendiente')),
     reportado: suma(s.pagos.filter((p) => p.estado === 'reportado' || p.estado === 'en_discrepancia')),

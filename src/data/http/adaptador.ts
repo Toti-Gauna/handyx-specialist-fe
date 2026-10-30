@@ -33,6 +33,8 @@ import {
   LlamadaPuenteSchema,
   EntradaDiarioSchema,
   JornadaSchema,
+  ContactoSchema,
+  MediosCobroSchema,
   TrabajoSchema,
 } from '../../contracts/dto.ts';
 import type { EspecialistaApi } from '../api.ts';
@@ -189,6 +191,11 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
 
     feeVigente: () => c.pedir('GET', '/v1/fee/vigente', FeeVigenteSchema),
     aceptarAvisoFee: (politicaId, version) => c.pedir('POST', '/v1/fee/aviso', FeeVigenteSchema, { cuerpo: { politicaId, version } }),
+    contactos: () => c.pedir('GET', '/v1/especialista/contactos', z.array(ContactoSchema)),
+    agregarContacto: (cid) => c.pedir('POST', '/v1/especialista/contactos', ContactoSchema, { cuerpo: { conversacionId: cid } }),
+    quitarContacto: (kid) => c.pedir('DELETE', `/v1/especialista/contactos/${id(kid)}`, Nada),
+    mediosCobro: () => c.pedir('GET', '/v1/especialista/cobros', MediosCobroSchema),
+    guardarMediosCobro: (m) => c.pedir('PUT', '/v1/especialista/cobros', MediosCobroSchema, { cuerpo: m }),
     preferencias: () => c.pedir('GET', '/v1/cuenta/preferencias', PreferenciasSchema),
     guardarPreferencias: (p) => c.pedir('PUT', '/v1/cuenta/preferencias', PreferenciasSchema, { cuerpo: p }),
     activarPush: () => c.pedir('POST', '/v1/cuenta/push', PreferenciasSchema),

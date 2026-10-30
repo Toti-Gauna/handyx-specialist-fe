@@ -130,6 +130,8 @@ export function estadoBase(escenario: Escenario): EstadoMock {
     casos: [],
     avisos: [],
     preferencias: { avisosUrgentes: true, avisosProgramados: true, avisosMensajes: true, avisosPagos: true, push: 'sin_pedir' },
+    contactos: [],
+    mediosCobro: { efectivo: true, mercadoPago: true, cuentaMercadoPago: { estado: 'vinculada', etiqueta: 'Cuenta de prueba de Mercado Pago' }, version: 0 },
     baja: null,
     feeAvisoEn: null,
     viajes: new Map(),
@@ -446,6 +448,7 @@ export function crearEstado(escenario: Escenario): EstadoMock {
     ultimoMensaje: ultimo,
     noLeidos,
     actualizadoEn: iso(en),
+    contactoId: null,
   });
   s.conversaciones = [
     conv(ID.c2, ID.pProgramado, null, 'Cliente de prueba 2', 'cotizando', 'Propuesta de $ 38.000 para el jueves 19/11', 1, T0 - 25 * MIN),
@@ -453,6 +456,12 @@ export function crearEstado(escenario: Escenario): EstadoMock {
     conv(ID.c3, idFijo(0xb8), ID.t2, 'Cliente de prueba 6', 'cerrada', 'Gracias, quedó funcionando.', 0, T0 - DIA),
     conv(idFijo(0xd7), idFijo(0xbc), ID.t6, 'Cliente de prueba 11', 'trabajo', 'Dejo las llaves con el encargado.', 0, T0 - 3 * HORA),
   ];
+  // Contactos (lote 4.8): uno ya guardado desde su chat; el resto se agrega desde cada conversación.
+  s.contactos = [{ id: idFijo(0x7a1), conversacionId: ID.c1, nombre: 'Cliente de prueba 5', detalle: 'Plomería · Güemes', agregadoEn: iso(T0 - 2 * DIA) }];
+  for (const k of s.contactos) {
+    const c = s.conversaciones.find((x) => x.id === k.conversacionId);
+    if (c) c.contactoId = k.id;
+  }
   const msg = (id: number, conversacionId: string, autorRol: Mensaje['autorRol'], texto: string | null, en: number, tipo: Mensaje['tipo'] = 'texto', propuestaId: string | null = null): Mensaje => ({
     id: idFijo(0x900 + id),
     conversacionId,

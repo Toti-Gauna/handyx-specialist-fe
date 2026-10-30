@@ -1,4 +1,4 @@
-// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.8.0, borrador; versión en version.ts).
+// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.9.0, borrador; versión en version.ts).
 // El servidor valida con los mismos esquemas; el cliente valida cada respuesta y trata un desajuste
 // como error de contrato (nunca lo "arregla" con datos de muestra). OpenAPI: docs/api/openapi.yaml.
 import { z } from 'zod';
@@ -696,8 +696,43 @@ export const ConversacionSchema = z.strictObject({
   ultimoMensaje: z.string().nullable(),
   noLeidos: z.int().nonnegative(),
   actualizadoEn: InstanteSchema,
+  /** Si la contraparte ya está en tus contactos (0.9.0). */
+  contactoId: IdSchema.nullable(),
 });
 export type Conversacion = z.infer<typeof ConversacionSchema>;
+
+// ── Contactos (0.9.0) ────────────────────────────────────────────────────────────────────────────
+// Solo los que el especialista agrega desde un chat: la app no lee la agenda del teléfono ni muestra números. Escribirle
+// a un contacto abre el chat de siempre; no hay envíos automáticos.
+export const ContactoSchema = z.strictObject({
+  id: IdSchema,
+  conversacionId: IdSchema,
+  nombre: z.string(),
+  /** Para reconocerlo: el rubro y el barrio del último pedido o trabajo con esa persona. */
+  detalle: z.string(),
+  agregadoEn: InstanteSchema,
+});
+export type Contacto = z.infer<typeof ContactoSchema>;
+
+// ── Cómo te paga el cliente (0.9.0) ──────────────────────────────────────────────────────────────
+// El pago va directo del cliente al especialista. La cuenta de Mercado Pago se vincula con el proveedor (fase 5): Handyx
+// nunca ve ni guarda la contraseña ni las claves de esa cuenta.
+export const MediosCobroSchema = z.strictObject({
+  efectivo: z.boolean(),
+  mercadoPago: z.boolean(),
+  cuentaMercadoPago: z.strictObject({
+    estado: z.enum(['sin_vincular', 'vinculada']),
+    /** Un nombre para reconocerla (nunca el número completo ni datos de acceso). */
+    etiqueta: z.string().nullable(),
+  }),
+  version: z.int().nonnegative(),
+});
+export type MediosCobro = z.infer<typeof MediosCobroSchema>;
+
+export const GuardarMediosCobroSchema = z
+  .strictObject({ efectivo: z.boolean(), mercadoPago: z.boolean(), version: z.int().nonnegative() })
+  .refine((m) => m.efectivo || m.mercadoPago, 'Elegí al menos una forma de cobro');
+export type GuardarMediosCobro = z.infer<typeof GuardarMediosCobroSchema>;
 
 export const EnviarMensajeSchema = z.strictObject({
   tipo: z.enum(['texto', 'foto']),

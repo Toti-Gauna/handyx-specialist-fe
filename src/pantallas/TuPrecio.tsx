@@ -1,6 +1,7 @@
 'use client';
 // Tu precio (lote 4.5): cuándo podés ir, "Handyx sugiere · Vos decidís", qué incluye y cuánto recibís. Sirve para la
-// primera propuesta y para contraofertar (`?base=`). Enviar no compromete a nadie: el cliente decide.
+// primera propuesta y para contraofertar (`?base=`). Desde un chat (`?chat=`) vuelve al chat. Enviar no compromete a
+// nadie: el cliente decide.
 import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -25,7 +26,9 @@ import { PrecioStepper } from '../kit/Precio.tsx';
 
 export function TuPrecio() {
   const id = useIdDeUrl();
-  const baseId = useSearchParams().get('base');
+  const params = useSearchParams();
+  const baseId = params.get('base');
+  const chatId = params.get('chat');
   const c = useCarga(async () => {
     if (!id) return null;
     const [pedido, fee] = await Promise.all([api.pedido(id), api.feeVigente()]);
@@ -35,16 +38,16 @@ export function TuPrecio() {
   if (!id) return <Vacio icono="lupa" titulo="No indicaste qué pedido cotizar"><Link href={RUTAS.pedidos.ruta}>Ver pedidos</Link></Vacio>;
   if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
-  return <Formulario key={`${id}-${baseId ?? ''}`} datos={c.datos} baseId={baseId} />;
+  return <Formulario key={`${id}-${baseId ?? ''}`} datos={c.datos} baseId={baseId} chatId={chatId} />;
 }
 
-function Formulario({ datos, baseId }: { datos: { pedido: Awaited<ReturnType<typeof api.pedido>>; fee: Awaited<ReturnType<typeof api.feeVigente>> }; baseId: string | null }) {
+function Formulario({ datos, baseId, chatId }: { datos: { pedido: Awaited<ReturnType<typeof api.pedido>>; fee: Awaited<ReturnType<typeof api.feeVigente>> }; baseId: string | null; chatId: string | null }) {
   const router = useRouter();
   const isla = useIsla();
   const { pedido, fee } = datos;
   const ahora = api.ahora();
   const base = baseId ? (pedido.propuestas.find((p) => p.id === baseId) ?? null) : null;
-  const volver = `${RUTAS.pedido.ruta}?id=${pedido.id}`;
+  const volver = chatId ? `${RUTAS.hilo.ruta}?id=${chatId}` : `${RUTAS.pedido.ruta}?id=${pedido.id}`;
   const opciones = opcionesCuando(pedido.tipo, pedido.fechaSolicitada, ahora, base?.horario.inicio ?? null);
   const sugerido = pedido.precioSugerido?.monto.centavos ?? null;
   const tarifaBps = fee.politica && avisoFee(ahora, fee.politica).fase !== 'terminada' ? fee.politica.bpsEspecialista : null;
@@ -82,7 +85,7 @@ function Formulario({ datos, baseId }: { datos: { pedido: Awaited<ReturnType<typ
 
   return (
     <div className="fl-pantalla">
-      <BarraSuperior titulo={base ? 'Contraofertar' : 'Tu precio'} atras={volver} textoAtras="Volver al pedido" acciones={null} />
+      <BarraSuperior titulo={base ? 'Contraofertar' : 'Tu precio'} atras={volver} textoAtras={chatId ? 'Volver al chat' : 'Volver al pedido'} acciones={null} />
       <div className="fl-ficha">
         <ChipTipo tipo={pedido.tipo} />
         <p className="fl-ficha__titulo">{NOMBRE_RUBRO[pedido.rubro]}</p>

@@ -65,6 +65,7 @@ export const RUTAS = {
     descripcion: 'Conversaciones por pedido y trabajo.',
     nav: { icono: 'chat', texto: 'Mensajes' },
   },
+  contactos: { ruta: '/mensajes/contactos/', titulo: 'Contactos', lote: '4.8', descripcion: 'Solo los agregados desde un chat, sin teléfonos.' },
   hilo: { ruta: '/mensajes/hilo/', titulo: 'Conversación', lote: '2.3', descripcion: 'Chat con texto, fotos y presupuesto estructurado.' },
   caja: { ruta: '/caja/', titulo: 'Caja', lote: '2.5', descripcion: 'Pagos directos: pendientes, reportados y verificados.' },
   cuenta: {
@@ -74,7 +75,11 @@ export const RUTAS = {
     descripcion: 'Documentos y estado, fee 0 % con contador, preferencias, soporte y baja.',
     nav: { icono: 'usuario', texto: 'Cuenta' },
   },
-  soporte: { ruta: '/soporte/', titulo: 'Ayuda y reclamos', lote: '2.4', descripcion: 'Asistencia y reclamos con su historial.' },
+  cuentaDatos: { ruta: '/cuenta/datos/', titulo: 'Datos personales', lote: '4.8', descripcion: 'Lo que cargaste en el alta, de solo lectura (DNI y CUIT con sus últimos números).' },
+  cuentaCobros: { ruta: '/cuenta/cobros/', titulo: 'Cómo te paga el cliente', lote: '4.8', descripcion: 'Mercado Pago, efectivo o los dos; el pago va directo a vos.' },
+  cuentaNotificaciones: { ruta: '/cuenta/notificaciones/', titulo: 'Notificaciones', lote: '4.8', descripcion: 'Qué avisos recibís y los avisos del dispositivo.' },
+  cuentaPrivacidad: { ruta: '/cuenta/privacidad/', titulo: 'Privacidad y baja', lote: '4.8', descripcion: 'Quién ve qué, documentos, políticas y eliminar tu cuenta.' },
+  soporte: { ruta: '/soporte/', titulo: 'Centro de ayuda', lote: '4.8', descripcion: 'Asistencia y reclamos con su historial.' },
   notificaciones: { ruta: '/notificaciones/', titulo: 'Avisos', lote: '2.2', descripcion: 'Avisos dentro de la app, urgentes y programados diferenciados.' },
 } as const satisfies Record<string, Ruta>;
 

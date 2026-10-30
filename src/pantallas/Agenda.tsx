@@ -1,105 +1,126 @@
 'use client';
+// Agenda (lote 4.8, como la demo): el mes con los días marcados, la lista del día elegido y el detalle del turno en
+// una hoja. Una obra aparece jornada por jornada. Una oferta no es un turno: se confirma cuando la otra parte acepta.
 import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
 import { useState } from 'react';
 import { RUTAS } from '../app/rutas.ts';
-import { Cargando, ErrorCaja, Vacio } from '../components/Estados.tsx';
+import { ErrorCaja } from '../components/Estados.tsx';
+import { Hoja } from '../components/Hoja.tsx';
 import { Icono } from '../components/Icono.tsx';
-import { Aviso, ChipTexto } from '../components/ui.tsx';
+import { Aviso, Chip } from '../components/ui.tsx';
 import type { AgendaItem } from '../contracts/dto.ts';
 import { useCarga } from '../hooks/useCarga.ts';
-import { DIAS } from '../lib/etiquetas.ts';
-import { diaLocal, fechaLarga, hora } from '../lib/formato.ts';
+import type { Etiqueta } from '../lib/etiquetas.ts';
+import { diaLocal, fechaLarga, hora, plural } from '../lib/formato.ts';
+import { CalendarioMes } from '../kit/Fechas.tsx';
+import { EstadoVacio } from '../kit/Piezas.tsx';
+import './agenda.css';
 
-const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const dd = (n: number) => String(n).padStart(2, '0');
+
+export const ESTADO_TURNO: Record<AgendaItem['estado'], Etiqueta> = {
+  confirmado: { texto: 'Confirmado', tono: 'exito', icono: 'checkCirculo' },
+  cambio_pendiente: { texto: 'Cambio pendiente', tono: 'aviso', icono: 'reintentar' },
+  oferta_pendiente: { texto: 'Oferta sin confirmar', tono: 'azul', icono: 'etiqueta' },
+};
 
 export function Agenda() {
   const hoy = diaLocal(api.ahora().toISOString());
   const [y0, m0] = hoy.split('-').map(Number) as [number, number];
-  const [mes, setMes] = useState({ y: y0, m: m0 });
+  const [mes, setMes] = useState({ anio: y0, mes: m0 });
   const [elegido, setElegido] = useState(hoy);
+  const [abierto, setAbierto] = useState<AgendaItem | null>(null);
 
   // Un mes de Buenos Aires: de 00:00 local (03:00 UTC) del día 1 al del mes siguiente.
-  const desde = `${mes.y}-${dd(mes.m)}-01T03:00:00.000Z`;
-  const sig = mes.m === 12 ? { y: mes.y + 1, m: 1 } : { y: mes.y, m: mes.m + 1 };
-  const hasta = `${sig.y}-${dd(sig.m)}-01T03:00:00.000Z`;
+  const desde = `${mes.anio}-${dd(mes.mes)}-01T03:00:00.000Z`;
+  const sig = mes.mes === 12 ? { anio: mes.anio + 1, mes: 1 } : { anio: mes.anio, mes: mes.mes + 1 };
+  const hasta = `${sig.anio}-${dd(sig.mes)}-01T03:00:00.000Z`;
   const c = useCarga(() => api.agenda(desde, hasta), [desde, hasta]);
 
-  const items = c.datos ?? [];
   const porDia = new Map<string, AgendaItem[]>();
-  for (const i of items) porDia.set(diaLocal(i.inicio), [...(porDia.get(diaLocal(i.inicio)) ?? []), i]);
-  const primero = new Date(Date.UTC(mes.y, mes.m - 1, 1)).getUTCDay();
-  const diasDelMes = new Date(Date.UTC(mes.y, mes.m, 0)).getUTCDate();
+  for (const i of c.datos ?? []) porDia.set(diaLocal(i.inicio), [...(porDia.get(diaLocal(i.inicio)) ?? []), i]);
+  const marcas = Object.fromEntries([...porDia].map(([d, l]) => [d, l.length]));
   const delDia = porDia.get(elegido) ?? [];
 
-  function mover(delta: number) {
-    const f = new Date(Date.UTC(mes.y, mes.m - 1 + delta, 1));
-    const nuevo = { y: f.getUTCFullYear(), m: f.getUTCMonth() + 1 };
-    setMes(nuevo);
-    setElegido(`${nuevo.y}-${dd(nuevo.m)}-01`);
-  }
-
   return (
-    <div className="pila">
+    <div className="pila ag">
       <h1 className="titulo">Agenda</h1>
-      <div className="fila-flex fila-flex--entre">
-        <button type="button" className="boton-icono" aria-label="Mes anterior" onClick={() => mover(-1)}><Icono nombre="izquierda" /></button>
-        <h2 aria-live="polite">{MESES[mes.m - 1]} {mes.y}</h2>
-        <button type="button" className="boton-icono" aria-label="Mes siguiente" onClick={() => mover(1)}><Icono nombre="derecha" /></button>
-      </div>
       {c.fallo ? <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} /> : null}
-      <div className="calendario" role="group" aria-label={`Calendario de ${MESES[mes.m - 1]} ${mes.y}`}>
-        {DIAS.map((d) => (
-          <span key={d} className="calendario__dia-semana" aria-hidden="true">{d.slice(0, 1)}</span>
-        ))}
-        {Array.from({ length: primero }, (_, i) => <span key={`v${i}`} className="calendario__dia calendario__dia--vacio" aria-hidden="true" />)}
-        {Array.from({ length: diasDelMes }, (_, i) => {
-          const clave = `${mes.y}-${dd(mes.m)}-${dd(i + 1)}`;
-          const cant = porDia.get(clave)?.length ?? 0;
-          return (
-            <button
-              key={clave}
-              type="button"
-              className={`calendario__dia${clave === hoy ? ' calendario__dia--hoy' : ''}${clave === elegido ? ' calendario__dia--elegido' : ''}`}
-              aria-pressed={clave === elegido}
-              onClick={() => setElegido(clave)}
-            >
-              {i + 1}
-              <span className="visualmente-oculto">
-                {` de ${MESES[mes.m - 1]}${clave === hoy ? ', hoy' : ''}${cant ? `, ${cant} ${cant === 1 ? 'evento' : 'eventos'}` : ', sin eventos'}`}
-              </span>
-              {cant > 0 ? <span className="calendario__marca" aria-hidden="true">{cant}</span> : null}
-            </button>
-          );
-        })}
-      </div>
-      <p className="texto-suave texto-chico">Hoy: número subrayado con borde naranja. El número chico es la cantidad de eventos del día. Cualquier día se puede tocar.</p>
+      <CalendarioMes
+        anio={mes.anio}
+        mes={mes.mes}
+        onCambiarMes={(anio, m) => {
+          setMes({ anio, mes: m });
+          setElegido(anio === y0 && m === m0 ? hoy : `${anio}-${dd(m)}-01`);
+        }}
+        hoy={hoy}
+        elegido={elegido}
+        onElegir={setElegido}
+        marcas={marcas}
+      />
 
-      {!c.datos && !c.fallo ? <Cargando /> : null}
-      <h2>{fechaLarga(`${elegido}T15:00:00.000Z`)}</h2>
-      {c.datos && delDia.length === 0 ? <Vacio icono="calendario" titulo="No tenés nada este día" /> : null}
-      <ul className="lista-tarjetas">
-        {delDia.map((i) => {
-          const destino = i.trabajoId ? `${RUTAS.trabajo.ruta}?id=${i.trabajoId}` : i.pedidoId ? `${RUTAS.pedido.ruta}?id=${i.pedidoId}` : null;
-          const cuerpo = (
-            <>
-              <div className="fila-flex fila-flex--entre">
-                <span className="tarjeta__titulo">{hora(i.inicio)}{i.fin ? ` a ${hora(i.fin)}` : ''}</span>
-                {i.estado === 'confirmado' ? <ChipTexto tono="exito" icono="checkCirculo">Confirmado</ChipTexto> : null}
-                {i.estado === 'cambio_pendiente' ? <ChipTexto tono="aviso" icono="reintentar">Cambio pendiente</ChipTexto> : null}
-                {i.estado === 'oferta_pendiente' ? <ChipTexto tono="azul" icono="etiqueta">Oferta sin confirmar</ChipTexto> : null}
-              </div>
-              <p>{i.titulo}</p>
-              {i.superpuesto ? (
-                <Aviso tono="aviso" icono="alerta">Se superpone con un trabajo que ya tenés confirmado.</Aviso>
-              ) : null}
-              {i.estado === 'oferta_pendiente' ? <p className="texto-suave texto-chico">Una oferta no es un turno: se confirma recién cuando la otra parte acepta.</p> : null}
-            </>
-          );
-          return <li key={i.id}>{destino ? <Link className="tarjeta" href={destino}>{cuerpo}</Link> : <div className="tarjeta">{cuerpo}</div>}</li>;
-        })}
-      </ul>
+      <section className="ag-dia" aria-labelledby="ag-dia-t" aria-live="polite">
+        <h2 id="ag-dia-t" className="ag-dia__titulo">
+          {fechaLarga(`${elegido}T15:00:00.000Z`)}
+          <small>{c.datos ? (delDia.length ? plural(delDia.length, 'turno', 'turnos') : 'sin turnos') : 'cargando…'}</small>
+        </h2>
+        {c.datos && delDia.length === 0 ? (
+          <EstadoVacio titulo="No tenés nada este día">Cuando aceptes un trabajo o te acepten una propuesta, aparece acá.</EstadoVacio>
+        ) : null}
+        <ul className="ag-lista">
+          {delDia.map((i) => (
+            <li key={i.id}>
+              <button type="button" className={`ag-turno ag-turno--${i.estado}`} onClick={() => setAbierto(i)}>
+                <span className="ag-turno__hora">
+                  <strong>{hora(i.inicio)}</strong>
+                  {i.fin ? <small>a {hora(i.fin)}</small> : null}
+                </span>
+                <span className="ag-turno__texto">
+                  <strong>{i.titulo}</strong>
+                  <Chip e={ESTADO_TURNO[i.estado]} />
+                  {i.superpuesto ? (
+                    <small className="ag-turno__alerta">
+                      <Icono nombre="alerta" /> Se superpone con un trabajo confirmado
+                    </small>
+                  ) : null}
+                </span>
+                <Icono nombre="derecha" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <Hoja abierta={abierto !== null} titulo="Detalle del turno" onCerrar={() => setAbierto(null)}>
+        {abierto ? <DetalleTurno t={abierto} /> : null}
+      </Hoja>
+    </div>
+  );
+}
+
+function DetalleTurno({ t }: { t: AgendaItem }) {
+  const destino = t.trabajoId ? `${RUTAS.trabajo.ruta}?id=${t.trabajoId}` : t.pedidoId ? `${RUTAS.pedido.ruta}?id=${t.pedidoId}` : null;
+  return (
+    <div className="ag-detalle">
+      <Chip e={ESTADO_TURNO[t.estado]} />
+      <p className="ag-detalle__titulo">{t.titulo}</p>
+      <p className="ag-detalle__cuando">
+        <Icono nombre="calendario" /> {fechaLarga(t.inicio)}, de {hora(t.inicio)}
+        {t.fin ? ` a ${hora(t.fin)}` : ''}
+      </p>
+      {t.superpuesto ? (
+        <Aviso tono="aviso" icono="alerta">
+          Se superpone con un trabajo que ya tenés confirmado.
+        </Aviso>
+      ) : null}
+      {t.estado === 'oferta_pendiente' ? <p className="texto-suave texto-chico">Una oferta no es un turno: se confirma recién cuando la otra parte acepta.</p> : null}
+      {t.estado === 'cambio_pendiente' ? <p className="texto-suave texto-chico">Hay un cambio de fecha esperando respuesta: hasta que se acepte, vale el día acordado.</p> : null}
+      {destino ? (
+        <Link className="boton boton--bloque" href={destino}>
+          {t.trabajoId ? 'Ver el trabajo' : 'Ver la oferta'}
+        </Link>
+      ) : null}
     </div>
   );
 }

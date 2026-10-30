@@ -2,6 +2,8 @@
 // Todo es SINTÉTICO: nombres de prueba, correos @example.test e ids 00000000-….
 import type {
   Adicional,
+  Contacto,
+  MediosCobro,
   Aviso,
   CasoSoporteDetalle,
   Conversacion,
@@ -150,6 +152,9 @@ export interface EstadoMock {
   baja: Baja | null;
   feeAvisoEn: string | null;
   viajes: Map<string, ViajeInterno>;
+  /** Contactos agregados desde un chat y cómo te paga el cliente (lote 4.8). */
+  contactos: Contacto[];
+  mediosCobro: MediosCobro;
   /** Turnos de antecedentes de la oficina de prueba (lote 4.4). */
   turnos: TurnoAntecedentes[];
   gps: GpsSimulado;

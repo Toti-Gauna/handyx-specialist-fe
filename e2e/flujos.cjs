@@ -249,7 +249,7 @@ async function main() {
     await foto('05-esperando');
     // Revocar "Disponible" corta la oferta
     await nav(p, 'Cuenta');
-    await p.getByRole('link', { name: 'Mi disponibilidad y cobertura' }).click();
+    await p.getByRole('link', { name: /Rubros y zonas/ }).click();
     await p.getByRole('switch', { name: /urgentes/i }).click();
     await ver(p, 'Apagado: no te ofrecemos pedidos urgentes');
     await foto('06-ahora-apagado');
@@ -450,6 +450,7 @@ async function main() {
     await p.waitForURL('**/inicio/');
     // Baja: estado honesto, sesión cerrada y cancelación
     await nav(p, 'Cuenta');
+    await p.getByRole('link', { name: /Privacidad y baja/ }).click();
     await p.getByRole('button', { name: 'Eliminar mi cuenta y mis datos' }).click();
     await ver(p, 'Esto es una baja real, no solo cerrar sesión');
     await foto('05-confirmar-baja');
@@ -529,6 +530,7 @@ async function main() {
     await foto('08-caja-simulacion');
     // Preferencias: avisos distintos para urgentes y programados
     await nav(p, 'Cuenta');
+    await p.getByRole('link', { name: /Notificaciones/ }).click();
     await ver(p, 'Pedidos urgentes', { exact: true });
     await ver(p, 'Pedidos programados', { exact: true });
     await foto('09-cuenta-preferencias');
@@ -963,13 +965,78 @@ async function main() {
     await foto('06-cierre');
   }, { capturas });
 
+  await escenario('Q-agenda-chat-contactos-cuenta-caja-ayuda', nav_, base, async ({ p, foto }) => {
+    // Agenda: mes con marcas, lista del día y detalle del turno (una obra, jornada por jornada)
+    await p.goto(`${base}/agenda/?escenario=habilitado`);
+    await p.getByRole('button', { name: /18 de noviembre, 2 eventos/ }).click();
+    await ver(p, 'jornada 1 de 5');
+    await p.locator('.ag-turno').first().click();
+    await ver(p, 'Detalle del turno');
+    await foto('01-detalle-turno');
+    await p.getByRole('link', { name: 'Ver el trabajo' }).click();
+    await p.waitForURL('**/trabajos/detalle/**');
+    // Mensajes y chat: agregar a contactos, respuestas rápidas que completan (no mandan) y programar turno
+    await nav(p, 'Mensajes');
+    await p.getByText('Cliente de prueba 2').first().click();
+    await p.getByRole('button', { name: 'Agregar a contactos' }).click();
+    await ver(p, 'Lo agregaste a tus contactos');
+    await p.getByRole('link', { name: /En tus contactos/ }).waitFor();
+    const antes = await p.locator('.chat .burbuja').count();
+    await p.getByRole('button', { name: '¿Me mandás una foto del problema?' }).click();
+    assert.equal(await p.getByLabel('Escribí un mensaje').inputValue(), '¿Me mandás una foto del problema?');
+    assert.equal(await p.locator('.chat .burbuja').count(), antes, 'una respuesta rápida no se manda sola');
+    await p.getByRole('button', { name: 'Enviar mensaje' }).click();
+    await ver(p, '¿Me mandás una foto del problema?');
+    await foto('02-chat');
+    await p.getByRole('link', { name: /Programar turno/ }).click();
+    await p.waitForURL('**/pedidos/propuesta/**');
+    await p.getByRole('link', { name: 'Volver al chat' }).click();
+    await p.waitForURL('**/mensajes/hilo/**');
+    // Contactos: solo los agregados desde un chat; quitar no borra la conversación
+    await nav(p, 'Mensajes');
+    await p.getByRole('link', { name: 'Contactos' }).click();
+    await ver(p, 'Cliente de prueba 5');
+    await ver(p, 'Cliente de prueba 2');
+    await foto('03-contactos');
+    await p.getByRole('button', { name: 'Sacar a Cliente de prueba 2 de tus contactos' }).click();
+    await ver(p, 'Lo sacaste de tus contactos');
+    assert.equal(await p.getByRole('link', { name: 'Escribirle a Cliente de prueba 2' }).count(), 0);
+    // Cuenta: cómo te paga el cliente (al menos una forma)
+    await nav(p, 'Cuenta');
+    await ver(p, 'Verificado por Handyx');
+    await foto('04-cuenta');
+    await p.getByRole('link', { name: /Cómo te paga el cliente/ }).click();
+    await p.getByRole('switch', { name: /Efectivo/ }).click();
+    await p.waitForFunction(() => document.querySelector('[role="switch"][aria-checked="false"]') !== null);
+    await p.getByRole('switch', { name: /Mercado Pago/ }).click();
+    await ver(p, 'Dejá al menos una forma de cobro');
+    assert.equal(await p.getByRole('switch', { name: /Mercado Pago/ }).getAttribute('aria-checked'), 'true');
+    await foto('05-cobros');
+    // Caja: lo cobrado del mes, filtros por estado y el desglose
+    await p.getByRole('link', { name: 'Ver la Caja' }).click();
+    await ver(p, 'Cobrado este mes');
+    await p.getByRole('button', { name: /^Con problemas · 1/ }).click();
+    assert.equal(await p.locator('.cj-mov').count(), 1);
+    await ver(p, 'Falló', { exact: true });
+    assert.equal(await p.locator('.cj-mov__desglose').first().isVisible(), false, 'el desglose arranca cerrado');
+    await p.getByRole('button', { name: /Ver el desglose/ }).click();
+    await ver(p, 'Referencia del proveedor');
+    await foto('06-caja');
+    // Centro de ayuda: temas en pastillas y preguntas que se abren
+    await p.goto(`${base}/soporte/?escenario=habilitado`);
+    await p.getByRole('button', { name: 'Cobros' }).click();
+    await p.getByText('¿Cuánto cobra Handyx?').click();
+    await ver(p, 'Handyx no te cobra tarifa: 0 %');
+    await foto('07-ayuda');
+  }, { capturas });
+
   await escenario('J-sin-conexion-service-worker', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/?escenario=habilitado`);
     await p.waitForURL('**/inicio/');
     await p.waitForFunction(() => Boolean(navigator.serviceWorker.controller), null, { timeout: 15000 });
     // Una navegación con el service worker activo deja guardado el HTML de esa pantalla
     await p.goto(`${base}/agenda/?escenario=habilitado`);
-    await ver(p, 'número subrayado');
+    await ver(p, 'Noviembre 2026');
     await p.context().setOffline(true);
     await ver(p, 'Lo que ves puede estar desactualizado');
     await foto('01-franja');
@@ -979,7 +1046,7 @@ async function main() {
     await foto('02-sin-conexion');
     // Pantalla ya visitada: se abre su copia
     await p.goto(`${base}/agenda/?escenario=habilitado`);
-    await ver(p, 'número subrayado');
+    await ver(p, 'Noviembre 2026');
     // En la caché solo hay archivos estáticos y públicos de la app: nada de la API ni de otros sitios
     const guardado = await p.evaluate(async () => {
       const urls = [];

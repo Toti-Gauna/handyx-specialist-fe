@@ -59,6 +59,7 @@ el trayecto no se puede calcular (la app ofrece Google Maps o Waze).
 | Llegada automática y "Ya llegué" | Compartiendo con buena señal, la llegada se marca sola al entrar en la cuadra; con señal imprecisa, sin señal, sin permiso o sin compartir aparece "Ya llegué" con el motivo | E2E M2 · C · O · `mock.test` |
 | Adicionales | En curso › *Agregar repuestos o mano de obra*; panel › *Acepta / Rechaza tu último adicional*; los pendientes se retiran al terminar y el cobro va por el total vigente | E2E O · `mock.test` |
 | Obra de varios días | Trabajo de *Cliente de prueba 11* (agendado) o de *Cliente de prueba 8* (en curso): resumen, plan, jornadas y diario; panel › *Acepta / Rechaza el cambio de jornada* y *Acepta tu último adicional* | E2E P · I · `mock.test` |
+| Chat, contactos, cuenta, caja y ayuda | Chat › respuestas rápidas, *Agregar a contactos* y *Programar turno*; Mensajes › *Contactos*; Cuenta › *Cómo te paga el cliente*; Caja › filtros y desglose; Centro de ayuda › temas | E2E Q · `mock.test` |
 | Cambiar la fecha y cancelar | Trabajo › *Cambiar la fecha* (motivo, día y franja) y *Cancelar este trabajo* (alternativas, motivo y confirmación) | E2E D · O |
 | Ubicación en vivo (señal, permiso, desvío) | En camino › *Compartir mi ubicación*; panel › señal imprecisa, sin señal, permiso negado o desviarme | E2E M2 · `mock.test` |
 | Mapa que no carga | Sin WebGL (o sin conexión al abrirlo): queda el texto con el barrio o el destino | E2E M3 |

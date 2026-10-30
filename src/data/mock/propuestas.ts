@@ -19,7 +19,7 @@ export function asegurarConversacion(s: EstadoMock, p: PedidoInterno): string {
   if (p.conversacionId) return p.conversacionId;
   const id = idNuevo(s);
   p.conversacionId = id;
-  s.conversaciones.unshift({ id, pedidoId: p.pub.id, trabajoId: null, contraparte: p.cliente, etapa: 'cotizando', ultimoMensaje: null, noLeidos: 0, actualizadoEn: iso(ahoraMs(s)) });
+  s.conversaciones.unshift({ id, pedidoId: p.pub.id, trabajoId: null, contraparte: p.cliente, etapa: 'cotizando', ultimoMensaje: null, noLeidos: 0, actualizadoEn: iso(ahoraMs(s)), contactoId: null });
   s.mensajes[id] = [];
   return id;
 }
