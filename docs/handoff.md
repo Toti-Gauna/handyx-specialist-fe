@@ -1,10 +1,23 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada salvo el sí de diseño de Ignacio (4.9) y el mapa base del 4.3 (datos de OpenStreetMap bloqueados por la red).**
+Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (sí de diseño dado al arrancar la fase 5; mapa base del 4.3 pendiente). Fase 5: 5.1 hecho.**
 Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 5 · Lote 5.1 (modelo y migraciones, en `handyx-client-be`)
+
+- El esquema compartido vive en `handyx-client-be` (dueño único, ADR-0001), rama `claude/pensive-hypatia-jajjgm`
+  (commit `cdea35c`, sobre `fase-1-bases`). Probado contra PostgreSQL 16 local aislado; nada remoto.
+- Cubre todo lo que pidió la fase 4 de esta app (obras, diario, adicionales, viaje, precio sugerido, código de email,
+  Google y Apple, turnos de antecedentes, contactos y formas de cobro). Diccionario, ERD y tabla de conciliación con el
+  contrato 0.9.0 de esta app: `handyx-client-be/docs/data-model.md`.
+- **Para esta app**: los estados del contrato 0.9.0 se traducen a los de la base (pedido, etapa, reclamo, baja) hasta
+  alinear el contrato en 5.8. Queda una decisión de producto: ¿"Terminé" cierra el trabajo o el usuario lo confirma?
+
+**Próximo paso**: 5.2 (cuentas, sesiones y acceso), Opus 5.5 / xhigh. Necesita autorización para Google Cloud, Apple
+Developer y el proveedor de emails antes de conectar los proveedores reales.
 
 ## Fase 4 · Lote 4.9 (QA premium y sí de diseño)
 

@@ -135,7 +135,8 @@ la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote
 
 ### Fase 5 · Backend y DB conectados — Opus 5.5 / high (salvo indicación)
 Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `handyx-specialist-be`. Empieza con el sí de diseño del 4.9.
-- [ ] **5.1 Modelo y migraciones:**
+- [x] **5.1 Modelo y migraciones** (hecho el 30/10/2026 en `handyx-client-be`, rama `claude/pensive-hypatia-jajjgm`: 51 tablas,
+  migraciones con reglas, 4 roles de runtime y 21 pruebas contra PostgreSQL aislado; ver su `docs/data-model.md`):
   - ERD y diccionario de datos: tipo, nulabilidad, sensibilidad, claves foráneas, índices, retención y dueño.
   - Importes en centavos ≥ 0.
   - Un acuerdo activo por pedido.
