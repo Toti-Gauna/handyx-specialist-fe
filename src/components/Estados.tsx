@@ -50,11 +50,13 @@ const HANDY_ROTO: Record<string, NombreHandy> = {
 };
 
 /** Error con reintento. Muestra el mensaje seguro del servidor si lo hay y la referencia para soporte. */
-export function ErrorCaja({ fallo, onReintentar }: { fallo: FalloApi; onReintentar?: () => void }) {
+/** `pantalla`: el error ocupa toda la pantalla (no cargó nada); su mensaje pasa a ser el título h1 para los lectores. */
+export function ErrorCaja({ fallo, onReintentar, pantalla = false }: { fallo: FalloApi; onReintentar?: () => void; pantalla?: boolean }) {
+  const mensaje = fallo.detalle?.mensaje ?? TEXTOS[fallo.tipo] ?? TEXTOS.servidor;
   return (
     <div className="caja-error" role="alert">
       <Handy nombre={HANDY_ROTO[fallo.tipo] ?? 'engranaje-roto'} alto={88} className="handy--tambalea" />
-      <p>{fallo.detalle?.mensaje ?? TEXTOS[fallo.tipo] ?? TEXTOS.servidor}</p>
+      {pantalla ? <h1 className="caja-error__mensaje">{mensaje}</h1> : <p>{mensaje}</p>}
       {fallo.requestId ? <p className="texto-suave texto-chico">Referencia: {fallo.requestId}</p> : null}
       {onReintentar ? (
         <button type="button" className="boton boton--claro" onClick={onReintentar}>

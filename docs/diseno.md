@@ -93,13 +93,15 @@ Probado en 320×568, 360×740, 390×844, 768×1024, 820×1180, 1180×820 y 1280�
 
 | Criterio | Cómo se cumple | Verificación |
 |---|---|---|
-| Contraste (1.4.3, 1.4.11) | Tokens con contraste AA; texto claro sobre fondos oscuros | axe: 0 violaciones en 28 pantallas y 6 diálogos, en 320, 390 y 1280 px |
+| Contraste (1.4.3, 1.4.11) | Tokens con contraste AA; texto claro sobre fondos oscuros | axe: 0 violaciones en todas las pantallas y diálogos, en 320, 390, 768 y 1280 px (lote 4.9) |
 | Uso sin depender del color (1.4.1) | Estados con ícono y texto; el interruptor dice "Sí"/"No"; "hoy" subrayado; historial con texto oculto "(hecho)"/"(pendiente)" | Revisión de capturas |
 | Nombre accesible = texto visible (2.5.3) | Logo con `alt`; los días del calendario agregan "de noviembre, 1 evento" como texto oculto | axe |
-| Áreas táctiles (2.5.8) | Botones, pestañas y enlaces sueltos de al menos 44 px de alto; ninguno por debajo de 24 px (días del calendario a 320 px: 38×46) | `npm run accesibilidad` |
+| Áreas táctiles (2.5.8) | Botones, pestañas y enlaces sueltos de al menos 44 px de alto; ninguno por debajo de 24 px (días del calendario a 320 px: 39×44). Un objetivo tapado por un botón fijo se vuelve a medir después de llevarlo a la vista | `npm run accesibilidad` |
 | Teclado y foco (2.1.1, 2.4.7) | Foco visible de 3 px en todo; las hojas atrapan y hacen circular el foco y se cierran con Escape | Recorrido con Tab en Inicio y en 6 diálogos |
 | Errores de formulario (3.3.1, 3.3.3) | Mensaje por campo con ícono, asociado con `aria-describedby`; al enviar, el foco va al primer campo con error | Registro, datos del alta y caso de soporte |
-| Título por pantalla (2.4.2) | `metadata.title` por ruta ("Pedido · Handyx Especialistas") | `out/*/index.html` |
+| Título por pantalla (2.4.2) | `metadata.title` por ruta ("Pedido · Handyx Especialistas"), también en la 404 | `npm run accesibilidad` (lote 4.9) |
+| Estructura para lectores (1.3.1) | Un solo h1 y una región principal por pantalla; un error que ocupa la pantalla es su h1 (`ErrorCaja pantalla`) | `npm run accesibilidad` (lote 4.9) |
+| Foco no tapado (2.4.11) | `scroll-padding` para la barra superior, las pestañas y el botón fijo de abajo | `src/kit/kit.css` |
 | Orientación (1.3.4) | El manifest ya no fuerza vertical | `public/manifest.webmanifest` |
 | Texto al 200 % y reflow (1.4.4, 1.4.10) | Corte de palabras largas solo cuando no entran; controles que bajan de línea | 28 pantallas al 200 % sin desborde (también a 320 px) |
 | Movimiento (2.3.3, 2.2.2) | Las animaciones solo corren con `prefers-reduced-motion: no-preference`; nada dura más de 0,6 s ni se repite (salvo el esqueleto mientras carga) | CSS, sección "Movimiento" |

@@ -39,7 +39,7 @@ export function PlanObra() {
     return { detalle, pagos: pagos.items.filter((p) => p.trabajoId === detalle.trabajo.id) };
   }, [id]);
   if (!id) return <Vacio icono="maletin" titulo="No indicaste qué obra abrir"><Link href={RUTAS.trabajos.ruta}>Ver mis trabajos</Link></Vacio>;
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   return <Plan detalle={c.datos.detalle} pagos={c.datos.pagos} recargar={c.recargar} fallo={c.fallo} />;
 }

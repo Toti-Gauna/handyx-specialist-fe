@@ -18,7 +18,7 @@ export function Contactos() {
   const c = useCarga(() => api.contactos(), []);
   const isla = useIsla();
   const quitar = useAccion();
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
 
   async function sacar(k: Contacto) {

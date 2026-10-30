@@ -24,7 +24,7 @@ export const ETAPA_CHAT: Record<Conversacion['etapa'], Etiqueta> = {
 export function Mensajes() {
   const c = useCarga(() => api.conversaciones(), []);
   const ahora = useAhora(30_000);
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   return (
     <div className="pila me">

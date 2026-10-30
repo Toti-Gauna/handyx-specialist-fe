@@ -1053,8 +1053,12 @@ legend {
 .sin-red__texto .handy {
   flex: none;
 }
-.caja-error p {
+.caja-error p,
+.caja-error__mensaje {
   margin: 0;
+}
+.caja-error__mensaje {
+  font: inherit;
 }
 
 .cargando {

@@ -241,6 +241,17 @@
   background: linear-gradient(to top, var(--color-hueso) 72%, transparent);
 }
 
+/* Foco nunca tapado (WCAG 2.4.11): al llegar con el teclado, el navegador deja lugar para la barra y el botón fijos. */
+html:has(.hx-barra) {
+  scroll-padding-top: calc(var(--hx-barra-alto) + var(--hx-seguro-arriba) + var(--esp-2));
+}
+html:has(.hx-pestanas) {
+  scroll-padding-bottom: calc(var(--hx-pestanas-alto) + var(--esp-6) + var(--hx-seguro-abajo));
+}
+html:has(.hx-boton-fijo) {
+  scroll-padding-bottom: calc(var(--toque-min) + 2 * var(--esp-3) + var(--esp-4) + var(--hx-seguro-abajo));
+}
+
 .hx-boton-fijo__nota {
   margin: 0;
   color: var(--hd-suave);
@@ -472,6 +483,7 @@
 /* ── Calendario del mes ────────────────────────────────────────────── */
 
 .hx-cal {
+  container-type: inline-size;
   display: grid;
   gap: var(--esp-2);
 }
@@ -501,6 +513,14 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* Calendario angosto: menos espacio entre días para que cada uno conserve el ancho táctil. */
+@container (max-width: 370px) {
+  .hx-cal__semana,
+  .hx-cal__grilla {
+    gap: 3px;
+  }
 }
 
 .hx-cal__semana {

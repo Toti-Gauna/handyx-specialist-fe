@@ -1,10 +1,53 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.8) · Bloque 4 · **Fase 4 en curso: 4.1, 4.2 y 4.4 a 4.8 cerrados localmente; 4.3 hecho salvo el mapa base (queda para el final: datos de OpenStreetMap bloqueados por la red).**
+Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada salvo el sí de diseño de Ignacio (4.9) y el mapa base del 4.3 (datos de OpenStreetMap bloqueados por la red).**
 Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 4 · Lote 4.9 (QA premium y sí de diseño)
+
+- **Página de flujos actualizada** (artifact "Flujos de Handyx Especialistas", privado de Ignacio): 26 recorridos con 114
+  capturas, lo que hay que decidir, la calidad del lote y la lista para probar con VoiceOver y TalkBack.
+- **Accesibilidad en 4 tamaños** (320, 390, 768 y 1280):
+  - La auditoría suma la estructura para lectores: un h1, un main y título propio por pantalla. Encontró 4 problemas:
+    - "¡Terminaste!" tenía dos h1: la celebración pasó a h2.
+    - Las pantallas de error de carga no tenían h1: `ErrorCaja pantalla` hace del mensaje el título.
+    - La 404 no tenía título propio.
+  - A 768 px, la grilla de horarios del alta quedaba debajo del botón fijo "Guardar". Arreglado con `scroll-padding`
+    para la barra superior, las pestañas y el botón fijo (el foco nunca queda tapado, WCAG 2.4.11).
+  - La auditoría vuelve a medir un objetivo tapado por un elemento fijo después de llevarlo a la vista.
+  - Calendario angosto: menos espacio entre días (consulta de contenedor). A 320 px pasan de 36 a 39 px de ancho.
+- **Rendimiento** (Lighthouse móvil, `e2e/rendimiento.cjs` sobre el build de producción y una API ficticia local):
+  - **El mapa arranca con la primera interacción** (tocar, deslizar, una tecla) o con "Ver el mapa"; antes se ve el texto
+    de la zona. En camino y el pedido entrante lo cargan al aparecer (`inmediato`). Inicio: de 61 a 84–86.
+  - Entrar se exporta con su contenido: solo la cabecera lee `?motivo=` (antes toda la pantalla esperaba al JS). 88 → 96.
+  - Sesión y perfil se piden a la par en la guardia.
+  - `preconnect` al dominio de la API cuando el origen es `http`.
+  - Cuenta espera al sello, los rubros y el fee antes de mostrarse: el salto de diseño bajó de 0,31 a 0,03.
+  - La imagen de la 404 ya no se precarga en todas las pantallas (su árbol viaja en cada HTML exportado).
+  - Resultado: públicas 96–97; con sesión 83–90; accesibilidad 96–100.
+- **Probado y descartado** (no cambian el LCP): recortar Archivo de 88 a 44 KB y cortar el prefetch de las pestañas.
+  El límite es el armado en el navegador detrás de la sesión (~3,5 s en Slow 4G simulado).
+
+### Comandos del lote 4.9 (30/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 144 pruebas: 142 OK y 2 omitidas (sincronías con otros repos) |
+| `npm run e2e` | 26/26 (M1 prueba "Ver el mapa"; M3 espera el texto antes de activar el mapa) |
+| `npm run accesibilidad` (390, `ANCHO=320x568`, `768x1024`, `1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom, movimiento y estructura |
+| `npm run capturas` · `capturas:docs` | 59/59 y 118/118 |
+| `node e2e/rendimiento.cjs` | Ver arriba: 5 de 14 pantallas en 90 o más |
+| `build:hostinger` con API ficticia | OK, sin fixtures ni banner |
+
+**Pendiente para cerrar la fase 4**:
+1. Ignacio: sí de diseño sobre la página de flujos, y decidir si el rendimiento con sesión (83–90) alcanza para la fase 5
+   o si se prerenderiza el marco de cada pantalla.
+2. Prueba a mano con VoiceOver (iPhone) y TalkBack (Android), con la lista de la página de flujos.
+3. Mapa base del 4.3 cuando la red permita bajar OpenStreetMap.
 
 ## Fase 4 · Lote 4.8 (agenda, mensajes, cuenta, caja y ayuda)
 
@@ -58,7 +101,7 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 | `ANCHOS=` 7 tamaños `npm run capturas` | 413/413 sin desborde y sanitizadas |
 | `build:hostinger` con API ficticia | OK: 41 páginas (suma Contactos y las 4 de Cuenta), sin `/catalogo/`, fixtures ni las marcas del panel |
 
-**Próximo paso**: lote 4.9 (QA premium y sí de diseño). Antes, cerrar el mapa base del 4.3 si se habilita Overpass.
+**Próximo paso** (del 4.8): lote 4.9, hecho (ver arriba).
 
 ## Fase 4 · Lote 4.7 (obras de varios días)
 

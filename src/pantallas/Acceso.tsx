@@ -4,7 +4,7 @@
 import { api, credencialesPrueba } from '@handyx/origen-datos';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, type FormEvent } from 'react';
+import { Suspense, useState, type FormEvent } from 'react';
 import { RUTAS } from '../app/rutas.ts';
 import { BotonesProveedor } from '../components/BotonesProveedor.tsx';
 import { CampoClave, Escena } from '../components/Cuenta.tsx';
@@ -15,7 +15,6 @@ import { destinoCuenta } from '../lib/destino.ts';
 
 export function Acceso() {
   const router = useRouter();
-  const deSesionVencida = useSearchParams().get('motivo') === 'sesion';
   const { pendiente, fallo, ejecutar } = useAccion({ publica: true });
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,20 +48,10 @@ export function Acceso() {
   return (
     <>
       <Escena tono="amarillo" handy="grupo" alto={130} logo />
-      <div className="cu-cabecera">
-        <h1 className="hx-titulo cu-titulo">
-          {deSesionVencida ? (
-            <>
-              Hola <span className="hx-marca">de nuevo</span>
-            </>
-          ) : (
-            <>
-              Entrá a <span className="hx-marca">Handyx</span>
-            </>
-          )}
-        </h1>
-        <p className="cu-bajada">{deSesionVencida ? 'Por seguridad cerramos tu sesión. Lo que ya enviaste está guardado.' : 'La app para especialistas del hogar de Mar del Plata.'}</p>
-      </div>
+      {/* Solo la cabecera lee la URL: el resto de la pantalla sale en el HTML exportado y se ve antes de que cargue el JS. */}
+      <Suspense fallback={<Cabecera deSesionVencida={false} />}>
+        <CabeceraSegunUrl />
+      </Suspense>
 
       <BotonesProveedor onEntrar={(r) => void conProveedor(r)} />
 
@@ -92,5 +81,28 @@ export function Acceso() {
         </Aviso>
       ) : null}
     </>
+  );
+}
+
+function CabeceraSegunUrl() {
+  return <Cabecera deSesionVencida={useSearchParams().get('motivo') === 'sesion'} />;
+}
+
+function Cabecera({ deSesionVencida }: { deSesionVencida: boolean }) {
+  return (
+    <div className="cu-cabecera">
+      <h1 className="hx-titulo cu-titulo">
+        {deSesionVencida ? (
+          <>
+            Hola <span className="hx-marca">de nuevo</span>
+          </>
+        ) : (
+          <>
+            Entrá a <span className="hx-marca">Handyx</span>
+          </>
+        )}
+      </h1>
+      <p className="cu-bajada">{deSesionVencida ? 'Por seguridad cerramos tu sesión. Lo que ya enviaste está guardado.' : 'La app para especialistas del hogar de Mar del Plata.'}</p>
+    </div>
   );
 }

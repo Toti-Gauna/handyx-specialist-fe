@@ -17,7 +17,9 @@ const HANDYS = {
 
 export type NombreHandy = keyof typeof HANDYS;
 
-export function Handy({ nombre, alto = 96, className = '' }: { nombre: NombreHandy; alto?: number; className?: string }) {
+/** `diferida`: para imágenes que no están en la primera vista (por ejemplo, la de la 404, cuyo árbol viaja en todas las
+ * páginas exportadas): así no se precargan en cada pantalla. */
+export function Handy({ nombre, alto = 96, className = '', diferida = false }: { nombre: NombreHandy; alto?: number; className?: string; diferida?: boolean }) {
   const h = HANDYS[nombre];
   return (
     <img
@@ -28,6 +30,7 @@ export function Handy({ nombre, alto = 96, className = '' }: { nombre: NombreHan
       width={Math.round((h.ancho * alto) / h.alto)}
       height={alto}
       decoding="async"
+      loading={diferida ? 'lazy' : undefined}
     />
   );
 }

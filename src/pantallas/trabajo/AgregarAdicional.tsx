@@ -34,7 +34,7 @@ export function AgregarAdicional() {
     return { detalle, fee };
   }, [id]);
   if (!id) return <Vacio icono="maletin" titulo="No indicaste a qué trabajo agregar"><Link href={RUTAS.trabajos.ruta}>Ver mis trabajos</Link></Vacio>;
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   const ahora = api.ahora();
   const politica = c.datos.fee.politica;

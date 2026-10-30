@@ -64,7 +64,7 @@
   background-size: 64px 52px;
 }
 
-.hx-mapa__respaldo > * {
+.hx-mapa__respaldo > :not(.boton) {
   max-width: 32ch;
   margin: 0;
   padding: var(--esp-2) var(--esp-3);

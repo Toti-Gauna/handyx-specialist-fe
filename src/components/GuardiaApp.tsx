@@ -23,11 +23,13 @@ export function GuardiaApp({ children }: { children: ReactNode }) {
   // Una cuenta a medio crear (email sin verificar o términos sin aceptar) vuelve a terminarla antes de entrar.
   const c = useCarga(
     async () => {
-      const s = await api.sesion();
+      // Sesión y perfil van a la par (un viaje menos al abrir la app). El perfil solo se usa si la sesión está
+      // completa; si falló teniendo sesión, se vuelve a pedir para que su error llegue tal cual.
+      const [s, p] = await Promise.all([api.sesion(), api.perfil().catch(() => null)]);
       if (!s) return null;
       if (!s.cuenta.emailVerificado) return 'verificar' as const;
       if (!s.cuenta.terminosAceptados) return 'aceptar' as const;
-      return api.perfil();
+      return p ?? api.perfil();
     },
     [],
     { cadaMs: 60_000 },
@@ -42,7 +44,7 @@ export function GuardiaApp({ children }: { children: ReactNode }) {
     if (perfil?.baja && perfil.baja !== 'cancelada') router.replace(RUTAS.baja.ruta);
   }, [c.estado, c.datos, perfil, router]);
 
-  if (c.fallo && !perfil) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !perfil) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!valor) return <Cargando />;
   return <Ctx.Provider value={valor}>{children}</Ctx.Provider>;
 }

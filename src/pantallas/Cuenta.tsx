@@ -5,7 +5,7 @@
 import { api } from '@handyx/origen-datos';
 import { useRouter } from 'next/navigation';
 import { RUTAS } from '../app/rutas.ts';
-import { ErrorCaja } from '../components/Estados.tsx';
+import { Cargando, ErrorCaja } from '../components/Estados.tsx';
 import { ContadorFee } from '../components/FeeAviso.tsx';
 import { usePerfil } from '../components/GuardiaApp.tsx';
 import { Icono } from '../components/Icono.tsx';
@@ -26,6 +26,10 @@ export function Cuenta() {
   const nombre = [perfil.nombre, perfil.apellido].filter(Boolean).join(' ') || 'Tu cuenta';
   // El sello lo decide el servidor: mientras no responde, no se muestra.
   const verificado = publico.datos?.verificado === true;
+
+  // El sello, los rubros y el contador del fee llegan juntos: la pantalla se muestra entera de una vez, sin empujar
+  // las filas hacia abajo mientras carga (CLS).
+  if ((!fee.datos && !fee.fallo) || (!publico.datos && !publico.fallo)) return <Cargando />;
 
   async function salir() {
     await salida.ejecutar(() => api.salir());

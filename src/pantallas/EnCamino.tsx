@@ -76,7 +76,7 @@ export function EnCamino() {
   }, [activa, estadoTrabajo, parar]);
 
   if (!id) return <Vacio icono="maletin" titulo="No indicaste qué trabajo abrir"><Link href={RUTAS.trabajos.ruta}>Ver mis trabajos</Link></Vacio>;
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
 
   const { detalle, viaje: viajeInicial } = c.datos;
@@ -123,6 +123,7 @@ export function EnCamino() {
         <Mapa
           etiqueta={`Mapa del viaje a lo de ${detalle.contraparte}`}
           alto="completo"
+          inmediato
           interactivo
           conCentrar
           tapadoAbajo={ALTURAS_HOJA[alturaHoja]}

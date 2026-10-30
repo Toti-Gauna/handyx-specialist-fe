@@ -37,7 +37,7 @@ export function Terminado() {
   }, [celebrar, listo, id, lanzar]);
 
   if (!id) return <Vacio icono="maletin" titulo="No indicaste qué trabajo"><Link href={RUTAS.trabajos.ruta}>Ver mis trabajos</Link></Vacio>;
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   const { detalle: d, pagos } = c.datos;
   const t = d.trabajo;
@@ -60,9 +60,10 @@ export function Terminado() {
       <BarraSuperior titulo={obra ? 'Obra terminada' : 'Trabajo terminado'} atras={volver} textoAtras="Volver al trabajo" acciones={null} />
       <section className="tr-fin__hero" aria-labelledby="tr-fin-t">
         <Tilde />
-        <h1 id="tr-fin-t" className="hx-titulo tr-fin__titulo">
+        {/* El h1 de la pantalla es el de la barra; la celebración es la primera sección. */}
+        <h2 id="tr-fin-t" className="hx-titulo tr-fin__titulo">
           {obra ? '¡Terminaste la obra!' : '¡Terminaste el trabajo!'}
-        </h1>
+        </h2>
         <p className="tr-fin__sub">
           {NOMBRE_RUBRO[t.rubro]} · {d.contraparte}
         </p>

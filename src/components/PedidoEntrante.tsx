@@ -39,7 +39,7 @@ export function PedidoEntrante({ pedidos }: { pedidos: readonly PedidoElegible[]
         <p className="pe__zona">
           <Icono nombre="pin" /> {p.zonaAproximada} · zona aproximada
         </p>
-        {p.zonaMapa ? <Mapa etiqueta={`Zona aproximada del pedido en ${p.zonaAproximada}`} alto="chico" zona={p.zonaMapa} alternativa={<p>Zona aproximada: {p.zonaAproximada}</p>} /> : null}
+        {p.zonaMapa ? <Mapa etiqueta={`Zona aproximada del pedido en ${p.zonaAproximada}`} alto="chico" inmediato zona={p.zonaMapa} alternativa={<p>Zona aproximada: {p.zonaAproximada}</p>} /> : null}
         <p className="pe__descripcion">{p.descripcion}</p>
         {quedan ? (
           <p className="pe__vigencia">

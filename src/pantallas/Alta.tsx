@@ -49,7 +49,7 @@ export function Alta() {
     previo.current = perfil.estadoAlta;
   }, [perfil.estadoAlta]);
 
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
 
   const { datos, disponibilidad } = c.datos;

@@ -36,7 +36,7 @@ export function TuPrecio() {
   }, [id]);
 
   if (!id) return <Vacio icono="lupa" titulo="No indicaste qué pedido cotizar"><Link href={RUTAS.pedidos.ruta}>Ver pedidos</Link></Vacio>;
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   return <Formulario key={`${id}-${baseId ?? ''}`} datos={c.datos} baseId={baseId} chatId={chatId} />;
 }

@@ -65,7 +65,7 @@ export function Hilo() {
   }, [cantidad]);
 
   if (!id) return <Vacio icono="chat" titulo="No indicaste qué conversación abrir"><Link href={RUTAS.mensajes.ruta}>Ver mensajes</Link></Vacio>;
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   const { conv, mensajes, propuestas, pedido } = c.datos;
   const cerrada = conv.etapa === 'cerrada';

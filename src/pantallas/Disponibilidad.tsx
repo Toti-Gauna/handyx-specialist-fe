@@ -39,7 +39,7 @@ export function Disponibilidad() {
     }
   }, [c.datos]);
 
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos || !franjas) return <Cargando />;
   const d = c.datos;
   const habilitados = perfil.rubros.filter((r) => r.estado === 'habilitado');

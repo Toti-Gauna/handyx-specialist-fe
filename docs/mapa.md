@@ -97,7 +97,11 @@ npm run mapa:generar     # → public/mapa/teselas/{z}/{x}/{y}.pbf + public/mapa
   `scripts/mapa/preparar-motor.mjs` copia `maplibre-gl-worker-<versión>.js` a `public/mapa/motor/`. Corre en
   `dev`, `build` y `build:hostinger`, y la copia no se versiona.
 - `motor.ts` le indica esa ruta con `setWorkerUrl`.
-- Peso: el chunk de MapLibre es de ~283 KB comprimido y ninguna página lo precarga. Se baja recién cuando aparece un mapa.
+- Peso: el chunk de MapLibre es de ~283 KB comprimido y ninguna página lo precarga.
+  - Desde el lote 4.9 se baja con la primera interacción con la pantalla (tocar, deslizar, una tecla) o con "Ver el mapa".
+    Mientras tanto se ve la `alternativa` en texto, con `data-mapa="en_espera"`.
+  - Los mapas que son lo principal de la pantalla llevan `inmediato` y arrancan al aparecer: En camino y el pedido entrante.
+  - Motivo: en Inicio, el motor sumaba más de 2 s de bloqueo en Lighthouse móvil (rendimiento 61; con el cambio, 84–86).
 - El service worker no cambió:
   - Las teselas y `meta.json` van siempre a la red.
   - El worker (`.js`) sigue "red primero".

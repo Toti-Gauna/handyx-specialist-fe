@@ -14,9 +14,31 @@ async function auditar(p, nombre, informe) {
   const r = await p.evaluate(async (tags) => {
     // eslint-disable-next-line no-undef
     const res = await axe.run(document, { runOnly: { type: 'tag', values: tags } });
-    return res.violations.map((v) => ({ id: v.id, impacto: v.impact, ayuda: v.help, nodos: v.nodes.slice(0, 3).map((n) => n.target.join(' ')) }));
+    return res.violations.map((v) => ({ id: v.id, impacto: v.impact, ayuda: v.help, nodos: v.nodes.map((n) => n.target.join(' ')) }));
   }, ETIQUETAS);
-  for (const v of r) informe.push({ nombre, ...v });
+  for (const v of r) {
+    // target-size también cuenta lo que tapa un botón fijo según dónde quedó el scroll: el objetivo se lleva a la vista
+    // (como lo hace el foco, con el scroll-padding del kit) y se vuelve a medir. Solo queda si sigue siendo chico.
+    if (v.id === 'target-size') v.nodos = await sigueChico(p, v.nodos);
+    if (v.nodos.length > 0) informe.push({ nombre, ...v });
+  }
+}
+
+async function sigueChico(p, selectores) {
+  const quedan = [];
+  for (const sel of selectores) {
+    const falla = await p.evaluate(async (s) => {
+      const el = document.querySelector(s);
+      if (!el) return true;
+      el.scrollIntoView({ block: 'nearest' });
+      // eslint-disable-next-line no-undef
+      const res = await axe.run(el, { runOnly: { type: 'rule', values: ['target-size'] } });
+      window.scrollTo(0, 0);
+      return res.violations.length > 0;
+    }, sel);
+    if (falla) quedan.push(sel);
+  }
+  return quedan;
 }
 
 /** Elementos interactivos más chicos que el mínimo. Los enlaces dentro de un párrafo están exceptuados (WCAG 2.5.8). */
@@ -60,6 +82,16 @@ async function main() {
     await esperarMapas(p);
     await auditar(p, nombre, violaciones);
     await areas(p, nombre, tactiles);
+    // Estructura para lectores de pantalla (lote 4.9): un solo h1, una región principal y un título propio en la pestaña.
+    const est = await p.evaluate(() => ({
+      h1: document.querySelectorAll('h1').length,
+      main: document.querySelectorAll('main, [role=main]').length,
+      titulo: document.title,
+    }));
+    // El catálogo del kit (solo en el mock) muestra varias pantallas de ejemplo con su título: no cuenta.
+    if (est.h1 !== 1 && nombre !== 'catalogo') teclado.push(`${nombre}: tiene ${est.h1} títulos h1 (tiene que haber uno)`);
+    if (est.main !== 1) teclado.push(`${nombre}: tiene ${est.main} regiones principales (main)`);
+    if (!est.titulo || est.titulo === 'Handyx · Especialistas') teclado.push(`${nombre}: sin título propio en la pestaña`);
     // Texto al 200 % (WCAG 1.4.4 / 1.4.10): nada desborda hacia los costados
     await p.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
     await p.waitForTimeout(80);
@@ -185,7 +217,7 @@ async function main() {
 
   const graves = tactiles.filter((t) => t.grave);
   console.log(`\naxe (WCAG 2.2 A/AA): ${violaciones.length} violaciones`);
-  for (const v of violaciones) console.log(`  ✘ ${v.nombre} · ${v.id} (${v.impacto}): ${v.ayuda} → ${v.nodos.join(' | ')}`);
+  for (const v of violaciones) console.log(`  ✘ ${v.nombre} · ${v.id} (${v.impacto}): ${v.ayuda} → ${v.nodos.slice(0, 3).join(' | ')}`);
   console.log(`Áreas táctiles < 44 px: ${tactiles.length} (de ellas < 24 px: ${graves.length})`);
   for (const t of tactiles) console.log(`  ${t.grave ? '✘' : '·'} ${t.nombre} · ${t.el} ${t.w}×${t.h}`);
   console.log(`Teclado, foco y movimiento: ${teclado.length} problemas`);

@@ -123,12 +123,15 @@ la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote
   - Cuenta, cobros y notificaciones.
   - Caja con filtros.
   - Centro de ayuda.
-- [ ] **4.9 QA premium y sí de diseño:**
-  - E2E nuevos (más de 15 recorridos) y axe en 0 en 4 tamaños.
-  - Lectores de pantalla y "reducir movimiento".
-  - Lighthouse móvil ≥ 90.
-  - Página de flujos con capturas.
-  - Revisión de Ignacio.
+- [ ] **4.9 QA premium y sí de diseño** (hecho todo salvo la revisión de Ignacio y la prueba a mano con lectores; evidencia en
+  `docs/handoff.md` → Lote 4.9):
+  - [x] E2E nuevos (26 recorridos) y axe en 0 en 4 tamaños (320, 390, 768 y 1280).
+  - [x] "Reducir movimiento" y estructura para lectores (un h1, un main y título propio en cada pantalla), automáticos.
+  - [ ] VoiceOver y TalkBack a mano: lista en la página de flujos.
+  - [ ] Lighthouse móvil ≥ 90: accesibilidad 96–100 en todo; rendimiento 96–97 en las públicas y 83–90 en las de sesión
+    (decisión pendiente de Ignacio).
+  - [x] Página de flujos con capturas (114 pantallas de los 26 recorridos).
+  - [ ] Revisión de Ignacio y sí de diseño.
 
 ### Fase 5 · Backend y DB conectados — Opus 5.5 / high (salvo indicación)
 Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `handyx-specialist-be`. Empieza con el sí de diseño del 4.9.

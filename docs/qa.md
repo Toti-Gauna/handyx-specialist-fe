@@ -8,9 +8,10 @@ estas pruebas demuestran la interfaz y las reglas emuladas del servidor, no el b
 | Qué | Comando | Qué cubre |
 |---|---|---|
 | Unitarias y del mock | `npm test` | Contrato, máquinas de estado, fee, formato, mock con reglas de servidor (60+ pruebas) |
-| Recorridos de punta a punta | `npm run build && npm run e2e` | 22 recorridos en Chromium (390×844) sobre `out/`, incluidos J (sin conexión con service worker) y M1–M3 (mapa) |
+| Recorridos de punta a punta | `npm run build && npm run e2e` | 26 recorridos en Chromium (390×844) sobre `out/`, incluidos J (sin conexión con service worker) y M1–M3 (mapa) |
 | Service worker | `npm test` (`src/pwa/politica.test.ts`) | Nunca intercepta la API, mutaciones ni otros sitios |
-| Accesibilidad | `npm run accesibilidad` (`ANCHO=1280x800`) | axe WCAG 2.2 AA en 46 pantallas, En camino compartiendo y 6 diálogos, áreas táctiles, teclado, foco al primer error y texto al 200 % |
+| Accesibilidad | `npm run accesibilidad` (`ANCHO=320x568`, `768x1024`, `1280x800`) | axe WCAG 2.2 AA en 59 pantallas, En camino compartiendo y los diálogos; áreas táctiles; teclado; foco al primer error; texto al 200 %; estructura para lectores (un h1, un main y título propio); reducir movimiento |
+| Rendimiento | Build de producción apuntando a `http://localhost:4503` y `node e2e/rendimiento.cjs` (`SOLO=`, `VECES=`) | Lighthouse móvil 13.6.0 (rendimiento y accesibilidad) en 14 pantallas, con una API ficticia local que sirve los datos sintéticos del mock. Solo informa: lista lo que queda por debajo de 90 |
 | Capturas | `npm run capturas -- [carpeta]` (`ANCHOS=360x740,…`) | 46 pantallas/escenarios (incluye cuenta, cada paso del alta, mapas, errores, sin conexión y 404) con control de desborde y de sanitización |
 | Catálogo en `docs/capturas/` | `npm run capturas:docs` (ImageMagick) | Las 32 a 390×844 y 6 a 1280×800 en webp |
 | Capturas de recorridos | `CAPTURAS=/ruta node e2e/flujos.cjs` | Una captura por estado clave (insumo de la fase 3 y de Handy Docs, sin datos reales) |
@@ -73,6 +74,26 @@ el trayecto no se puede calcular (la app ofrece Google Maps o Waze).
 | 2.3 | Un acuerdo no cambia sin nueva aceptación; el chat funciona antes de contratar | Cumplido: `mock.test` (cambio de fecha) y E2E D/E |
 | 2.4 | Cambios, errores y próxima acción se entienden sin backend | Cumplido en el mock; falta revisión visual (fase 3) |
 | 2.5 | Sin saldo retirable de Handy ni comisión en la demo | Cumplido: caja con fee $ 0, sin retiros; simulación rotulada "no vigente" |
+
+## Lote 4.9 · QA premium (30/10/2026)
+
+| Control | Resultado |
+|---|---|
+| E2E | 26/26 |
+| axe en 320, 390, 768 y 1280 | 0 violaciones; 0 problemas de teclado, foco, zoom, movimiento y estructura |
+| Áreas táctiles | ≥ 44 px salvo los días del calendario a 320 px (39×44) y el catálogo del mock |
+| Lighthouse accesibilidad | 96–100 (Inicio 96: el interruptor queda debajo de las pestañas en la primera vista) |
+| Lighthouse rendimiento | Bienvenida 97, Entrar 96, Crear cuenta 97; con sesión 83–90 (LCP ~3,5 s con Slow 4G simulado) |
+| Lectores de pantalla a mano | Pendiente: lista para VoiceOver y TalkBack en la página de flujos |
+
+Para medir el rendimiento:
+
+```sh
+NEXT_PUBLIC_DATA_SOURCE=http NEXT_PUBLIC_API_BASE_URL=http://localhost:4503 npx next build
+node e2e/rendimiento.cjs
+```
+
+Ese build es solo para medir: apunta a la API ficticia local y nunca se publica (`build:hostinger` exige https).
 
 ## Lo que esta fase NO demuestra
 

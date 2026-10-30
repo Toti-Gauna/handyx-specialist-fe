@@ -10,6 +10,8 @@ import { ProveedorIsla } from '../kit/Efectos.tsx';
 import { Proveedor } from './contexto.tsx';
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+// Con la API real, la conexión a su dominio (DNS, TCP y TLS) se abre mientras baja la app: el primer pedido no la espera.
+const origenApi = process.env.NEXT_PUBLIC_DATA_SOURCE === 'http' && process.env.NEXT_PUBLIC_API_BASE_URL ? new URL(process.env.NEXT_PUBLIC_API_BASE_URL).origin : null;
 
 export const metadata: Metadata = {
   title: { default: 'Handyx · Especialistas', template: '%s · Handyx Especialistas' },
@@ -33,6 +35,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         {/* Tokens de marca (copia de Handy-landing-page-fe/src/brand/tokens.ts) como variables CSS. */}
         <style dangerouslySetInnerHTML={{ __html: variablesCss() }} />
+        {/* Con credenciales: es la misma conexión que usan los pedidos con la cookie de sesión. */}
+        {origenApi ? <link rel="preconnect" href={origenApi} crossOrigin="use-credentials" /> : null}
       </head>
       <body>
         <a className="saltar" href="#contenido">

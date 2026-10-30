@@ -27,7 +27,7 @@ export function CambiarFecha() {
   const id = useIdDeUrl();
   const c = useCarga(() => (id ? api.trabajo(id) : Promise.resolve(null)), [id]);
   if (!id) return <Vacio icono="maletin" titulo="No indicaste qué trabajo mover"><Link href={RUTAS.trabajos.ruta}>Ver mis trabajos</Link></Vacio>;
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   return <Formulario detalle={c.datos} />;
 }

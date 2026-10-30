@@ -54,7 +54,7 @@ export function Avisos() {
   const borrado = useAccion();
   const [confirmar, setConfirmar] = useState(false);
 
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   const nuevos = c.datos.filter((a) => !a.leido);
   const antes = c.datos.filter((a) => a.leido);

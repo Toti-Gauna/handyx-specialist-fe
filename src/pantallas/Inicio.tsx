@@ -56,7 +56,7 @@ function PanelInicio({ nombre }: { nombre: string | null }) {
   }, []);
   const cambio = useAccion();
 
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   const { inicio, disp, pedidos, fee, barrios } = c.datos;
   const tarifa = tarifaTexto(fee.politica, api.ahora());

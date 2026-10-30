@@ -35,7 +35,7 @@ export function Soporte() {
     if (trabajoUrl) setAbierto(true);
   }, [trabajoUrl]);
 
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   const { casos, trabajos } = c.datos;
 

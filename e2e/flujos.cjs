@@ -5,6 +5,7 @@
 const assert = require('node:assert/strict');
 const { join } = require('node:path');
 const { servir } = require('./servidor.cjs');
+const { activarMapas, esperarMapas } = require('./pantallas.cjs');
 const { chromium } = require('playwright');
 
 const resultados = [];
@@ -156,7 +157,7 @@ async function main() {
     await p.getByRole('button', { name: 'Centro', exact: true }).click();
     await p.getByRole('button', { name: 'La Perla', exact: true }).click();
     await p.getByRole('button', { name: 'Lunes a la mañana' }).click();
-    await p.waitForFunction(() => !document.querySelector('[data-mapa="cargando"]'));
+    await esperarMapas(p);
     await foto('09-alta-zonas');
     await p.getByRole('button', { name: 'Guardar zonas y horarios' }).click();
     await ver(p, '2 barrios · 1 franja');
@@ -749,12 +750,19 @@ async function main() {
   }, { capturas });
 
   // ── Mapa, ubicación en vivo y trayectos (lote 4.3) ──
-  const mapaListo = (p, n = 1) => p.waitForFunction((k) => document.querySelectorAll('[data-mapa="listo"]').length >= k, n, { timeout: 20000 });
+  const mapaListo = async (p, n = 1) => {
+    await activarMapas(p);
+    await p.waitForFunction((k) => document.querySelectorAll('[data-mapa="listo"]').length >= k, n, { timeout: 20000 });
+  };
   const chip = (p, texto) => p.locator('.vj-compartir .chip').getByText(texto).waitFor();
 
   await escenario('M1-zona-aproximada-del-pedido', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/pedidos/detalle/?id=00000000-0000-4000-8000-0000000000b2&escenario=habilitado`);
     await ver(p, 'El círculo es aproximado');
+    // Hasta la primera interacción el motor no se baja: se ve la zona en texto y "Ver el mapa" (lote 4.9)
+    assert.equal(await p.locator('[data-mapa="en_espera"]').count(), 1);
+    await ver(p, 'Zona aproximada: Centro');
+    await p.getByRole('button', { name: 'Ver el mapa' }).click();
     await mapaListo(p);
     assert.equal(await p.getByRole('region', { name: 'Zona aproximada del pedido en Centro' }).count(), 1);
     // Antes del acuerdo no hay pin de destino: solo la zona
@@ -810,6 +818,8 @@ async function main() {
 
   await escenario('M3-sin-mapa-queda-el-texto', navSinWebgl, base, async ({ p, foto }) => {
     await p.goto(`${base}/pedidos/detalle/?id=00000000-0000-4000-8000-0000000000b2&escenario=habilitado`);
+    await ver(p, 'Zona aproximada: Centro');
+    await activarMapas(p);
     await p.waitForSelector('[data-mapa="sin_mapa"]', { timeout: 20000 });
     await ver(p, 'Zona aproximada: Centro');
     await foto('01-respaldo');

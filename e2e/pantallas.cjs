@@ -65,6 +65,19 @@ const PANTALLAS = [
 ];
 
 /** Espera a que los mapas de la pantalla terminen de cargar (o queden con su texto de respaldo). */
-const esperarMapas = (p) => p.waitForFunction(() => !document.querySelector('[data-mapa="cargando"]'), null, { timeout: 20000 });
+// Los mapas arrancan con la primera interacción (lote 4.9): se simula un desplazamiento hasta que ninguno espere.
+const activarMapas = (p) =>
+  p.waitForFunction(
+    () => {
+      if (document.querySelector('[data-mapa="en_espera"]')) window.dispatchEvent(new Event('scroll'));
+      return !document.querySelector('[data-mapa="en_espera"]');
+    },
+    null,
+    { timeout: 20000 },
+  );
+const esperarMapas = async (p) => {
+  await activarMapas(p);
+  await p.waitForFunction(() => !document.querySelector('[data-mapa="cargando"]'), null, { timeout: 20000 });
+};
 
-module.exports = { PANTALLAS, id, esperarMapas };
+module.exports = { PANTALLAS, id, activarMapas, esperarMapas };

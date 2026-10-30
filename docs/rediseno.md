@@ -380,6 +380,16 @@ Una obra (pintura, revoque, instalación grande) dura días o semanas y hoy se v
 - Rendimiento medido con Lighthouse móvil (≥ 90 en rendimiento y accesibilidad).
 - Revisión final con Ignacio, que da el **sí de diseño** para empezar la fase 5 (backend).
 
+**Estado (30/10/2026)**: hecho salvo la revisión de Ignacio y la prueba a mano con lectores de pantalla.
+- 26 recorridos E2E y axe en 0 en 320, 390, 768 y 1280. La auditoría suma la estructura para lectores (un h1, un main y
+  título propio) y vuelve a medir un objetivo tapado por un botón fijo después de llevarlo a la vista.
+- Lighthouse móvil sobre el build de producción (`node e2e/rendimiento.cjs`, con una API ficticia local):
+  - Accesibilidad: 96–100 en todas las pantallas.
+  - Rendimiento: 96–97 en las públicas; 83–90 en las de sesión (LCP de ~3,5 s).
+  - Con sesión, la pantalla se arma en el navegador después de verificar la sesión: bajar más exige prerenderizar el marco
+    de cada pantalla. Queda a decisión de Ignacio.
+- El mapa (salvo En camino y el pedido entrante) arranca con la primera interacción o con "Ver el mapa": Inicio pasó de 61 a 84–86.
+
 ## 6. Inventario de pantallas (73)
 
 | Grupo | Pantallas | Lote |

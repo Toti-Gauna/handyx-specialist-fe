@@ -55,7 +55,7 @@ export function RecuperarNueva() {
       </div>
     );
   }
-  if (estado.fallo && !estado.datos) return <ErrorCaja fallo={estado.fallo} onReintentar={() => void estado.recargar()} />;
+  if (estado.fallo && !estado.datos) return <ErrorCaja pantalla fallo={estado.fallo} onReintentar={() => void estado.recargar()} />;
   if (!estado.datos) return <Cargando />;
 
   if (estado.datos.estado !== 'valido' || fallo?.tipo === 'conflicto') {
