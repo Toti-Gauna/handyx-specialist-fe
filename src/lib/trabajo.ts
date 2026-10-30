@@ -93,6 +93,8 @@ export const FRANJAS = [
   { id: 'manana', texto: 'Mañana · 8 a 12', desde: '08:00', hasta: '12:00' },
   { id: 'mediodia', texto: 'Mediodía · 12 a 16', desde: '12:00', hasta: '16:00' },
   { id: 'tarde', texto: 'Tarde · 16 a 20', desde: '16:00', hasta: '20:00' },
+  // Para las jornadas de una obra (4.7), que suelen ser de día completo.
+  { id: 'dia', texto: 'Día completo · 9 a 17', desde: '09:00', hasta: '17:00' },
 ] as const;
 export type Franja = (typeof FRANJAS)[number]['id'];
 

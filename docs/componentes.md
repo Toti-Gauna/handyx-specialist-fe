@@ -1,4 +1,4 @@
-# Catálogo de componentes · PWA Especialista (lotes 3.3 y 4.1 a 4.6)
+# Catálogo de componentes · PWA Especialista (lotes 3.3 y 4.1 a 4.7)
 
 Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila dice dónde verlo en
 `docs/capturas/390x844/` (todas con datos sintéticos; ver `docs/capturas/README.md`).
@@ -46,6 +46,8 @@ Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila d
 | `TarjetaPedido` | Enlace al detalle; nunca acepta. Tipo → rubro → zona y fecha → descripción → búsqueda | `pedidos`, `inicio` |
 | `TarjetaPropuesta` | Monto, horario, alcance y "Vence en" neutro; aceptar verde y rechazar en contorno rojo, con confirmación | `pedido-programado` |
 | `FormPropuesta` | Montos en centavos enteros, `Idempotency-Key` estable al reintentar. Desde el 4.5 la propuesta del pedido va por la pantalla Tu precio; `FormPropuesta` queda en el chat hasta su lote. `FormCambio` se reemplazó por la pantalla Cambiar la fecha (4.6) | (hojas) |
+| `CobroDirecto` (4.6 y 4.7) | El estado de un cobro con texto y "Ya me pagó: informarlo" con confirmación; queda "reportado", nunca verificado. Sirve para el trabajo terminado y para cada etapa de una obra | `trabajo-terminaste`, `obra-plan` |
+| `ResumenObra` (4.7) | Anillo de avance por etapas, jornada de hoy o próxima, acordado, cobrado y falta cobrar, y los accesos al plan, las jornadas, el diario y los adicionales | `trabajo-obra` |
 | `EstadoMiPropuesta` (4.5) | Esperando al cliente (Handy, monto y "Vence en"); ¡El cliente te eligió! (confeti solo si se vio el cambio, abre el trabajo); no te eligieron, venció o retirada en gris, sin culpa | `tu-precio`, recorrido N |
 | `PedidoEntrante` (4.5) | Hoja con el urgente nuevo: rubro, zona aproximada, descripción y vigencia neutra. "Ver y cotizar" abre el detalle; "Ahora no" deja pasar los urgentes de ahora (en memoria) y nunca rechaza | recorrido B |
 | `VigiaAvisos` (4.5) | Consulta los avisos cada 20 s en la app y, ante un "te eligieron" nuevo, muestra la isla con "Ver el trabajo" y confeti | recorrido N |

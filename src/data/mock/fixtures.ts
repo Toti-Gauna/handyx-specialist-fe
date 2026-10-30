@@ -24,6 +24,7 @@ import {
   type TrabajoInterno,
 } from './estado.ts';
 import { BASE_PRUEBA, destinoPrueba, zonaPrueba } from './mapa.ts';
+import { FOTO_PRUEBA } from './fotos.ts';
 import { calcularFaltantes } from './reglas.ts';
 import { turnosDePrueba } from './turnos.ts';
 
@@ -49,6 +50,8 @@ export const ID = {
   t3: idFijo(0xc3),
   t4: idFijo(0xc4),
   t5: idFijo(0xc5),
+  /** Obra agendada de 3 etapas en 5 jornadas (lote 4.7), para recorrerla de punta a punta. */
+  t6: idFijo(0xc6),
   // conversaciones
   c1: idFijo(0xd1),
   c2: idFijo(0xd2),
@@ -325,6 +328,8 @@ export function crearEstado(escenario: Escenario): EstadoMock {
     pagoId: null,
     metodoPago: 'mercado_pago',
     adicionales: [],
+    jornadas: [],
+    diario: [],
     ...extra,
   });
 
@@ -341,16 +346,64 @@ export function crearEstado(escenario: Escenario): EstadoMock {
   t3.trabajo.destino = null;
   const t4 = trab(ID.t4, idFijo(0xba), idFijo(0xf5), 'en_curso', 'albanileria', 'obra', 320000, 'Revoque, pintura y terminación de una medianera, en tres etapas.', T0 - 3 * DIA, idFijo(0xd5), 'Cliente de prueba 8', { pagoId: ID.pg4 });
   t4.eventos.push({ estado: 'en_curso', en: iso(T0 - 3 * DIA), actor: 'especialista' });
+  // Obras (0.8.0): etapas con lo que incluyen y su cobro, jornadas de 9 a 17 (hora de Buenos Aires) y diario.
+  const DIA_9 = Date.parse('2026-11-17T12:00:00.000Z'); // martes 17/11, 9:00 en Buenos Aires
+  const etapa = (n: number, orden: number, nombre: string, incluye: string, importe: number, estado: TrabajoInterno['etapas'][number]['estado'], terminadaEn: number | null = null, pagoId: string | null = null) => ({
+    id: idFijo(n),
+    orden,
+    nombre,
+    incluye,
+    monto: pesos(importe),
+    estado,
+    terminadaEn: terminadaEn === null ? null : iso(terminadaEn),
+    pagoId,
+  });
+  const jornada = (n: number, etapaId: string, numero: number, dia: number, estado: TrabajoInterno['jornadas'][number]['estado'] = 'programada') => ({
+    id: idFijo(n),
+    etapaId,
+    numero,
+    horario: { inicio: iso(DIA_9 + dia * DIA), fin: iso(DIA_9 + dia * DIA + 8 * HORA) },
+    estado,
+    cambioPendiente: null,
+  });
+  t4.trabajo.acuerdo.horario.inicio = iso(DIA_9 - 3 * DIA);
   t4.etapas = [
-    { nombre: 'Etapa 1 · Revoque', monto: pesos(120000), estado: 'terminada' },
-    { nombre: 'Etapa 2 · Pintura', monto: pesos(140000), estado: 'en_curso' },
-    { nombre: 'Etapa 3 · Terminación', monto: pesos(60000), estado: 'pendiente' },
+    etapa(0xc41, 1, 'Revoque', 'Picado del revoque flojo, revoque grueso y fino de la medianera.', 120000, 'terminada', T0 - 2 * DIA, ID.pg4),
+    etapa(0xc42, 2, 'Pintura', 'Fijador y dos manos de látex para exterior.', 140000, 'en_curso'),
+    etapa(0xc43, 3, 'Terminación', 'Cierre de juntas, limpieza y retiro de escombros.', 60000, 'pendiente'),
+  ];
+  t4.jornadas = [
+    jornada(0xca1, idFijo(0xc41), 1, -3, 'hecha'),
+    jornada(0xca2, idFijo(0xc41), 2, -2, 'hecha'),
+    jornada(0xca3, idFijo(0xc42), 3, 0),
+    jornada(0xca4, idFijo(0xc42), 4, 2),
+    jornada(0xca5, idFijo(0xc43), 5, 5),
+  ];
+  t4.diario = [
+    { id: idFijo(0xcd1), etapaId: idFijo(0xc41), jornadaId: idFijo(0xca1), nota: 'Picamos todo el revoque flojo y dejamos la pared lista para revocar.', fotos: [{ id: idFijo(0xcd5), url: FOTO_PRUEBA }], creadoEn: iso(DIA_9 - 3 * DIA + 7 * HORA) },
+    { id: idFijo(0xcd2), etapaId: idFijo(0xc41), jornadaId: idFijo(0xca2), nota: 'Terminamos el revoque grueso y el fino. Tiene que secar antes de pintar.', fotos: [{ id: idFijo(0xcd6), url: FOTO_PRUEBA }, { id: idFijo(0xcd7), url: FOTO_PRUEBA }], creadoEn: iso(DIA_9 - 2 * DIA + 7 * HORA) },
+  ];
+  const t6 = trab(ID.t6, idFijo(0xbc), idFijo(0xf7), 'agendado', 'albanileria', 'obra', 250000, 'Pintura de un departamento de dos ambientes, en tres etapas.', DIA_9 + DIA, idFijo(0xd7), 'Cliente de prueba 11');
+  t6.trabajo.acuerdo.horario.fin = iso(DIA_9 + DIA + 8 * HORA);
+  t6.trabajo.destino = destinoPrueba(ID.t6, 'Centro');
+  t6.etapas = [
+    etapa(0xc61, 1, 'Preparación', 'Proteger pisos y muebles, enduido y lijado de paredes.', 60000, 'pendiente'),
+    etapa(0xc62, 2, 'Pintura', 'Dos manos de látex interior en paredes y techos.', 150000, 'pendiente'),
+    etapa(0xc63, 3, 'Terminación', 'Marcos, retoques y limpieza final.', 40000, 'pendiente'),
+  ];
+  // Miércoles a viernes, y lunes y martes de la semana siguiente.
+  t6.jornadas = [
+    jornada(0xcb1, idFijo(0xc61), 1, 1),
+    jornada(0xcb2, idFijo(0xc62), 2, 2),
+    jornada(0xcb3, idFijo(0xc62), 3, 3),
+    jornada(0xcb4, idFijo(0xc62), 4, 6),
+    jornada(0xcb5, idFijo(0xc63), 5, 7),
   ];
   const t5 = trab(ID.t5, idFijo(0xbb), idFijo(0xf6), 'cancelado', 'plomeria', 'programado', 25000, 'Revisión de pérdida (cancelado por el usuario).', T0 - 8 * DIA, idFijo(0xd6), 'Cliente de prueba 9');
   t5.eventos.push({ estado: 'cancelado', en: iso(T0 - 8 * DIA - 3 * HORA), actor: 'usuario' });
   t5.trabajo.direccion = null;
   t5.trabajo.destino = null;
-  s.trabajos = [t1, t2, t3, t4, t5];
+  s.trabajos = [t1, t2, t3, t4, t5, t6];
 
   const pago = (
     id: string,
@@ -362,9 +415,11 @@ export function crearEstado(escenario: Escenario): EstadoMock {
     fuente: Pago['fuenteConfirmacion'],
     ref: string | null,
     en: number,
+    etapaId: string | null = null,
   ): Pago => ({
     id,
     trabajoId,
+    etapaId,
     descripcion,
     feeHandy: pesos(0),
     neto: pesos(importe),
@@ -379,7 +434,7 @@ export function crearEstado(escenario: Escenario): EstadoMock {
     pago(ID.pg1, ID.t1, 'Plomería · 18/11', 45000, 'mercado_pago', 'pendiente', null, null, T0 - 20 * HORA),
     pago(ID.pg2, ID.t2, 'Plomería · 16/11', 30000, 'efectivo', 'reportado', 'reporte_especialista', null, T0 - DIA),
     pago(ID.pg3, ID.t3, 'Electricidad · 12/11', 52000, 'mercado_pago', 'verificado', 'webhook_proveedor', 'MP-PRUEBA-0003', T0 - 5 * DIA + 5 * HORA),
-    pago(ID.pg4, ID.t4, 'Albañilería · Etapa 1 · Revoque', 120000, 'mercado_pago', 'fallido', 'webhook_proveedor', 'MP-PRUEBA-0004', T0 - 2 * DIA),
+    pago(ID.pg4, ID.t4, 'Albañilería · Etapa 1 · Revoque', 120000, 'mercado_pago', 'fallido', 'webhook_proveedor', 'MP-PRUEBA-0004', T0 - 2 * DIA, idFijo(0xc41)),
   ];
 
   const conv = (id: string, pedidoId: string, trabajoId: string | null, contraparte: string, etapa: Conversacion['etapa'], ultimo: string | null, noLeidos: number, en: number): Conversacion => ({
@@ -396,6 +451,7 @@ export function crearEstado(escenario: Escenario): EstadoMock {
     conv(ID.c2, ID.pProgramado, null, 'Cliente de prueba 2', 'cotizando', 'Propuesta de $ 38.000 para el jueves 19/11', 1, T0 - 25 * MIN),
     conv(ID.c1, idFijo(0xb7), ID.t1, 'Cliente de prueba 5', 'trabajo', 'Perfecto, te espero mañana.', 1, T0 - 2 * HORA),
     conv(ID.c3, idFijo(0xb8), ID.t2, 'Cliente de prueba 6', 'cerrada', 'Gracias, quedó funcionando.', 0, T0 - DIA),
+    conv(idFijo(0xd7), idFijo(0xbc), ID.t6, 'Cliente de prueba 11', 'trabajo', 'Dejo las llaves con el encargado.', 0, T0 - 3 * HORA),
   ];
   const msg = (id: number, conversacionId: string, autorRol: Mensaje['autorRol'], texto: string | null, en: number, tipo: Mensaje['tipo'] = 'texto', propuestaId: string | null = null): Mensaje => ({
     id: idFijo(0x900 + id),
@@ -418,6 +474,7 @@ export function crearEstado(escenario: Escenario): EstadoMock {
       msg(5, ID.c1, 'usuario', 'Perfecto, te espero mañana.', T0 - 2 * HORA),
     ],
     [ID.c3]: [msg(6, ID.c3, 'usuario', 'Gracias, quedó funcionando.', T0 - DIA)],
+    [idFijo(0xd7)]: [msg(20, idFijo(0xd7), 'usuario', 'Dejo las llaves con el encargado.', T0 - 3 * HORA)],
   };
 
   const caso = (id: string, asunto: string, categoria: CasoSoporteDetalle['categoria'], estado: CasoSoporteDetalle['estado'], trabajoId: string | null, detalle: string, eventos: CasoSoporteDetalle['eventos'], en: number): CasoSoporteDetalle => ({

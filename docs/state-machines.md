@@ -92,6 +92,13 @@ el radio de 80 m del destino con una precisión de 50 m o mejor (geocerca: solo 
 `sin_ubicacion`); va por `POST /trabajos/{id}/llegada`, no por `eventos`. `Trabajo.llegada` guarda el modo, el motivo y
 la hora. Cancelar va por `POST /trabajos/{id}/cancelacion`, siempre con motivo.
 
+## Etapa de obra (0.8.0)
+
+`pendiente → en_curso` (**sistema**: al empezar la obra la primera, y al terminar una etapa la siguiente) ·
+`en_curso → terminada` (**especialista**, con `POST .../etapas/{id}/fin`, que crea el cobro de la etapa). Una sola en
+curso a la vez. La obra pasa a `finalizado` solo con todas terminadas. Las jornadas (`programada → hecha`) cambian al
+cargar el avance de ese día; pedir otro día deja un `cambioPendiente` que resuelve el usuario y no mueve las demás.
+
 ## Adicional (0.7.0)
 
 `pendiente → aceptado | rechazado` (solo el **usuario**) · `pendiente → retirado` (el **especialista**, o el

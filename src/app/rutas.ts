@@ -47,7 +47,10 @@ export const RUTAS = {
   trabajoAdicional: { ruta: '/trabajos/adicional/', titulo: 'Agregar al trabajo', lote: '4.6', descripcion: 'Repuestos o mano de obra que el cliente acepta o rechaza.' },
   trabajoCambio: { ruta: '/trabajos/cambio/', titulo: 'Cambiar la fecha', lote: '4.6', descripcion: 'Motivo, día y franja: queda como pedido hasta que el cliente acepte.' },
   trabajoCancelar: { ruta: '/trabajos/cancelar/', titulo: 'Cancelar el trabajo', lote: '4.6', descripcion: 'Primero otras opciones; después el motivo y la confirmación.' },
-  trabajoTerminado: { ruta: '/trabajos/terminado/', titulo: '¡Terminaste!', lote: '4.6', descripcion: 'Monto, desglose e informar el cobro.' },
+  trabajoTerminado: { ruta: '/trabajos/terminado/', titulo: '¡Terminaste!', lote: '4.7', descripcion: 'Monto, desglose e informar el cobro; en una obra, el cierre etapa por etapa.' },
+  obraPlan: { ruta: '/trabajos/obra/plan/', titulo: 'Plan de obra', lote: '4.7', descripcion: 'Etapas en una línea de tiempo con fechas, importe, lo que incluyen, adicionales y el cobro de cada una.' },
+  obraJornadas: { ruta: '/trabajos/obra/jornadas/', titulo: 'Jornadas', lote: '4.7', descripcion: 'Días de trabajo en el calendario; pedir otro día para una jornada sin mover el resto.' },
+  obraDiario: { ruta: '/trabajos/obra/diario/', titulo: 'Diario de obra', lote: '4.7', descripcion: 'Avance del día con una nota y fotos, que ve el cliente.' },
   agenda: {
     ruta: '/agenda/',
     titulo: 'Agenda',

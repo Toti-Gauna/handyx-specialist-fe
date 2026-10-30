@@ -1,9 +1,10 @@
 'use client';
-// Agregar repuestos o mano de obra (lote 4.6): "Opción personalizada" primero y lo habitual del rubro; el especialista
-// pone el precio. Va al cliente, que lo acepta o lo rechaza: mientras tanto rige el precio vigente.
+// Agregar repuestos o mano de obra (lotes 4.6 y 4.7): "Opción personalizada" primero y lo habitual del rubro; el
+// especialista pone el precio. Va al cliente, que lo acepta o lo rechaza: mientras tanto rige el precio vigente. En una
+// obra se suma a la etapa en curso (`?etapa=`) y se cobra con ella.
 import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { RUTAS } from '../../app/rutas.ts';
 import { Cargando, ErrorCaja, Vacio } from '../../components/Estados.tsx';
@@ -16,7 +17,8 @@ import { NOMBRE_RUBRO } from '../../contracts/rubros.ts';
 import { useAccion } from '../../hooks/useAccion.ts';
 import { useCarga } from '../../hooks/useCarga.ts';
 import { useIdDeUrl } from '../../hooks/useIdDeUrl.ts';
-import { pesos, pesosDesdeCentavos } from '../../lib/formato.ts';
+import { pesosDesdeCentavos } from '../../lib/formato.ts';
+import { etapaEnCurso, totalEtapa } from '../../lib/obra.ts';
 import { opcionesAdicional, TIPO_ADICIONAL, type OpcionAdicional } from '../../lib/trabajo.ts';
 import { useIsla } from '../../kit/Efectos.tsx';
 import { BarraSuperior } from '../../kit/Navegacion.tsx';
@@ -25,6 +27,7 @@ import { PrecioStepper } from '../../kit/Precio.tsx';
 
 export function AgregarAdicional() {
   const id = useIdDeUrl();
+  const etapaPedida = useSearchParams().get('etapa');
   const c = useCarga(async () => {
     if (!id) return null;
     const [detalle, fee] = await Promise.all([api.trabajo(id), api.feeVigente()]);
@@ -36,14 +39,19 @@ export function AgregarAdicional() {
   const ahora = api.ahora();
   const politica = c.datos.fee.politica;
   const tarifaBps = politica && avisoFee(ahora, politica).fase !== 'terminada' ? politica.bpsEspecialista : null;
-  return <Formulario detalle={c.datos.detalle} tarifaBps={tarifaBps} />;
+  return <Formulario detalle={c.datos.detalle} tarifaBps={tarifaBps} etapaPedida={etapaPedida} />;
 }
 
-function Formulario({ detalle: d, tarifaBps }: { detalle: TrabajoDetalle; tarifaBps: number | null }) {
+function Formulario({ detalle: d, tarifaBps, etapaPedida }: { detalle: TrabajoDetalle; tarifaBps: number | null; etapaPedida: string | null }) {
   const router = useRouter();
   const isla = useIsla();
   const t = d.trabajo;
-  const volver = `${RUTAS.trabajo.ruta}?id=${t.id}`;
+  const obra = t.tipo === 'obra';
+  // En una obra, la etapa en curso (la pedida tiene que ser esa). Desde el plan se vuelve al plan.
+  const etapa = obra ? (d.etapas.find((e) => e.id === etapaPedida && e.estado === 'en_curso') ?? etapaEnCurso(d.etapas)) : null;
+  const volver = etapaPedida ? `${RUTAS.obraPlan.ruta}?id=${t.id}` : `${RUTAS.trabajo.ruta}?id=${t.id}`;
+  const textoVolver = etapaPedida ? 'Volver al plan de obra' : 'Volver al trabajo';
+  const rige = etapa ? totalEtapa(etapa, d.adicionales) : d.totalVigente.centavos;
   const opciones = opcionesAdicional(t.rubro);
   const [opcion, setOpcion] = useState<OpcionAdicional | null>(null);
   const [descripcion, setDescripcion] = useState('');
@@ -52,11 +60,11 @@ function Formulario({ detalle: d, tarifaBps }: { detalle: TrabajoDetalle; tarifa
   const [errores, setErrores] = useState<{ opcion?: string; descripcion?: string; precio?: string }>({});
   const { pendiente, fallo, ejecutar, clave } = useAccion();
 
-  if (t.estado !== 'en_curso') {
+  if (t.estado !== 'en_curso' || (obra && !etapa)) {
     return (
       <div className="fl-pantalla">
-        <BarraSuperior titulo="Agregar al trabajo" atras={volver} textoAtras="Volver al trabajo" acciones={null} />
-        <Vacio icono="maletin" titulo="Los adicionales se agregan con el trabajo en curso">
+        <BarraSuperior titulo="Agregar al trabajo" atras={volver} textoAtras={textoVolver} acciones={null} />
+        <Vacio icono="maletin" titulo={obra ? 'Los adicionales se agregan a una etapa en curso' : 'Los adicionales se agregan con el trabajo en curso'}>
           <Link href={volver}>Volver al trabajo</Link>
         </Vacio>
       </div>
@@ -80,7 +88,7 @@ function Formulario({ detalle: d, tarifaBps }: { detalle: TrabajoDetalle; tarifa
       document.querySelector<HTMLElement>(err.opcion ? '#ad-que' : err.descripcion ? '#ad-descripcion input' : '#ad-precio')?.focus();
       return;
     }
-    const r = await ejecutar(() => api.crearAdicional(t.id, { tipo, descripcion: descripcion.trim(), monto: monto(precio) }, clave()));
+    const r = await ejecutar(() => api.crearAdicional(t.id, { etapaId: etapa?.id ?? null, tipo, descripcion: descripcion.trim(), monto: monto(precio) }, clave()));
     if (r.ok) {
       isla({ titulo: 'Se lo mandamos al cliente', texto: 'Te avisamos cuando responda. Mientras tanto rige el precio vigente.', icono: 'enviar', tono: 'exito' });
       router.replace(volver);
@@ -89,12 +97,13 @@ function Formulario({ detalle: d, tarifaBps }: { detalle: TrabajoDetalle; tarifa
 
   return (
     <div className="fl-pantalla">
-      <BarraSuperior titulo="Agregar al trabajo" atras={volver} textoAtras="Volver al trabajo" acciones={null} />
+      <BarraSuperior titulo="Agregar al trabajo" atras={volver} textoAtras={textoVolver} acciones={null} />
       <div className="fl-ficha">
         <ChipTipo tipo={t.tipo} />
         <p className="fl-ficha__titulo">{NOMBRE_RUBRO[t.rubro]}</p>
         <p className="fl-ficha__linea">
-          <Icono nombre="usuario" /> {d.contraparte} · hoy rige {pesos(d.totalVigente)}
+          <Icono nombre="usuario" /> {d.contraparte}
+          {etapa ? ` · etapa ${etapa.orden}: ${etapa.nombre}` : ''} · hoy rige {pesosDesdeCentavos(rige)}
         </p>
       </div>
 
@@ -152,17 +161,17 @@ function Formulario({ detalle: d, tarifaBps }: { detalle: TrabajoDetalle; tarifa
             ) : null}
             <dl className="tr-desglose">
               <div>
-                <dt>Hoy rige</dt>
-                <dd>{pesos(d.totalVigente)}</dd>
+                <dt>{etapa ? 'Hoy la etapa vale' : 'Hoy rige'}</dt>
+                <dd>{pesosDesdeCentavos(rige)}</dd>
               </div>
               <div className="tr-desglose__total">
                 <dt>Si lo acepta</dt>
-                <dd>{pesosDesdeCentavos(d.totalVigente.centavos + precio)}</dd>
+                <dd>{pesosDesdeCentavos(rige + precio)}</dd>
               </div>
             </dl>
           </section>
           <Aviso tono="neutro" icono="info">
-            Hacelo después de que el cliente lo acepte. Si no responde, al terminar se retira y no se cobra.
+            Hacelo después de que el cliente lo acepte. Si no responde, al terminar {etapa ? 'la etapa' : 'el trabajo'} se retira y no se cobra.
           </Aviso>
         </>
       ) : null}

@@ -1,10 +1,71 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.6) · Bloque 4 · **Fase 4 en curso: 4.1, 4.2, 4.4, 4.5 y 4.6 cerrados localmente; 4.3 hecho salvo el mapa base (queda para el final: datos de OpenStreetMap bloqueados por la red).**
+Fecha: 29/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.7) · Bloque 4 · **Fase 4 en curso: 4.1, 4.2 y 4.4 a 4.7 cerrados localmente; 4.3 hecho salvo el mapa base (queda para el final: datos de OpenStreetMap bloqueados por la red).**
 Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 4 · Lote 4.7 (obras de varios días)
+
+- **Resumen de la obra** (dentro del trabajo):
+  - Anillo de avance (etapas hechas de las totales), la jornada de hoy o la próxima.
+  - Acordado, cobrado (con lo verificado aparte) y lo que falta cobrar.
+  - Accesos al plan, las jornadas, el diario y los adicionales.
+- **Plan de obra**:
+  - Las etapas en una línea de tiempo, cada una con sus fechas (salen de sus jornadas), su estado, su importe, lo que
+    incluye, sus adicionales y su cobro.
+  - **"Terminé esta etapa"** pide confirmación con el desglose. Crea el cobro de la etapa y arranca la siguiente.
+  - **Cobro por etapa**: "Ya me pagó: informarlo" la deja "reportado", nunca verificado.
+  - Con todas terminadas, **"Cerrar la obra"** lleva al cierre.
+- **Jornadas**:
+  - El calendario del mes con los días de trabajo marcados, y la lista con el estado de cada uno: hecha, hoy,
+    programada, sin avance o con otro día pedido.
+  - **"Pedir otro día"**: motivo, día y horario (sumé "Día completo · 9 a 17"). Es una solicitud que no mueve las demás
+    jornadas y cambia cuando el cliente acepta.
+- **Diario de obra**: el avance del día con una nota corta (280 caracteres) y hasta 4 fotos.
+  - Las fotos se ven antes de publicar y quedan solo en memoria; nada se guarda en el navegador.
+  - El cliente lo ve, y la jornada del día queda "hecha".
+  - La app pide que no se vean personas, documentos ni cosas personales.
+- **Adicionales por etapa**: van a la etapa en curso y se cobran con ella; los que no se respondieron se retiran al
+  terminarla.
+- **Cierre de la obra** (¡Terminaste la obra!):
+  - Lo cobrado: verificado, informado sin verificar y lo que falta.
+  - Cada etapa con sus adicionales y su cobro.
+- **Agenda**: una obra aparece jornada por jornada.
+- **Contrato 0.8.0**:
+  - Etapas con id, lo que incluyen y su cobro.
+  - Jornadas con su cambio pendiente.
+  - El diario, con fotos en multipart.
+  - `etapaId` en adicionales y pagos.
+  - Terminar una etapa.
+  - Una obra se cierra solo con todas sus etapas terminadas.
+- **Datos de prueba**:
+  - Obra nueva de *Cliente de prueba 11*: agendada, 3 etapas en 5 jornadas.
+  - La obra de *Cliente de prueba 8*, en curso, ahora tiene jornadas, diario y la etapa 1 cobrada.
+  - En el panel: el cliente acepta o rechaza el cambio de jornada.
+- **Refactor**: el cobro directo pasó a un componente (`CobroDirecto`), que usan ¡Terminaste! y cada etapa del plan.
+- **Pruebas**:
+  - 4 unitarias: avance, próxima jornada, fechas por etapa y lo cobrado.
+  - 4 del mock: etapas y cobros, cambio de jornada, diario y agenda.
+  - Recorrido I actualizado.
+  - **Recorrido P nuevo, el "hecho cuando" del lote**: una obra de 3 etapas en 5 jornadas, con el diario, un cambio de
+    jornada, un adicional, el cobro de cada etapa y el cierre.
+  - 3 pantallas y 2 hojas nuevas en accesibilidad y capturas.
+
+### Comandos del lote 4.7 (29/10/2026, local)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` · `typecheck` | OK |
+| `npm test` | 141 pruebas: 139 OK y 2 omitidas (sincronías con otros repos) |
+| `npm run build` | OK |
+| `npm run e2e` | 25/25 recorridos (I actualizado; P nuevo) |
+| `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento. A 320 px, los días de los calendarios (agenda, jornadas y catálogo) miden 36 a 38 px de ancho: 7 columnas no entran a 44 px en 288 px útiles. Están por encima del mínimo de 24 px de WCAG 2.5.8 |
+| `ANCHOS=` 7 tamaños `npm run capturas` | 378/378 sin desborde y sanitizadas |
+| `build:hostinger` con API ficticia | OK: 36 páginas (suma las 3 de la obra), sin `/catalogo/`, fixtures ni las marcas del panel |
+
+**Próximo paso**: lote 4.8 (agenda, mensajes, cuenta, caja y ayuda). El mapa base del 4.3 queda para el final.
 
 ## Fase 4 · Lote 4.6 (trabajo de punta a punta)
 
@@ -79,7 +140,7 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 | `ANCHOS=` 7 tamaños `npm run capturas` | 357/357 sin desborde y sanitizadas |
 | `build:hostinger` con API ficticia | OK: 33 páginas (suma las 4 del trabajo), sin `/catalogo/`, fixtures ni las marcas del panel |
 
-**Próximo paso**: lote 4.7 (obras de varios días). El mapa base del 4.3 queda para el final.
+**Siguiente**: lote 4.7 (cerrado, ver arriba).
 
 ## Fase 4 · Lote 4.5 (inicio, pedidos y propuesta)
 

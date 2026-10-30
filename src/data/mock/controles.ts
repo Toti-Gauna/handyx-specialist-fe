@@ -88,6 +88,8 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       u('usuario_cambio', 'Pide mover la fecha de un trabajo');
       u('usuario_acepta_adicional', 'Acepta tu último adicional');
       u('usuario_rechaza_adicional', 'Rechaza tu último adicional');
+      u('usuario_acepta_jornada', 'Acepta el cambio de jornada');
+      u('usuario_rechaza_jornada', 'Rechaza el cambio de jornada');
       u('usuario_mensaje', 'Te escribe un mensaje');
       u('pedido_urgente', 'Entra un pedido urgente nuevo');
       const p = (id: string, etiqueta: string) => a.push({ id, etiqueta, grupo: 'Pagos y soporte' });
@@ -224,6 +226,19 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         ad.version += 1;
         s.avisos.unshift({ id: idNuevo(s), tipo: 'trabajo', titulo: acepta ? 'Aceptó el adicional' : 'No aceptó el adicional', cuerpo: `${ad.descripcion}. ${acepta ? 'Ya se suma al total del trabajo.' : 'Sigue el precio vigente.'}`, creadoEn: iso(ahoraMs(s)), leido: false, destino: { ruta: 'trabajo', id: t.trabajo.id } });
         s.nota = acepta ? 'El usuario aceptó el adicional: se suma al total.' : 'El usuario rechazó el adicional: sigue el precio vigente.';
+        break;
+      }
+      case 'usuario_acepta_jornada':
+      case 'usuario_rechaza_jornada': {
+        const acepta = id === 'usuario_acepta_jornada';
+        const t = s.trabajos.find((x) => x.jornadas.some((j) => j.cambioPendiente));
+        const j = t?.jornadas.find((x) => x.cambioPendiente);
+        if (!t || !j?.cambioPendiente) { s.nota = 'No hay un cambio de jornada esperando respuesta.'; break; }
+        // Aceptar mueve solo esa jornada: el resto queda como estaba.
+        if (acepta) j.horario = j.cambioPendiente.horario;
+        j.cambioPendiente = null;
+        s.avisos.unshift({ id: idNuevo(s), tipo: 'trabajo', titulo: acepta ? 'Aceptó el cambio de jornada' : 'No aceptó el cambio de jornada', cuerpo: `Jornada ${j.numero}: ${acepta ? 'queda en el día nuevo.' : 'sigue en el día acordado.'}`, creadoEn: iso(ahoraMs(s)), leido: false, destino: { ruta: 'trabajo', id: t.trabajo.id } });
+        s.nota = acepta ? 'El usuario aceptó el día nuevo para esa jornada.' : 'El usuario prefirió mantener el día acordado.';
         break;
       }
       case 'usuario_mensaje': {

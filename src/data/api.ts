@@ -51,6 +51,10 @@ import type {
   MotivoCancelacion,
   MotivoRespaldoLlegada,
   NuevoAdicional,
+  CambioJornada,
+  EntradaDiario,
+  Jornada,
+  NuevaEntradaDiario,
 } from '../contracts/dto.ts';
 import type { Rubro } from '../contracts/rubros.ts';
 
@@ -139,6 +143,14 @@ export interface EspecialistaApi {
   retirarAdicional(trabajoId: string, adicionalId: string): Promise<Adicional>;
   /** Número puente para llamar a la otra parte sin ver su teléfono (0.7.0). Dura unos minutos. */
   llamada(trabajoId: string): Promise<LlamadaPuente>;
+
+  // Obras de varios días (contrato 0.8.0)
+  /** Terminar la etapa en curso: crea su cobro (directo del cliente) y arranca la siguiente. Devuelve el cobro. */
+  terminarEtapa(trabajoId: string, etapaId: string, clave: ClaveIdempotencia): Promise<Pago>;
+  /** Pedir otro día para una jornada: queda pendiente hasta que el cliente acepta y no mueve el resto. */
+  pedirCambioJornada(trabajoId: string, jornadaId: string, cambio: CambioJornada, clave: ClaveIdempotencia): Promise<Jornada>;
+  /** Avance del día en el diario (lo ve el cliente). `fotos`: hasta 4; el mock nunca las lee ni las guarda. */
+  agregarAlDiario(trabajoId: string, entrada: NuevaEntradaDiario, fotos: readonly Blob[], clave: ClaveIdempotencia): Promise<EntradaDiario>;
   agenda(desde: string, hasta: string): Promise<AgendaItem[]>;
 
   // Mapa y viaje (contrato 0.4.0)

@@ -314,6 +314,13 @@ trae fotos): el detalle y el pedido entrante muestran la zona, la descripción y
 
 ### 4.7 · Obras de varios días
 
+**Estado: hecho (29/10/2026).** Supuestos del lote:
+- Las etapas van de a una: al terminar una, arranca la siguiente.
+- Una jornada queda "hecha" cuando se carga su avance en el diario.
+- El primer día de la obra pasa por Salgo para allá, la llegada y Empezar; los días siguientes la obra sigue en curso.
+- Una obra se cierra desde el plan, con todas las etapas terminadas, y cerrarla no crea otro cobro.
+- Las fotos del diario son del trabajo: la app pide que no se vean personas, documentos ni cosas personales del cliente.
+
 Una obra (pintura, revoque, instalación grande) dura días o semanas y hoy se ve como un trabajo más con etapas en una lista.
 
 1. **Resumen de la obra**:

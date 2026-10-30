@@ -1,6 +1,23 @@
 # Contrato compartido Usuario · Especialista · Portal (lote 1.3)
 
-Versión: **0.7.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+Versión: **0.8.0 (borrador)** · `src/contracts/version.ts` · fecha 29/10/2026.
+
+**0.7.0 → 0.8.0 (fase 4, lote 4.7, cambios para el dueño del contrato):** obras de varios días.
+- `EtapaObra` pasa a tener `id`, `orden`, `incluye`, `terminadaEn` y `pagoId`, y `ESTADOS_ETAPA` con su máquina
+  (`MAQUINA_ETAPA`): de a una, la arranca el sistema y la termina el especialista.
+- `TrabajoDetalle` suma `jornadas` (`Jornada`: etapa, número, horario, estado `programada` o `hecha` y un
+  `cambioPendiente` con horario, motivo y fecha del pedido) y `diario` (`EntradaDiario`: etapa, jornada, nota de hasta
+  280 caracteres y hasta 4 fotos con URL firmada). En un trabajo de un día los dos van vacíos.
+- `Adicional`, `NuevoAdicional` y `Pago` suman `etapaId` (null en un trabajo de un día). En una obra, un adicional va a
+  la etapa en curso y se cobra con ella.
+- Endpoints nuevos:
+  - `POST /trabajos/{id}/etapas/{etapaId}/fin`: termina la etapa, crea su cobro (la etapa más sus adicionales aceptados),
+    retira los que no tuvieron respuesta y arranca la siguiente. Devuelve el cobro.
+  - `POST /trabajos/{id}/jornadas/{jornadaId}/cambio`: pide otro día para una jornada futura. No mueve las demás; cambia
+    cuando el usuario acepta.
+  - `POST /trabajos/{id}/diario` (multipart con `fotos`): el avance del día. Con una jornada, la marca `hecha`.
+- Una obra se cierra (`eventos` → `finalizado`) solo con todas sus etapas terminadas, y cerrarla no crea otro cobro.
+- La agenda muestra una obra jornada por jornada.
 
 **0.6.0 → 0.7.0 (fase 4, lote 4.6, cambios para el dueño del contrato):** trabajo de punta a punta.
 - **Llegada**: `Trabajo` suma `llegada` (`modo` automática o respaldo, `motivo` y hora; null hasta llegar). La automática

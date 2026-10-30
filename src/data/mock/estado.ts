@@ -79,6 +79,9 @@ export interface TrabajoInterno {
   metodoPago: 'mercado_pago' | 'efectivo';
   /** Adicionales del trabajo (0.7.0), en el orden en que se crearon. */
   adicionales: Adicional[];
+  /** Obra (0.8.0): jornadas en orden y diario en el orden en que se cargó. */
+  jornadas: TrabajoDetalle['jornadas'];
+  diario: TrabajoDetalle['diario'];
 }
 
 /** Viaje de un trabajo (lote 4.3). `desvios`: posiciones seguidas lejos del trayecto (con 2 se recalcula). */

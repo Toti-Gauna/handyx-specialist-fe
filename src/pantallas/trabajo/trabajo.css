@@ -294,27 +294,3 @@
   color: var(--hd-suave);
   overflow-wrap: anywhere;
 }
-
-.tr-cobro {
-  display: grid;
-  justify-items: start;
-  gap: var(--esp-2);
-  padding: var(--esp-4);
-  border-radius: 22px;
-  background: #fff;
-  box-shadow: var(--hx-elev-1);
-}
-
-.tr-cobro > * {
-  max-width: 100%;
-}
-
-.tr-cobro p {
-  margin: 0;
-}
-
-.tr-cobro .enlace {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--toque-min);
-}

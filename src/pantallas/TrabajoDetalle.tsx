@@ -27,6 +27,7 @@ import { cronometro, inicioEnCurso, textoLlegada, TIPO_ADICIONAL } from '../lib/
 import { useIsla } from '../kit/Efectos.tsx';
 import { Fila } from '../kit/Piezas.tsx';
 import { Mapa } from '../mapa/Mapa.tsx';
+import { ResumenObra } from './obra/ResumenObra.tsx';
 import './trabajo/trabajo.css';
 
 const ACTIVO = ['agendado', 'en_camino', 'en_sitio', 'en_curso'];
@@ -58,7 +59,7 @@ export function TrabajoDetalle() {
   }
   if (!c.datos) return <Cargando />;
   const d = c.datos;
-  const { trabajo: t, contraparte, eventos, etapas, cambioPendiente } = d;
+  const { trabajo: t, contraparte, eventos, cambioPendiente } = d;
   const activo = ACTIVO.includes(t.estado);
   const conAdicionales = d.totalVigente.centavos !== t.acuerdo.monto.centavos;
   const q = `?id=${t.id}`;
@@ -86,6 +87,7 @@ export function TrabajoDetalle() {
       {activo ? <Contacto trabajoId={t.id} conversacionId={t.conversacionId} contraparte={contraparte} /> : null}
 
       <PanelEstado detalle={d} recargar={c.recargar} alSalir={() => router.push(`${RUTAS.enCamino.ruta}${q}`)} alTerminar={() => router.push(`${RUTAS.trabajoTerminado.ruta}${q}`)} />
+      {t.tipo === 'obra' && t.estado !== 'cancelado' ? <ResumenObra detalle={d} /> : null}
 
       {activo && t.destino ? (
         <Seccion titulo="Cómo llegar">
@@ -138,22 +140,6 @@ export function TrabajoDetalle() {
         </Seccion>
       ) : null}
 
-      {etapas.length > 0 ? (
-        <Seccion titulo="Etapas de la obra">
-          <ul className="lista-tarjetas">
-            {etapas.map((e) => (
-              <li key={e.nombre} className="tarjeta">
-                <div className="fila-flex fila-flex--entre">
-                  <span className="tarjeta__titulo">{e.nombre}</span>
-                  <Chip e={e.estado === 'terminada' ? { texto: 'Terminada', tono: 'exito', icono: 'checkCirculo' } : e.estado === 'en_curso' ? { texto: 'En curso', tono: 'azul', icono: 'maletin' } : { texto: 'Pendiente', tono: 'neutro', icono: 'reloj' }} />
-                </div>
-                <p className="monto monto--chico">{pesos(e.monto)}</p>
-              </li>
-            ))}
-          </ul>
-          <p className="texto-suave texto-chico">Cada etapa se cobra por separado, directamente del cliente a vos.</p>
-        </Seccion>
-      ) : null}
 
       <Seccion titulo="Historial">
         <ol className="linea-tiempo">
@@ -213,7 +199,7 @@ function PanelEstado({ detalle: d, recargar, alSalir, alTerminar }: { detalle: D
           <Icono nombre="checkCirculo" /> Llegaste a las {hora(t.llegada.en)}. {textoLlegada(t.llegada)}; le avisamos al cliente.
         </p>
       ) : null}
-      {t.estado === 'en_curso' ? <EnCurso detalle={d} recargar={recargar} /> : null}
+      {t.estado === 'en_curso' && t.tipo !== 'obra' ? <EnCurso detalle={d} recargar={recargar} /> : null}
       <AccionTrabajo detalle={d} alCambiar={recargar} alSalir={alSalir} alTerminar={alTerminar} />
     </section>
   );

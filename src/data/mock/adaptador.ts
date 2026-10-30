@@ -16,6 +16,7 @@ import { soporte } from './soporte.ts';
 import { trabajos } from './trabajos.ts';
 import { cargarGrafo } from './mapa.ts';
 import { viajes } from './viajes.ts';
+import { obras } from './obras.ts';
 import { turnos } from './turnos.ts';
 import { fallo } from './estado.ts';
 
@@ -50,6 +51,7 @@ export function crearApiMockConEstado(o: OpcionesMock = {}): ApiMock {
     ...propuestas(s),
     ...trabajos(s),
     ...viajes(s),
+    ...obras(s),
     ...turnos(s),
     ...mensajes(s),
     ...caja(s),

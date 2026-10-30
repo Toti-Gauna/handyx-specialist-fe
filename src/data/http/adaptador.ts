@@ -31,6 +31,8 @@ import {
   TrabajoDetalleSchema,
   AdicionalSchema,
   LlamadaPuenteSchema,
+  EntradaDiarioSchema,
+  JornadaSchema,
   TrabajoSchema,
 } from '../../contracts/dto.ts';
 import type { EspecialistaApi } from '../api.ts';
@@ -138,6 +140,17 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
       c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/adicionales`, AdicionalSchema, { cuerpo: adicional, idempotencyKey: clave }),
     retirarAdicional: (tid, aid) => c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/adicionales/${id(aid)}/retiro`, AdicionalSchema),
     llamada: (tid) => c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/llamada`, LlamadaPuenteSchema),
+    terminarEtapa: (tid, eid, clave) => c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/etapas/${id(eid)}/fin`, PagoSchema, { idempotencyKey: clave }),
+    pedirCambioJornada: (tid, jid, cambio, clave) =>
+      c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/jornadas/${id(jid)}/cambio`, JornadaSchema, { cuerpo: cambio, idempotencyKey: clave }),
+    agregarAlDiario(tid, entrada, fotos, clave) {
+      const f = new FormData();
+      f.set('etapaId', entrada.etapaId);
+      if (entrada.jornadaId) f.set('jornadaId', entrada.jornadaId);
+      f.set('nota', entrada.nota);
+      for (const foto of fotos) f.append('fotos', foto);
+      return c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/diario`, EntradaDiarioSchema, { formulario: f, idempotencyKey: clave });
+    },
     proponerCambio: (tid, cambio, clave) =>
       c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/cambio`, PropuestaSchema, { cuerpo: cambio, idempotencyKey: clave }),
     agenda: (desde, hasta) =>

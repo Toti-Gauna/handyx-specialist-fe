@@ -27,6 +27,10 @@ export function AccionTrabajo({ detalle, alCambiar, alSalir, alTerminar }: { det
   const [confirmar, setConfirmar] = useState(false);
   const paso = PASOS[trabajo.estado];
   if (!paso) return null;
+  // Una obra se cierra desde el plan, con todas sus etapas terminadas (cada una con su cobro).
+  if (trabajo.tipo === 'obra' && paso.hacia === 'finalizado') {
+    return <p className="texto-suave texto-chico">Cada etapa se termina y se cobra desde el plan de obra; con la última, cerrás la obra.</p>;
+  }
   const aceptados = detalle.adicionales.filter((a) => a.estado === 'aceptado');
   const sinRespuesta = detalle.adicionales.filter((a) => a.estado === 'pendiente');
 

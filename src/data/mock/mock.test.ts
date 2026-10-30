@@ -14,7 +14,7 @@ import { usarGrafo } from './mapa.ts';
 import { monto } from '../../contracts/dinero.ts';
 import { crearApiMockConEstado } from './adaptador.ts';
 import { crearControles } from './controles.ts';
-import { CODIGO_PRUEBA, CREDENCIALES_PRUEBA, CUENTAS_PROVEEDOR_PRUEBA, TOKEN_RECUPERACION_PRUEBA, TOKEN_VENCIDO_PRUEBA, type Escenario } from './estado.ts';
+import { CODIGO_PRUEBA, CREDENCIALES_PRUEBA, CUENTAS_PROVEEDOR_PRUEBA, TOKEN_RECUPERACION_PRUEBA, TOKEN_VENCIDO_PRUEBA, idFijo, type Escenario } from './estado.ts';
 import { ID } from './fixtures.ts';
 
 const nuevo = (escenario: Escenario = 'habilitado') => {
@@ -43,7 +43,7 @@ describe('el mock cumple el contrato', () => {
     ok(PedidoDetalleSchema, await api.pedido(ID.pProgramado));
     (await api.avisos()).forEach((a) => ok(AvisoSchema, a));
     for (const v of ['activos', 'historial'] as const) (await api.trabajos(v)).items.forEach((t) => ok(TrabajoSchema, t));
-    for (const id of [ID.t1, ID.t2, ID.t3, ID.t4, ID.t5]) ok(TrabajoDetalleSchema, await api.trabajo(id));
+    for (const id of [ID.t1, ID.t2, ID.t3, ID.t4, ID.t5, ID.t6]) ok(TrabajoDetalleSchema, await api.trabajo(id));
     (await api.agenda('2026-11-01T00:00:00Z', '2026-12-31T00:00:00Z')).forEach((a) => ok(AgendaItemSchema, a));
     (await api.conversaciones()).forEach((c) => ok(ConversacionSchema, c));
     (await api.mensajes(ID.c2)).forEach((m) => ok(MensajeSchema, m));
@@ -655,20 +655,20 @@ describe('trabajo de punta a punta (lote 4.6)', () => {
   it('adicionales: solo en curso, rige el precio vigente hasta que el cliente acepta, y los pendientes no se cobran', async () => {
     const { api, controles } = nuevo();
     const base = (await api.trabajo(ID.t1)).trabajo.acuerdo.monto;
-    await assert.rejects(api.crearAdicional(ID.t1, { tipo: 'repuesto', descripcion: 'Flexible', monto: monto(800000) }, clave()), { tipo: 'conflicto' });
+    await assert.rejects(api.crearAdicional(ID.t1, { etapaId: null, tipo: 'repuesto', descripcion: 'Flexible', monto: monto(800000) }, clave()), { tipo: 'conflicto' });
     const x = await enCurso(api);
-    await assert.rejects(api.crearAdicional(ID.t1, { tipo: 'repuesto', descripcion: 'Flexible', monto: monto(0) }, clave()), { tipo: 'validacion' });
+    await assert.rejects(api.crearAdicional(ID.t1, { etapaId: null, tipo: 'repuesto', descripcion: 'Flexible', monto: monto(0) }, clave()), { tipo: 'validacion' });
     const k = clave();
-    const a = await api.crearAdicional(ID.t1, { tipo: 'repuesto', descripcion: 'Flexible de 40 cm', monto: monto(800000) }, k);
-    assert.equal((await api.crearAdicional(ID.t1, { tipo: 'repuesto', descripcion: 'Flexible de 40 cm', monto: monto(800000) }, k)).id, a.id); // misma clave, mismo adicional
+    const a = await api.crearAdicional(ID.t1, { etapaId: null, tipo: 'repuesto', descripcion: 'Flexible de 40 cm', monto: monto(800000) }, k);
+    assert.equal((await api.crearAdicional(ID.t1, { etapaId: null, tipo: 'repuesto', descripcion: 'Flexible de 40 cm', monto: monto(800000) }, k)).id, a.id); // misma clave, mismo adicional
     let d = await api.trabajo(ID.t1);
     assert.equal(d.adicionales[0]?.estado, 'pendiente');
     assert.deepEqual(d.totalVigente, base); // pendiente: no suma
     controles.ejecutar('usuario_acepta_adicional');
     d = await api.trabajo(ID.t1);
     assert.equal(d.totalVigente.centavos, base.centavos + 800000);
-    const b = await api.crearAdicional(ID.t1, { tipo: 'mano_de_obra', descripcion: 'Una hora más', monto: monto(1500000) }, clave());
-    const c = await api.crearAdicional(ID.t1, { tipo: 'mano_de_obra', descripcion: 'Otra cosa', monto: monto(500000) }, clave());
+    const b = await api.crearAdicional(ID.t1, { etapaId: null, tipo: 'mano_de_obra', descripcion: 'Una hora más', monto: monto(1500000) }, clave());
+    const c = await api.crearAdicional(ID.t1, { etapaId: null, tipo: 'mano_de_obra', descripcion: 'Otra cosa', monto: monto(500000) }, clave());
     assert.equal((await api.retirarAdicional(ID.t1, c.id)).estado, 'retirado');
     await assert.rejects(api.retirarAdicional(ID.t1, a.id), { tipo: 'conflicto' }); // ya lo aceptó el cliente
     const fin = await api.avanzarTrabajo(ID.t1, 'finalizado', x.version, clave());
@@ -683,7 +683,7 @@ describe('trabajo de punta a punta (lote 4.6)', () => {
       const { api, controles, estado } = nuevo();
       if (!conPrevio) estado.trabajos.find((t) => t.trabajo.id === ID.t1)!.pagoId = null;
       const x = await enCurso(api);
-      await api.crearAdicional(ID.t1, { tipo: 'repuesto', descripcion: 'Canilla', monto: monto(1200000) }, clave());
+      await api.crearAdicional(ID.t1, { etapaId: null, tipo: 'repuesto', descripcion: 'Canilla', monto: monto(1200000) }, clave());
       controles.ejecutar('usuario_acepta_adicional');
       await api.avanzarTrabajo(ID.t1, 'finalizado', x.version, clave());
       const d = await api.trabajo(ID.t1);
@@ -706,5 +706,98 @@ describe('trabajo de punta a punta (lote 4.6)', () => {
     const w = nuevo();
     const x = await enCurso(w.api);
     await assert.rejects(w.api.cancelarTrabajo(ID.t1, 'otro', x.version, clave()), { tipo: 'conflicto' }); // en curso cancela solo Operations
+  });
+});
+
+describe('obras de varios días (lote 4.7)', () => {
+  const E = { prep: idFijo(0xc61), pintura: idFijo(0xc62), fin: idFijo(0xc63) };
+  const J = (n: number) => idFijo(0xcb0 + n);
+  const empezarObra = async (api: ReturnType<typeof nuevo>['api']) => {
+    let x = (await api.trabajo(ID.t6)).trabajo;
+    x = await api.avanzarTrabajo(ID.t6, 'en_camino', x.version, clave());
+    x = await api.marcarLlegada(ID.t6, 'sin_ubicacion', x.version, clave());
+    return api.avanzarTrabajo(ID.t6, 'en_curso', x.version, clave());
+  };
+
+  it('la obra trae etapas, 5 jornadas que no se pisan y diario; en la agenda aparece día por día', async () => {
+    const { api } = nuevo();
+    const d = await api.trabajo(ID.t6);
+    assert.ok(TrabajoDetalleSchema.safeParse(d).success);
+    assert.deepEqual(d.etapas.map((e) => e.estado), ['pendiente', 'pendiente', 'pendiente']);
+    assert.equal(d.jornadas.length, 5);
+    assert.equal(d.etapas.reduce((n, e) => n + e.monto.centavos, 0), d.trabajo.acuerdo.monto.centavos, 'las etapas suman lo acordado');
+    const inicios = d.jornadas.map((j) => Date.parse(j.horario.inicio));
+    assert.deepEqual(inicios, [...inicios].sort((a, b) => a - b));
+    const agenda = await api.agenda(new Date(inicios[0]! - 3_600_000).toISOString(), new Date(inicios[4]! + 3_600_000).toISOString());
+    assert.equal(agenda.filter((i) => i.trabajoId === ID.t6).length, 5);
+    assert.ok(agenda.some((i) => i.titulo.includes('jornada 3 de 5')));
+  });
+
+  it('al empezar arranca la primera etapa; terminar una crea su cobro con sus adicionales y arranca la siguiente', async () => {
+    const { api, controles } = nuevo();
+    await empezarObra(api);
+    let d = await api.trabajo(ID.t6);
+    assert.deepEqual(d.etapas.map((e) => e.estado), ['en_curso', 'pendiente', 'pendiente']);
+    await assert.rejects(api.terminarEtapa(ID.t6, E.pintura, clave()), { tipo: 'conflicto' }); // de a una
+    await assert.rejects(api.crearAdicional(ID.t6, { etapaId: null, tipo: 'repuesto', descripcion: 'Enduido', monto: monto(500000) }, clave()), { tipo: 'validacion' }); // en una obra, con etapa
+    await assert.rejects(api.crearAdicional(ID.t6, { etapaId: E.pintura, tipo: 'repuesto', descripcion: 'Enduido', monto: monto(500000) }, clave()), { tipo: 'validacion' }); // solo la etapa en curso
+    await api.crearAdicional(ID.t6, { etapaId: E.prep, tipo: 'repuesto', descripcion: 'Enduido extra', monto: monto(500000) }, clave());
+    controles.ejecutar('usuario_acepta_adicional');
+    await api.crearAdicional(ID.t6, { etapaId: E.prep, tipo: 'mano_de_obra', descripcion: 'Sin respuesta', monto: monto(300000) }, clave());
+    const k = clave();
+    const pago = await api.terminarEtapa(ID.t6, E.prep, k);
+    assert.equal((await api.terminarEtapa(ID.t6, E.prep, k)).id, pago.id, 'misma clave, mismo cobro');
+    assert.equal(pago.etapaId, E.prep);
+    assert.equal(pago.monto.centavos, 6_000_000 + 500_000, 'la etapa más su adicional aceptado');
+    assert.equal(pago.feeHandy.centavos, 0);
+    d = await api.trabajo(ID.t6);
+    assert.deepEqual(d.etapas.map((e) => e.estado), ['terminada', 'en_curso', 'pendiente']);
+    assert.equal(d.etapas[0]?.pagoId, pago.id);
+    assert.equal(d.adicionales.find((a) => a.descripcion === 'Sin respuesta')?.estado, 'retirado');
+    // No se cierra la obra con etapas abiertas
+    await assert.rejects(api.avanzarTrabajo(ID.t6, 'finalizado', d.trabajo.version, clave()), { tipo: 'conflicto' });
+    await api.terminarEtapa(ID.t6, E.pintura, clave());
+    await api.terminarEtapa(ID.t6, E.fin, clave());
+    d = await api.trabajo(ID.t6);
+    const pagosAntes = (await api.pagos()).items.length;
+    const fin = await api.avanzarTrabajo(ID.t6, 'finalizado', d.trabajo.version, clave());
+    assert.equal(fin.estado, 'finalizado');
+    assert.equal((await api.pagos()).items.length, pagosAntes, 'cerrar la obra no crea otro cobro: cada etapa tiene el suyo');
+    const cobros = (await api.pagos()).items.filter((p) => p.trabajoId === ID.t6);
+    assert.equal(cobros.length, 3);
+    assert.equal(cobros.reduce((n, p) => n + p.monto.centavos, 0), d.totalVigente.centavos);
+  });
+
+  it('pedir otro día para una jornada no mueve las demás y solo cambia cuando el cliente acepta', async () => {
+    const { api, controles } = nuevo();
+    const antes = (await api.trabajo(ID.t6)).jornadas;
+    const dia = Date.parse(antes[2]!.horario.inicio) + 2 * 86_400_000;
+    const nuevoHorario = { inicio: new Date(dia).toISOString(), fin: new Date(dia + 8 * 3_600_000).toISOString() };
+    const j = await api.pedirCambioJornada(ID.t6, J(3), { horario: nuevoHorario, motivo: 'clima' }, clave());
+    assert.equal(j.cambioPendiente?.motivo, 'clima');
+    assert.equal(j.horario.inicio, antes[2]!.horario.inicio, 'hasta que acepte, sigue el día acordado');
+    await assert.rejects(api.pedirCambioJornada(ID.t6, J(3), { horario: nuevoHorario, motivo: 'otro' }, clave()), { tipo: 'conflicto' });
+    await assert.rejects(api.pedirCambioJornada(ID.t6, J(2), { horario: { inicio: api.ahora().toISOString(), fin: null }, motivo: 'otro' }, clave()), { tipo: 'validacion' });
+    controles.ejecutar('usuario_acepta_jornada');
+    const despues = (await api.trabajo(ID.t6)).jornadas;
+    assert.equal(despues[2]?.horario.inicio, nuevoHorario.inicio);
+    assert.equal(despues[2]?.cambioPendiente, null);
+    for (const i of [0, 1, 3, 4]) assert.deepEqual(despues[i]?.horario, antes[i]?.horario, `la jornada ${i + 1} no se movió`);
+  });
+
+  it('el diario se carga con la obra en curso, marca la jornada hecha y nunca guarda las fotos en el mock', async () => {
+    const { api } = nuevo();
+    await assert.rejects(api.agregarAlDiario(ID.t6, { etapaId: E.prep, jornadaId: J(1), nota: 'Hoy' }, [], clave()), { tipo: 'conflicto' });
+    await empezarObra(api);
+    await assert.rejects(api.agregarAlDiario(ID.t6, { etapaId: E.pintura, jornadaId: null, nota: 'Hoy' }, [], clave()), { tipo: 'validacion' }); // etapa sin empezar
+    await assert.rejects(api.agregarAlDiario(ID.t6, { etapaId: E.prep, jornadaId: null, nota: 'x'.repeat(281) }, [], clave()), { tipo: 'validacion' });
+    const fotos = [new Blob(['a']), new Blob(['b'])];
+    await assert.rejects(api.agregarAlDiario(ID.t6, { etapaId: E.prep, jornadaId: null, nota: 'Hoy' }, [...fotos, ...fotos, ...fotos], clave()), { tipo: 'validacion' });
+    const e = await api.agregarAlDiario(ID.t6, { etapaId: E.prep, jornadaId: J(1), nota: 'Protegimos pisos y enduimos el living.' }, fotos, clave());
+    assert.equal(e.fotos.length, 2);
+    assert.ok(e.fotos.every((f) => f.url.startsWith('data:image/svg+xml')), 'el mock no guarda imágenes: usa la foto sintética');
+    const d = await api.trabajo(ID.t6);
+    assert.equal(d.diario[0]?.id, e.id);
+    assert.equal(d.jornadas[0]?.estado, 'hecha');
   });
 });

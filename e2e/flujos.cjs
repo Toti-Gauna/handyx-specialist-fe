@@ -500,9 +500,10 @@ async function main() {
     // Obra: etapas, cada una con su estado y su importe
     await nav(p, 'Trabajos');
     await p.getByText('Albañilería · Cliente de prueba 8').click();
-    await ver(p, 'Etapas de la obra');
-    await ver(p, 'Etapa 2 · Pintura');
-    await ver(p, 'Cada etapa se cobra por separado');
+    // Obra en curso (lote 4.7): resumen con el avance, la jornada de hoy y lo cobrado
+    await ver(p, 'Etapa 2: Pintura');
+    await ver(p, 'Jornada de hoy');
+    await ver(p, 'Falta cobrar');
     await foto('03-obra');
     // Reclamo desde un trabajo
     await p.getByRole('link', { name: 'Pedir ayuda o hacer un reclamo' }).click();
@@ -875,6 +876,91 @@ async function main() {
     await p.waitForURL('**/trabajos/detalle/**');
     await ver(p, 'Este trabajo fue cancelado');
     await foto('07-cancelado');
+  }, { capturas });
+
+  await escenario('P-obra-3-etapas-5-jornadas', nav_, base, async ({ p, foto }) => {
+    // "Hecho cuando" del lote 4.7: una obra de 3 etapas en 5 jornadas, con un cambio de jornada, un adicional y el cobro de cada etapa
+    const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+    await p.goto(`${base}/trabajos/detalle/?id=00000000-0000-4000-8000-0000000000c6&escenario=habilitado`);
+    await ver(p, 'Todavía no empezó');
+    await foto('01-obra-agendada');
+    await p.getByRole('button', { name: 'Salgo para allá' }).click();
+    await p.waitForURL('**/en-camino/**');
+    await p.getByRole('button', { name: 'Ya llegué' }).click();
+    await p.waitForURL('**/trabajos/detalle/**');
+    await p.getByRole('button', { name: 'Empezar el trabajo' }).click();
+    await ver(p, 'Etapa 1: Preparación');
+    assert.equal(await p.getByRole('button', { name: 'Terminé el trabajo' }).count(), 0, 'una obra se cierra desde el plan');
+    // Diario: nota y fotos (vista previa en memoria); el cliente lo ve
+    await p.getByRole('link', { name: /Diario de obra/ }).click();
+    await p.waitForURL('**/obra/diario/**');
+    await p.getByRole('button', { name: 'Publicar en el diario' }).click();
+    await ver(p, 'Contá en una frase qué hiciste hoy.');
+    await p.getByLabel('¿Qué hiciste hoy?').fill('Protegimos pisos y muebles y enduimos el living.');
+    await p.locator('#ob-fotos-entrada').setInputFiles([{ name: 'avance-1.png', mimeType: 'image/png', buffer: PNG }, { name: 'avance-2.png', mimeType: 'image/png', buffer: PNG }]);
+    await p.getByRole('button', { name: 'Quitar la foto 2' }).click();
+    assert.equal(await p.locator('.ob-fotos__nueva').count(), 1);
+    await foto('02-diario');
+    await p.getByRole('button', { name: 'Publicar en el diario' }).click();
+    await ver(p, 'Publicaste el avance');
+    await ver(p, 'Protegimos pisos y muebles');
+    assert.equal(await p.getByRole('img', { name: /Foto 1 del avance/ }).count(), 1);
+    // Jornadas: pedir otro día para la 3 no mueve las demás; cambia cuando el cliente acepta
+    await p.getByRole('link', { name: 'Volver al trabajo' }).click();
+    await p.getByRole('link', { name: /Jornadas/ }).click();
+    await p.waitForURL('**/obra/jornadas/**');
+    await ver(p, 'Jornada 5 de 5');
+    const antes = await p.locator('.ob-jornada__cuando').allTextContents();
+    await p.getByRole('button', { name: /Pedir otro día para la jornada 3/ }).click();
+    await p.getByRole('button', { name: 'Pedir este día' }).click();
+    await ver(p, 'Elegí el motivo: el cliente lo ve.');
+    await p.getByRole('button', { name: 'Por el clima' }).click();
+    await p.locator('dialog[open] .hx-tira__dia:not([disabled])').nth(4).click();
+    await ver(p, 'Pedís el');
+    await foto('03-otro-dia');
+    await p.getByRole('button', { name: 'Pedir este día' }).click();
+    await ver(p, 'Pediste pasarla al');
+    await panel(p, 'Acepta el cambio de jornada');
+    await p.getByText(/Pediste pasarla al/).waitFor({ state: 'detached' });
+    const despues = await p.locator('.ob-jornada__cuando').allTextContents();
+    assert.notEqual(despues[2], antes[2], 'la jornada 3 cambió de día');
+    for (const i of [0, 1, 3, 4]) assert.equal(despues[i], antes[i], `la jornada ${i + 1} no se movió`);
+    await foto('04-jornadas');
+    // Plan: un adicional en la etapa 1, aceptado, y el cobro de cada etapa
+    await p.getByRole('link', { name: 'Volver al trabajo' }).click();
+    await p.getByRole('link', { name: /Plan de obra/ }).click();
+    await p.waitForURL('**/obra/plan/**');
+    await p.getByRole('link', { name: 'Agregar repuestos o mano de obra' }).click();
+    await p.waitForURL('**/trabajos/adicional/**');
+    await ver(p, 'etapa 1: Preparación');
+    await p.getByRole('button', { name: /Materiales extra/ }).click();
+    await p.getByRole('button', { name: '+ $ 5.000' }).click();
+    await p.getByRole('button', { name: /^Mandárselo al cliente/ }).click();
+    await p.waitForURL('**/obra/plan/**');
+    await ver(p, 'esperando al cliente');
+    await panel(p, 'Acepta tu último adicional');
+    await ver(p, 'Total de la etapa');
+    for (const [i, monto] of [[1, '$ 65.000'], [2, '$ 150.000'], [3, '$ 40.000']]) {
+      await p.getByRole('button', { name: 'Terminé esta etapa' }).click();
+      await ver(p, `¿Terminaste la etapa ${i}?`);
+      await ver(p, monto);
+      await p.getByRole('button', { name: 'Sí, terminé la etapa' }).click();
+      await ver(p, `Terminaste la etapa ${i}`);
+      await p.getByRole('button', { name: new RegExp(`Ya me pagó: informarlo \\(etapa ${i}`) }).click();
+      await ver(p, `Vas a informar que cobraste ${monto}`);
+      await p.getByRole('button', { name: 'Sí, ya lo cobré' }).click();
+      await p.locator('dialog[open]').waitFor({ state: 'detached' });
+      if (i === 1) await foto('05-etapa-1-cobrada');
+    }
+    assert.equal(await p.getByText('Reportado, sin verificar', { exact: true }).count(), 3, 'informar no verifica');
+    // Cierre de la obra
+    await p.getByRole('button', { name: 'Cerrar la obra' }).click();
+    await p.getByRole('button', { name: 'Sí, cerrar la obra' }).click();
+    await p.waitForURL('**/trabajos/terminado/**');
+    await ver(p, '¡Terminaste la obra!');
+    await ver(p, 'Etapa por etapa');
+    assert.equal((await p.locator('.tr-desglose--tarjeta .tr-desglose__total dd').textContent()).trim(), '$ 0', 'falta cobrar: nada');
+    await foto('06-cierre');
   }, { capturas });
 
   await escenario('J-sin-conexion-service-worker', nav_, base, async ({ p, foto }) => {

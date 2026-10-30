@@ -1,4 +1,4 @@
-// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.7.0, borrador; versión en version.ts).
+// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.8.0, borrador; versión en version.ts).
 // El servidor valida con los mismos esquemas; el cliente valida cada respuesta y trata un desajuste
 // como error de contrato (nunca lo "arregla" con datos de muestra). OpenAPI: docs/api/openapi.yaml.
 import { z } from 'zod';
@@ -8,6 +8,8 @@ import {
   ESTADOS_ALTA,
   ESTADOS_BAJA,
   ESTADOS_DOCUMENTO,
+  ESTADOS_ETAPA,
+  ESTADOS_JORNADA,
   ESTADOS_PAGO,
   ESTADOS_PEDIDO,
   ESTADOS_PRESENCIAL,
@@ -304,6 +306,8 @@ export const MensajeSchema = z.strictObject({
 export const PagoSchema = z.strictObject({
   id: IdSchema,
   trabajoId: IdSchema,
+  /** En una obra, cada etapa se cobra por separado (0.8.0); null en un trabajo de un día. */
+  etapaId: IdSchema.nullable(),
   descripcion: z.string(),
   /** Tarifa de Handy sobre este pago (0 durante la demo) y lo que cobra el especialista. */
   feeHandy: MontoSchema,
@@ -484,11 +488,59 @@ export const PedidoDetalleSchema = PedidoElegibleSchema.extend({
 export type PedidoDetalle = z.infer<typeof PedidoDetalleSchema>;
 
 // ── Trabajo: detalle, historial y obra por etapas ────────────────────────────────────────────────
+/** Etapa de una obra (0.8.0): su importe, lo que incluye, su estado y su cobro. Las fechas salen de sus jornadas. */
 export const EtapaObraSchema = z.strictObject({
+  id: IdSchema,
+  orden: z.int().min(1),
   nombre: z.string(),
+  incluye: z.string(),
   monto: MontoSchema,
-  estado: z.enum(['pendiente', 'en_curso', 'terminada']),
+  estado: z.enum(ESTADOS_ETAPA),
+  terminadaEn: InstanteSchema.nullable(),
+  /** El cobro de la etapa: se crea al terminarla. */
+  pagoId: IdSchema.nullable(),
 });
+export type EtapaObra = z.infer<typeof EtapaObraSchema>;
+
+const HorarioSchema = z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() });
+
+/** Día de trabajo de una obra (0.8.0). Pedir otro día es una solicitud: no cambia hasta que el cliente acepta y no mueve el resto. */
+export const JornadaSchema = z.strictObject({
+  id: IdSchema,
+  etapaId: IdSchema,
+  numero: z.int().min(1),
+  horario: HorarioSchema,
+  estado: z.enum(ESTADOS_JORNADA),
+  cambioPendiente: z
+    .strictObject({
+      horario: HorarioSchema,
+      motivo: z.enum(['otro_trabajo', 'imprevisto', 'falta_repuesto', 'pedido_del_cliente', 'clima', 'otro']),
+      pedidoEn: InstanteSchema,
+    })
+    .nullable(),
+});
+export type Jornada = z.infer<typeof JornadaSchema>;
+
+/** Diario de obra (0.8.0): el avance del día con una nota corta y hasta 4 fotos. Lo ve el cliente de esa obra. */
+export const MAX_FOTOS_DIARIO = 4;
+export const EntradaDiarioSchema = z.strictObject({
+  id: IdSchema,
+  etapaId: IdSchema,
+  jornadaId: IdSchema.nullable(),
+  nota: z.string(),
+  /** URL firmada de corta duración, como las fotos del chat. */
+  fotos: z.array(z.strictObject({ id: IdSchema, url: z.url() })).max(MAX_FOTOS_DIARIO),
+  creadoEn: InstanteSchema,
+});
+export type EntradaDiario = z.infer<typeof EntradaDiarioSchema>;
+
+/** Campos del avance (multipart): las fotos van como archivos aparte (`fotos`), nunca dentro del JSON. */
+export const NuevaEntradaDiarioSchema = z.strictObject({
+  etapaId: IdSchema,
+  jornadaId: IdSchema.nullable(),
+  nota: z.string().trim().min(1).max(280),
+});
+export type NuevaEntradaDiario = z.infer<typeof NuevaEntradaDiarioSchema>;
 
 // ── Adicionales (0.7.0) ─────────────────────────────────────────────────────────────────────────
 export const TIPOS_ADICIONAL = ['repuesto', 'mano_de_obra'] as const;
@@ -497,6 +549,8 @@ export type TipoAdicional = (typeof TIPOS_ADICIONAL)[number];
 export const AdicionalSchema = z.strictObject({
   id: IdSchema,
   trabajoId: IdSchema,
+  /** En una obra, la etapa a la que se suma (0.8.0); null en un trabajo de un día. */
+  etapaId: IdSchema.nullable(),
   tipo: z.enum(TIPOS_ADICIONAL),
   descripcion: z.string(),
   monto: MontoSchema,
@@ -508,6 +562,8 @@ export const AdicionalSchema = z.strictObject({
 export type Adicional = z.infer<typeof AdicionalSchema>;
 
 export const NuevoAdicionalSchema = z.strictObject({
+  /** Obligatorio en una obra (la etapa en curso); null en un trabajo de un día (0.8.0). */
+  etapaId: IdSchema.nullable(),
   tipo: z.enum(TIPOS_ADICIONAL),
   descripcion: z.string().trim().min(1).max(200),
   monto: MontoSchema.refine((m) => m.centavos > 0, 'El importe tiene que ser mayor a cero'),
@@ -530,6 +586,9 @@ export const TrabajoDetalleSchema = z.strictObject({
   pagoId: IdSchema.nullable(),
   /** Adicionales del trabajo, del más nuevo al más viejo (0.7.0). */
   adicionales: z.array(AdicionalSchema),
+  /** Obra (0.8.0): jornadas en orden y diario del más nuevo al más viejo. Vacíos en un trabajo de un día. */
+  jornadas: z.array(JornadaSchema),
+  diario: z.array(EntradaDiarioSchema),
   /** Lo acordado más los adicionales aceptados: el precio que rige (los pendientes no suman). */
   totalVigente: MontoSchema,
 });
@@ -583,6 +642,13 @@ export const NuevoCambioSchema = z.strictObject({
   motivo: z.enum(MOTIVOS_CAMBIO).nullable(),
 });
 export type NuevoCambio = z.infer<typeof NuevoCambioSchema>;
+
+/** Pedir otro día para una jornada de obra (0.8.0). */
+export const CambioJornadaSchema = z.strictObject({
+  horario: z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() }),
+  motivo: z.enum(MOTIVOS_CAMBIO),
+});
+export type CambioJornada = z.infer<typeof CambioJornadaSchema>;
 
 /** Cancelar un trabajo (0.7.0): siempre con motivo. Sin penalización automática. */
 export const MOTIVOS_CANCELACION = ['no_puedo_ir', 'problema_personal', 'cliente_no_responde', 'trabajo_distinto', 'riesgo_en_el_lugar', 'otro'] as const;

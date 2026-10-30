@@ -18,6 +18,7 @@ import { MAQUINA_ADICIONAL, MAQUINA_TRABAJO, puedeTransicionar, type EstadoTraba
 import { VIGENCIA_PROPUESTA_PROGRAMADO_MS } from '../../contracts/tiempos.ts';
 import { ahoraMs, fallo, idempotente, idNuevo, iso, type EstadoMock, type TrabajoInterno } from './estado.ts';
 import { zodAFallo } from './validacion.ts';
+import { arrancarSiguienteEtapa } from './obras.ts';
 import { registrarLlegada, terminarViaje } from './viajes.ts';
 
 const ACTIVOS: readonly EstadoTrabajo[] = ['agendado', 'en_camino', 'en_sitio', 'en_curso'];
@@ -72,6 +73,7 @@ function crearCobro(s: EstadoMock, t: TrabajoInterno): void {
   const pago: Pago = {
     id: idNuevo(s),
     trabajoId: t.trabajo.id,
+    etapaId: null,
     descripcion: `${t.trabajo.rubro === 'aire_acondicionado' ? 'Aire acondicionado' : t.trabajo.rubro.charAt(0).toUpperCase() + t.trabajo.rubro.slice(1)} · trabajo terminado`,
     feeHandy: monto(0),
     neto: total,
@@ -107,6 +109,8 @@ export const trabajos = (s: EstadoMock) => ({
       pagoId: t.pagoId,
       adicionales: [...t.adicionales].reverse(),
       totalVigente: totalVigente(t),
+      jornadas: [...t.jornadas].sort((a, b) => a.numero - b.numero),
+      diario: [...t.diario].reverse(),
     };
   },
 
@@ -118,10 +122,15 @@ export const trabajos = (s: EstadoMock) => ({
       if (!AVANCES_TRABAJO.includes(hacia) || !puedeTransicionar(MAQUINA_TRABAJO, t.trabajo.estado, hacia, 'especialista')) {
         throw fallo('conflicto', 409, 'transicion_invalida', 'Ese paso no corresponde al estado actual del trabajo.');
       }
+      // Una obra se cierra recién con todas sus etapas terminadas: cada una ya tiene su cobro (0.8.0).
+      if (hacia === 'finalizado' && t.trabajo.tipo === 'obra' && t.etapas.some((e) => e.estado !== 'terminada')) {
+        throw fallo('conflicto', 409, 'transicion_invalida', 'Para cerrar la obra, terminá todas sus etapas.');
+      }
       t.trabajo.estado = hacia;
       t.trabajo.version += 1;
       t.eventos.push({ estado: hacia, en: iso(ahoraMs(s)), actor: 'especialista' });
       if (hacia !== 'en_camino') terminarViaje(s, t.trabajo.id);
+      if (hacia === 'en_curso' && t.trabajo.tipo === 'obra') arrancarSiguienteEtapa(t);
       if (hacia === 'finalizado') {
         // Lo que el usuario no respondió no se cobra: el sistema lo retira.
         for (const a of t.adicionales) {
@@ -132,7 +141,7 @@ export const trabajos = (s: EstadoMock) => ({
           }
         }
         cerrarConversacion(s, t);
-        crearCobro(s, t);
+        if (t.trabajo.tipo !== 'obra') crearCobro(s, t);
       }
       return structuredClone(t.trabajo);
     });
@@ -200,6 +209,10 @@ export const trabajos = (s: EstadoMock) => ({
       const ok = NuevoAdicionalSchema.safeParse(datos);
       if (!ok.success) throw zodAFallo(ok.error);
       if (t.trabajo.estado !== 'en_curso') throw fallo('conflicto', 409, 'transicion_invalida', 'Los adicionales se agregan con el trabajo en curso.');
+      // En una obra cada adicional va a la etapa en curso (0.8.0); en un trabajo de un día, sin etapa.
+      if (t.trabajo.tipo === 'obra' ? t.etapas.find((e) => e.id === ok.data.etapaId)?.estado !== 'en_curso' : ok.data.etapaId !== null) {
+        throw fallo('validacion', 400, 'validacion', t.trabajo.tipo === 'obra' ? 'Elegí la etapa en curso.' : 'Un trabajo de un día no tiene etapas.');
+      }
       const a: Adicional = { id: idNuevo(s), trabajoId: t.trabajo.id, ...ok.data, estado: 'pendiente', creadoEn: iso(ahoraMs(s)), respondidoEn: null, version: 0 };
       t.adicionales.push(a);
       return structuredClone(a);
@@ -230,6 +243,14 @@ export const trabajos = (s: EstadoMock) => ({
     const confirmados: Array<[number, number]> = [];
     for (const t of s.trabajos) {
       if (!ACTIVOS.includes(t.trabajo.estado)) continue;
+      // Una obra aparece día por día, con cada jornada (0.8.0).
+      if (t.jornadas.length > 0) {
+        for (const j of t.jornadas) {
+          confirmados.push([Date.parse(j.horario.inicio), fin(j.horario.inicio, j.horario.fin)]);
+          items.push({ id: j.id, trabajoId: t.trabajo.id, pedidoId: null, titulo: `Obra · ${t.contraparte} · jornada ${j.numero} de ${t.jornadas.length}`, inicio: j.horario.inicio, fin: j.horario.fin, estado: j.cambioPendiente ? 'cambio_pendiente' : 'confirmado', superpuesto: false });
+        }
+        continue;
+      }
       const { inicio, fin: f } = t.trabajo.acuerdo.horario;
       confirmados.push([Date.parse(inicio), fin(inicio, f)]);
       items.push({ id: `${t.trabajo.id}`, trabajoId: t.trabajo.id, pedidoId: null, titulo: `${t.trabajo.tipo === 'obra' ? 'Obra' : 'Trabajo'} · ${t.contraparte}`, inicio, fin: f, estado: cambioVigente(s, t) ? 'cambio_pendiente' : 'confirmado', superpuesto: false });

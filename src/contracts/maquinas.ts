@@ -193,6 +193,23 @@ export const MAQUINA_ADICIONAL: Maquina<EstadoAdicional> = {
   ],
 };
 
+// ── Etapa de una obra (0.8.0) ────────────────────────────────────────────────────────────────────
+// Una a la vez: al empezar la obra arranca la primera; al terminar una, el sistema arranca la siguiente. Terminar una
+// etapa crea su cobro (directo del cliente al especialista) y retira sus adicionales sin respuesta.
+export const ESTADOS_ETAPA = ['pendiente', 'en_curso', 'terminada'] as const;
+export type EstadoEtapa = (typeof ESTADOS_ETAPA)[number];
+
+export const MAQUINA_ETAPA: Maquina<EstadoEtapa> = {
+  nombre: 'etapa',
+  estados: ESTADOS_ETAPA,
+  inicial: 'pendiente',
+  transiciones: [t('pendiente', 'en_curso', 'sistema'), t('en_curso', 'terminada', 'especialista')],
+};
+
+/** Jornada de una obra (0.8.0): queda `hecha` cuando el especialista carga el avance de ese día en el diario. */
+export const ESTADOS_JORNADA = ['programada', 'hecha'] as const;
+export type EstadoJornada = (typeof ESTADOS_JORNADA)[number];
+
 // ── Pago directo del usuario al especialista (Mercado Pago o efectivo) ───────────────────────────
 // Handy no recibe ese dinero. `reportado` (manual) NO es `verificado`. Verifica un webhook validado
 // del proveedor (`sistema`) u Operations con evidencia; nunca la parte que reporta.

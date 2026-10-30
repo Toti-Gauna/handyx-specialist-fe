@@ -109,7 +109,7 @@ la entrada de una app on demand, y la cabecera ocupa lugar. Detalle de cada lote
   - En curso, con **adicionales** (repuestos y mano de obra que el cliente acepta).
   - ¡Terminaste! e informar el cobro.
   - Cambiar la fecha y cancelar.
-- [ ] **4.7 Obras de varios días:**
+- [x] **4.7 Obras de varios días** (evidencia: recorrido P, la obra de 3 etapas en 5 jornadas; `docs/screens.md` → E5 a E5c; contrato 0.8.0):
   - Plan de obra por jornadas y etapas, en el calendario y en una línea de tiempo.
   - Avance diario con fotos y notas.
   - Adicionales por etapa.

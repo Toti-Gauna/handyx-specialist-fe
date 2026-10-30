@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: api-especialista (Handyx)
-  version: 0.7.0
+  version: 0.8.0
   description: |
     BORRADOR del contrato de api-especialista (TECH-20). Fuente de los esquemas: src/contracts/dto.ts
     (contrato compartido v0.6.0, dueño handyx-client-be). Nada implementado todavía: lo construye
@@ -505,6 +505,69 @@ paths:
         '200':
           description: Retirado
           content: { application/json: { schema: { $ref: '#/components/schemas/Adicional' } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/etapas/{etapaId}/fin:
+    post:
+      tags: [obras]
+      summary: Terminar la etapa en curso de una obra (0.8.0). Crea su cobro (directo del cliente), retira sus adicionales sin respuesta y arranca la siguiente
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { name: etapaId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { $ref: '#/components/parameters/Csrf' }
+        - { $ref: '#/components/parameters/Idempotencia' }
+      responses:
+        '200':
+          description: El cobro de la etapa (pendiente)
+          content: { application/json: { schema: { $ref: '#/components/schemas/Pago' } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/jornadas/{jornadaId}/cambio:
+    post:
+      tags: [obras]
+      summary: Pedir otro día para una jornada (0.8.0). Queda pendiente hasta que el cliente acepta y no mueve las demás
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { name: jornadaId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { $ref: '#/components/parameters/Csrf' }
+        - { $ref: '#/components/parameters/Idempotencia' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [horario, motivo]
+              properties:
+                horario: { $ref: '#/components/schemas/Horario' }
+                motivo: { type: string, enum: [otro_trabajo, imprevisto, falta_repuesto, pedido_del_cliente, clima, otro] }
+      responses:
+        '200':
+          description: Jornada con el cambio pendiente
+          content: { application/json: { schema: { $ref: '#/components/schemas/Jornada' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/diario:
+    post:
+      tags: [obras]
+      summary: Cargar el avance del día en el diario de obra (0.8.0). Lo ve el cliente; con una jornada, la marca hecha
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [etapaId, nota]
+              properties:
+                etapaId: { type: string, format: uuid }
+                jornadaId: { type: string, format: uuid }
+                nota: { type: string, minLength: 1, maxLength: 280 }
+                fotos: { type: array, maxItems: 4, items: { type: string, format: binary }, description: 'image/jpeg|png|webp; se guardan privadas' }
+      responses:
+        '201':
+          description: Entrada del diario
+          content: { application/json: { schema: { $ref: '#/components/schemas/EntradaDiario' } } }
+        '400': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
   /v1/especialista/trabajos/{id}/llamada:
     post:
@@ -1338,10 +1401,11 @@ components:
     Adicional:
       type: object
       additionalProperties: false
-      required: [id, trabajoId, tipo, descripcion, monto, estado, creadoEn, respondidoEn, version]
+      required: [id, trabajoId, etapaId, tipo, descripcion, monto, estado, creadoEn, respondidoEn, version]
       properties:
         id: { type: string, format: uuid }
         trabajoId: { type: string, format: uuid }
+        etapaId: { type: [string, 'null'], format: uuid, description: en una obra, la etapa a la que se suma (0.8.0) }
         tipo: { type: string, enum: [repuesto, mano_de_obra] }
         descripcion: { type: string }
         monto: { $ref: '#/components/schemas/Monto' }
@@ -1352,8 +1416,9 @@ components:
     NuevoAdicional:
       type: object
       additionalProperties: false
-      required: [tipo, descripcion, monto]
+      required: [etapaId, tipo, descripcion, monto]
       properties:
+        etapaId: { type: [string, 'null'], format: uuid, description: 'obligatorio en una obra: la etapa en curso (0.8.0)' }
         tipo: { type: string, enum: [repuesto, mano_de_obra] }
         descripcion: { type: string, minLength: 1, maxLength: 200 }
         monto: { $ref: '#/components/schemas/Monto', description: mayor a cero }
@@ -1380,10 +1445,11 @@ components:
     Pago:
       type: object
       additionalProperties: false
-      required: [id, trabajoId, descripcion, feeHandy, neto, metodo, monto, estado, fuenteConfirmacion, referenciaProveedor, actualizadoEn]
+      required: [id, trabajoId, etapaId, descripcion, feeHandy, neto, metodo, monto, estado, fuenteConfirmacion, referenciaProveedor, actualizadoEn]
       properties:
         id: { type: string, format: uuid }
         trabajoId: { type: string, format: uuid }
+        etapaId: { type: [string, 'null'], format: uuid, description: en una obra, la etapa que se cobra (0.8.0) }
         descripcion: { type: string }
         feeHandy: { $ref: '#/components/schemas/Monto' }
         neto: { $ref: '#/components/schemas/Monto' }
@@ -1541,7 +1607,7 @@ components:
     TrabajoDetalle:
       type: object
       additionalProperties: false
-      required: [trabajo, contraparte, eventos, etapas, cambioPendiente, pagoId, adicionales, totalVigente]
+      required: [trabajo, contraparte, eventos, etapas, cambioPendiente, pagoId, adicionales, totalVigente, jornadas, diario]
       properties:
         trabajo: { $ref: '#/components/schemas/Trabajo' }
         contraparte: { type: string }
@@ -1555,20 +1621,66 @@ components:
               estado: { type: string, enum: [agendado, en_camino, en_sitio, en_curso, finalizado, cancelado] }
               en: { $ref: '#/components/schemas/Instante' }
               actor: { type: string, enum: [especialista, usuario, operations, sistema] }
-        etapas:
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            required: [nombre, monto, estado]
-            properties:
-              nombre: { type: string }
-              monto: { $ref: '#/components/schemas/Monto' }
-              estado: { type: string, enum: [pendiente, en_curso, terminada] }
+        etapas: { type: array, items: { $ref: '#/components/schemas/EtapaObra' } }
         cambioPendiente: { oneOf: [{ $ref: '#/components/schemas/Propuesta' }, { type: 'null' }] }
         pagoId: { type: [string, 'null'], format: uuid }
         adicionales: { type: array, items: { $ref: '#/components/schemas/Adicional' }, description: del más nuevo al más viejo (0.7.0) }
         totalVigente: { $ref: '#/components/schemas/Monto', description: lo acordado más los adicionales aceptados }
+        jornadas: { type: array, items: { $ref: '#/components/schemas/Jornada' }, description: obra (0.8.0), en orden; vacío en un trabajo de un día }
+        diario: { type: array, items: { $ref: '#/components/schemas/EntradaDiario' }, description: obra (0.8.0), del más nuevo al más viejo }
+    EtapaObra:
+      type: object
+      additionalProperties: false
+      required: [id, orden, nombre, incluye, monto, estado, terminadaEn, pagoId]
+      properties:
+        id: { type: string, format: uuid }
+        orden: { type: integer, minimum: 1 }
+        nombre: { type: string }
+        incluye: { type: string }
+        monto: { $ref: '#/components/schemas/Monto' }
+        estado: { type: string, enum: [pendiente, en_curso, terminada] }
+        terminadaEn: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
+        pagoId: { type: [string, 'null'], format: uuid, description: el cobro de la etapa; se crea al terminarla }
+    Jornada:
+      type: object
+      additionalProperties: false
+      required: [id, etapaId, numero, horario, estado, cambioPendiente]
+      properties:
+        id: { type: string, format: uuid }
+        etapaId: { type: string, format: uuid }
+        numero: { type: integer, minimum: 1 }
+        horario: { $ref: '#/components/schemas/Horario' }
+        estado: { type: string, enum: [programada, hecha], description: 'hecha: el especialista cargó el avance de ese día' }
+        cambioPendiente:
+          oneOf:
+            - type: 'null'
+            - type: object
+              additionalProperties: false
+              required: [horario, motivo, pedidoEn]
+              properties:
+                horario: { $ref: '#/components/schemas/Horario' }
+                motivo: { type: string, enum: [otro_trabajo, imprevisto, falta_repuesto, pedido_del_cliente, clima, otro] }
+                pedidoEn: { $ref: '#/components/schemas/Instante' }
+    EntradaDiario:
+      type: object
+      additionalProperties: false
+      required: [id, etapaId, jornadaId, nota, fotos, creadoEn]
+      properties:
+        id: { type: string, format: uuid }
+        etapaId: { type: string, format: uuid }
+        jornadaId: { type: [string, 'null'], format: uuid }
+        nota: { type: string }
+        fotos:
+          type: array
+          maxItems: 4
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, url]
+            properties:
+              id: { type: string, format: uuid }
+              url: { type: string, format: uri, description: URL firmada de corta duración; solo la ven las partes de la obra }
+        creadoEn: { $ref: '#/components/schemas/Instante' }
     NuevoCambio:
       type: object
       additionalProperties: false

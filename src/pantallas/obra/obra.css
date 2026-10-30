@@ -1,0 +1,398 @@
+/* Obras de varios días (lote 4.7): resumen, plan de etapas, jornadas, diario y cierre. Prefijo ob-. */
+
+/* Resumen dentro del trabajo */
+.ob-resumen {
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.ob-resumen > * {
+  min-width: 0;
+}
+
+.ob-resumen__cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-4);
+  padding: var(--esp-4);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.ob-resumen__texto {
+  display: grid;
+  flex: 1 1 160px;
+  gap: var(--esp-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ob-resumen__etapa {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--hd-tinta);
+}
+
+.ob-resumen__proxima {
+  margin: 0;
+  color: var(--hd-texto);
+}
+
+.ob-montos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: var(--esp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ob-montos li {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: var(--esp-3);
+  border-radius: var(--hx-radio-mosaico);
+  background: var(--hd-mosaico);
+  color: var(--hd-tinta);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.ob-montos__dato {
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.1rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.ob-montos small {
+  color: var(--hd-suave);
+  font-weight: 600;
+}
+
+/* Plan de obra: línea de tiempo vertical */
+.ob-plan {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ob-etapa {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: var(--esp-3);
+  padding-bottom: var(--esp-4);
+}
+
+/* La línea que une las etapas */
+.ob-etapa::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  bottom: 0;
+  left: 19px;
+  width: 2px;
+  background: var(--hd-linea);
+}
+
+.ob-etapa:last-child::before {
+  display: none;
+}
+
+.ob-etapa--terminada::before {
+  background: var(--hd-exito);
+}
+
+.ob-etapa__punto {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--hd-mosaico);
+  color: var(--hd-tinta);
+  font-family: var(--fuente-titulos);
+  font-weight: 900;
+}
+
+.ob-etapa--en_curso .ob-etapa__punto {
+  background: var(--hd-azul);
+  color: #fff;
+}
+
+.ob-etapa--terminada .ob-etapa__punto {
+  background: var(--hd-exito-boton);
+  color: #fff;
+}
+
+.ob-etapa__cuerpo {
+  display: grid;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.ob-etapa__cuerpo > * {
+  min-width: 0;
+}
+
+.ob-etapa--en_curso .ob-etapa__cuerpo {
+  outline: 2px solid var(--hd-azul);
+}
+
+.ob-etapa__cabeza,
+.ob-jornada__cabeza,
+.ob-lista-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+}
+
+.ob-etapa__nombre {
+  margin: 0;
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+.ob-etapa__fechas,
+.ob-jornada__cuando {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  color: var(--hd-suave);
+  overflow-wrap: anywhere;
+}
+
+.ob-etapa__fechas .icono,
+.ob-jornada__cuando .icono {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.ob-etapa__incluye {
+  margin: 0;
+}
+
+.ob-etapa__adicional--fuera dt,
+.ob-etapa__adicional--fuera dd {
+  color: var(--hd-suave);
+}
+
+.ob-etapa__acciones {
+  display: grid;
+  gap: var(--esp-2);
+}
+
+.ob-etapa .cobro {
+  padding: var(--esp-3);
+  background: var(--hd-fondo-2);
+  box-shadow: none;
+}
+
+.ob-cerrar {
+  display: grid;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border-radius: 22px;
+  background: var(--hd-exito-tinte);
+}
+
+.ob-cerrar p {
+  margin: 0;
+}
+
+/* Jornadas */
+.ob-jornadas {
+  display: grid;
+  gap: var(--esp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ob-jornada {
+  display: grid;
+  justify-items: start;
+  gap: var(--esp-2);
+  padding: var(--esp-3) var(--esp-4);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.ob-jornada > * {
+  max-width: 100%;
+}
+
+.ob-jornada__cabeza {
+  width: 100%;
+}
+
+.ob-jornada__titulo {
+  margin: 0;
+  font-weight: 800;
+  color: var(--hd-tinta);
+}
+
+.ob-jornada__cambio {
+  margin: 0;
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: 12px;
+  background: var(--hd-aviso-tinte);
+  color: var(--hd-aviso);
+  font-weight: 600;
+}
+
+.ob-hoja__rotulo {
+  margin: 0;
+  font-weight: 800;
+}
+
+/* Diario */
+.ob-nuevo {
+  display: grid;
+  gap: var(--esp-3);
+  padding: var(--esp-4);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.ob-nuevo > *,
+.ob-nuevo__fotos > * {
+  min-width: 0;
+}
+
+.ob-nuevo__fotos {
+  display: grid;
+  justify-items: start;
+  gap: var(--esp-2);
+}
+
+.ob-diario {
+  display: grid;
+  gap: var(--esp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ob-avance {
+  display: grid;
+  gap: var(--esp-1);
+  padding: var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+  overflow-wrap: anywhere;
+}
+
+.ob-avance p {
+  margin: 0;
+}
+
+.ob-avance__etapa {
+  color: var(--hd-suave);
+  font-size: 0.9rem;
+}
+
+.ob-avance__nota {
+  margin-top: var(--esp-1);
+}
+
+.ob-fotos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: var(--esp-2);
+  width: 100%;
+  margin: var(--esp-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ob-fotos li {
+  position: relative;
+}
+
+.ob-fotos img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  object-fit: cover;
+  background: var(--hd-mosaico);
+}
+
+.ob-fotos__quitar {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: var(--toque-min);
+  height: var(--toque-min);
+  border: 0;
+  border-radius: 50%;
+  background: rgb(14 29 54 / 0.75);
+  color: #fff;
+  cursor: pointer;
+}
+
+.ob-fotos__quitar:focus-visible {
+  outline: 3px solid var(--hd-amarillo);
+  outline-offset: 2px;
+}
+
+/* Cierre de la obra */
+.ob-cierre {
+  display: grid;
+  gap: var(--esp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ob-cierre__etapa {
+  display: grid;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.ob-cierre__etapa > * {
+  min-width: 0;
+}
+
+.ob-cierre__titulo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--esp-2);
+  margin: 0;
+  font-weight: 800;
+  color: var(--hd-tinta);
+  overflow-wrap: anywhere;
+}
+
+.ob-cierre__etapa .cobro {
+  padding: var(--esp-3);
+  background: var(--hd-fondo-2);
+  box-shadow: none;
+}
