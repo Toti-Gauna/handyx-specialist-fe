@@ -14,8 +14,9 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 - `handyx-client-be` `f98db60`: columnas derivadas en `trips`, contrato del usuario `1.0.0-draft.2` con el viaje en vivo
   por SSE (posición exacta, trayecto y llegada estimada solo mientras se comparte), escucha del canal con reconexión y
   geocodificador Nominatim propio.
-- Decisiones 15–17 del plan. **Atención**: otra sesión armó un esquema paralelo en `handyx-client-be` (`fase-4-backend`);
-  queda como base esta rama y el informe dice qué traer de allá.
+- Decisiones 15–17 del plan. **Esquema conciliado** con la rama `fase-4-backend` de la otra sesión (`handyx-client-be`
+  `479b689`, `handyx-specialist-be` `1b10a83`): esquema `handyx`, roles `handyx_usuario_app` / `handyx_especialista_app`,
+  nombres de TECH-03 y migraciones reversibles. A la otra sesión se le avisó que rebase.
 - Pendiente: instancias propias de OSRM y Nominatim (Ignacio), sesiones (5.2) y copiar el contrato del usuario a
   `handyx-client-fe` cuando el bloque 3 rebase.
 

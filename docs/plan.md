@@ -261,5 +261,7 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
     comparte (confirma la 6 y reemplaza «aproximada, sin ETA» del rediseño de la app de usuario).
 16. **Trayectos y geocodificación**: solo instancias propias de OSRM y Nominatim con datos de OpenStreetMap; las
     posiciones y las direcciones no salen a terceros. Las crea Ignacio; sin ellas, el viaje va sin trayecto.
-17. **Esquema compartido**: la base es la rama `claude/pensive-hypatia-jajjgm` de `handyx-client-be`, no `fase-4-backend`
-    (`handyx-client-be/docs/conciliacion-fase-4-backend.md`).
+17. **Esquema compartido** («lo que mejor congenie entre ambos»): la estructura de la rama `claude/pensive-hypatia-jajjgm`
+    de `handyx-client-be` con lo de `fase-4-backend` (esquema `handyx`, roles `handyx_usuario_app` /
+    `handyx_especialista_app`, nombres de TECH-03, `down.sql`, guía de base). Detalle:
+    `handyx-client-be/docs/conciliacion-fase-4-backend.md`.
