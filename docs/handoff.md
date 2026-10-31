@@ -1,10 +1,26 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (sí de diseño dado al arrancar la fase 5; mapa base del 4.3 pendiente). Fase 5: 5.1 y 5.3 hechos; 5.2 en espera de autorizaciones.**
+Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (sí de diseño dado al arrancar la fase 5; mapa base del 4.3 pendiente). Fase 5: 5.1, 5.3 y 5.4 hechos; 5.2 en espera de autorizaciones.**
 Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 5 · Lote 5.4 (pedidos, negociación y precio sugerido, en `handyx-specialist-be`)
+
+- Commit `5410c95` (contrato del módulo en `docs/pedidos.md` allá): `inicio`, `disponibilidad`, `mapa/barrios`,
+  `pedidos` (bandeja paginada y detalle), `propuestas` (enviar, responder, retirar).
+- Filtro en el servidor: alta habilitada, rubro habilitado, zonas, ventana vigente y opt-out de urgentes (efecto en la
+  siguiente consulta). Antes de contratar solo barrio y círculo desplazado; la dirección y el destino llegan con el trabajo.
+- Aceptación en una transacción con versión, `Idempotency-Key` y bloqueo del pedido: dos a la vez → un trabajo y un 409.
+  El acuerdo toma la tarifa de la política aprobada y vigente (0 % en la demo); sin política, 503.
+- Vencimientos con el reloj del servidor (al leer y en la purga); precio sugerido versionado que publica Operations.
+- 16 pruebas de integración nuevas (31 en total). En `handyx-client-be` `47e73bc`: función de zona aproximada y permiso
+  de la purga sobre `proposals`.
+- Abierto: si «Terminé» cierra el trabajo o espera la confirmación del usuario (decisión de producto, para el 5.6).
+
+**Próximo paso**: 5.5 (ubicación en tiempo real y trayectos; modelo y esfuerzo en `docs/plan.md`). El 5.2 sigue
+pendiente de las autorizaciones de Google Cloud, Apple Developer y el proveedor de emails.
 
 ## Fase 5 · Lote 5.3 (alta, verificación y privacidad, en `handyx-specialist-be`)
 
@@ -15,9 +31,6 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
   solo por Operations (script privado con su rol de base); retención parametrizada (DNI 90 días, ubicación 30) y baja real.
 - **Sin el 5.2 no hay sesiones**: las rutas responden 503. La app sigue usando el mock hasta conectar (5.8).
 - 18 pruebas unitarias y 15 de integración contra PostgreSQL aislado; cambios del esquema en `handyx-client-be` `6bf939b`.
-
-**Próximo paso**: 5.4 (pedidos, negociación y precio sugerido), Opus 5.5 / high. El 5.2 queda pendiente de las
-autorizaciones de Google Cloud, Apple Developer y el proveedor de emails.
 
 ## Fase 5 · Lote 5.1 (modelo y migraciones, en `handyx-client-be`)
 

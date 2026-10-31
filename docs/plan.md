@@ -158,7 +158,8 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
   - Turnos presenciales.
   - Retenciones parametrizadas: DNI 90 días y ubicación 30 días.
   - Baja real.
-- [ ] **5.4 Pedidos, negociación y precio sugerido:**
+- [x] **5.4 Pedidos, negociación y precio sugerido** (hecho el 31/10/2026 en `handyx-specialist-be` `5410c95` + permisos y
+  zona en `handyx-client-be` `47e73bc`; sin sesiones reales hasta el 5.2; ver `docs/pedidos.md` allá):
   - Filtro en el servidor y opt-out de urgentes.
   - Zona aproximada calculada por el servidor.
   - Propuestas bidireccionales.
