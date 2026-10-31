@@ -1,10 +1,30 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (sí de diseño dado al arrancar la fase 5; mapa base del 4.3 pendiente). Fase 5: 5.1, 5.3, 5.4 y 5.5 hechos; 5.2 en espera de autorizaciones.**
+Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (sí de diseño dado al arrancar la fase 5; mapa base del 4.3 pendiente). Fase 5: 5.1 y 5.3 a 5.6 hechos; 5.2 en espera de autorizaciones.**
 Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 5 · Lote 5.6 (trabajo, obras, chat, agenda y soporte)
+
+- `handyx-specialist-be` en tres tandas (`93b0fb6`, `6b322fa`, `ef0e948`; contrato del módulo en `docs/trabajos.md` allá):
+  - Trabajo: lista, detalle, salir/empezar/terminar con versión e idempotencia, cancelación con motivo, cambio del acuerdo
+    en las dos direcciones. «Terminé» queda `terminado_por_especialista` en la base (el usuario confirma) y se ve
+    finalizado; crea el cobro por el total vigente.
+  - Obras: adicionales, fin de etapa con su cobro, otro día para una jornada, diario con hasta 4 fotos privadas.
+  - Chat cifrado con fotos privadas, contactos, agenda con superposición y avisos sin datos personales.
+  - Soporte auditable (eventos inmutables), preferencias, push `no_disponible` sin proveedor y outbox con reintento
+    acotado (`npm run avisos:enviar`).
+  - Arreglo de seguridad: las URL firmadas aceptaban otra escritura de la firma con la misma decodificación.
+- `handyx-client-be` `6af4c3b`: permisos del envío de avisos y aviso `trabajo_cancelado` (contrato `1.0.0-draft.3`).
+- `docs/api/openapi.yaml` de este repo corregido donde no coincidía con el contrato en código: mensajes (lista y
+  envío de texto o foto) y casos de soporte (lista).
+- Pendiente (5.8 o decisión): contrato con archivos para los adjuntos de soporte (hoy, más de 0 es 400), la suscripción
+  push cuando haya proveedor, la llamada por número puente (503 sin proveedor de telefonía) y el plan de obra, que lo
+  crea la API de usuario.
+
+**Próximo paso**: 5.7 (caja, Mercado Pago y ledger; modelo y esfuerzo en `docs/plan.md`).
 
 ## Fase 5 · Lote 5.5 (ubicación en tiempo real y trayectos)
 
@@ -19,8 +39,6 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
   nombres de TECH-03 y migraciones reversibles. A la otra sesión se le avisó que rebase.
 - Pendiente: instancias propias de OSRM y Nominatim (Ignacio), sesiones (5.2) y copiar el contrato del usuario a
   `handyx-client-fe` cuando el bloque 3 rebase.
-
-**Próximo paso**: 5.6 (trabajo, obras, chat, agenda y soporte; modelo y esfuerzo en `docs/plan.md`).
 
 ## Fase 5 · Lote 5.4 (pedidos, negociación y precio sugerido, en `handyx-specialist-be`)
 

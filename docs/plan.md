@@ -173,7 +173,8 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
   - Geocerca de llegada en el servidor y respaldo manual auditado.
   - Motor de trayectos (§5) y geocodificación de direcciones.
   - Retención de 30 días.
-- [ ] **5.6 Trabajo, obras, chat, agenda y soporte:**
+- [x] **5.6 Trabajo, obras, chat, agenda y soporte** (hecho el 31/10/2026 en `handyx-specialist-be` `93b0fb6`, `6b322fa` y
+  `ef0e948` + permisos y aviso en `handyx-client-be` `6af4c3b`; sin sesiones reales hasta el 5.2; ver `docs/trabajos.md` allá):
   - Eventos del trabajo, obras por jornada y adicionales con aceptación.
   - Chat con archivos privados.
   - Outbox con reintento acotado.

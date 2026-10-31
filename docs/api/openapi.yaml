@@ -583,22 +583,16 @@ paths:
   /v1/conversaciones/{id}/mensajes:
     get:
       tags: [mensajes]
-      parameters: [{ $ref: '#/components/parameters/Id' }, { name: cursor, in: query, schema: { type: string } }]
+      summary: Los últimos 200 mensajes del hilo, en orden (lote 5.6). Abrirlo marca leído lo del usuario
+      parameters: [{ $ref: '#/components/parameters/Id' }]
       responses:
         '200':
           description: Mensajes (solo participantes)
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties: false
-                required: [items, siguienteCursor]
-                properties:
-                  items: { type: array, items: { $ref: '#/components/schemas/Mensaje' } }
-                  siguienteCursor: { type: [string, 'null'] }
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Mensaje' } } } }
         '404': { $ref: '#/components/responses/Error' }
     post:
       tags: [mensajes]
+      summary: Texto (JSON) o foto privada (multipart con `archivo`, `tipo` y `texto` opcional). La misma clave no duplica
       parameters:
         - { $ref: '#/components/parameters/Id' }
         - { $ref: '#/components/parameters/Csrf' }
@@ -610,14 +604,26 @@ paths:
             schema:
               type: object
               additionalProperties: false
-              required: [texto]
+              required: [tipo, texto]
               properties:
-                texto: { type: string, minLength: 1, maxLength: 2000 }
+                tipo: { type: string, enum: [texto, foto] }
+                texto: { type: [string, 'null'], maxLength: 2000 }
+          multipart/form-data:
+            schema:
+              type: object
+              required: [archivo, tipo]
+              properties:
+                archivo: { type: string, format: binary, description: 'JPEG, PNG o WebP de hasta 5 MB (por sus bytes)' }
+                tipo: { type: string, enum: [foto] }
+                texto: { type: string, maxLength: 2000 }
       responses:
         '201':
           description: Enviado
           content: { application/json: { schema: { $ref: '#/components/schemas/Mensaje' } } }
-
+        '400': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '415': { $ref: '#/components/responses/Error' }
   /v1/especialista/caja:
     get:
       tags: [caja]
@@ -651,18 +657,11 @@ paths:
   /v1/soporte/casos:
     get:
       tags: [soporte]
+      summary: Casos propios, el más reciente primero (los últimos 100)
       responses:
         '200':
           description: Casos propios
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties: false
-                required: [items, siguienteCursor]
-                properties:
-                  items: { type: array, items: { $ref: '#/components/schemas/CasoSoporte' } }
-                  siguienteCursor: { type: [string, 'null'] }
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/CasoSoporte' } } } }
     post:
       tags: [soporte]
       parameters: [{ $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
