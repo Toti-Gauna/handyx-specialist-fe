@@ -166,7 +166,9 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
   - Aceptación transaccional con versión e idempotencia.
   - Vencimientos en el servidor.
   - Precios sugeridos versionados.
-- [ ] **5.5 Ubicación en tiempo real y trayectos** (Opus / xhigh):
+- [x] **5.5 Ubicación en tiempo real y trayectos** (hecho el 31/10/2026 en `handyx-specialist-be` `7dca619` + esquema,
+  contrato del usuario y SSE en `handyx-client-be` `f98db60`; sin sesiones reales hasta el 5.2 y sin instancias de OSRM ni
+  Nominatim todavía; ver `docs/viaje.md` allá):
   - Posiciones del viaje por una conexión en vivo (SSE), solo durante el viaje y solo para las dos partes.
   - Geocerca de llegada en el servidor y respaldo manual auditado.
   - Motor de trayectos (§5) y geocodificación de direcciones.
@@ -252,3 +254,12 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
 12. **Pantalla de carga**: los Handys terminan **todos de la mano** con el logo.
 13. **Imágenes nuevas de los Handys** en distintas poses, sobre fondo verde (`docs/handys-prompt.md`).
 14. El rediseño es la **fase 4**: el backend pasa a la fase 5 y el deploy a la 6.
+
+### Decisiones del 31/10/2026 (fase 5)
+
+15. **Viaje**: el usuario ve la posición exacta del especialista, el trayecto y la llegada estimada, solo mientras se
+    comparte (confirma la 6 y reemplaza «aproximada, sin ETA» del rediseño de la app de usuario).
+16. **Trayectos y geocodificación**: solo instancias propias de OSRM y Nominatim con datos de OpenStreetMap; las
+    posiciones y las direcciones no salen a terceros. Las crea Ignacio; sin ellas, el viaje va sin trayecto.
+17. **Esquema compartido**: la base es la rama `claude/pensive-hypatia-jajjgm` de `handyx-client-be`, no `fase-4-backend`
+    (`handyx-client-be/docs/conciliacion-fase-4-backend.md`).

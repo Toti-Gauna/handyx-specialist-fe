@@ -1,10 +1,25 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (sí de diseño dado al arrancar la fase 5; mapa base del 4.3 pendiente). Fase 5: 5.1, 5.3 y 5.4 hechos; 5.2 en espera de autorizaciones.**
+Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (sí de diseño dado al arrancar la fase 5; mapa base del 4.3 pendiente). Fase 5: 5.1, 5.3, 5.4 y 5.5 hechos; 5.2 en espera de autorizaciones.**
 Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 5 · Lote 5.5 (ubicación en tiempo real y trayectos)
+
+- `handyx-specialist-be` `7dca619` (`docs/viaje.md` allá): `viaje`, `viaje/posiciones` (POST y DELETE) y `llegada` del
+  contrato 0.9.0. Posiciones cifradas (30 días, una cada 5 s), trayecto con un OSRM propio y recálculo con dos desvíos,
+  geocerca de 80 m que marca la llegada sola, «Ya llegué» auditado (también sin destino exacto) y `pg_notify` sin datos.
+- `handyx-client-be` `f98db60`: columnas derivadas en `trips`, contrato del usuario `1.0.0-draft.2` con el viaje en vivo
+  por SSE (posición exacta, trayecto y llegada estimada solo mientras se comparte), escucha del canal con reconexión y
+  geocodificador Nominatim propio.
+- Decisiones 15–17 del plan. **Atención**: otra sesión armó un esquema paralelo en `handyx-client-be` (`fase-4-backend`);
+  queda como base esta rama y el informe dice qué traer de allá.
+- Pendiente: instancias propias de OSRM y Nominatim (Ignacio), sesiones (5.2) y copiar el contrato del usuario a
+  `handyx-client-fe` cuando el bloque 3 rebase.
+
+**Próximo paso**: 5.6 (trabajo, obras, chat, agenda y soporte; modelo y esfuerzo en `docs/plan.md`).
 
 ## Fase 5 · Lote 5.4 (pedidos, negociación y precio sugerido, en `handyx-specialist-be`)
 
@@ -18,9 +33,6 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 - 16 pruebas de integración nuevas (31 en total). En `handyx-client-be` `47e73bc`: función de zona aproximada y permiso
   de la purga sobre `proposals`.
 - Abierto: si «Terminé» cierra el trabajo o espera la confirmación del usuario (decisión de producto, para el 5.6).
-
-**Próximo paso**: 5.5 (ubicación en tiempo real y trayectos; modelo y esfuerzo en `docs/plan.md`). El 5.2 sigue
-pendiente de las autorizaciones de Google Cloud, Apple Developer y el proveedor de emails.
 
 ## Fase 5 · Lote 5.3 (alta, verificación y privacidad, en `handyx-specialist-be`)
 
