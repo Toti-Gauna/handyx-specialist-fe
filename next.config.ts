@@ -9,6 +9,9 @@ const origen = process.env.NEXT_PUBLIC_DATA_SOURCE === 'http' ? './src/data/orig
 
 const config: NextConfig = {
   output: 'export',
+  // Las páginas `page.mock.tsx` (el catálogo del kit) existen solo con el origen de prueba: en producción no son rutas,
+  // así que ni se construyen ni entran al bundle (scripts/verificar-bundle.mjs lo comprueba).
+  pageExtensions: origen.endsWith('mock.ts') ? ['mock.tsx', 'tsx', 'ts'] : ['tsx', 'ts'],
   trailingSlash: true,
   images: { unoptimized: true },
   poweredByHeader: false,

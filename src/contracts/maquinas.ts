@@ -91,11 +91,12 @@ export const MAQUINA_PRESENCIAL: Maquina<EstadoPresencial> = {
   estados: ESTADOS_PRESENCIAL,
   inicial: 'pendiente_cita',
   transiciones: [
-    t('pendiente_cita', 'cita_coordinada', 'operations'),
+    // Desde 0.5.0 el especialista reserva el turno él mismo (o lo coordina Operations). Cambiar de turno no cambia el estado.
+    t('pendiente_cita', 'cita_coordinada', 'especialista', 'operations'),
     t('cita_coordinada', 'aprobada', 'operations'),
     t('cita_coordinada', 'no_aprobada', 'operations'),
     t('cita_coordinada', 'no_asistio', 'operations'),
-    t('no_asistio', 'cita_coordinada', 'operations'),
+    t('no_asistio', 'cita_coordinada', 'especialista', 'operations'),
   ],
 };
 
@@ -163,7 +164,9 @@ export const MAQUINA_TRABAJO: Maquina<EstadoTrabajo> = {
   inicial: 'agendado',
   transiciones: [
     t('agendado', 'en_camino', 'especialista'),
-    t('en_camino', 'en_sitio', 'especialista'),
+    // Llegada (0.7.0): `sistema` la marca sola al entrar en el radio con la app abierta (geocerca); `especialista` solo con
+    // "Ya llegué", el respaldo cuando la ubicación anda mal, y siempre con el motivo.
+    t('en_camino', 'en_sitio', 'especialista', 'sistema'),
     t('en_sitio', 'en_curso', 'especialista'),
     t('en_curso', 'finalizado', 'especialista'), // confirmación del usuario: PENDIENTE de definir
     t('agendado', 'cancelado', 'usuario', 'especialista', 'operations'),
@@ -172,6 +175,40 @@ export const MAQUINA_TRABAJO: Maquina<EstadoTrabajo> = {
     t('en_curso', 'cancelado', 'operations'),
   ],
 };
+
+// ── Adicional de un trabajo (0.7.0): repuestos o mano de obra que se suman durante el trabajo ──────
+// Lo propone el especialista con el trabajo en curso; lo acepta o rechaza el usuario. Mientras está pendiente rige el
+// precio vigente. Al terminar el trabajo, los pendientes los retira el sistema (no se cobran).
+export const ESTADOS_ADICIONAL = ['pendiente', 'aceptado', 'rechazado', 'retirado'] as const;
+export type EstadoAdicional = (typeof ESTADOS_ADICIONAL)[number];
+
+export const MAQUINA_ADICIONAL: Maquina<EstadoAdicional> = {
+  nombre: 'adicional',
+  estados: ESTADOS_ADICIONAL,
+  inicial: 'pendiente',
+  transiciones: [
+    t('pendiente', 'aceptado', 'usuario'),
+    t('pendiente', 'rechazado', 'usuario'),
+    t('pendiente', 'retirado', 'especialista', 'sistema'),
+  ],
+};
+
+// ── Etapa de una obra (0.8.0) ────────────────────────────────────────────────────────────────────
+// Una a la vez: al empezar la obra arranca la primera; al terminar una, el sistema arranca la siguiente. Terminar una
+// etapa crea su cobro (directo del cliente al especialista) y retira sus adicionales sin respuesta.
+export const ESTADOS_ETAPA = ['pendiente', 'en_curso', 'terminada'] as const;
+export type EstadoEtapa = (typeof ESTADOS_ETAPA)[number];
+
+export const MAQUINA_ETAPA: Maquina<EstadoEtapa> = {
+  nombre: 'etapa',
+  estados: ESTADOS_ETAPA,
+  inicial: 'pendiente',
+  transiciones: [t('pendiente', 'en_curso', 'sistema'), t('en_curso', 'terminada', 'especialista')],
+};
+
+/** Jornada de una obra (0.8.0): queda `hecha` cuando el especialista carga el avance de ese día en el diario. */
+export const ESTADOS_JORNADA = ['programada', 'hecha'] as const;
+export type EstadoJornada = (typeof ESTADOS_JORNADA)[number];
 
 // ── Pago directo del usuario al especialista (Mercado Pago o efectivo) ───────────────────────────
 // Handy no recibe ese dinero. `reportado` (manual) NO es `verificado`. Verifica un webhook validado

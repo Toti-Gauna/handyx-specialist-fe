@@ -3,6 +3,9 @@ import {
   AceptacionSchema,
   AgendaItemSchema,
   AvisoSchema,
+  TurnoAntecedentesSchema,
+  BarrioSchema,
+  ViajeSchema,
   BajaSchema,
   CajaResumenSchema,
   CasoSoporteDetalleSchema,
@@ -21,8 +24,17 @@ import {
   PerfilPublicoSchema,
   PreferenciasSchema,
   PropuestaSchema,
+  ResultadoProveedorSchema,
   SesionSchema,
+  VerificacionEmailSchema,
+  EstadoTokenSchema,
   TrabajoDetalleSchema,
+  AdicionalSchema,
+  LlamadaPuenteSchema,
+  EntradaDiarioSchema,
+  JornadaSchema,
+  ContactoSchema,
+  MediosCobroSchema,
   TrabajoSchema,
 } from '../../contracts/dto.ts';
 import type { EspecialistaApi } from '../api.ts';
@@ -59,18 +71,42 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
       c.recordarCsrf(null);
     },
 
+    estadoVerificacion: () => c.pedir('GET', '/v1/auth/verificacion', VerificacionEmailSchema),
+    reenviarCodigo: () => c.pedir('POST', '/v1/auth/verificacion/reenvio', VerificacionEmailSchema),
+    async verificarEmail(datos) {
+      const s = await c.pedir('POST', '/v1/auth/verificacion', SesionSchema, { cuerpo: datos });
+      c.recordarCsrf(s.csrfToken);
+      return s;
+    },
+    async ingresarConProveedor(datos) {
+      const r = await c.pedir('POST', '/v1/auth/proveedor', ResultadoProveedorSchema, { cuerpo: datos });
+      c.recordarCsrf(r.sesion.csrfToken);
+      return r;
+    },
+    async aceptarTerminos(datos) {
+      await c.pedir('POST', '/v1/auth/aceptaciones', Nada, { cuerpo: datos });
+    },
+    estadoRecuperacion: (token) => c.pedir('POST', '/v1/auth/recuperacion/estado', EstadoTokenSchema, { cuerpo: { token } }),
+    async restablecer(datos) {
+      await c.pedir('POST', '/v1/auth/recuperacion/nueva', Nada, { cuerpo: datos });
+      c.recordarCsrf(null);
+    },
+
     perfil: () => c.pedir('GET', '/v1/especialista/perfil', PerfilEspecialistaSchema),
     perfilPublico: () => c.pedir('GET', '/v1/especialista/perfil/publico', PerfilPublicoSchema),
     datosAlta: () => c.pedir('GET', '/v1/especialista/alta/datos', DatosAltaSchema),
     guardarDatosAlta: (datos) => c.pedir('PUT', '/v1/especialista/alta/datos', DatosAltaSchema, { cuerpo: datos }),
-    cargarDocumento(tipo, rubro, archivo) {
+    cargarDocumento(tipo, rubro, archivo, dorso) {
       const f = new FormData();
       if (archivo) f.set('archivo', archivo);
+      if (dorso) f.set('dorso', dorso);
       if (rubro) f.set('rubro', rubro);
       return c.pedir('POST', `/v1/especialista/documentos/${id(tipo)}`, PerfilEspecialistaSchema, { formulario: f });
     },
     elegirRubros: (rubros) => c.pedir('PUT', '/v1/especialista/rubros', PerfilEspecialistaSchema, { cuerpo: { rubros } }),
     enviarAlta: () => c.pedir('POST', '/v1/especialista/alta/envio', PerfilEspecialistaSchema),
+    turnosAntecedentes: () => c.pedir('GET', '/v1/especialista/antecedentes/turnos', z.array(TurnoAntecedentesSchema)),
+    reservarTurno: (turnoId) => c.pedir('PUT', '/v1/especialista/antecedentes/turno', PerfilEspecialistaSchema, { cuerpo: { turnoId } }),
 
     disponibilidad: () => c.pedir('GET', '/v1/especialista/disponibilidad', DisponibilidadSchema),
     actualizarDisponibilidad: (cambio) => c.pedir('PUT', '/v1/especialista/disponibilidad', DisponibilidadSchema, { cuerpo: cambio }),
@@ -82,6 +118,12 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
     async marcarAvisoLeido(aid) {
       await c.pedir('POST', `/v1/especialista/avisos/${id(aid)}/leido`, Nada);
     },
+    async borrarAviso(aid) {
+      await c.pedir('DELETE', `/v1/especialista/avisos/${id(aid)}`, Nada);
+    },
+    async borrarAvisos() {
+      await c.pedir('DELETE', '/v1/especialista/avisos', Nada);
+    },
 
     enviarPropuesta: (datos, clave) => c.pedir('POST', '/v1/especialista/propuestas', PropuestaSchema, { cuerpo: datos, idempotencyKey: clave }),
     responderPropuesta: (pid, accion, version, clave) =>
@@ -92,10 +134,35 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
     trabajo: (tid) => c.pedir('GET', `/v1/especialista/trabajos/${id(tid)}`, TrabajoDetalleSchema),
     avanzarTrabajo: (tid, hacia, version, clave) =>
       c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/eventos`, TrabajoSchema, { cuerpo: { hacia, version }, idempotencyKey: clave }),
+    marcarLlegada: (tid, motivo, version, clave) =>
+      c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/llegada`, TrabajoSchema, { cuerpo: { motivo, version }, idempotencyKey: clave }),
+    cancelarTrabajo: (tid, motivo, version, clave) =>
+      c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/cancelacion`, TrabajoSchema, { cuerpo: { motivo, version }, idempotencyKey: clave }),
+    crearAdicional: (tid, adicional, clave) =>
+      c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/adicionales`, AdicionalSchema, { cuerpo: adicional, idempotencyKey: clave }),
+    retirarAdicional: (tid, aid) => c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/adicionales/${id(aid)}/retiro`, AdicionalSchema),
+    llamada: (tid) => c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/llamada`, LlamadaPuenteSchema),
+    terminarEtapa: (tid, eid, clave) => c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/etapas/${id(eid)}/fin`, PagoSchema, { idempotencyKey: clave }),
+    pedirCambioJornada: (tid, jid, cambio, clave) =>
+      c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/jornadas/${id(jid)}/cambio`, JornadaSchema, { cuerpo: cambio, idempotencyKey: clave }),
+    agregarAlDiario(tid, entrada, fotos, clave) {
+      const f = new FormData();
+      f.set('etapaId', entrada.etapaId);
+      if (entrada.jornadaId) f.set('jornadaId', entrada.jornadaId);
+      f.set('nota', entrada.nota);
+      for (const foto of fotos) f.append('fotos', foto);
+      return c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/diario`, EntradaDiarioSchema, { formulario: f, idempotencyKey: clave });
+    },
     proponerCambio: (tid, cambio, clave) =>
       c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/cambio`, PropuestaSchema, { cuerpo: cambio, idempotencyKey: clave }),
     agenda: (desde, hasta) =>
       c.pedir('GET', `/v1/especialista/agenda?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`, z.array(AgendaItemSchema)),
+
+    // La posición va siempre en el cuerpo, nunca en la URL (no queda en logs de acceso ni en el historial).
+    barrios: () => c.pedir('GET', '/v1/especialista/mapa/barrios', z.array(BarrioSchema)),
+    viaje: (tid) => c.pedir('GET', `/v1/especialista/trabajos/${id(tid)}/viaje`, ViajeSchema),
+    enviarPosicion: (tid, posicion) => c.pedir('POST', `/v1/especialista/trabajos/${id(tid)}/viaje/posiciones`, ViajeSchema, { cuerpo: posicion }),
+    dejarDeCompartir: (tid) => c.pedir('DELETE', `/v1/especialista/trabajos/${id(tid)}/viaje/posiciones`, ViajeSchema),
 
     conversaciones: () => c.pedir('GET', '/v1/conversaciones', z.array(ConversacionSchema)),
     conversacion: (cid) => c.pedir('GET', `/v1/conversaciones/${id(cid)}`, ConversacionSchema),
@@ -124,6 +191,11 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
 
     feeVigente: () => c.pedir('GET', '/v1/fee/vigente', FeeVigenteSchema),
     aceptarAvisoFee: (politicaId, version) => c.pedir('POST', '/v1/fee/aviso', FeeVigenteSchema, { cuerpo: { politicaId, version } }),
+    contactos: () => c.pedir('GET', '/v1/especialista/contactos', z.array(ContactoSchema)),
+    agregarContacto: (cid) => c.pedir('POST', '/v1/especialista/contactos', ContactoSchema, { cuerpo: { conversacionId: cid } }),
+    quitarContacto: (kid) => c.pedir('DELETE', `/v1/especialista/contactos/${id(kid)}`, Nada),
+    mediosCobro: () => c.pedir('GET', '/v1/especialista/cobros', MediosCobroSchema),
+    guardarMediosCobro: (m) => c.pedir('PUT', '/v1/especialista/cobros', MediosCobroSchema, { cuerpo: m }),
     preferencias: () => c.pedir('GET', '/v1/cuenta/preferencias', PreferenciasSchema),
     guardarPreferencias: (p) => c.pedir('PUT', '/v1/cuenta/preferencias', PreferenciasSchema, { cuerpo: p }),
     activarPush: () => c.pedir('POST', '/v1/cuenta/push', PreferenciasSchema),

@@ -1,0 +1,25 @@
+/* Cobro directo del cliente al especialista (lotes 4.6 y 4.7). */
+
+.cobro {
+  display: grid;
+  justify-items: start;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.cobro > * {
+  max-width: 100%;
+}
+
+.cobro p {
+  margin: 0;
+}
+
+.cobro .cobro__caja {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque-min);
+}

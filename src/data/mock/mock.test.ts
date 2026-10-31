@@ -4,12 +4,17 @@ import type { z } from 'zod';
 import {
   AceptacionSchema, AgendaItemSchema, AvisoSchema, BajaSchema, CajaResumenSchema, CasoSoporteDetalleSchema, CasoSoporteSchema, ConversacionSchema,
   DatosAltaSchema, DisponibilidadSchema, FeeVigenteSchema, InicioSchema, MensajeSchema, PagoSchema, PedidoDetalleSchema, PedidoElegibleSchema,
-  PerfilEspecialistaSchema, PerfilPublicoSchema, PreferenciasSchema, PropuestaSchema, SesionSchema, TrabajoDetalleSchema, TrabajoSchema,
+  MediosCobroSchema, PerfilEspecialistaSchema, PerfilPublicoSchema, PreferenciasSchema, PropuestaSchema, SesionSchema, TrabajoDetalleSchema, TrabajoSchema,
+  BarrioSchema, ViajeSchema, TurnoAntecedentesSchema,
 } from '../../contracts/dto.ts';
+import type { FalloApi } from '../errores.ts';
+import { desplazar, distanciaM } from '../../lib/geo.ts';
+import { armarGrafo, type WayOsm } from '../../mapa/osm.ts';
+import { usarGrafo } from './mapa.ts';
 import { monto } from '../../contracts/dinero.ts';
 import { crearApiMockConEstado } from './adaptador.ts';
 import { crearControles } from './controles.ts';
-import { CREDENCIALES_PRUEBA, type Escenario } from './estado.ts';
+import { CODIGO_PRUEBA, CREDENCIALES_PRUEBA, CUENTAS_PROVEEDOR_PRUEBA, TOKEN_RECUPERACION_PRUEBA, TOKEN_VENCIDO_PRUEBA, idFijo, type Escenario } from './estado.ts';
 import { ID } from './fixtures.ts';
 
 const nuevo = (escenario: Escenario = 'habilitado') => {
@@ -38,7 +43,7 @@ describe('el mock cumple el contrato', () => {
     ok(PedidoDetalleSchema, await api.pedido(ID.pProgramado));
     (await api.avisos()).forEach((a) => ok(AvisoSchema, a));
     for (const v of ['activos', 'historial'] as const) (await api.trabajos(v)).items.forEach((t) => ok(TrabajoSchema, t));
-    for (const id of [ID.t1, ID.t2, ID.t3, ID.t4, ID.t5]) ok(TrabajoDetalleSchema, await api.trabajo(id));
+    for (const id of [ID.t1, ID.t2, ID.t3, ID.t4, ID.t5, ID.t6]) ok(TrabajoDetalleSchema, await api.trabajo(id));
     (await api.agenda('2026-11-01T00:00:00Z', '2026-12-31T00:00:00Z')).forEach((a) => ok(AgendaItemSchema, a));
     (await api.conversaciones()).forEach((c) => ok(ConversacionSchema, c));
     (await api.mensajes(ID.c2)).forEach((m) => ok(MensajeSchema, m));
@@ -60,6 +65,7 @@ describe('alta: del registro a la habilitación', () => {
     assert.equal(await api.sesion(), null);
     await api.registrar({ email: 'nueva@example.test', password: 'una-clave-larga-123', terminos: 'esp-terminos-2026-10-29-prov', privacidad: 'esp-privacidad-2026-10-29-prov' });
     assert.ok(await api.sesion());
+    await api.verificarEmail({ codigo: CODIGO_PRUEBA });
     let perfil = await api.perfil();
     assert.equal(perfil.estadoAlta, 'borrador');
     // Enviar incompleto es un error por campo, no un éxito
@@ -218,11 +224,11 @@ describe('propuestas y acuerdos', () => {
     const { api } = nuevo();
     const antes = (await api.trabajo(ID.t1)).trabajo.acuerdo;
     const nuevaFecha = futuro(api, 60 * 48);
-    const p = await api.proponerCambio(ID.t1, { horario: { inicio: nuevaFecha, fin: null }, alcance: antes.alcance, monto: null }, clave());
+    const p = await api.proponerCambio(ID.t1, { horario: { inicio: nuevaFecha, fin: null }, alcance: antes.alcance, monto: null, motivo: 'otro_trabajo' }, clave());
     const detalle = await api.trabajo(ID.t1);
     assert.equal(detalle.cambioPendiente?.id, p.id);
     assert.deepEqual(detalle.trabajo.acuerdo, antes); // sigue igual
-    await assert.rejects(api.proponerCambio(ID.t1, { horario: { inicio: nuevaFecha, fin: null }, alcance: 'x', monto: null }, clave()), { tipo: 'conflicto' });
+    await assert.rejects(api.proponerCambio(ID.t1, { horario: { inicio: nuevaFecha, fin: null }, alcance: 'x', monto: null, motivo: null }, clave()), { tipo: 'conflicto' });
   });
 
   it('si el usuario pide mover la fecha y el especialista acepta, el acuerdo cambia con historial; si rechaza, queda igual', async () => {
@@ -251,12 +257,12 @@ describe('propuestas y acuerdos', () => {
 });
 
 describe('trabajo, caja y soporte', () => {
-  it('las transiciones respetan la máquina: no se salta "Llegué" ni se reabre un trabajo cerrado', async () => {
+  it('las transiciones respetan la máquina: no se salta la llegada ni se reabre un trabajo cerrado', async () => {
     const { api } = nuevo();
     const t = (await api.trabajo(ID.t1)).trabajo;
     await assert.rejects(api.avanzarTrabajo(t.id, 'en_curso', t.version, clave()), { tipo: 'conflicto' });
     let x = await api.avanzarTrabajo(t.id, 'en_camino', t.version, clave());
-    x = await api.avanzarTrabajo(t.id, 'en_sitio', x.version, clave());
+    x = await api.marcarLlegada(t.id, 'sin_senal', x.version, clave());
     x = await api.avanzarTrabajo(t.id, 'en_curso', x.version, clave());
     await assert.rejects(api.avanzarTrabajo(t.id, 'en_curso', 0, clave()), { tipo: 'conflicto' }); // versión vieja
     const pagosAntes = (await api.pagos()).items.length;
@@ -267,7 +273,7 @@ describe('trabajo, caja y soporte', () => {
     assert.equal((await api.pagos()).items.length, pagosAntes); // t1 ya tenía su pago pendiente
   });
 
-  it('la caja: reportado no es verificado, Handy no cobra nada en la demo y el dinero no es de Handy', async () => {
+  it('la caja: reportado no es verificado, Handyx no cobra nada en la demo y el dinero no es de Handyx', async () => {
     const { api, controles } = nuevo();
     const antes = await api.cajaResumen();
     assert.equal(antes.feeHandyPeriodo.centavos, 0);
@@ -365,5 +371,461 @@ describe('cuenta, baja y fallas', () => {
     const { api } = nuevo();
     const claves = Object.keys(await api.inicio()).join(' ');
     assert.doesNotMatch(claves, /acept|respuesta|puntual|ranking/i);
+  });
+});
+
+describe('cuenta: código por email, Google o Apple y recuperación (lote 4.2)', () => {
+  const VERSIONES = { terminos: 'esp-terminos-2026-10-29-prov', privacidad: 'esp-privacidad-2026-10-29-prov' };
+  type Falla = { tipo: string; detalle?: { mensaje?: string } };
+
+  it('una cuenta nueva no usa el resto de la API hasta verificar el email', async () => {
+    const { api } = nuevo('nuevo');
+    await api.registrar({ email: 'nueva@example.test', password: 'una-clave-larga-123', ...VERSIONES });
+    const sesion = await api.sesion();
+    assert.equal(sesion?.cuenta.emailVerificado, false);
+    assert.equal(sesion?.cuenta.terminosAceptados, true);
+    await assert.rejects(api.perfil(), (e: Falla) => e.tipo === 'permiso');
+    const v = await api.estadoVerificacion();
+    assert.equal(v.emailEnmascarado, 'nu•••@example.test');
+    assert.equal(v.intentosRestantes, 5);
+  });
+
+  it('el código: incorrecto descuenta intentos, después de 5 hay que pedir otro, y el correcto verifica', async () => {
+    const { api, estado } = nuevo('sin_verificar');
+    await assert.rejects(api.verificarEmail({ codigo: '000000' }), (e: Falla) => e.tipo === 'validacion' && /Te quedan 4 intentos/.test(e.detalle?.mensaje ?? ''));
+    for (let i = 0; i < 3; i++) await assert.rejects(api.verificarEmail({ codigo: '000000' }));
+    await assert.rejects(api.verificarEmail({ codigo: '000000' }), (e: Falla) => e.tipo === 'limite');
+    await assert.rejects(api.verificarEmail({ codigo: CODIGO_PRUEBA }), (e: Falla) => e.tipo === 'limite', 'bloqueado aunque ahora acierte');
+    // Pedir otro código exige esperar un minuto
+    estado.saltosMs = 0;
+    await assert.rejects(api.reenviarCodigo(), (e: Falla) => e.tipo === 'limite');
+    estado.saltosMs = 61_000;
+    assert.equal((await api.reenviarCodigo()).intentosRestantes, 5);
+    const s = await api.verificarEmail({ codigo: CODIGO_PRUEBA });
+    assert.equal(s.cuenta.emailVerificado, true);
+    assert.ok(await api.perfil());
+  });
+
+  it('el código vence a los 10 minutos', async () => {
+    const { api, estado } = nuevo('sin_verificar');
+    estado.saltosMs = 11 * 60_000;
+    await assert.rejects(api.verificarEmail({ codigo: CODIGO_PRUEBA }), (e: Falla) => e.tipo === 'validacion' && /venció/.test(e.detalle?.mensaje ?? ''));
+  });
+
+  it('Google: una cuenta nueva viene verificada pero acepta términos antes de seguir; una existente entra directo', async () => {
+    const { api } = nuevo('nuevo');
+    const nueva = CUENTAS_PROVEEDOR_PRUEBA.google[0];
+    const r = await api.ingresarConProveedor({ proveedor: 'google', idToken: nueva.idToken, nonce: 'nonce-de-prueba-0001' });
+    assert.equal(r.cuentaNueva, true);
+    assert.equal(r.sesion.cuenta.emailVerificado, true);
+    assert.equal(r.sesion.cuenta.terminosAceptados, false);
+    await assert.rejects(api.perfil(), (e: Falla) => e.tipo === 'permiso');
+    await api.aceptarTerminos(VERSIONES);
+    assert.ok(await api.perfil());
+
+    const { api: otra } = nuevo('nuevo');
+    const existente = CUENTAS_PROVEEDOR_PRUEBA.google[1];
+    const r2 = await otra.ingresarConProveedor({ proveedor: 'google', idToken: existente.idToken, nonce: 'nonce-de-prueba-0002' });
+    assert.equal(r2.cuentaNueva, false);
+    assert.ok(await otra.perfil());
+  });
+
+  it('un token de proveedor desconocido no abre sesión, y una cuenta de Google no entra con contraseña', async () => {
+    const { api } = nuevo('nuevo');
+    await assert.rejects(api.ingresarConProveedor({ proveedor: 'apple', idToken: 'token-que-no-existe-0000000', nonce: 'nonce-de-prueba-0003' }), (e: Falla) => e.tipo === 'sesion');
+    assert.equal(await api.sesion(), null);
+    const { api: otra } = nuevo('sin_aceptar');
+    await otra.salir();
+    await assert.rejects(otra.ingresar({ email: CUENTAS_PROVEEDOR_PRUEBA.google[0].email, password: 'cualquier-clave' }), (e: Falla) => e.tipo === 'sesion');
+  });
+
+  it('recuperación: el enlace sirve una sola vez, cambia la contraseña y cierra la sesión', async () => {
+    const { api } = nuevo('habilitado');
+    await api.recuperar(CREDENCIALES_PRUEBA.email);
+    assert.deepEqual(await api.estadoRecuperacion(TOKEN_RECUPERACION_PRUEBA), { estado: 'valido' });
+    await api.restablecer({ token: TOKEN_RECUPERACION_PRUEBA, password: 'otra-clave-bien-larga' });
+    assert.equal(await api.sesion(), null);
+    assert.deepEqual(await api.estadoRecuperacion(TOKEN_RECUPERACION_PRUEBA), { estado: 'usado' });
+    await assert.rejects(api.restablecer({ token: TOKEN_RECUPERACION_PRUEBA, password: 'otra-clave-bien-larga' }), (e: Falla) => e.tipo === 'conflicto');
+    await assert.rejects(api.ingresar(CREDENCIALES_PRUEBA), (e: Falla) => e.tipo === 'sesion');
+    assert.ok(await api.ingresar({ email: CREDENCIALES_PRUEBA.email, password: 'otra-clave-bien-larga' }));
+  });
+
+  it('recuperación neutra: un email sin cuenta, un enlace desconocido o uno viejo se ven como vencidos', async () => {
+    const { api, estado } = nuevo('habilitado');
+    await api.recuperar('nadie@example.test');
+    assert.deepEqual(await api.estadoRecuperacion(TOKEN_RECUPERACION_PRUEBA), { estado: 'vencido' });
+    assert.deepEqual(await api.estadoRecuperacion('token-inventado-00000000'), { estado: 'vencido' });
+    assert.deepEqual(await api.estadoRecuperacion(TOKEN_VENCIDO_PRUEBA), { estado: 'vencido' });
+    await api.recuperar(CREDENCIALES_PRUEBA.email);
+    estado.saltosMs = 31 * 60_000;
+    assert.deepEqual(await api.estadoRecuperacion(TOKEN_RECUPERACION_PRUEBA), { estado: 'vencido' });
+  });
+});
+
+describe('mapa y viaje (lote 4.3)', () => {
+  // Cuadrícula sintética de 3 × 3 esquinas a ~220 m (no son calles reales): el trayecto se puede calcular y recalcular.
+  const O = { lat: -10, lng: -20 };
+  const PASO = 0.002;
+  const esquina = (f: number, c: number) => ({ lat: O.lat + f * PASO, lng: O.lng + c * PASO });
+  const via = (id: number, puntos: Array<[number, number]>): WayOsm => ({
+    type: 'way',
+    id,
+    nodes: puntos.map(([f, c]) => 1000 + f * 10 + c),
+    geometry: puntos.map(([f, c]) => ({ lat: esquina(f, c).lat, lon: esquina(f, c).lng })),
+    tags: { highway: 'residential' },
+  });
+  const CUADRICULA = [0, 1, 2].flatMap((k) => [via(k, [[k, 0], [k, 1], [k, 2]]), via(10 + k, [[0, k], [1, k], [2, k]])]);
+  const pos = (api: { ahora(): Date }, punto: { lat: number; lng: number }, precisionM = 8) => ({ punto, precisionM, en: api.ahora().toISOString() });
+
+  it('el pedido trae una zona aproximada que contiene al destino, pero nunca el punto exacto', async () => {
+    const { api, estado } = nuevo();
+    const p = (await api.pedidosElegibles()).items.find((x) => x.id === ID.pProgramado);
+    assert.ok(p?.zonaMapa);
+    const interno = estado.pedidos.find((x) => x.pub.id === ID.pProgramado)!;
+    const d = distanciaM(p.zonaMapa.centro, interno.destino);
+    assert.ok(d >= 200 && d <= 350, `centro corrido ${Math.round(d)} m`);
+    assert.ok(d < p.zonaMapa.radioM);
+    assert.ok(!JSON.stringify(p).includes(String(interno.destino.lat)));
+    const barrios = await api.barrios();
+    assert.ok(barrios.some((b) => b.id === 'La Perla'));
+    barrios.forEach((b) => assert.ok(BarrioSchema.safeParse(b).success));
+  });
+
+  it('solo se comparte durante el viaje y el servidor deja de compartir al llegar', async () => {
+    usarGrafo(null);
+    const { api } = nuevo();
+    let v = await api.viaje(ID.t1);
+    assert.ok(ViajeSchema.safeParse(v).success);
+    assert.equal(v.estado, 'sin_compartir');
+    await assert.rejects(api.enviarPosicion(ID.t1, pos(api, v.destino)), (e: FalloApi) => e.status === 409);
+    const t = await api.avanzarTrabajo(ID.t1, 'en_camino', (await api.trabajo(ID.t1)).trabajo.version, clave());
+    v = await api.enviarPosicion(ID.t1, pos(api, desplazar(v.destino, 2000, 270)));
+    assert.equal(v.estado, 'compartiendo');
+    assert.equal(v.trayecto, null, 'sin grafo no hay trayecto: la app ofrece Google Maps o Waze');
+    assert.ok(Math.abs((v.distanciaRestanteM ?? 0) - 2000) < 2);
+    assert.ok(v.llegadaEstimada);
+    v = await api.dejarDeCompartir(ID.t1);
+    assert.equal(v.estado, 'sin_compartir');
+    // Fuera del radio no llega; con una posición imprecisa dentro del radio, tampoco (la geocerca exige precisión).
+    await api.enviarPosicion(ID.t1, pos(api, desplazar(v.destino, 300, 0)));
+    await api.enviarPosicion(ID.t1, pos(api, desplazar(v.destino, 30, 0), 250));
+    assert.equal((await api.trabajo(ID.t1)).trabajo.estado, 'en_camino');
+    v = await api.enviarPosicion(ID.t1, pos(api, desplazar(v.destino, 30, 0)));
+    assert.equal(v.estado, 'terminado');
+    const llegado = await api.trabajo(ID.t1);
+    assert.equal(llegado.trabajo.estado, 'en_sitio');
+    assert.equal(llegado.trabajo.llegada?.modo, 'automatica');
+    assert.equal(llegado.eventos.at(-1)?.actor, 'sistema');
+    assert.ok(llegado.trabajo.version > t.version);
+    assert.equal((await api.viaje(ID.t1)).estado, 'terminado');
+    await assert.rejects(api.enviarPosicion(ID.t1, pos(api, v.destino)), (e: FalloApi) => e.status === 409);
+    await assert.rejects(api.viaje(ID.t2), (e: FalloApi) => e.status === 409, 'un trabajo sin dirección no tiene destino');
+    await assert.rejects(api.enviarPosicion(ID.t1, { punto: { lat: 200, lng: 0 }, precisionM: 5, en: api.ahora().toISOString() }), (e: FalloApi) => e.status === 400);
+  });
+
+  it('calcula el trayecto con la primera posición y lo recalcula después de dos posiciones fuera', async () => {
+    usarGrafo(armarGrafo(CUADRICULA, [O.lng - 0.01, O.lat - 0.01, O.lng + 0.01, O.lat + 0.01], 'prueba'));
+    try {
+      const { api, estado } = nuevo();
+      estado.trabajos.find((x) => x.trabajo.id === ID.t1)!.trabajo.destino = esquina(2, 2);
+      await api.avanzarTrabajo(ID.t1, 'en_camino', (await api.trabajo(ID.t1)).trabajo.version, clave());
+      let v = await api.enviarPosicion(ID.t1, pos(api, esquina(0, 0)));
+      assert.equal(v.trayecto?.version, 0);
+      assert.ok((v.trayecto?.distanciaM ?? 0) > 800, 'por las calles, no en diagonal');
+      assert.ok(v.trayecto!.duracionS > 0);
+      const centroManzana = { lat: O.lat + PASO / 2, lng: O.lng + PASO / 2 };
+      v = await api.enviarPosicion(ID.t1, pos(api, centroManzana));
+      assert.equal(v.trayecto?.version, 0, 'una sola posición fuera no alcanza');
+      v = await api.enviarPosicion(ID.t1, pos(api, centroManzana, 300));
+      assert.equal(v.trayecto?.version, 0, 'con mala precisión no cuenta como desvío');
+      v = await api.enviarPosicion(ID.t1, pos(api, centroManzana));
+      v = await api.enviarPosicion(ID.t1, pos(api, centroManzana));
+      assert.equal(v.trayecto?.version, 1);
+      assert.ok(v.distanciaRestanteM !== null && v.distanciaRestanteM < 900);
+    } finally {
+      usarGrafo(null);
+    }
+  });
+});
+
+describe('alta guiada (lote 4.4)', () => {
+  it('turnos de antecedentes: se reserva uno libre, cambiarlo libera el anterior y nunca hay archivo', async () => {
+    const { api } = nuevo('incompleto');
+    const turnos = await api.turnosAntecedentes();
+    turnos.forEach((t) => assert.ok(TurnoAntecedentesSchema.safeParse(t).success));
+    assert.ok(turnos.every((t) => Date.parse(t.inicio) > api.ahora().getTime()), 'solo turnos futuros');
+    const libres = turnos.filter((t) => t.disponible);
+    const ocupado = turnos.find((t) => !t.disponible)!;
+    await assert.rejects(api.reservarTurno(ocupado.id), (e: FalloApi) => e.status === 409);
+    let p = await api.reservarTurno(libres[0]!.id);
+    assert.equal(p.antecedentes, 'cita_coordinada');
+    assert.equal(p.citaAntecedentes?.turnoId, libres[0]!.id);
+    p = await api.reservarTurno(libres[1]!.id);
+    assert.equal(p.citaAntecedentes?.turnoId, libres[1]!.id);
+    const despues = await api.turnosAntecedentes();
+    assert.equal(despues.find((t) => t.id === libres[0]!.id)?.disponible, true, 'el turno anterior se libera');
+    assert.equal(despues.find((t) => t.id === libres[1]!.id)?.disponible, false);
+    assert.ok(PerfilEspecialistaSchema.safeParse(p).success);
+  });
+
+  it('con la verificación ya resuelta no se reserva otro turno', async () => {
+    const { api } = nuevo('habilitado');
+    const libre = (await api.turnosAntecedentes()).find((t) => t.disponible)!;
+    await assert.rejects(api.reservarTurno(libre.id), (e: FalloApi) => e.status === 409);
+  });
+
+  it('durante el alta se declaran zonas y horarios, pero no se activan pedidos', async () => {
+    const { api } = nuevo('incompleto');
+    const d = await api.disponibilidad();
+    const nueva = await api.actualizarDisponibilidad({ urgentesAhora: false, programados: false, zonas: ['Centro', 'Güemes'], franjas: [{ dia: 1, desde: '08:00', hasta: '12:00' }], version: d.version });
+    assert.deepEqual(nueva.zonas, ['Centro', 'Güemes']);
+    await assert.rejects(api.actualizarDisponibilidad({ urgentesAhora: true, programados: false, version: nueva.version }), (e: FalloApi) => e.status === 403);
+    await assert.rejects(api.actualizarDisponibilidad({ urgentesAhora: false, programados: true, version: nueva.version }), (e: FalloApi) => e.status === 403);
+  });
+
+  it('en corrección, el resumen no dice "todo cargado" con un documento rechazado', async () => {
+    const { api } = nuevo('correccion');
+    const p = await api.perfil();
+    assert.equal(p.documentos.dni, 'rechazado');
+    assert.deepEqual(p.faltantesEnvio, ['dni']);
+    await api.cargarDocumento('dni');
+    assert.deepEqual((await api.perfil()).faltantesEnvio, []);
+  });
+});
+
+describe('pedidos, propuesta y avisos (lote 4.5)', () => {
+  it('el detalle trae la sugerencia de Handyx (una ayuda, no un mínimo) y sin trabajo hasta el acuerdo', async () => {
+    const { api } = nuevo();
+    const d = await api.pedido(ID.pProgramado);
+    assert.ok(PedidoDetalleSchema.safeParse(d).success);
+    assert.equal(d.precioSugerido?.monto.centavos, 3_800_000);
+    assert.equal(d.trabajoId, null);
+    // Una propuesta muy por debajo de la sugerencia igual se envía: Handyx sugiere, no impone
+    const p = await api.enviarPropuesta(nuevaPropuesta(api, ID.pObra, 100_000), clave());
+    assert.equal(p.estado, 'pendiente');
+  });
+
+  it('cuando el cliente acepta, llega el aviso "te eligieron" con el trabajo y el detalle lo enlaza', async () => {
+    const { api, controles } = nuevo();
+    await api.enviarPropuesta(nuevaPropuesta(api, ID.pObra), clave());
+    controles.ejecutar('usuario_acepta');
+    const aviso = (await api.avisos()).find((a) => a.tipo === 'te_eligieron');
+    assert.ok(aviso && AvisoSchema.safeParse(aviso).success);
+    assert.equal(aviso.destino.ruta, 'trabajo');
+    const d = await api.pedido(ID.pObra);
+    assert.equal(d.trabajoId, aviso.destino.id);
+    assert.ok(d.trabajoId);
+  });
+
+  it('los avisos se borran de a uno o todos', async () => {
+    const { api } = nuevo();
+    const antes = await api.avisos();
+    assert.ok(antes.length > 1);
+    await api.borrarAviso(antes[0]!.id);
+    assert.equal((await api.avisos()).length, antes.length - 1);
+    await api.borrarAviso('00000000-0000-4000-8000-0000000000ff');
+    await api.borrarAvisos();
+    assert.deepEqual(await api.avisos(), []);
+  });
+});
+
+describe('trabajo de punta a punta (lote 4.6)', () => {
+  const enCurso = async (api: Awaited<ReturnType<typeof nuevo>>['api']) => {
+    let x = (await api.trabajo(ID.t1)).trabajo;
+    x = await api.avanzarTrabajo(ID.t1, 'en_camino', x.version, clave());
+    x = await api.marcarLlegada(ID.t1, 'sin_permiso', x.version, clave());
+    return api.avanzarTrabajo(ID.t1, 'en_curso', x.version, clave());
+  };
+
+  it('"Ya llegué" va con motivo, solo en camino, y la llegada y la cancelación no pasan por avanzarTrabajo', async () => {
+    const { api } = nuevo();
+    let x = (await api.trabajo(ID.t1)).trabajo;
+    await assert.rejects(api.marcarLlegada(ID.t1, 'sin_senal', x.version, clave()), { tipo: 'conflicto' }); // todavía no salió
+    x = await api.avanzarTrabajo(ID.t1, 'en_camino', x.version, clave());
+    await assert.rejects(api.avanzarTrabajo(ID.t1, 'en_sitio' as never, x.version, clave()), { tipo: 'conflicto' });
+    await assert.rejects(api.avanzarTrabajo(ID.t1, 'cancelado' as never, x.version, clave()), { tipo: 'conflicto' });
+    await assert.rejects(api.marcarLlegada(ID.t1, 'porque_si' as never, x.version, clave()), { tipo: 'validacion' });
+    x = await api.marcarLlegada(ID.t1, 'imprecisa', x.version, clave());
+    assert.equal(x.estado, 'en_sitio');
+    assert.deepEqual({ modo: x.llegada?.modo, motivo: x.llegada?.motivo }, { modo: 'respaldo', motivo: 'imprecisa' });
+    assert.equal((await api.trabajo(ID.t1)).eventos.at(-1)?.actor, 'especialista');
+  });
+
+  it('adicionales: solo en curso, rige el precio vigente hasta que el cliente acepta, y los pendientes no se cobran', async () => {
+    const { api, controles } = nuevo();
+    const base = (await api.trabajo(ID.t1)).trabajo.acuerdo.monto;
+    await assert.rejects(api.crearAdicional(ID.t1, { etapaId: null, tipo: 'repuesto', descripcion: 'Flexible', monto: monto(800000) }, clave()), { tipo: 'conflicto' });
+    const x = await enCurso(api);
+    await assert.rejects(api.crearAdicional(ID.t1, { etapaId: null, tipo: 'repuesto', descripcion: 'Flexible', monto: monto(0) }, clave()), { tipo: 'validacion' });
+    const k = clave();
+    const a = await api.crearAdicional(ID.t1, { etapaId: null, tipo: 'repuesto', descripcion: 'Flexible de 40 cm', monto: monto(800000) }, k);
+    assert.equal((await api.crearAdicional(ID.t1, { etapaId: null, tipo: 'repuesto', descripcion: 'Flexible de 40 cm', monto: monto(800000) }, k)).id, a.id); // misma clave, mismo adicional
+    let d = await api.trabajo(ID.t1);
+    assert.equal(d.adicionales[0]?.estado, 'pendiente');
+    assert.deepEqual(d.totalVigente, base); // pendiente: no suma
+    controles.ejecutar('usuario_acepta_adicional');
+    d = await api.trabajo(ID.t1);
+    assert.equal(d.totalVigente.centavos, base.centavos + 800000);
+    const b = await api.crearAdicional(ID.t1, { etapaId: null, tipo: 'mano_de_obra', descripcion: 'Una hora más', monto: monto(1500000) }, clave());
+    const c = await api.crearAdicional(ID.t1, { etapaId: null, tipo: 'mano_de_obra', descripcion: 'Otra cosa', monto: monto(500000) }, clave());
+    assert.equal((await api.retirarAdicional(ID.t1, c.id)).estado, 'retirado');
+    await assert.rejects(api.retirarAdicional(ID.t1, a.id), { tipo: 'conflicto' }); // ya lo aceptó el cliente
+    const fin = await api.avanzarTrabajo(ID.t1, 'finalizado', x.version, clave());
+    d = await api.trabajo(ID.t1);
+    assert.equal(d.adicionales.find((y) => y.id === b.id)?.estado, 'retirado', 'al terminar, lo pendiente se retira');
+    assert.equal(fin.estado, 'finalizado');
+    assert.equal(d.totalVigente.centavos, base.centavos + 800000);
+  });
+
+  it('terminar cobra el total vigente (con los adicionales aceptados), también si ya había un cobro pendiente', async () => {
+    for (const conPrevio of [false, true]) {
+      const { api, controles, estado } = nuevo();
+      if (!conPrevio) estado.trabajos.find((t) => t.trabajo.id === ID.t1)!.pagoId = null;
+      const x = await enCurso(api);
+      await api.crearAdicional(ID.t1, { etapaId: null, tipo: 'repuesto', descripcion: 'Canilla', monto: monto(1200000) }, clave());
+      controles.ejecutar('usuario_acepta_adicional');
+      await api.avanzarTrabajo(ID.t1, 'finalizado', x.version, clave());
+      const d = await api.trabajo(ID.t1);
+      const pago = (await api.pagos()).items.find((p) => p.id === d.pagoId);
+      assert.deepEqual(pago?.monto, d.totalVigente, conPrevio ? 'el cobro pendiente se actualiza' : 'el cobro nuevo');
+      assert.deepEqual(pago?.neto, d.totalVigente);
+      assert.equal(pago?.feeHandy.centavos, 0);
+    }
+  });
+
+  it('cancelar exige motivo y no vale una vez empezado; la llamada puente solo con el trabajo activo', async () => {
+    const { api } = nuevo();
+    const t = (await api.trabajo(ID.t1)).trabajo;
+    const ll = await api.llamada(ID.t1);
+    assert.match(ll.telefono, /^\+0+$/, 'el número de prueba no llama a nadie');
+    await assert.rejects(api.cancelarTrabajo(ID.t1, 'sin_motivo' as never, t.version, clave()), { tipo: 'validacion' });
+    const c = await api.cancelarTrabajo(ID.t1, 'no_puedo_ir', t.version, clave());
+    assert.equal(c.estado, 'cancelado');
+    await assert.rejects(api.llamada(ID.t1), { tipo: 'conflicto' });
+    const w = nuevo();
+    const x = await enCurso(w.api);
+    await assert.rejects(w.api.cancelarTrabajo(ID.t1, 'otro', x.version, clave()), { tipo: 'conflicto' }); // en curso cancela solo Operations
+  });
+});
+
+describe('obras de varios días (lote 4.7)', () => {
+  const E = { prep: idFijo(0xc61), pintura: idFijo(0xc62), fin: idFijo(0xc63) };
+  const J = (n: number) => idFijo(0xcb0 + n);
+  const empezarObra = async (api: ReturnType<typeof nuevo>['api']) => {
+    let x = (await api.trabajo(ID.t6)).trabajo;
+    x = await api.avanzarTrabajo(ID.t6, 'en_camino', x.version, clave());
+    x = await api.marcarLlegada(ID.t6, 'sin_ubicacion', x.version, clave());
+    return api.avanzarTrabajo(ID.t6, 'en_curso', x.version, clave());
+  };
+
+  it('la obra trae etapas, 5 jornadas que no se pisan y diario; en la agenda aparece día por día', async () => {
+    const { api } = nuevo();
+    const d = await api.trabajo(ID.t6);
+    assert.ok(TrabajoDetalleSchema.safeParse(d).success);
+    assert.deepEqual(d.etapas.map((e) => e.estado), ['pendiente', 'pendiente', 'pendiente']);
+    assert.equal(d.jornadas.length, 5);
+    assert.equal(d.etapas.reduce((n, e) => n + e.monto.centavos, 0), d.trabajo.acuerdo.monto.centavos, 'las etapas suman lo acordado');
+    const inicios = d.jornadas.map((j) => Date.parse(j.horario.inicio));
+    assert.deepEqual(inicios, [...inicios].sort((a, b) => a - b));
+    const agenda = await api.agenda(new Date(inicios[0]! - 3_600_000).toISOString(), new Date(inicios[4]! + 3_600_000).toISOString());
+    assert.equal(agenda.filter((i) => i.trabajoId === ID.t6).length, 5);
+    assert.ok(agenda.some((i) => i.titulo.includes('jornada 3 de 5')));
+  });
+
+  it('al empezar arranca la primera etapa; terminar una crea su cobro con sus adicionales y arranca la siguiente', async () => {
+    const { api, controles } = nuevo();
+    await empezarObra(api);
+    let d = await api.trabajo(ID.t6);
+    assert.deepEqual(d.etapas.map((e) => e.estado), ['en_curso', 'pendiente', 'pendiente']);
+    await assert.rejects(api.terminarEtapa(ID.t6, E.pintura, clave()), { tipo: 'conflicto' }); // de a una
+    await assert.rejects(api.crearAdicional(ID.t6, { etapaId: null, tipo: 'repuesto', descripcion: 'Enduido', monto: monto(500000) }, clave()), { tipo: 'validacion' }); // en una obra, con etapa
+    await assert.rejects(api.crearAdicional(ID.t6, { etapaId: E.pintura, tipo: 'repuesto', descripcion: 'Enduido', monto: monto(500000) }, clave()), { tipo: 'validacion' }); // solo la etapa en curso
+    await api.crearAdicional(ID.t6, { etapaId: E.prep, tipo: 'repuesto', descripcion: 'Enduido extra', monto: monto(500000) }, clave());
+    controles.ejecutar('usuario_acepta_adicional');
+    await api.crearAdicional(ID.t6, { etapaId: E.prep, tipo: 'mano_de_obra', descripcion: 'Sin respuesta', monto: monto(300000) }, clave());
+    const k = clave();
+    const pago = await api.terminarEtapa(ID.t6, E.prep, k);
+    assert.equal((await api.terminarEtapa(ID.t6, E.prep, k)).id, pago.id, 'misma clave, mismo cobro');
+    assert.equal(pago.etapaId, E.prep);
+    assert.equal(pago.monto.centavos, 6_000_000 + 500_000, 'la etapa más su adicional aceptado');
+    assert.equal(pago.feeHandy.centavos, 0);
+    d = await api.trabajo(ID.t6);
+    assert.deepEqual(d.etapas.map((e) => e.estado), ['terminada', 'en_curso', 'pendiente']);
+    assert.equal(d.etapas[0]?.pagoId, pago.id);
+    assert.equal(d.adicionales.find((a) => a.descripcion === 'Sin respuesta')?.estado, 'retirado');
+    // No se cierra la obra con etapas abiertas
+    await assert.rejects(api.avanzarTrabajo(ID.t6, 'finalizado', d.trabajo.version, clave()), { tipo: 'conflicto' });
+    await api.terminarEtapa(ID.t6, E.pintura, clave());
+    await api.terminarEtapa(ID.t6, E.fin, clave());
+    d = await api.trabajo(ID.t6);
+    const pagosAntes = (await api.pagos()).items.length;
+    const fin = await api.avanzarTrabajo(ID.t6, 'finalizado', d.trabajo.version, clave());
+    assert.equal(fin.estado, 'finalizado');
+    assert.equal((await api.pagos()).items.length, pagosAntes, 'cerrar la obra no crea otro cobro: cada etapa tiene el suyo');
+    const cobros = (await api.pagos()).items.filter((p) => p.trabajoId === ID.t6);
+    assert.equal(cobros.length, 3);
+    assert.equal(cobros.reduce((n, p) => n + p.monto.centavos, 0), d.totalVigente.centavos);
+  });
+
+  it('pedir otro día para una jornada no mueve las demás y solo cambia cuando el cliente acepta', async () => {
+    const { api, controles } = nuevo();
+    const antes = (await api.trabajo(ID.t6)).jornadas;
+    const dia = Date.parse(antes[2]!.horario.inicio) + 2 * 86_400_000;
+    const nuevoHorario = { inicio: new Date(dia).toISOString(), fin: new Date(dia + 8 * 3_600_000).toISOString() };
+    const j = await api.pedirCambioJornada(ID.t6, J(3), { horario: nuevoHorario, motivo: 'clima' }, clave());
+    assert.equal(j.cambioPendiente?.motivo, 'clima');
+    assert.equal(j.horario.inicio, antes[2]!.horario.inicio, 'hasta que acepte, sigue el día acordado');
+    await assert.rejects(api.pedirCambioJornada(ID.t6, J(3), { horario: nuevoHorario, motivo: 'otro' }, clave()), { tipo: 'conflicto' });
+    await assert.rejects(api.pedirCambioJornada(ID.t6, J(2), { horario: { inicio: api.ahora().toISOString(), fin: null }, motivo: 'otro' }, clave()), { tipo: 'validacion' });
+    controles.ejecutar('usuario_acepta_jornada');
+    const despues = (await api.trabajo(ID.t6)).jornadas;
+    assert.equal(despues[2]?.horario.inicio, nuevoHorario.inicio);
+    assert.equal(despues[2]?.cambioPendiente, null);
+    for (const i of [0, 1, 3, 4]) assert.deepEqual(despues[i]?.horario, antes[i]?.horario, `la jornada ${i + 1} no se movió`);
+  });
+
+  it('el diario se carga con la obra en curso, marca la jornada hecha y nunca guarda las fotos en el mock', async () => {
+    const { api } = nuevo();
+    await assert.rejects(api.agregarAlDiario(ID.t6, { etapaId: E.prep, jornadaId: J(1), nota: 'Hoy' }, [], clave()), { tipo: 'conflicto' });
+    await empezarObra(api);
+    await assert.rejects(api.agregarAlDiario(ID.t6, { etapaId: E.pintura, jornadaId: null, nota: 'Hoy' }, [], clave()), { tipo: 'validacion' }); // etapa sin empezar
+    await assert.rejects(api.agregarAlDiario(ID.t6, { etapaId: E.prep, jornadaId: null, nota: 'x'.repeat(281) }, [], clave()), { tipo: 'validacion' });
+    const fotos = [new Blob(['a']), new Blob(['b'])];
+    await assert.rejects(api.agregarAlDiario(ID.t6, { etapaId: E.prep, jornadaId: null, nota: 'Hoy' }, [...fotos, ...fotos, ...fotos], clave()), { tipo: 'validacion' });
+    const e = await api.agregarAlDiario(ID.t6, { etapaId: E.prep, jornadaId: J(1), nota: 'Protegimos pisos y enduimos el living.' }, fotos, clave());
+    assert.equal(e.fotos.length, 2);
+    assert.ok(e.fotos.every((f) => f.url.startsWith('data:image/svg+xml')), 'el mock no guarda imágenes: usa la foto sintética');
+    const d = await api.trabajo(ID.t6);
+    assert.equal(d.diario[0]?.id, e.id);
+    assert.equal(d.jornadas[0]?.estado, 'hecha');
+  });
+});
+
+describe('contactos y formas de cobro (lote 4.8)', () => {
+  it('los contactos se agregan solo desde un chat propio, sin duplicarse, y quitarlos no borra la conversación', async () => {
+    const { api } = nuevo();
+    const antes = await api.contactos();
+    assert.deepEqual(antes.map((k) => k.nombre), ['Cliente de prueba 5']);
+    assert.ok(antes.every((k) => !/\d{6,}/.test(k.detalle)), 'sin números de teléfono');
+    const k = await api.agregarContacto(ID.c2);
+    assert.equal((await api.agregarContacto(ID.c2)).id, k.id, 'agregar dos veces devuelve el mismo');
+    assert.equal((await api.conversacion(ID.c2)).contactoId, k.id);
+    assert.equal((await api.contactos()).length, 2);
+    await assert.rejects(api.agregarContacto(idFijo(0xdead)), { tipo: 'no_encontrado' });
+    await api.quitarContacto(k.id);
+    await api.quitarContacto(k.id); // de nuevo: responde igual
+    assert.equal((await api.conversacion(ID.c2)).contactoId, null);
+    assert.equal((await api.conversaciones()).some((c) => c.id === ID.c2), true, 'la conversación sigue');
+  });
+
+  it('las formas de cobro exigen al menos una y cuidan la versión', async () => {
+    const { api } = nuevo();
+    const m = await api.mediosCobro();
+    assert.ok(MediosCobroSchema.safeParse(m).success);
+    await assert.rejects(api.guardarMediosCobro({ efectivo: false, mercadoPago: false, version: m.version }), { tipo: 'validacion' });
+    const n = await api.guardarMediosCobro({ efectivo: false, mercadoPago: true, version: m.version });
+    assert.deepEqual([n.efectivo, n.mercadoPago, n.version], [false, true, m.version + 1]);
+    await assert.rejects(api.guardarMediosCobro({ efectivo: true, mercadoPago: true, version: m.version }), { tipo: 'conflicto' });
   });
 });

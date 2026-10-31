@@ -1,0 +1,90 @@
+/* Cuenta y sus pantallas (lote 4.8). Prefijo ct-. */
+
+.ct > * {
+  min-width: 0;
+}
+
+.ct-perfil {
+  display: grid;
+  justify-items: center;
+  gap: var(--esp-2);
+  padding: var(--esp-5) var(--esp-4) var(--esp-4);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+  text-align: center;
+}
+
+.ct-perfil > * {
+  max-width: 100%;
+}
+
+.ct-perfil__nombre {
+  margin: var(--esp-1) 0 0;
+  color: var(--hd-azul);
+  font-size: clamp(1.4rem, 6vw, 1.8rem);
+  overflow-wrap: anywhere;
+}
+
+.ct-perfil__email {
+  margin: 0;
+  color: var(--hd-suave);
+  overflow-wrap: anywhere;
+}
+
+.ct-perfil__rubros {
+  justify-content: center;
+}
+
+.ct-etiqueta {
+  margin: var(--esp-2) 0 var(--esp-2) var(--esp-2);
+  color: var(--hd-suave);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ct-grupo {
+  display: grid;
+  padding: 0 var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.ct-grupo > .hx-fila:last-child {
+  border-bottom: 0;
+}
+
+/* Tarjeta de las pantallas de cuenta */
+.ct-tarjeta {
+  display: grid;
+  gap: var(--esp-3);
+  padding: var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.ct-tarjeta > * {
+  min-width: 0;
+}
+
+.ct-tarjeta > .chip {
+  justify-self: start;
+}
+
+.ct-docs {
+  display: grid;
+  gap: var(--esp-2);
+  margin: 0;
+}
+
+.ct-docs li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+}

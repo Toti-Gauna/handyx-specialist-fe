@@ -1,0 +1,173 @@
+/* Estilos del catálogo del kit (solo mock: los importa Catalogo.tsx, que no existe en producción). */
+
+.cat {
+  display: grid;
+  gap: var(--esp-6);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--esp-5) var(--esp-4) 120px;
+}
+
+.cat > * {
+  min-width: 0;
+}
+
+.cat-cabecera {
+  display: grid;
+  gap: var(--esp-2);
+}
+
+.cat-cabecera__titulo {
+  font-size: clamp(2rem, 7vw, 3rem);
+}
+
+.cat-indice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  margin-top: var(--esp-2);
+}
+
+.cat-indice .hx-chip {
+  text-decoration: none;
+}
+
+.cat-bloque {
+  display: grid;
+  gap: var(--esp-4);
+  padding: var(--esp-5);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+  scroll-margin-top: var(--esp-4);
+}
+
+.cat-bloque > * {
+  min-width: 0;
+}
+
+.cat-bloque__titulo {
+  margin: 0;
+  color: var(--hd-tinta);
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.4rem;
+  font-weight: 900;
+  font-stretch: 118%;
+}
+
+.cat-colores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--esp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cat-colores li {
+  display: grid;
+  gap: 4px;
+}
+
+.cat-muestra {
+  height: 56px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgb(14 29 54 / 0.1);
+}
+
+.cat-muestra--azul { background: var(--hd-azul); }
+.cat-muestra--azul-hondo { background: var(--hd-azul-hondo); }
+.cat-muestra--noche { background: var(--hd-noche); }
+.cat-muestra--amarillo { background: var(--hd-amarillo); }
+.cat-muestra--mosaico { background: var(--hd-mosaico); }
+.cat-muestra--hueso { background: var(--color-hueso); }
+.cat-muestra--exito-boton { background: var(--hd-exito-boton); }
+.cat-muestra--error { background: var(--hd-error); }
+
+.cat-ejemplo-titulo {
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+}
+
+.cat-marcos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-5);
+}
+
+/* Marco de celular: con transform, lo fijo a la pantalla (pestañas, hoja) queda fijo a este marco. */
+.cat-marco {
+  --hx-alto-ref: 620px;
+  position: relative;
+  width: min(100%, 390px);
+  height: 640px;
+  overflow: hidden;
+  border: 10px solid var(--hd-noche);
+  border-radius: 44px;
+  background: var(--color-hueso);
+  transform: translateZ(0);
+}
+
+.cat-marco__pantalla {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.cat-marco .hx-barra {
+  padding-top: 8px;
+}
+
+.cat-marco .hx-titulo-grande,
+.cat-relleno {
+  padding-inline: var(--esp-4);
+}
+
+.cat-relleno {
+  padding-bottom: var(--esp-4);
+}
+
+/* Un mapa de mentira (manzanas grises) detrás de la hoja. */
+.cat-mapa {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 40px, #fff 40px 50px) 0 0 / 50px 50px,
+    linear-gradient(transparent 40px, #fff 40px 50px) 0 0 / 50px 50px,
+    #e3e6eb;
+}
+
+.cat-dos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: var(--esp-5);
+  align-items: start;
+}
+
+.cat-angosto {
+  max-width: 420px;
+}
+
+.cat-celebrar {
+  display: grid;
+  justify-items: center;
+  gap: var(--esp-3);
+  text-align: center;
+}
+
+.cat-handys {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--esp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cat-handys li {
+  display: grid;
+  justify-items: center;
+  gap: var(--esp-2);
+  padding: var(--esp-3);
+  border-radius: 20px;
+  background: var(--hd-fondo-2);
+}

@@ -29,7 +29,7 @@ export function Baja() {
     if (sesion.estado === 'ok' && sesion.datos === null) router.replace(RUTAS.acceso.ruta);
   }, [sesion.estado, sesion.datos, router]);
 
-  if (baja.fallo && !baja.datos) return <ErrorCaja fallo={baja.fallo} onReintentar={() => void baja.recargar()} />;
+  if (baja.fallo && !baja.datos) return <ErrorCaja pantalla fallo={baja.fallo} onReintentar={() => void baja.recargar()} />;
   if (baja.estado === 'cargando' && !baja.datos) return <Cargando />;
   const b = baja.datos;
   if (!b) {

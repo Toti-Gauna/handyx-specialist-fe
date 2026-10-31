@@ -1,6 +1,8 @@
 # Handyx · PWA Especialista (handyx-specialist-fe)
 
-Retomar siempre desde `docs/handoff.md`. Plan de 5 fases (no inventar más): `docs/plan.md`.
+Retomar siempre desde `docs/handoff.md`. Plan de 6 fases (no inventar más): `docs/plan.md`:
+1 bases · 2 mockup · 3 refinación · 4 **rediseño premium Handyx** (`docs/rediseno.md`) · 5 backend · 6 deploy.
+En los textos visibles, la marca es **Handyx**; "los Handys" son los personajes.
 
 ## Stack
 
@@ -50,14 +52,26 @@ ni "al instante". Tokens de `src/brand/tokens.ts` = copia byte a byte de la land
 (`HANDY_LANDING_TOKENS=<ruta> npm test` lo verifica). Lenguaje visual de la demo de la landing (`demo-app.css`):
 mosaicos grises, botones con base que se hunde, Archivo 900 ensanchado + DM Sans, sin gradientes ni vidrio.
 Reglas de forma (tokens `--hd-*`, `ChipTipo` vs chips de estado, una acción primaria, aceptar verde / rechazar en contorno
-rojo, urgencia en texto neutro, sin estilos inline): `docs/diseno.md`. Capturas: `node e2e/capturas.cjs [carpeta]`.
+rojo, urgencia en texto neutro, sin estilos inline, movimiento solo con `no-preference`, Handys decorativos): `docs/diseno.md`;
+catálogo en `docs/componentes.md`. Capturas sanitizadas: `npm run capturas` (catálogo: `npm run capturas:docs`).
+
+**Kit v2 (fase 4)** en `src/kit/`: las pantallas rediseñadas se arman con sus piezas (`BarraSuperior`, `PestanasFlotantes`,
+`HojaArrastrable`, `useIsla`, `useConfeti`, `PrecioStepper`, `TiraDias`, `CalendarioMes`, `SelectorHora`, `Mosaico`…), con estilos
+`hx-*` de `kit.css` y lógica pura con pruebas en `logica.ts`. Se ven en `/catalogo/`, que solo existe en el mock (`page.mock.tsx`
++ `pageExtensions`): no lo pongas en `RUTAS` ni en nada que entre a producción.
+
+**Service worker** (`docs/pwa.md`): `out/sw.js` lo genera `scripts/generar-sw.mjs` con la política de `src/pwa/politica.ts`. Solo
+archivos estáticos públicos; nunca la API, mutaciones ni otros sitios, y sin cola offline. Cambiar la política exige su prueba.
 
 ## Comandos
 
 ```sh
 npm ci
 npm run dev | build | build:hostinger | lint | typecheck | test
+npm run e2e | accesibilidad | capturas | capturas:docs   # después de npm run build (Playwright)
 ```
 
-Antes de cada PR: `lint`, `typecheck`, `test`, `build`, `node e2e/flujos.cjs` y `build:hostinger` con una API ficticia (el CI corre todo menos el E2E hasta el lote 5.1).
+Antes de cada PR: `lint`, `typecheck`, `test`, `build`, `npm run e2e`, `npm run accesibilidad` y `build:hostinger` con una API
+ficticia (el CI corre todo menos el E2E y la accesibilidad hasta el lote 5.1). Accesibilidad mínima: WCAG 2.2 AA con axe en 0,
+áreas táctiles ≥ 44 px, foco visible, foco al primer error y texto al 200 % sin desborde (`docs/diseno.md`).
 Mantener `docs/` (TECH-12) junto al código.

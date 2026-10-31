@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: api-especialista (Handyx)
-  version: 0.2.0
+  version: 0.9.0
   description: |
     BORRADOR del contrato de api-especialista (TECH-20). Fuente de los esquemas: src/contracts/dto.ts
-    (contrato compartido v0.2.0, dueño handyx-client-be). Nada implementado todavía: lo construye
+    (contrato compartido v0.6.0, dueño handyx-client-be). Nada implementado todavía: lo construye
     handyx-specialist-be en la fase 4. Sesión por cookie HttpOnly; CSRF en X-CSRF-Token para mutaciones;
     Idempotency-Key (UUIDv4) donde se indica. Timestamps UTC; importes en centavos enteros.
 servers:
@@ -23,6 +23,7 @@ tags:
   - name: pedidos
   - name: propuestas
   - name: trabajos
+  - name: mapa
   - name: mensajes
   - name: caja
   - name: soporte
@@ -90,6 +91,132 @@ paths:
       responses:
         '204': { description: Sesión revocada }
 
+  # ── 0.3.0 · Cuenta (lote 4.2): código por email, Google o Apple y recuperación con enlace ──────
+  /v1/auth/verificacion:
+    get:
+      tags: [auth]
+      summary: Estado del código de 6 dígitos enviado al email (el código nunca viaja al cliente)
+      responses:
+        '200':
+          description: Código vigente
+          content: { application/json: { schema: { $ref: '#/components/schemas/VerificacionEmail' } } }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [auth]
+      summary: Verificar el email con el código (5 intentos; vence a los 10 minutos)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [codigo]
+              properties:
+                codigo: { type: string, pattern: '^[0-9]{6}$' }
+      responses:
+        '200':
+          description: Email verificado
+          content: { application/json: { schema: { $ref: '#/components/schemas/Sesion' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /v1/auth/verificacion/reenvio:
+    post:
+      tags: [auth]
+      summary: Mandar otro código (solo después de reenviarDesde)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '200':
+          description: Código nuevo enviado
+          content: { application/json: { schema: { $ref: '#/components/schemas/VerificacionEmail' } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /v1/auth/proveedor:
+    post:
+      tags: [auth]
+      security: []
+      summary: Entrar con Google o Apple (el servidor valida firma, audiencia, emisor, vencimiento y nonce del id_token)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [proveedor, idToken, nonce]
+              properties:
+                proveedor: { type: string, enum: [google, apple] }
+                idToken: { type: string, minLength: 20 }
+                nonce: { type: string, minLength: 16 }
+      responses:
+        '200':
+          description: Sesión iniciada; cuentaNueva indica que falta aceptar términos y privacidad
+          content: { application/json: { schema: { $ref: '#/components/schemas/ResultadoProveedor' } } }
+        '401': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /v1/auth/aceptaciones:
+    post:
+      tags: [auth]
+      summary: Aceptar términos y privacidad (cuentas nuevas de Google o Apple)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [terminos, privacidad]
+              properties:
+                terminos: { type: string, description: id de la versión aceptada }
+                privacidad: { type: string, description: id de la versión del aviso aceptado }
+      responses:
+        '204': { description: Aceptaciones registradas }
+        '400': { $ref: '#/components/responses/Error' }
+  /v1/auth/recuperacion/estado:
+    post:
+      tags: [auth]
+      security: []
+      summary: Estado del enlace de recuperación (token en el cuerpo, nunca en la ruta; uno desconocido se informa vencido)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [token]
+              properties:
+                token: { type: string, minLength: 16 }
+      responses:
+        '200':
+          description: Estado del enlace
+          content: { application/json: { schema: { $ref: '#/components/schemas/EstadoToken' } } }
+        '429': { $ref: '#/components/responses/Error' }
+  /v1/auth/recuperacion/nueva:
+    post:
+      tags: [auth]
+      security: []
+      summary: Elegir la contraseña nueva con el enlace (un solo uso; cierra todas las sesiones)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [token, password]
+              properties:
+                token: { type: string, minLength: 16 }
+                password: { type: string, minLength: 12, maxLength: 128 }
+      responses:
+        '204': { description: Contraseña cambiada }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+
   /v1/especialista/perfil:
     get:
       tags: [perfil]
@@ -117,7 +244,8 @@ paths:
             schema:
               type: object
               properties:
-                archivo: { type: string, format: binary, description: 'image/jpeg|png|webp, tamaño máximo PENDIENTE' }
+                archivo: { type: string, format: binary, description: 'image/jpeg|png|webp, tamaño máximo PENDIENTE. En el DNI, el frente' }
+                dorso: { type: string, format: binary, description: 'Solo y obligatorio para el DNI (0.5.0): el dorso' }
                 rubro: { type: string, description: solo para matrícula }
       responses:
         '201':
@@ -126,6 +254,30 @@ paths:
         '400': { $ref: '#/components/responses/Error' }
         '413': { $ref: '#/components/responses/Error' }
         '415': { $ref: '#/components/responses/Error' }
+  /v1/especialista/antecedentes/turnos:
+    get:
+      tags: [perfil]
+      summary: Turnos de la verificación presencial de antecedentes (0.5.0). El certificado se muestra en persona, nunca se sube
+      responses:
+        '200':
+          description: Turnos futuros, libres u ocupados
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/TurnoAntecedentes' } } } }
+  /v1/especialista/antecedentes/turno:
+    put:
+      tags: [perfil]
+      summary: Reservar o cambiar el turno (0.5.0). Libera el anterior y deja la verificación en cita_coordinada
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: false, required: [turnoId], properties: { turnoId: { type: string, format: uuid } } }
+      responses:
+        '200':
+          description: Perfil con la cita
+          content: { application/json: { schema: { $ref: '#/components/schemas/PerfilEspecialista' } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /v1/especialista/alta/envio:
     post:
       tags: [perfil]
@@ -147,6 +299,9 @@ paths:
     put:
       tags: [disponibilidad]
       summary: Cambiar disponibilidad (revocar urgentes corta la oferta al instante)
+      description: >-
+        Durante el alta (borrador, corrección, enviada o en revisión) solo se pueden declarar zonas y franjas: urgentesAhora
+        y programados quedan en false hasta que el alta esté habilitada (403 sin_permiso). (0.5.0)
       parameters: [{ $ref: '#/components/parameters/Csrf' }]
       requestBody:
         required: true
@@ -259,7 +414,7 @@ paths:
   /v1/especialista/trabajos/{id}/eventos:
     post:
       tags: [trabajos]
-      summary: 'Transición del trabajo (en_camino, en_sitio = "Llegué", en_curso, finalizado, cancelado)'
+      summary: 'Salir, empezar o terminar (0.7.0: la llegada y la cancelación tienen su propio endpoint). Terminar retira los adicionales pendientes y crea el cobro por el total vigente'
       parameters:
         - { $ref: '#/components/parameters/Id' }
         - { $ref: '#/components/parameters/Csrf' }
@@ -273,33 +428,171 @@ paths:
               additionalProperties: false
               required: [hacia, version]
               properties:
-                hacia: { type: string, enum: [en_camino, en_sitio, en_curso, finalizado, cancelado] }
+                hacia: { type: string, enum: [en_camino, en_curso, finalizado] }
                 version: { type: integer, minimum: 0 }
       responses:
         '200':
           description: Trabajo actualizado
           content: { application/json: { schema: { $ref: '#/components/schemas/Trabajo' } } }
         '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/llegada:
+    post:
+      tags: [trabajos]
+      summary: '"Ya llegué" (0.7.0): respaldo de la llegada automática, solo cuando la ubicación anda mal y con el motivo. La automática la marca el servidor al recibir una posición dentro del radio'
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [motivo, version]
+              properties:
+                motivo: { type: string, enum: [sin_permiso, imprecisa, sin_senal, sin_ubicacion] }
+                version: { type: integer, minimum: 0 }
+      responses:
+        '200':
+          description: En el lugar; el usuario recibe el aviso
+          content: { application/json: { schema: { $ref: '#/components/schemas/Trabajo' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/cancelacion:
+    post:
+      tags: [trabajos]
+      summary: Cancelar con motivo (0.7.0). Sin penalización automática; en curso solo cancela Operations
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [motivo, version]
+              properties:
+                motivo: { type: string, enum: [no_puedo_ir, problema_personal, cliente_no_responde, trabajo_distinto, riesgo_en_el_lugar, otro] }
+                version: { type: integer, minimum: 0 }
+      responses:
+        '200':
+          description: Cancelado
+          content: { application/json: { schema: { $ref: '#/components/schemas/Trabajo' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/adicionales:
+    post:
+      tags: [trabajos]
+      summary: Agregar repuestos o mano de obra con el trabajo en curso (0.7.0). Lo acepta o rechaza el usuario; mientras tanto rige el precio vigente
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/NuevoAdicional' } } }
+      responses:
+        '201':
+          description: Adicional pendiente
+          content: { application/json: { schema: { $ref: '#/components/schemas/Adicional' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/adicionales/{adicionalId}/retiro:
+    post:
+      tags: [trabajos]
+      summary: Retirar un adicional que el usuario todavía no respondió (0.7.0)
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { name: adicionalId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { $ref: '#/components/parameters/Csrf' }
+      responses:
+        '200':
+          description: Retirado
+          content: { application/json: { schema: { $ref: '#/components/schemas/Adicional' } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/etapas/{etapaId}/fin:
+    post:
+      tags: [obras]
+      summary: Terminar la etapa en curso de una obra (0.8.0). Crea su cobro (directo del cliente), retira sus adicionales sin respuesta y arranca la siguiente
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { name: etapaId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { $ref: '#/components/parameters/Csrf' }
+        - { $ref: '#/components/parameters/Idempotencia' }
+      responses:
+        '200':
+          description: El cobro de la etapa (pendiente)
+          content: { application/json: { schema: { $ref: '#/components/schemas/Pago' } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/jornadas/{jornadaId}/cambio:
+    post:
+      tags: [obras]
+      summary: Pedir otro día para una jornada (0.8.0). Queda pendiente hasta que el cliente acepta y no mueve las demás
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { name: jornadaId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { $ref: '#/components/parameters/Csrf' }
+        - { $ref: '#/components/parameters/Idempotencia' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [horario, motivo]
+              properties:
+                horario: { $ref: '#/components/schemas/Horario' }
+                motivo: { type: string, enum: [otro_trabajo, imprevisto, falta_repuesto, pedido_del_cliente, clima, otro] }
+      responses:
+        '200':
+          description: Jornada con el cambio pendiente
+          content: { application/json: { schema: { $ref: '#/components/schemas/Jornada' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/diario:
+    post:
+      tags: [obras]
+      summary: Cargar el avance del día en el diario de obra (0.8.0). Lo ve el cliente; con una jornada, la marca hecha
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [etapaId, nota]
+              properties:
+                etapaId: { type: string, format: uuid }
+                jornadaId: { type: string, format: uuid }
+                nota: { type: string, minLength: 1, maxLength: 280 }
+                fotos: { type: array, maxItems: 4, items: { type: string, format: binary }, description: 'image/jpeg|png|webp; se guardan privadas' }
+      responses:
+        '201':
+          description: Entrada del diario
+          content: { application/json: { schema: { $ref: '#/components/schemas/EntradaDiario' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/llamada:
+    post:
+      tags: [trabajos]
+      summary: Número puente de Handyx para llamar a la otra parte sin ver su teléfono (0.7.0). Solo con el trabajo activo; dura unos minutos
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '200':
+          description: Número puente
+          content: { application/json: { schema: { $ref: '#/components/schemas/LlamadaPuente' } } }
+        '409': { $ref: '#/components/responses/Error' }
 
   /v1/conversaciones/{id}/mensajes:
     get:
       tags: [mensajes]
-      parameters: [{ $ref: '#/components/parameters/Id' }, { name: cursor, in: query, schema: { type: string } }]
+      summary: Los últimos 200 mensajes del hilo, en orden (lote 5.6). Abrirlo marca leído lo del usuario
+      parameters: [{ $ref: '#/components/parameters/Id' }]
       responses:
         '200':
           description: Mensajes (solo participantes)
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties: false
-                required: [items, siguienteCursor]
-                properties:
-                  items: { type: array, items: { $ref: '#/components/schemas/Mensaje' } }
-                  siguienteCursor: { type: [string, 'null'] }
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Mensaje' } } } }
         '404': { $ref: '#/components/responses/Error' }
     post:
       tags: [mensajes]
+      summary: Texto (JSON) o foto privada (multipart con `archivo`, `tipo` y `texto` opcional). La misma clave no duplica
       parameters:
         - { $ref: '#/components/parameters/Id' }
         - { $ref: '#/components/parameters/Csrf' }
@@ -311,14 +604,26 @@ paths:
             schema:
               type: object
               additionalProperties: false
-              required: [texto]
+              required: [tipo, texto]
               properties:
-                texto: { type: string, minLength: 1, maxLength: 2000 }
+                tipo: { type: string, enum: [texto, foto] }
+                texto: { type: [string, 'null'], maxLength: 2000 }
+          multipart/form-data:
+            schema:
+              type: object
+              required: [archivo, tipo]
+              properties:
+                archivo: { type: string, format: binary, description: 'JPEG, PNG o WebP de hasta 5 MB (por sus bytes)' }
+                tipo: { type: string, enum: [foto] }
+                texto: { type: string, maxLength: 2000 }
       responses:
         '201':
           description: Enviado
           content: { application/json: { schema: { $ref: '#/components/schemas/Mensaje' } } }
-
+        '400': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '415': { $ref: '#/components/responses/Error' }
   /v1/especialista/caja:
     get:
       tags: [caja]
@@ -352,18 +657,11 @@ paths:
   /v1/soporte/casos:
     get:
       tags: [soporte]
+      summary: Casos propios, el más reciente primero (los últimos 100)
       responses:
         '200':
           description: Casos propios
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties: false
-                required: [items, siguienteCursor]
-                properties:
-                  items: { type: array, items: { $ref: '#/components/schemas/CasoSoporte' } }
-                  siguienteCursor: { type: [string, 'null'] }
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/CasoSoporte' } } } }
     post:
       tags: [soporte]
       parameters: [{ $ref: '#/components/parameters/Csrf' }, { $ref: '#/components/parameters/Idempotencia' }]
@@ -530,6 +828,19 @@ paths:
         '200':
           description: Avisos
           content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Aviso' } } } }
+    delete:
+      tags: [pedidos]
+      summary: Borrar todos los avisos (0.6.0). Lo importante sigue en su pantalla (pedido, trabajo, caja)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '204': { description: Borrados }
+  /v1/especialista/avisos/{id}:
+    delete:
+      tags: [pedidos]
+      summary: Borrar un aviso (0.6.0). Uno ajeno o inexistente responde igual
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '204': { description: Borrado }
   /v1/especialista/avisos/{id}/leido:
     post:
       tags: [pedidos]
@@ -570,6 +881,51 @@ paths:
           description: Propuesta de cambio pendiente
           content: { application/json: { schema: { $ref: '#/components/schemas/Propuesta' } } }
         '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/mapa/barrios:
+    get:
+      tags: [mapa]
+      summary: Barrios de cobertura con un punto para la etiqueta del mapa (0.4.0)
+      responses:
+        '200':
+          description: Barrios
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Barrio' } } } }
+  /v1/especialista/trabajos/{id}/viaje:
+    get:
+      tags: [mapa]
+      summary: Destino, trayecto y última posición del viaje (0.4.0). Solo para las partes de un trabajo con dirección
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Viaje
+          content: { application/json: { schema: { $ref: '#/components/schemas/Viaje' } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /v1/especialista/trabajos/{id}/viaje/posiciones:
+    post:
+      tags: [mapa]
+      summary: >-
+        Posición actual mientras el trabajo está en camino (0.4.0). El cliente de ese trabajo la ve en vivo (SSE de su lado).
+        La primera calcula el trayecto; con dos posiciones seguidas fuera del trayecto se recalcula y sube su versión.
+        La posición va en el cuerpo, nunca en la URL. Como mucho una cada 5 s. Retención: 30 días.
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Posicion' } } }
+      responses:
+        '200':
+          description: Viaje actualizado
+          content: { application/json: { schema: { $ref: '#/components/schemas/Viaje' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [mapa]
+      summary: Dejar de compartir la ubicación (0.4.0). El servidor también deja de compartir al llegar, empezar, terminar o cancelar
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '200':
+          description: Viaje sin compartir
+          content: { application/json: { schema: { $ref: '#/components/schemas/Viaje' } } }
   /v1/especialista/agenda:
     get:
       tags: [trabajos]
@@ -582,6 +938,70 @@ paths:
           description: Items de agenda
           content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/AgendaItem' } } } }
 
+  /v1/especialista/contactos:
+    get:
+      tags: [mensajes]
+      summary: Contactos del especialista (0.9.0), solo los agregados desde un chat. Sin teléfonos
+      responses:
+        '200':
+          description: Contactos
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Contacto' } } } }
+    post:
+      tags: [mensajes]
+      summary: Agregar a contactos a la contraparte de una conversación propia (agregarla dos veces devuelve la misma)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [conversacionId]
+              properties:
+                conversacionId: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Contacto
+          content: { application/json: { schema: { $ref: '#/components/schemas/Contacto' } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /v1/especialista/contactos/{id}:
+    delete:
+      tags: [mensajes]
+      summary: Quitar un contacto (la conversación sigue). Uno ajeno o inexistente responde igual
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/Csrf' }]
+      responses:
+        '204': { description: Quitado }
+  /v1/especialista/cobros:
+    get:
+      tags: [caja]
+      summary: Cómo te paga el cliente (0.9.0) y el estado de la cuenta de Mercado Pago
+      responses:
+        '200':
+          description: Formas de cobro
+          content: { application/json: { schema: { $ref: '#/components/schemas/MediosCobro' } } }
+    put:
+      tags: [caja]
+      summary: Elegir las formas de cobro (al menos una)
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [efectivo, mercadoPago, version]
+              properties:
+                efectivo: { type: boolean }
+                mercadoPago: { type: boolean }
+                version: { type: integer, minimum: 0 }
+      responses:
+        '200':
+          description: Guardadas
+          content: { application/json: { schema: { $ref: '#/components/schemas/MediosCobro' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /v1/conversaciones:
     get:
       tags: [mensajes]
@@ -767,16 +1187,112 @@ components:
         cuenta:
           type: object
           additionalProperties: false
-          required: [id, roles]
+          required: [id, roles, emailVerificado, terminosAceptados]
           properties:
             id: { type: string, format: uuid }
             roles: { type: array, items: { type: string, enum: [usuario, especialista] } }
+            emailVerificado: { type: boolean, description: '0.3.0 · hasta verificar el código solo se puede verificar, reenviar o salir' }
+            terminosAceptados: { type: boolean, description: '0.3.0 · las cuentas nuevas de Google o Apple aceptan después de entrar' }
         csrfToken: { type: string, minLength: 16 }
         expiraEn: { $ref: '#/components/schemas/Instante' }
+    Punto:
+      type: object
+      additionalProperties: false
+      required: [lat, lng]
+      properties:
+        lat: { type: number, minimum: -90, maximum: 90 }
+        lng: { type: number, minimum: -180, maximum: 180 }
+    ZonaMapa:
+      type: object
+      additionalProperties: false
+      required: [centro, radioM]
+      properties:
+        centro: { $ref: '#/components/schemas/Punto' }
+        radioM: { type: integer, minimum: 200, maximum: 5000 }
+    Barrio:
+      type: object
+      additionalProperties: false
+      required: [id, nombre, centro]
+      properties:
+        id: { type: string, minLength: 1 }
+        nombre: { type: string, minLength: 1 }
+        centro: { $ref: '#/components/schemas/Punto' }
+    Posicion:
+      type: object
+      additionalProperties: false
+      required: [punto, precisionM, en]
+      properties:
+        punto: { $ref: '#/components/schemas/Punto' }
+        precisionM: { type: number, minimum: 0, maximum: 10000 }
+        en: { $ref: '#/components/schemas/Instante' }
+    Trayecto:
+      type: object
+      additionalProperties: false
+      required: [linea, distanciaM, duracionS, version]
+      properties:
+        linea: { type: array, minItems: 2, maxItems: 5000, items: { $ref: '#/components/schemas/Punto' } }
+        distanciaM: { type: integer, minimum: 0 }
+        duracionS: { type: integer, minimum: 0 }
+        version: { type: integer, minimum: 0 }
+    Viaje:
+      type: object
+      additionalProperties: false
+      required: [trabajoId, destino, estado, trayecto, ultimaPosicion, distanciaRestanteM, llegadaEstimada]
+      properties:
+        trabajoId: { type: string, format: uuid }
+        destino: { $ref: '#/components/schemas/Punto' }
+        estado: { type: string, enum: [sin_compartir, compartiendo, terminado] }
+        trayecto:
+          description: Null sin posición o si el motor de trayectos no pudo calcularlo
+          oneOf: [{ $ref: '#/components/schemas/Trayecto' }, { type: 'null' }]
+        ultimaPosicion: { oneOf: [{ $ref: '#/components/schemas/Posicion' }, { type: 'null' }] }
+        distanciaRestanteM: { type: [integer, 'null'], minimum: 0 }
+        llegadaEstimada: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
+    VerificacionEmail:
+      type: object
+      additionalProperties: false
+      required: [emailEnmascarado, venceEn, reenviarDesde, intentosRestantes]
+      properties:
+        emailEnmascarado: { type: string, description: 'ma•••@dominio' }
+        venceEn: { $ref: '#/components/schemas/Instante' }
+        reenviarDesde: { $ref: '#/components/schemas/Instante' }
+        intentosRestantes: { type: integer, minimum: 0 }
+    ResultadoProveedor:
+      type: object
+      additionalProperties: false
+      required: [sesion, cuentaNueva]
+      properties:
+        sesion: { $ref: '#/components/schemas/Sesion' }
+        cuentaNueva: { type: boolean }
+    EstadoToken:
+      type: object
+      additionalProperties: false
+      required: [estado]
+      properties:
+        estado: { type: string, enum: [valido, vencido, usado] }
+    TurnoAntecedentes:
+      type: object
+      additionalProperties: false
+      required: [id, inicio, fin, lugar, disponible]
+      properties:
+        id: { type: string, format: uuid }
+        inicio: { $ref: '#/components/schemas/Instante' }
+        fin: { $ref: '#/components/schemas/Instante' }
+        lugar: { type: string, description: oficina de Operations (dato público) }
+        disponible: { type: boolean }
+    CitaAntecedentes:
+      type: object
+      additionalProperties: false
+      required: [turnoId, inicio, fin, lugar]
+      properties:
+        turnoId: { type: string, format: uuid }
+        inicio: { $ref: '#/components/schemas/Instante' }
+        fin: { $ref: '#/components/schemas/Instante' }
+        lugar: { type: string }
     PerfilEspecialista:
       type: object
       additionalProperties: false
-      required: [id, email, nombre, apellido, estadoAlta, motivoRevision, documentos, antecedentes, rubros, faltantesEnvio, baja, version]
+      required: [id, email, nombre, apellido, estadoAlta, motivoRevision, documentos, antecedentes, citaAntecedentes, rubros, faltantesEnvio, baja, version]
       properties:
         id: { type: string, format: uuid }
         email: { type: string }
@@ -798,6 +1314,9 @@ components:
         antecedentes:
           type: string
           enum: [pendiente_cita, cita_coordinada, aprobada, no_aprobada, no_asistio]
+        citaAntecedentes:
+          description: Turno reservado para la verificación presencial (0.5.0)
+          oneOf: [{ $ref: '#/components/schemas/CitaAntecedentes' }, { type: 'null' }]
         rubros:
           type: array
           items:
@@ -844,13 +1363,16 @@ components:
     PedidoElegible:
       type: object
       additionalProperties: false
-      required: [id, rubro, tipo, descripcion, zonaAproximada, fechaSolicitada, creadoEn, ventanaHasta, estado, miPropuesta]
+      required: [id, rubro, tipo, descripcion, zonaAproximada, zonaMapa, fechaSolicitada, creadoEn, ventanaHasta, estado, miPropuesta]
       properties:
         id: { type: string, format: uuid }
         rubro: { $ref: '#/components/schemas/Rubro' }
         tipo: { type: string, enum: [urgente, programado, obra] }
         descripcion: { type: string }
         zonaAproximada: { type: string }
+        zonaMapa:
+          description: Centro ya desplazado por el servidor y radio. Nunca el punto exacto del hogar antes del acuerdo
+          oneOf: [{ $ref: '#/components/schemas/ZonaMapa' }, { type: 'null' }]
         fechaSolicitada: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
         creadoEn: { $ref: '#/components/schemas/Instante' }
         ventanaHasta: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
@@ -906,7 +1428,7 @@ components:
     Trabajo:
       type: object
       additionalProperties: false
-      required: [id, pedidoId, propuestaAceptadaId, rubro, tipo, acuerdo, direccion, estado, conversacionId, version]
+      required: [id, pedidoId, propuestaAceptadaId, rubro, tipo, acuerdo, direccion, destino, estado, llegada, conversacionId, version]
       properties:
         id: { type: string, format: uuid }
         pedidoId: { type: string, format: uuid }
@@ -922,9 +1444,54 @@ components:
             alcance: { type: string }
             horario: { $ref: '#/components/schemas/Horario' }
         direccion: { type: [string, 'null'], description: solo con trabajo acordado y para sus partes }
+        destino:
+          description: Punto exacto del destino, con la misma regla que la dirección (0.4.0)
+          oneOf: [{ $ref: '#/components/schemas/Punto' }, { type: 'null' }]
         estado: { type: string, enum: [agendado, en_camino, en_sitio, en_curso, finalizado, cancelado] }
+        llegada:
+          description: Cómo se marcó la llegada (0.7.0); null hasta llegar
+          oneOf: [{ $ref: '#/components/schemas/Llegada' }, { type: 'null' }]
         conversacionId: { type: string, format: uuid }
         version: { type: integer, minimum: 0 }
+    Llegada:
+      type: object
+      additionalProperties: false
+      required: [modo, motivo, en]
+      properties:
+        modo: { type: string, enum: [automatica, respaldo], description: 'automatica: geocerca de 80 m con precisión de 50 m o mejor, con la app abierta' }
+        motivo: { type: [string, 'null'], enum: [sin_permiso, imprecisa, sin_senal, sin_ubicacion, null] }
+        en: { $ref: '#/components/schemas/Instante' }
+    Adicional:
+      type: object
+      additionalProperties: false
+      required: [id, trabajoId, etapaId, tipo, descripcion, monto, estado, creadoEn, respondidoEn, version]
+      properties:
+        id: { type: string, format: uuid }
+        trabajoId: { type: string, format: uuid }
+        etapaId: { type: [string, 'null'], format: uuid, description: en una obra, la etapa a la que se suma (0.8.0) }
+        tipo: { type: string, enum: [repuesto, mano_de_obra] }
+        descripcion: { type: string }
+        monto: { $ref: '#/components/schemas/Monto' }
+        estado: { type: string, enum: [pendiente, aceptado, rechazado, retirado] }
+        creadoEn: { $ref: '#/components/schemas/Instante' }
+        respondidoEn: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
+        version: { type: integer, minimum: 0 }
+    NuevoAdicional:
+      type: object
+      additionalProperties: false
+      required: [etapaId, tipo, descripcion, monto]
+      properties:
+        etapaId: { type: [string, 'null'], format: uuid, description: 'obligatorio en una obra: la etapa en curso (0.8.0)' }
+        tipo: { type: string, enum: [repuesto, mano_de_obra] }
+        descripcion: { type: string, minLength: 1, maxLength: 200 }
+        monto: { $ref: '#/components/schemas/Monto', description: mayor a cero }
+    LlamadaPuente:
+      type: object
+      additionalProperties: false
+      required: [telefono, venceEn]
+      properties:
+        telefono: { type: string, pattern: '^\+[0-9]{2,15}$', description: número puente de Handyx; no es el teléfono de la otra parte }
+        venceEn: { $ref: '#/components/schemas/Instante' }
     Mensaje:
       type: object
       additionalProperties: false
@@ -941,10 +1508,11 @@ components:
     Pago:
       type: object
       additionalProperties: false
-      required: [id, trabajoId, descripcion, feeHandy, neto, metodo, monto, estado, fuenteConfirmacion, referenciaProveedor, actualizadoEn]
+      required: [id, trabajoId, etapaId, descripcion, feeHandy, neto, metodo, monto, estado, fuenteConfirmacion, referenciaProveedor, actualizadoEn]
       properties:
         id: { type: string, format: uuid }
         trabajoId: { type: string, format: uuid }
+        etapaId: { type: [string, 'null'], format: uuid, description: en una obra, la etapa que se cobra (0.8.0) }
         descripcion: { type: string }
         feeHandy: { $ref: '#/components/schemas/Monto' }
         neto: { $ref: '#/components/schemas/Monto' }
@@ -1053,7 +1621,7 @@ components:
       required: [id, tipo, titulo, cuerpo, creadoEn, leido, destino]
       properties:
         id: { type: string, format: uuid }
-        tipo: { type: string, enum: [pedido_urgente, pedido_programado, propuesta, mensaje, trabajo, pago, soporte, cuenta] }
+        tipo: { type: string, enum: [pedido_urgente, pedido_programado, propuesta, te_eligieron, mensaje, trabajo, pago, soporte, cuenta] }
         titulo: { type: string }
         cuerpo: { type: string, description: Sin datos personales }
         creadoEn: { $ref: '#/components/schemas/Instante' }
@@ -1083,14 +1651,26 @@ components:
       allOf:
         - { $ref: '#/components/schemas/PedidoElegible' }
         - type: object
-          required: [conversacionId, propuestas]
+          required: [conversacionId, propuestas, precioSugerido, trabajoId]
           properties:
             conversacionId: { type: [string, 'null'], format: uuid }
             propuestas: { type: array, items: { $ref: '#/components/schemas/Propuesta' } }
+            precioSugerido:
+              description: '"Handyx sugiere" por rubro y tipo (0.6.0). Una ayuda, nunca un mínimo ni un máximo'
+              oneOf: [{ $ref: '#/components/schemas/PrecioSugerido' }, { type: 'null' }]
+            trabajoId: { type: [string, 'null'], format: uuid, description: el trabajo que salió de MI propuesta aceptada (0.6.0) }
+    PrecioSugerido:
+      type: object
+      additionalProperties: false
+      required: [monto, fuente, version]
+      properties:
+        monto: { $ref: '#/components/schemas/Monto' }
+        fuente: { type: string }
+        version: { type: string }
     TrabajoDetalle:
       type: object
       additionalProperties: false
-      required: [trabajo, contraparte, eventos, etapas, cambioPendiente, pagoId]
+      required: [trabajo, contraparte, eventos, etapas, cambioPendiente, pagoId, adicionales, totalVigente, jornadas, diario]
       properties:
         trabajo: { $ref: '#/components/schemas/Trabajo' }
         contraparte: { type: string }
@@ -1104,26 +1684,75 @@ components:
               estado: { type: string, enum: [agendado, en_camino, en_sitio, en_curso, finalizado, cancelado] }
               en: { $ref: '#/components/schemas/Instante' }
               actor: { type: string, enum: [especialista, usuario, operations, sistema] }
-        etapas:
+        etapas: { type: array, items: { $ref: '#/components/schemas/EtapaObra' } }
+        cambioPendiente: { oneOf: [{ $ref: '#/components/schemas/Propuesta' }, { type: 'null' }] }
+        pagoId: { type: [string, 'null'], format: uuid }
+        adicionales: { type: array, items: { $ref: '#/components/schemas/Adicional' }, description: del más nuevo al más viejo (0.7.0) }
+        totalVigente: { $ref: '#/components/schemas/Monto', description: lo acordado más los adicionales aceptados }
+        jornadas: { type: array, items: { $ref: '#/components/schemas/Jornada' }, description: obra (0.8.0), en orden; vacío en un trabajo de un día }
+        diario: { type: array, items: { $ref: '#/components/schemas/EntradaDiario' }, description: obra (0.8.0), del más nuevo al más viejo }
+    EtapaObra:
+      type: object
+      additionalProperties: false
+      required: [id, orden, nombre, incluye, monto, estado, terminadaEn, pagoId]
+      properties:
+        id: { type: string, format: uuid }
+        orden: { type: integer, minimum: 1 }
+        nombre: { type: string }
+        incluye: { type: string }
+        monto: { $ref: '#/components/schemas/Monto' }
+        estado: { type: string, enum: [pendiente, en_curso, terminada] }
+        terminadaEn: { oneOf: [{ $ref: '#/components/schemas/Instante' }, { type: 'null' }] }
+        pagoId: { type: [string, 'null'], format: uuid, description: el cobro de la etapa; se crea al terminarla }
+    Jornada:
+      type: object
+      additionalProperties: false
+      required: [id, etapaId, numero, horario, estado, cambioPendiente]
+      properties:
+        id: { type: string, format: uuid }
+        etapaId: { type: string, format: uuid }
+        numero: { type: integer, minimum: 1 }
+        horario: { $ref: '#/components/schemas/Horario' }
+        estado: { type: string, enum: [programada, hecha], description: 'hecha: el especialista cargó el avance de ese día' }
+        cambioPendiente:
+          oneOf:
+            - type: 'null'
+            - type: object
+              additionalProperties: false
+              required: [horario, motivo, pedidoEn]
+              properties:
+                horario: { $ref: '#/components/schemas/Horario' }
+                motivo: { type: string, enum: [otro_trabajo, imprevisto, falta_repuesto, pedido_del_cliente, clima, otro] }
+                pedidoEn: { $ref: '#/components/schemas/Instante' }
+    EntradaDiario:
+      type: object
+      additionalProperties: false
+      required: [id, etapaId, jornadaId, nota, fotos, creadoEn]
+      properties:
+        id: { type: string, format: uuid }
+        etapaId: { type: string, format: uuid }
+        jornadaId: { type: [string, 'null'], format: uuid }
+        nota: { type: string }
+        fotos:
           type: array
+          maxItems: 4
           items:
             type: object
             additionalProperties: false
-            required: [nombre, monto, estado]
+            required: [id, url]
             properties:
-              nombre: { type: string }
-              monto: { $ref: '#/components/schemas/Monto' }
-              estado: { type: string, enum: [pendiente, en_curso, terminada] }
-        cambioPendiente: { oneOf: [{ $ref: '#/components/schemas/Propuesta' }, { type: 'null' }] }
-        pagoId: { type: [string, 'null'], format: uuid }
+              id: { type: string, format: uuid }
+              url: { type: string, format: uri, description: URL firmada de corta duración; solo la ven las partes de la obra }
+        creadoEn: { $ref: '#/components/schemas/Instante' }
     NuevoCambio:
       type: object
       additionalProperties: false
-      required: [horario, alcance, monto]
+      required: [horario, alcance, monto, motivo]
       properties:
         horario: { $ref: '#/components/schemas/Horario' }
         alcance: { type: string, minLength: 1, maxLength: 2000 }
         monto: { oneOf: [{ $ref: '#/components/schemas/Monto' }, { type: 'null' }] }
+        motivo: { type: [string, 'null'], enum: [otro_trabajo, imprevisto, falta_repuesto, pedido_del_cliente, clima, otro, null], description: se le muestra al usuario (0.7.0) }
     AgendaItem:
       type: object
       additionalProperties: false
@@ -1140,7 +1769,7 @@ components:
     Conversacion:
       type: object
       additionalProperties: false
-      required: [id, pedidoId, trabajoId, contraparte, etapa, ultimoMensaje, noLeidos, actualizadoEn]
+      required: [id, pedidoId, trabajoId, contraparte, etapa, ultimoMensaje, noLeidos, actualizadoEn, contactoId]
       properties:
         id: { type: string, format: uuid }
         pedidoId: { type: string, format: uuid }
@@ -1150,6 +1779,32 @@ components:
         ultimoMensaje: { type: [string, 'null'] }
         noLeidos: { type: integer, minimum: 0 }
         actualizadoEn: { $ref: '#/components/schemas/Instante' }
+        contactoId: { type: [string, 'null'], format: uuid, description: si la contraparte ya está en tus contactos (0.9.0) }
+    Contacto:
+      type: object
+      additionalProperties: false
+      required: [id, conversacionId, nombre, detalle, agregadoEn]
+      properties:
+        id: { type: string, format: uuid }
+        conversacionId: { type: string, format: uuid }
+        nombre: { type: string }
+        detalle: { type: string, description: rubro y barrio del último pedido o trabajo (sin teléfono ni dirección) }
+        agregadoEn: { $ref: '#/components/schemas/Instante' }
+    MediosCobro:
+      type: object
+      additionalProperties: false
+      required: [efectivo, mercadoPago, cuentaMercadoPago, version]
+      properties:
+        efectivo: { type: boolean }
+        mercadoPago: { type: boolean }
+        cuentaMercadoPago:
+          type: object
+          additionalProperties: false
+          required: [estado, etiqueta]
+          properties:
+            estado: { type: string, enum: [sin_vincular, vinculada], description: 'la vinculación es con el proveedor (fase 5); Handyx nunca ve la contraseña ni las claves' }
+            etiqueta: { type: [string, 'null'] }
+        version: { type: integer, minimum: 0 }
     CajaResumen:
       type: object
       additionalProperties: false

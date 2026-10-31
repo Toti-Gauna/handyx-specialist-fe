@@ -1,12 +1,15 @@
-// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.1.0, borrador).
+// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.9.0, borrador; versión en version.ts).
 // El servidor valida con los mismos esquemas; el cliente valida cada respuesta y trata un desajuste
 // como error de contrato (nunca lo "arregla" con datos de muestra). OpenAPI: docs/api/openapi.yaml.
 import { z } from 'zod';
 import { MONEDAS } from './dinero.ts';
 import {
+  ESTADOS_ADICIONAL,
   ESTADOS_ALTA,
   ESTADOS_BAJA,
   ESTADOS_DOCUMENTO,
+  ESTADOS_ETAPA,
+  ESTADOS_JORNADA,
   ESTADOS_PAGO,
   ESTADOS_PEDIDO,
   ESTADOS_PRESENCIAL,
@@ -24,6 +27,29 @@ export const MontoSchema = z.strictObject({
   centavos: z.int().nonnegative(),
   moneda: z.enum(MONEDAS),
 });
+
+// ── Mapa (contrato 0.4.0) ───────────────────────────────────────────────────────────────────────
+// Coordenadas WGS84. Antes del acuerdo, el servidor solo manda una zona aproximada (centro ya desplazado + radio):
+// la app nunca recibe ni calcula el punto exacto de un hogar hasta que hay trabajo.
+export const PuntoSchema = z.strictObject({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+});
+export type Punto = z.infer<typeof PuntoSchema>;
+
+export const ZonaMapaSchema = z.strictObject({
+  centro: PuntoSchema,
+  radioM: z.int().min(200).max(5000),
+});
+export type ZonaMapa = z.infer<typeof ZonaMapaSchema>;
+
+/** Barrio de cobertura: id del servidor, nombre y un punto para la etiqueta. */
+export const BarrioSchema = z.strictObject({
+  id: z.string().min(1),
+  nombre: z.string().min(1),
+  centro: PuntoSchema,
+});
+export type Barrio = z.infer<typeof BarrioSchema>;
 
 // ── Errores ──────────────────────────────────────────────────────────────────────────────────────
 // Código estable + mensaje seguro (sin internos) + requestId + errores de campo.
@@ -61,6 +87,10 @@ export const SesionSchema = z.strictObject({
   cuenta: z.strictObject({
     id: IdSchema,
     roles: z.array(z.enum(['usuario', 'especialista'])),
+    /** 0.3.0: hasta verificar el email con el código, la cuenta solo puede verificar, reenviar o salir. */
+    emailVerificado: z.boolean(),
+    /** 0.3.0: las cuentas que entran por primera vez con Google o Apple aceptan términos y privacidad después. */
+    terminosAceptados: z.boolean(),
   }),
   csrfToken: z.string().min(16),
   expiraEn: InstanteSchema,
@@ -74,6 +104,28 @@ export const EstadoRubroSchema = z.enum(['elegido', 'habilitado', 'requiere_matr
 /** Qué le falta al alta para poder enviarse a revisión (lo calcula el servidor). */
 export const FALTANTES_ENVIO = ['datos', 'dni', 'cuitCuil', 'fotoCara', 'rubros', 'matricula'] as const;
 export type FaltanteEnvio = (typeof FALTANTES_ENVIO)[number];
+
+// ── Turnos de antecedentes (contrato 0.5.0) ─────────────────────────────────────────────────────
+// El certificado de antecedentes se muestra EN PERSONA a Operations: la app solo reserva el turno. Nunca un archivo.
+export const TurnoAntecedentesSchema = z.strictObject({
+  id: IdSchema,
+  inicio: InstanteSchema,
+  fin: InstanteSchema,
+  /** Oficina de Operations (dato público de Handyx, no de la persona). */
+  lugar: z.string(),
+  disponible: z.boolean(),
+});
+export type TurnoAntecedentes = z.infer<typeof TurnoAntecedentesSchema>;
+
+export const CitaAntecedentesSchema = z.strictObject({
+  turnoId: IdSchema,
+  inicio: InstanteSchema,
+  fin: InstanteSchema,
+  lugar: z.string(),
+});
+export type CitaAntecedentes = z.infer<typeof CitaAntecedentesSchema>;
+
+export const ReservaTurnoSchema = z.strictObject({ turnoId: IdSchema });
 
 export const PerfilEspecialistaSchema = z.strictObject({
   id: IdSchema,
@@ -89,6 +141,8 @@ export const PerfilEspecialistaSchema = z.strictObject({
     fotoCara: z.enum(ESTADOS_DOCUMENTO),
   }),
   antecedentes: z.enum(ESTADOS_PRESENCIAL),
+  /** Turno elegido para la verificación presencial de antecedentes (0.5.0). Sin archivos: solo el turno. */
+  citaAntecedentes: CitaAntecedentesSchema.nullable(),
   rubros: z.array(
     z.strictObject({
       rubro: z.enum(RUBROS),
@@ -140,6 +194,8 @@ export const PedidoElegibleSchema = z.strictObject({
   tipo: z.enum(TIPOS_PEDIDO),
   descripcion: z.string(),
   zonaAproximada: z.string(),
+  /** Zona para el mapa (0.4.0): centro desplazado por el servidor y radio. Null si el servidor todavía no la tiene. */
+  zonaMapa: ZonaMapaSchema.nullable(),
   fechaSolicitada: InstanteSchema.nullable(),
   creadoEn: InstanteSchema,
   /** Fin de la ventana de búsqueda calculado por el servidor. */
@@ -179,6 +235,36 @@ export const RespuestaPropuestaSchema = z.strictObject({
 });
 
 // ── Trabajos ─────────────────────────────────────────────────────────────────────────────────────
+/**
+ * Llegada (0.7.0). `automatica`: la marca el servidor (actor `sistema`) cuando una posición del viaje entra en el radio
+ * del destino con buena precisión (geocerca, solo con la app abierta). `respaldo`: "Ya llegué", solo cuando la ubicación
+ * anda mal, con el motivo. En los dos casos el usuario recibe el aviso de que llegaste.
+ */
+export const MODOS_LLEGADA = ['automatica', 'respaldo'] as const;
+/** `sin_ubicacion`: no compartís la ubicación o el teléfono no la da. */
+export const MOTIVOS_RESPALDO_LLEGADA = ['sin_permiso', 'imprecisa', 'sin_senal', 'sin_ubicacion'] as const;
+export type MotivoRespaldoLlegada = (typeof MOTIVOS_RESPALDO_LLEGADA)[number];
+/** Radio de la geocerca alrededor del destino y precisión mínima de la posición para marcar la llegada sola. */
+export const RADIO_LLEGADA_M = 80;
+export const PRECISION_MAX_LLEGADA_M = 50;
+
+export const LlegadaSchema = z.strictObject({
+  modo: z.enum(MODOS_LLEGADA),
+  motivo: z.enum(MOTIVOS_RESPALDO_LLEGADA).nullable(),
+  en: InstanteSchema,
+});
+export type Llegada = z.infer<typeof LlegadaSchema>;
+
+export const MarcarLlegadaSchema = z.strictObject({
+  motivo: z.enum(MOTIVOS_RESPALDO_LLEGADA),
+  version: z.int().nonnegative(),
+});
+export type MarcarLlegada = z.infer<typeof MarcarLlegadaSchema>;
+
+/** Pasos que el especialista marca con `avanzarTrabajo`. La llegada y la cancelación tienen su propio endpoint (0.7.0). */
+export const AVANCES_TRABAJO = ['en_camino', 'en_curso', 'finalizado'] as const;
+export type AvanceTrabajo = (typeof AVANCES_TRABAJO)[number];
+
 export const TrabajoSchema = z.strictObject({
   id: IdSchema,
   pedidoId: IdSchema,
@@ -193,7 +279,11 @@ export const TrabajoSchema = z.strictObject({
   }),
   /** Dirección exacta: solo después de contratar y solo para las partes del trabajo. */
   direccion: z.string().nullable(),
+  /** Punto exacto del destino (0.4.0): con la misma regla que la dirección. */
+  destino: PuntoSchema.nullable(),
   estado: z.enum(ESTADOS_TRABAJO),
+  /** Cómo se marcó la llegada (0.7.0); null hasta llegar. */
+  llegada: LlegadaSchema.nullable(),
   conversacionId: IdSchema,
   version: z.int().nonnegative(),
 });
@@ -216,6 +306,8 @@ export const MensajeSchema = z.strictObject({
 export const PagoSchema = z.strictObject({
   id: IdSchema,
   trabajoId: IdSchema,
+  /** En una obra, cada etapa se cobra por separado (0.8.0); null en un trabajo de un día. */
+  etapaId: IdSchema.nullable(),
   descripcion: z.string(),
   /** Tarifa de Handy sobre este pago (0 durante la demo) y lo que cobra el especialista. */
   feeHandy: MontoSchema,
@@ -333,6 +425,8 @@ export const TIPOS_AVISO = [
   'pedido_urgente',
   'pedido_programado',
   'propuesta',
+  /** El cliente aceptó tu propuesta (0.6.0): el destino es el trabajo nuevo. */
+  'te_eligieron',
   'mensaje',
   'trabajo',
   'pago',
@@ -371,19 +465,110 @@ export const InicioSchema = z.strictObject({
 export type Inicio = z.infer<typeof InicioSchema>;
 
 // ── Detalle de pedido (con el hilo de propuestas) ────────────────────────────────────────────────
+// "Handyx sugiere · Vos decidís" (0.6.0): una referencia por rubro y tipo de pedido. Es una ayuda: nunca un mínimo ni un
+// máximo, y el servidor no rechaza una propuesta por estar lejos de la sugerencia.
+export const PrecioSugeridoSchema = z.strictObject({
+  monto: MontoSchema,
+  /** De dónde sale (por ejemplo, la tabla de referencia de Handyx) para que se pueda explicar. */
+  fuente: z.string(),
+  /** Versión de la tabla: cambia cuando Handyx actualiza las referencias. */
+  version: z.string(),
+});
+export type PrecioSugerido = z.infer<typeof PrecioSugeridoSchema>;
+
 export const PedidoDetalleSchema = PedidoElegibleSchema.extend({
   /** Chat disponible desde la primera cotización, antes de contratar. */
   conversacionId: IdSchema.nullable(),
   propuestas: z.array(PropuestaSchema),
+  /** Null si no hay referencia para ese rubro y tipo (0.6.0). */
+  precioSugerido: PrecioSugeridoSchema.nullable(),
+  /** El trabajo que salió de MI propuesta aceptada (0.6.0); null en cualquier otro caso. */
+  trabajoId: IdSchema.nullable(),
 });
 export type PedidoDetalle = z.infer<typeof PedidoDetalleSchema>;
 
 // ── Trabajo: detalle, historial y obra por etapas ────────────────────────────────────────────────
+/** Etapa de una obra (0.8.0): su importe, lo que incluye, su estado y su cobro. Las fechas salen de sus jornadas. */
 export const EtapaObraSchema = z.strictObject({
+  id: IdSchema,
+  orden: z.int().min(1),
   nombre: z.string(),
+  incluye: z.string(),
   monto: MontoSchema,
-  estado: z.enum(['pendiente', 'en_curso', 'terminada']),
+  estado: z.enum(ESTADOS_ETAPA),
+  terminadaEn: InstanteSchema.nullable(),
+  /** El cobro de la etapa: se crea al terminarla. */
+  pagoId: IdSchema.nullable(),
 });
+export type EtapaObra = z.infer<typeof EtapaObraSchema>;
+
+const HorarioSchema = z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() });
+
+/** Día de trabajo de una obra (0.8.0). Pedir otro día es una solicitud: no cambia hasta que el cliente acepta y no mueve el resto. */
+export const JornadaSchema = z.strictObject({
+  id: IdSchema,
+  etapaId: IdSchema,
+  numero: z.int().min(1),
+  horario: HorarioSchema,
+  estado: z.enum(ESTADOS_JORNADA),
+  cambioPendiente: z
+    .strictObject({
+      horario: HorarioSchema,
+      motivo: z.enum(['otro_trabajo', 'imprevisto', 'falta_repuesto', 'pedido_del_cliente', 'clima', 'otro']),
+      pedidoEn: InstanteSchema,
+    })
+    .nullable(),
+});
+export type Jornada = z.infer<typeof JornadaSchema>;
+
+/** Diario de obra (0.8.0): el avance del día con una nota corta y hasta 4 fotos. Lo ve el cliente de esa obra. */
+export const MAX_FOTOS_DIARIO = 4;
+export const EntradaDiarioSchema = z.strictObject({
+  id: IdSchema,
+  etapaId: IdSchema,
+  jornadaId: IdSchema.nullable(),
+  nota: z.string(),
+  /** URL firmada de corta duración, como las fotos del chat. */
+  fotos: z.array(z.strictObject({ id: IdSchema, url: z.url() })).max(MAX_FOTOS_DIARIO),
+  creadoEn: InstanteSchema,
+});
+export type EntradaDiario = z.infer<typeof EntradaDiarioSchema>;
+
+/** Campos del avance (multipart): las fotos van como archivos aparte (`fotos`), nunca dentro del JSON. */
+export const NuevaEntradaDiarioSchema = z.strictObject({
+  etapaId: IdSchema,
+  jornadaId: IdSchema.nullable(),
+  nota: z.string().trim().min(1).max(280),
+});
+export type NuevaEntradaDiario = z.infer<typeof NuevaEntradaDiarioSchema>;
+
+// ── Adicionales (0.7.0) ─────────────────────────────────────────────────────────────────────────
+export const TIPOS_ADICIONAL = ['repuesto', 'mano_de_obra'] as const;
+export type TipoAdicional = (typeof TIPOS_ADICIONAL)[number];
+
+export const AdicionalSchema = z.strictObject({
+  id: IdSchema,
+  trabajoId: IdSchema,
+  /** En una obra, la etapa a la que se suma (0.8.0); null en un trabajo de un día. */
+  etapaId: IdSchema.nullable(),
+  tipo: z.enum(TIPOS_ADICIONAL),
+  descripcion: z.string(),
+  monto: MontoSchema,
+  estado: z.enum(ESTADOS_ADICIONAL),
+  creadoEn: InstanteSchema,
+  respondidoEn: InstanteSchema.nullable(),
+  version: z.int().nonnegative(),
+});
+export type Adicional = z.infer<typeof AdicionalSchema>;
+
+export const NuevoAdicionalSchema = z.strictObject({
+  /** Obligatorio en una obra (la etapa en curso); null en un trabajo de un día (0.8.0). */
+  etapaId: IdSchema.nullable(),
+  tipo: z.enum(TIPOS_ADICIONAL),
+  descripcion: z.string().trim().min(1).max(200),
+  monto: MontoSchema.refine((m) => m.centavos > 0, 'El importe tiene que ser mayor a cero'),
+});
+export type NuevoAdicional = z.infer<typeof NuevoAdicionalSchema>;
 
 export const TrabajoDetalleSchema = z.strictObject({
   trabajo: TrabajoSchema,
@@ -399,15 +584,92 @@ export const TrabajoDetalleSchema = z.strictObject({
   /** Propuesta de cambio (fecha/monto/alcance) pendiente: el acuerdo vigente no cambia hasta que se acepte. */
   cambioPendiente: PropuestaSchema.nullable(),
   pagoId: IdSchema.nullable(),
+  /** Adicionales del trabajo, del más nuevo al más viejo (0.7.0). */
+  adicionales: z.array(AdicionalSchema),
+  /** Obra (0.8.0): jornadas en orden y diario del más nuevo al más viejo. Vacíos en un trabajo de un día. */
+  jornadas: z.array(JornadaSchema),
+  diario: z.array(EntradaDiarioSchema),
+  /** Lo acordado más los adicionales aceptados: el precio que rige (los pendientes no suman). */
+  totalVigente: MontoSchema,
 });
 export type TrabajoDetalle = z.infer<typeof TrabajoDetalleSchema>;
+
+// ── Viaje (contrato 0.4.0) ──────────────────────────────────────────────────────────────────────
+// Solo durante el viaje de un trabajo en camino y con la app abierta. La ubicación la ven solo las dos partes del
+// trabajo; se deja de compartir al llegar, al cancelar o cuando el especialista lo decide. Retención: 30 días (lote 5.3).
+export const PosicionSchema = z.strictObject({
+  punto: PuntoSchema,
+  /** Radio de incertidumbre que informa el GPS, en metros. */
+  precisionM: z.number().min(0).max(10_000),
+  en: InstanteSchema,
+});
+export type Posicion = z.infer<typeof PosicionSchema>;
+
+export const TrayectoSchema = z.strictObject({
+  /** Recorrido por las calles, del origen al destino. */
+  linea: z.array(PuntoSchema).min(2).max(5000),
+  distanciaM: z.int().nonnegative(),
+  duracionS: z.int().nonnegative(),
+  /** Sube cada vez que el servidor lo recalcula (por ejemplo, después de un desvío). */
+  version: z.int().nonnegative(),
+});
+export type Trayecto = z.infer<typeof TrayectoSchema>;
+
+export const ESTADOS_VIAJE = ['sin_compartir', 'compartiendo', 'terminado'] as const;
+export type EstadoViaje = (typeof ESTADOS_VIAJE)[number];
+
+export const ViajeSchema = z.strictObject({
+  trabajoId: IdSchema,
+  destino: PuntoSchema,
+  estado: z.enum(ESTADOS_VIAJE),
+  /** Null si todavía no hay posición o si el motor de trayectos no pudo calcularlo (la app ofrece Google Maps o Waze). */
+  trayecto: TrayectoSchema.nullable(),
+  ultimaPosicion: PosicionSchema.nullable(),
+  /** Lo que falta por el trayecto (o en línea recta si no hay trayecto). */
+  distanciaRestanteM: z.int().nonnegative().nullable(),
+  llegadaEstimada: InstanteSchema.nullable(),
+});
+export type Viaje = z.infer<typeof ViajeSchema>;
+
+/** Por qué se pide mover la fecha (0.7.0). Se le muestra al usuario junto con la fecha nueva. */
+export const MOTIVOS_CAMBIO = ['otro_trabajo', 'imprevisto', 'falta_repuesto', 'pedido_del_cliente', 'clima', 'otro'] as const;
+export type MotivoCambio = (typeof MOTIVOS_CAMBIO)[number];
 
 export const NuevoCambioSchema = z.strictObject({
   horario: z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() }),
   alcance: z.string().trim().min(1).max(2000),
   monto: MontoSchema.nullable(),
+  motivo: z.enum(MOTIVOS_CAMBIO).nullable(),
 });
 export type NuevoCambio = z.infer<typeof NuevoCambioSchema>;
+
+/** Pedir otro día para una jornada de obra (0.8.0). */
+export const CambioJornadaSchema = z.strictObject({
+  horario: z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() }),
+  motivo: z.enum(MOTIVOS_CAMBIO),
+});
+export type CambioJornada = z.infer<typeof CambioJornadaSchema>;
+
+/** Cancelar un trabajo (0.7.0): siempre con motivo. Sin penalización automática. */
+export const MOTIVOS_CANCELACION = ['no_puedo_ir', 'problema_personal', 'cliente_no_responde', 'trabajo_distinto', 'riesgo_en_el_lugar', 'otro'] as const;
+export type MotivoCancelacion = (typeof MOTIVOS_CANCELACION)[number];
+
+export const CancelarTrabajoSchema = z.strictObject({
+  motivo: z.enum(MOTIVOS_CANCELACION),
+  version: z.int().nonnegative(),
+});
+export type CancelarTrabajo = z.infer<typeof CancelarTrabajoSchema>;
+
+/**
+ * Llamada a través de la app (0.7.0): un número puente de Handyx, de corta duración, que conecta con la otra parte del
+ * trabajo. Ninguna de las dos partes ve el teléfono de la otra. Necesita un proveedor de telefonía (fase 5, con
+ * autorización).
+ */
+export const LlamadaPuenteSchema = z.strictObject({
+  telefono: z.string().regex(/^\+[0-9]{2,15}$/),
+  venceEn: InstanteSchema,
+});
+export type LlamadaPuente = z.infer<typeof LlamadaPuenteSchema>;
 
 // ── Agenda ───────────────────────────────────────────────────────────────────────────────────────
 export const AgendaItemSchema = z.strictObject({
@@ -434,8 +696,43 @@ export const ConversacionSchema = z.strictObject({
   ultimoMensaje: z.string().nullable(),
   noLeidos: z.int().nonnegative(),
   actualizadoEn: InstanteSchema,
+  /** Si la contraparte ya está en tus contactos (0.9.0). */
+  contactoId: IdSchema.nullable(),
 });
 export type Conversacion = z.infer<typeof ConversacionSchema>;
+
+// ── Contactos (0.9.0) ────────────────────────────────────────────────────────────────────────────
+// Solo los que el especialista agrega desde un chat: la app no lee la agenda del teléfono ni muestra números. Escribirle
+// a un contacto abre el chat de siempre; no hay envíos automáticos.
+export const ContactoSchema = z.strictObject({
+  id: IdSchema,
+  conversacionId: IdSchema,
+  nombre: z.string(),
+  /** Para reconocerlo: el rubro y el barrio del último pedido o trabajo con esa persona. */
+  detalle: z.string(),
+  agregadoEn: InstanteSchema,
+});
+export type Contacto = z.infer<typeof ContactoSchema>;
+
+// ── Cómo te paga el cliente (0.9.0) ──────────────────────────────────────────────────────────────
+// El pago va directo del cliente al especialista. La cuenta de Mercado Pago se vincula con el proveedor (fase 5): Handyx
+// nunca ve ni guarda la contraseña ni las claves de esa cuenta.
+export const MediosCobroSchema = z.strictObject({
+  efectivo: z.boolean(),
+  mercadoPago: z.boolean(),
+  cuentaMercadoPago: z.strictObject({
+    estado: z.enum(['sin_vincular', 'vinculada']),
+    /** Un nombre para reconocerla (nunca el número completo ni datos de acceso). */
+    etiqueta: z.string().nullable(),
+  }),
+  version: z.int().nonnegative(),
+});
+export type MediosCobro = z.infer<typeof MediosCobroSchema>;
+
+export const GuardarMediosCobroSchema = z
+  .strictObject({ efectivo: z.boolean(), mercadoPago: z.boolean(), version: z.int().nonnegative() })
+  .refine((m) => m.efectivo || m.mercadoPago, 'Elegí al menos una forma de cobro');
+export type GuardarMediosCobro = z.infer<typeof GuardarMediosCobroSchema>;
 
 export const EnviarMensajeSchema = z.strictObject({
   tipo: z.enum(['texto', 'foto']),
@@ -498,6 +795,56 @@ export type Registro = z.infer<typeof RegistroSchema>;
 
 export const IngresoSchema = z.strictObject({ email: z.email(), password: z.string().min(1) });
 export type Ingreso = z.infer<typeof IngresoSchema>;
+
+// ═══ Contrato 0.3.0: cuenta (fase 4, lote 4.2) ═══════════════════════════════════════════════════
+// Código de 6 dígitos al email, entrada con Google o Apple y recuperación con enlace de un solo uso.
+
+/** Estado del código enviado al email. El código nunca viaja del servidor al cliente. */
+export const VerificacionEmailSchema = z.strictObject({
+  /** "ma•••@example.test": para que la persona reconozca el email sin mostrarlo entero. */
+  emailEnmascarado: z.string(),
+  venceEn: InstanteSchema,
+  /** Antes de este instante no se puede pedir otro código. */
+  reenviarDesde: InstanteSchema,
+  intentosRestantes: z.number().int().min(0),
+});
+export type VerificacionEmail = z.infer<typeof VerificacionEmailSchema>;
+
+export const CodigoEmailSchema = z.strictObject({ codigo: z.string().regex(/^\d{6}$/) });
+export type CodigoEmail = z.infer<typeof CodigoEmailSchema>;
+
+export const PROVEEDORES = ['google', 'apple'] as const;
+export type Proveedor = (typeof PROVEEDORES)[number];
+
+/** El id_token lo da Google o Apple en el navegador; el servidor lo valida (firma, audiencia, nonce) antes de abrir sesión. */
+export const IngresoProveedorSchema = z.strictObject({
+  proveedor: z.enum(PROVEEDORES),
+  idToken: z.string().min(20),
+  nonce: z.string().min(16),
+});
+export type IngresoProveedor = z.infer<typeof IngresoProveedorSchema>;
+
+export const ResultadoProveedorSchema = z.strictObject({
+  sesion: SesionSchema,
+  /** true: la cuenta se creó ahora y falta aceptar términos y privacidad. */
+  cuentaNueva: z.boolean(),
+});
+export type ResultadoProveedor = z.infer<typeof ResultadoProveedorSchema>;
+
+export const AceptacionesSchema = z.strictObject({ terminos: z.string(), privacidad: z.string() });
+export type Aceptaciones = z.infer<typeof AceptacionesSchema>;
+
+/** El token del enlace de recuperación va en el cuerpo, nunca en la ruta (no queda en los registros del servidor). */
+export const TokenRecuperacionSchema = z.strictObject({ token: z.string().min(16) });
+export const ESTADOS_TOKEN = ['valido', 'vencido', 'usado'] as const;
+export const EstadoTokenSchema = z.strictObject({ estado: z.enum(ESTADOS_TOKEN) });
+export type EstadoToken = z.infer<typeof EstadoTokenSchema>;
+
+export const RestablecerSchema = z.strictObject({
+  token: z.string().min(16),
+  password: z.string().min(REGLAS_CLAVE.minimo).max(REGLAS_CLAVE.maximo),
+});
+export type Restablecer = z.infer<typeof RestablecerSchema>;
 
 // Tipos de los esquemas que antes no los exportaban
 export type Mensaje = z.infer<typeof MensajeSchema>;

@@ -6,6 +6,8 @@ import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAhora } from '../hooks/useAhora.ts';
 import { PROPUESTA } from '../lib/etiquetas.ts';
 import { fechaHora, haceCuanto, hora, restante } from '../lib/formato.ts';
+import { textoDistancia } from '../lib/geo.ts';
+import './pedidos.css';
 import { Icono } from './Icono.tsx';
 import { Chip, ChipTipo } from './ui.tsx';
 
@@ -14,7 +16,7 @@ import { Chip, ChipTipo } from './ui.tsx';
  * Es un enlace al detalle: nada de acá acepta ni envía, así un toque suelto nunca compromete a nadie.
  * Solo datos mínimos (zona aproximada). El tiempo de búsqueda se informa en texto neutro, sin alarma.
  */
-export function TarjetaPedido({ pedido }: { pedido: PedidoElegible }) {
+export function TarjetaPedido({ pedido, distanciaM = null }: { pedido: PedidoElegible; /** Distancia aproximada a la zona, calculada en el teléfono (orden "Más cerca"). */ distanciaM?: number | null }) {
   const ahora = useAhora(30_000);
   const urgente = pedido.tipo === 'urgente';
   const quedan = pedido.ventanaHasta ? restante(pedido.ventanaHasta, ahora) : null;
@@ -32,6 +34,11 @@ export function TarjetaPedido({ pedido }: { pedido: PedidoElegible }) {
           <Icono nombre="pin" className="icono icono--chico" /> {pedido.zonaAproximada}
           {pedido.fechaSolicitada ? ` · ${fechaHora(pedido.fechaSolicitada)}` : ''}
         </span>
+        {distanciaM !== null ? (
+          <span className="ba-distancia">
+            <Icono nombre="derecha" className="icono icono--chico" /> A unos {textoDistancia(distanciaM)} de vos
+          </span>
+        ) : null}
       </div>
       <p className="pedido__descripcion">{pedido.descripcion}</p>
       <div className="pedido__pie">

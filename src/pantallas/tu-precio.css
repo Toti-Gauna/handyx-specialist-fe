@@ -1,0 +1,13 @@
+/* Tu precio (lote 4.5). Prefijo tp-. Lo común de los flujos (ficha, bloques) está en (flujo)/flujo.css. */
+
+.tp-otro {
+  display: grid;
+  gap: var(--esp-3);
+  padding: var(--esp-3);
+  border-radius: 22px;
+  background: #fff;
+}
+
+.tp-otro > * {
+  min-width: 0;
+}

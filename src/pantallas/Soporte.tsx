@@ -1,4 +1,6 @@
 'use client';
+// Centro de ayuda (lote 4.8): preguntas frecuentes por tema en pastillas, tus casos y "Abrir un caso" (asistencia o
+// reclamo, opcionalmente sobre un trabajo). Las respuestas de Handyx y el estado quedan en cada caso.
 import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -11,9 +13,13 @@ import { Aviso, AreaTexto, Campo, Casilla, Chip, Seleccion } from '../components
 import { NuevoCasoSchema } from '../contracts/dto.ts';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
+import { enfocarPrimerError } from '../lib/foco.ts';
 import { useCarga } from '../hooks/useCarga.ts';
 import { CATEGORIA_SOPORTE, SOPORTE } from '../lib/etiquetas.ts';
 import { fechaHora } from '../lib/formato.ts';
+import { TEMAS_AYUDA } from '../lib/ayuda.ts';
+import { ChipOpcion } from '../kit/Piezas.tsx';
+import './ayuda.css';
 
 export function Soporte() {
   const router = useRouter();
@@ -23,39 +29,75 @@ export function Soporte() {
     return { casos, trabajos: [...activos.items, ...historial.items] };
   }, []);
   const [abierto, setAbierto] = useState(false);
+  const [tema, setTema] = useState<string>(TEMAS_AYUDA[0]?.id ?? '');
 
   useEffect(() => {
     if (trabajoUrl) setAbierto(true);
   }, [trabajoUrl]);
 
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
   const { casos, trabajos } = c.datos;
 
+  const elegido = TEMAS_AYUDA.find((t) => t.id === tema) ?? TEMAS_AYUDA[0];
+
   return (
-    <div className="pila">
-      <h1 className="titulo">Ayuda y reclamos</h1>
-      <p className="texto-suave">Pedí ayuda sobre un trabajo, un pago o tu cuenta, o hacé un reclamo. Las respuestas y el estado quedan acá.</p>
-      <button type="button" className="boton boton--bloque" onClick={() => setAbierto(true)}>
-        <Icono nombre="mas" /> Abrir un caso
-      </button>
-      {casos.length === 0 ? (
-        <Vacio icono="pregunta" titulo="No abriste ningún caso" />
-      ) : (
-        <ul className="lista-tarjetas">
-          {casos.map((k) => (
-            <li key={k.id}>
-              <Link className="tarjeta" href={`${RUTAS.casoSoporte.ruta}?id=${k.id}`}>
-                <div className="fila-flex fila-flex--entre">
-                  <span className="tarjeta__titulo">{k.asunto}</span>
-                  <Chip e={SOPORTE[k.estado]} />
-                </div>
-                <p className="texto-suave texto-chico">{CATEGORIA_SOPORTE[k.categoria]} · actualizado {fechaHora(k.actualizadoEn)}</p>
-              </Link>
+    <div className="pila ay">
+      <h1 className="titulo">Centro de ayuda</h1>
+      <section className="ay-temas" aria-labelledby="ay-temas-t">
+        <h2 id="ay-temas-t" className="ay-subtitulo">
+          Preguntas frecuentes
+        </h2>
+        <ul className="hx-chips" aria-label="Temas">
+          {TEMAS_AYUDA.map((t) => (
+            <li key={t.id}>
+              <ChipOpcion texto={t.texto} icono={t.icono} elegido={elegido?.id === t.id} onClick={() => setTema(t.id)} />
             </li>
           ))}
         </ul>
-      )}
+        {elegido ? (
+          <div className="ay-preguntas" aria-live="polite">
+            {elegido.preguntas.map((q) => (
+              <details key={q.pregunta} className="ay-pregunta">
+                <summary>
+                  <span>{q.pregunta}</span>
+                  <Icono nombre="abajo" />
+                </summary>
+                <p>{q.respuesta}</p>
+              </details>
+            ))}
+          </div>
+        ) : null}
+      </section>
+
+      <section className="ay-casos" aria-labelledby="ay-casos-t">
+        <h2 id="ay-casos-t" className="ay-subtitulo">
+          Tus casos
+        </h2>
+        <p className="texto-suave">¿No encontraste la respuesta? Pedí ayuda sobre un trabajo, un pago o tu cuenta, o hacé un reclamo. Las respuestas y el estado quedan acá.</p>
+        <button type="button" className="boton boton--bloque" onClick={() => setAbierto(true)}>
+          <Icono nombre="mas" /> Abrir un caso
+        </button>
+        {casos.length === 0 ? (
+          <Vacio icono="pregunta" titulo="No abriste ningún caso" />
+        ) : (
+          <ul className="ay-lista">
+            {casos.map((k) => (
+              <li key={k.id}>
+                <Link className="ay-caso" href={`${RUTAS.casoSoporte.ruta}?id=${k.id}`}>
+                  <span className="ay-caso__texto">
+                    <strong>{k.asunto}</strong>
+                    <small>
+                      {CATEGORIA_SOPORTE[k.categoria]} · actualizado {fechaHora(k.actualizadoEn)}
+                    </small>
+                  </span>
+                  <Chip e={SOPORTE[k.estado]} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
       <NuevoCaso abierta={abierto} onCerrar={() => setAbierto(false)} trabajos={trabajos.map((t) => ({ id: t.id, texto: `${NOMBRE_RUBRO[t.rubro]} · ${fechaHora(t.acuerdo.horario.inicio)}` }))} trabajoInicial={trabajoUrl} onCreado={(id) => router.push(`${RUTAS.casoSoporte.ruta}?id=${id}`)} />
     </div>
   );
@@ -80,15 +122,16 @@ function NuevoCaso({ abierta, onCerrar, trabajos, trabajoInicial, onCreado }: { 
     }
   }, [abierta, trabajoInicial, limpiar, nueva]);
 
-  async function enviar(e: FormEvent) {
+  async function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     const datos = { categoria, trabajoId: trabajoId || null, pedidoId: null, asunto, detalle, adjuntos: adjunto ? 1 : 0 };
     const ok = NuevoCasoSchema.safeParse(datos);
     if (!ok.success) {
       const err: Record<string, string> = {};
       for (const i of ok.error.issues) err[String(i.path[0])] = i.path[0] === 'asunto' ? 'Escribí un asunto de al menos 3 letras.' : 'Contanos qué pasó.';
       setErrores(err);
-      return;
+      return enfocarPrimerError(form);
     }
     setErrores({});
     const r = await ejecutar(() => api.abrirCaso(ok.data, clave()));

@@ -1,0 +1,147 @@
+/* En camino (lote 4.3): mapa a pantalla completa y la hoja arrastrable encima. Prefijo vj-. */
+
+.vj {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  background: var(--hd-mosaico);
+}
+
+.vj-cuerpo {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.vj-pantalla {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.vj-sin {
+  padding: 0 var(--esp-4);
+  background: var(--color-hueso);
+  min-height: 100%;
+}
+
+.vj-mapa {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.vj-mapa .hx-mapa--completo {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+}
+
+/* "Centrar" debajo de los botones de zoom: abajo lo tapa la hoja. */
+.vj-mapa .hx-mapa__centrar {
+  top: 112px;
+  bottom: auto;
+  right: 10px;
+}
+
+.vj-hoja {
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.vj-hoja > * {
+  min-width: 0;
+}
+
+.vj-llegada__tiempo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  font-weight: 900;
+  font-stretch: 112%;
+  color: var(--hd-tinta);
+}
+
+.vj-llegada__tiempo strong {
+  color: var(--hd-azul);
+}
+
+.vj-llegada__detalle {
+  margin: 2px 0 0;
+  color: var(--hd-suave);
+  font-weight: 600;
+}
+
+.vj-destino {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-2);
+  margin: 0;
+  padding: var(--esp-3);
+  border-radius: 18px;
+  background: var(--hd-mosaico);
+  overflow-wrap: anywhere;
+}
+
+.vj-destino .icono {
+  flex: none;
+  color: var(--hd-azul);
+}
+
+.vj-compartir {
+  display: grid;
+  justify-items: start;
+  gap: var(--esp-2);
+}
+
+.vj-nota {
+  margin: 0;
+  color: var(--hd-texto);
+}
+
+/* Lote 4.6: con buena señal la llegada es automática (se dice con texto); si la ubicación anda mal, "Ya llegué". */
+.vj-nota--auto {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-2);
+  padding: var(--esp-3);
+  border-radius: 16px;
+  background: var(--hd-exito-tinte);
+  color: var(--hd-exito);
+  font-weight: 600;
+}
+
+.vj-nota--auto .icono {
+  flex: none;
+}
+
+.vj-respaldo {
+  display: grid;
+  gap: var(--esp-2);
+}
+
+.vj-permiso {
+  display: grid;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border-radius: 22px;
+  background: var(--hd-azul-tinte);
+}
+
+.vj-permiso__titulo {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--hd-tinta);
+}
+
+.vj-permiso__lista {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 var(--esp-2);
+  padding-left: 1.2em;
+}
+

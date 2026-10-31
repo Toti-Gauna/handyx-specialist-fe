@@ -7,6 +7,7 @@ import {
   faltantesParaHabilitar,
   MAQUINA_ALTA,
   MAQUINA_DOCUMENTO,
+  MAQUINA_ADICIONAL,
   MAQUINA_PAGO,
   MAQUINA_PEDIDO,
   MAQUINA_PRESENCIAL,
@@ -109,9 +110,17 @@ describe('propuestas, pedidos, trabajos y pagos', () => {
     assert.equal(puedeTransicionar(MAQUINA_PEDIDO, 'buscando', 'acordado', 'especialista'), false);
     assert.equal(puedeTransicionar(MAQUINA_PEDIDO, 'buscando', 'acordado', 'sistema'), true);
   });
-  it('"Llegué" es un paso explícito del especialista', () => {
+  it('la llegada la marca la geocerca (sistema) o el especialista con "Ya llegué"; nadie más (decisión del 29/10/2026)', () => {
     assert.equal(puedeTransicionar(MAQUINA_TRABAJO, 'en_camino', 'en_sitio', 'especialista'), true);
-    assert.equal(puedeTransicionar(MAQUINA_TRABAJO, 'en_camino', 'en_sitio', 'sistema'), false);
+    assert.equal(puedeTransicionar(MAQUINA_TRABAJO, 'en_camino', 'en_sitio', 'sistema'), true);
+    assert.equal(puedeTransicionar(MAQUINA_TRABAJO, 'en_camino', 'en_sitio', 'usuario'), false);
+    assert.equal(puedeTransicionar(MAQUINA_TRABAJO, 'agendado', 'en_sitio', 'sistema'), false);
+  });
+  it('un adicional lo responde solo el usuario; lo retira el especialista o el sistema al terminar', () => {
+    assert.equal(puedeTransicionar(MAQUINA_ADICIONAL, 'pendiente', 'aceptado', 'usuario'), true);
+    assert.equal(puedeTransicionar(MAQUINA_ADICIONAL, 'pendiente', 'aceptado', 'especialista'), false);
+    assert.equal(puedeTransicionar(MAQUINA_ADICIONAL, 'pendiente', 'retirado', 'sistema'), true);
+    assert.equal(puedeTransicionar(MAQUINA_ADICIONAL, 'aceptado', 'retirado', 'especialista'), false);
   });
   it('un pago reportado no lo verifica quien lo reporta', () => {
     assert.equal(puedeTransicionar(MAQUINA_PAGO, 'reportado', 'verificado', 'especialista'), false);

@@ -1,16 +1,11 @@
-import { EnviarMensajeSchema, type Conversacion, type Mensaje, type Propuesta } from '../../contracts/dto.ts';
-import { fallo, idempotente, type EstadoMock } from './estado.ts';
+import { EnviarMensajeSchema, type Contacto, type Conversacion, type Mensaje, type Propuesta } from '../../contracts/dto.ts';
+import { ahoraMs, fallo, idempotente, idNuevo, iso, type EstadoMock } from './estado.ts';
 import { agregarMensaje, asegurarConversacion } from './propuestas.ts';
 import { visible } from './reglas.ts';
 import { zodAFallo } from './validacion.ts';
+import { FOTO_PRUEBA } from './fotos.ts';
+import { NOMBRE_RUBRO } from '../../contracts/rubros.ts';
 import { FalloApi } from '../errores.ts';
-
-/** Foto sintética (SVG): en el mock nunca se lee ni se guarda una imagen real. */
-const FOTO_PRUEBA =
-  'data:image/svg+xml;utf8,' +
-  encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200"><rect width="320" height="200" fill="#ececec"/><path d="M40 150l60-60 40 40 50-70 90 90z" fill="#4a72b0"/><circle cx="240" cy="55" r="18" fill="#f5f59a"/><text x="160" y="190" font-family="sans-serif" font-size="14" text-anchor="middle" fill="#26324a">Foto de prueba</text></svg>',
-  );
 
 function conversacion(s: EstadoMock, id: string): Conversacion {
   const c = s.conversaciones.find((x) => x.id === id);
@@ -19,6 +14,24 @@ function conversacion(s: EstadoMock, id: string): Conversacion {
 }
 
 export const mensajes = (s: EstadoMock) => ({
+  contactos: (): Contacto[] => [...s.contactos].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es')),
+  agregarContacto(conversacionId: string): Contacto {
+    const c = conversacion(s, conversacionId);
+    const ya = s.contactos.find((k) => k.conversacionId === c.id);
+    if (ya) return ya;
+    const p = s.pedidos.find((x) => x.pub.id === c.pedidoId);
+    const k: Contacto = { id: idNuevo(s), conversacionId: c.id, nombre: c.contraparte, detalle: p ? `${NOMBRE_RUBRO[p.pub.rubro]} · ${p.pub.zonaAproximada}` : 'Desde un chat', agregadoEn: iso(ahoraMs(s)) };
+    s.contactos.push(k);
+    c.contactoId = k.id;
+    return k;
+  },
+  quitarContacto(id: string): void {
+    const k = s.contactos.find((x) => x.id === id);
+    if (!k) return; // uno ajeno o que ya no está responde igual
+    s.contactos = s.contactos.filter((x) => x.id !== id);
+    const c = s.conversaciones.find((x) => x.id === k.conversacionId);
+    if (c) c.contactoId = null;
+  },
   conversaciones: (): Conversacion[] => [...s.conversaciones].sort((a, b) => Date.parse(b.actualizadoEn) - Date.parse(a.actualizadoEn)),
   conversacion: (id: string): Conversacion => conversacion(s, id),
   abrirConversacion(pedidoId: string): Conversacion {

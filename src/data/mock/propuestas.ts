@@ -19,7 +19,7 @@ export function asegurarConversacion(s: EstadoMock, p: PedidoInterno): string {
   if (p.conversacionId) return p.conversacionId;
   const id = idNuevo(s);
   p.conversacionId = id;
-  s.conversaciones.unshift({ id, pedidoId: p.pub.id, trabajoId: null, contraparte: p.cliente, etapa: 'cotizando', ultimoMensaje: null, noLeidos: 0, actualizadoEn: iso(ahoraMs(s)) });
+  s.conversaciones.unshift({ id, pedidoId: p.pub.id, trabajoId: null, contraparte: p.cliente, etapa: 'cotizando', ultimoMensaje: null, noLeidos: 0, actualizadoEn: iso(ahoraMs(s)), contactoId: null });
   s.mensajes[id] = [];
   return id;
 }
@@ -68,11 +68,13 @@ export function aplicarAceptacion(s: EstadoMock, p: Propuesta): Trabajo {
     tipo: pedido.pub.tipo,
     acuerdo: { monto: p.monto, alcance: p.alcance, horario: p.horario },
     direccion: pedido.direccion,
+    destino: pedido.destino,
     estado: 'agendado',
+    llegada: null,
     conversacionId,
     version: 0,
   };
-  s.trabajos.unshift({ trabajo, contraparte: pedido.cliente, eventos: [{ estado: 'agendado', en: iso(ahoraMs(s)), actor: 'sistema' }], etapas: [], cambioPendienteId: null, pagoId: null, metodoPago: pedido.metodoPago });
+  s.trabajos.unshift({ trabajo, contraparte: pedido.cliente, eventos: [{ estado: 'agendado', en: iso(ahoraMs(s)), actor: 'sistema' }], etapas: [], cambioPendienteId: null, pagoId: null, metodoPago: pedido.metodoPago, adicionales: [], jornadas: [], diario: [] });
   const conv = s.conversaciones.find((c) => c.id === conversacionId);
   if (conv) {
     conv.trabajoId = trabajo.id;

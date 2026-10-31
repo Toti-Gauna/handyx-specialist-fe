@@ -5,10 +5,12 @@ import { faltantesParaHabilitar } from '../../contracts/maquinas.ts';
 import { monto } from '../../contracts/dinero.ts';
 import { requiereMatricula } from '../../contracts/rubros.ts';
 import type { Propuesta } from '../../contracts/dto.ts';
-import { ahoraMs, ESCENARIOS, ETIQUETA_ESCENARIO, idNuevo, iso, RELOJ_BASE, type Escenario, type EstadoMock } from './estado.ts';
+import { ahoraMs, ESCENARIOS, ETIQUETA_ESCENARIO, idNuevo, iso, RELOJ_BASE, SENALES_PRUEBA, type Escenario, type EstadoMock, type SenalPrueba } from './estado.ts';
 import { crearEstado, ID } from './fixtures.ts';
 import { agregarMensaje, aplicarAceptacion } from './propuestas.ts';
+import { destinoPrueba, zonaPrueba } from './mapa.ts';
 import { recalcular } from './reglas.ts';
+import { reservar } from './turnos.ts';
 
 export interface AccionPrueba {
   id: string;
@@ -38,6 +40,13 @@ export interface ControlesPrueba {
   /** Se llama tras cada acción del panel para que las pantallas vuelvan a pedir sus datos. */
   alCambiar(fn: () => void): () => void;
 }
+
+const ETIQUETA_SENAL: Record<SenalPrueba, string> = {
+  normal: 'Señal normal',
+  imprecisa: 'Señal imprecisa (± 250 m)',
+  sin_senal: 'Sin señal',
+  sin_permiso: 'Permiso de ubicación negado',
+};
 
 const MIN = 60_000;
 const HORA = 60 * MIN;
@@ -77,16 +86,25 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       u('usuario_rechaza', 'Rechaza tu última propuesta');
       u('usuario_contraoferta', 'Te contraoferta (−10 %)');
       u('usuario_cambio', 'Pide mover la fecha de un trabajo');
+      u('usuario_acepta_adicional', 'Acepta tu último adicional');
+      u('usuario_rechaza_adicional', 'Rechaza tu último adicional');
+      u('usuario_acepta_jornada', 'Acepta el cambio de jornada');
+      u('usuario_rechaza_jornada', 'Rechaza el cambio de jornada');
       u('usuario_mensaje', 'Te escribe un mensaje');
       u('pedido_urgente', 'Entra un pedido urgente nuevo');
       const p = (id: string, etiqueta: string) => a.push({ id, etiqueta, grupo: 'Pagos y soporte' });
       p('pago_mp_ok', 'Mercado Pago confirma un pago (webhook)');
       p('pago_mp_falla', 'Mercado Pago informa un pago fallido');
       p('pago_ops_verifica', 'Operations verifica un cobro reportado');
-      p('soporte_responde', 'Handy responde un caso de soporte');
+      p('soporte_responde', 'Handyx responde un caso de soporte');
     }
     if (s.baja?.estado === 'solicitada' || s.baja?.estado === 'en_proceso') a.push({ id: 'baja_procesar', etiqueta: 'Avanzar el proceso de baja', grupo: 'Cuenta' });
     a.push({ id: 'sesion_expira', etiqueta: 'Expirar la sesión ahora', grupo: 'Cuenta' });
+    if (s.perfil.estadoAlta === 'habilitada') {
+      const g = (id: string, etiqueta: string) => a.push({ id, etiqueta, grupo: 'Ubicación (GPS simulado)' });
+      for (const senal of SENALES_PRUEBA) g(`gps_${senal}`, `${ETIQUETA_SENAL[senal]}${s.gps.senal === senal ? ' · actual' : ''}`);
+      g('gps_desviar', 'Desviarme del trayecto');
+    }
     return a;
   };
 
@@ -113,7 +131,11 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         s.nota = 'Operations verificó los documentos. Falta la verificación presencial de antecedentes.';
         break;
       case 'ops_cita':
-        s.perfil.antecedentes = 'cita_coordinada';
+        {
+          const libre = s.turnos.find((t) => t.disponible && Date.parse(t.inicio) > ahoraMs(s));
+          if (libre) reservar(s, libre.id);
+          else s.perfil.antecedentes = 'cita_coordinada';
+        }
         s.nota = 'Operations coordinó una cita presencial.';
         break;
       case 'ops_aprobar':
@@ -156,6 +178,10 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         p.estado = 'aceptada';
         p.version += 1;
         aplicarAceptacion(s, p);
+        {
+          const t = s.trabajos.find((x) => x.trabajo.propuestaAceptadaId === p.id);
+          s.avisos.unshift({ id: idNuevo(s), tipo: 'te_eligieron', titulo: '¡El cliente te eligió!', cuerpo: 'Aceptó tu propuesta. Abrí el trabajo para ver la dirección y el horario.', creadoEn: iso(ahoraMs(s)), leido: false, destino: { ruta: 'trabajo', id: t?.trabajo.id ?? null } });
+        }
         s.nota = 'El usuario aceptó tu propuesta: se creó el trabajo.';
         break;
       }
@@ -189,6 +215,32 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         s.nota = 'El usuario pidió mover la fecha un día. El acuerdo no cambia hasta que respondas.';
         break;
       }
+      case 'usuario_acepta_adicional':
+      case 'usuario_rechaza_adicional': {
+        const acepta = id === 'usuario_acepta_adicional';
+        const t = s.trabajos.find((x) => x.adicionales.some((a) => a.estado === 'pendiente'));
+        const ad = t ? [...t.adicionales].reverse().find((a) => a.estado === 'pendiente') : undefined;
+        if (!t || !ad) { s.nota = 'No hay un adicional esperando respuesta.'; break; }
+        ad.estado = acepta ? 'aceptado' : 'rechazado';
+        ad.respondidoEn = iso(ahoraMs(s));
+        ad.version += 1;
+        s.avisos.unshift({ id: idNuevo(s), tipo: 'trabajo', titulo: acepta ? 'Aceptó el adicional' : 'No aceptó el adicional', cuerpo: `${ad.descripcion}. ${acepta ? 'Ya se suma al total del trabajo.' : 'Sigue el precio vigente.'}`, creadoEn: iso(ahoraMs(s)), leido: false, destino: { ruta: 'trabajo', id: t.trabajo.id } });
+        s.nota = acepta ? 'El usuario aceptó el adicional: se suma al total.' : 'El usuario rechazó el adicional: sigue el precio vigente.';
+        break;
+      }
+      case 'usuario_acepta_jornada':
+      case 'usuario_rechaza_jornada': {
+        const acepta = id === 'usuario_acepta_jornada';
+        const t = s.trabajos.find((x) => x.jornadas.some((j) => j.cambioPendiente));
+        const j = t?.jornadas.find((x) => x.cambioPendiente);
+        if (!t || !j?.cambioPendiente) { s.nota = 'No hay un cambio de jornada esperando respuesta.'; break; }
+        // Aceptar mueve solo esa jornada: el resto queda como estaba.
+        if (acepta) j.horario = j.cambioPendiente.horario;
+        j.cambioPendiente = null;
+        s.avisos.unshift({ id: idNuevo(s), tipo: 'trabajo', titulo: acepta ? 'Aceptó el cambio de jornada' : 'No aceptó el cambio de jornada', cuerpo: `Jornada ${j.numero}: ${acepta ? 'queda en el día nuevo.' : 'sigue en el día acordado.'}`, creadoEn: iso(ahoraMs(s)), leido: false, destino: { ruta: 'trabajo', id: t.trabajo.id } });
+        s.nota = acepta ? 'El usuario aceptó el día nuevo para esa jornada.' : 'El usuario prefirió mantener el día acordado.';
+        break;
+      }
       case 'usuario_mensaje': {
         const c = s.conversaciones.find((x) => x.etapa !== 'cerrada');
         if (!c) { s.nota = 'No hay conversaciones abiertas.'; break; }
@@ -199,7 +251,8 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       case 'pedido_urgente': {
         const base = s.pedidos.find((p) => p.pub.id === ID.pUrgente);
         const idp = idNuevo(s);
-        s.pedidos.push({ pub: { id: idp, rubro: 'plomeria', tipo: 'urgente', descripcion: 'Se rompió un caño debajo de la pileta y pierde agua (pedido de prueba).', zonaAproximada: 'Centro', fechaSolicitada: null, creadoEn: iso(ahoraMs(s)), ventanaHasta: iso(ahoraMs(s) + 20 * MIN), estado: 'buscando' }, cliente: 'Cliente de prueba 10', direccion: base?.direccion ?? 'Dirección de prueba 100 (ficticia)', metodoPago: 'mercado_pago', conversacionId: null });
+        const destino = destinoPrueba(idp, 'Centro');
+        s.pedidos.push({ pub: { id: idp, rubro: 'plomeria', tipo: 'urgente', descripcion: 'Se rompió un caño debajo de la pileta y pierde agua (pedido de prueba).', zonaAproximada: 'Centro', zonaMapa: zonaPrueba(idp, destino), fechaSolicitada: null, creadoEn: iso(ahoraMs(s)), ventanaHasta: iso(ahoraMs(s) + 20 * MIN), estado: 'buscando' }, cliente: 'Cliente de prueba 10', direccion: base?.direccion ?? 'Dirección de prueba 100 (ficticia)', destino, metodoPago: 'mercado_pago', conversacionId: null });
         s.avisos.unshift({ id: idNuevo(s), tipo: 'pedido_urgente', titulo: 'Pedido urgente en tu zona', cuerpo: 'Plomería · Centro. Abrilo para ver el detalle y decidir.', creadoEn: iso(ahoraMs(s)), leido: false, destino: { ruta: 'pedido', id: idp } });
         s.nota = s.disponibilidad.urgentesAhora ? 'Entró un pedido urgente.' : 'Entró un pedido urgente, pero no lo ves: tenés urgentes apagados (el servidor no te lo ofrece).';
         break;
@@ -231,13 +284,24 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         c.eventos.push({ id: idNuevo(s), autor: 'handy', texto: 'Revisamos tu caso. ¿Podés confirmarnos si el problema sigue?', adjuntos: 0, creadoEn: iso(ahoraMs(s)) });
         c.estado = 'esperando_respuesta';
         c.actualizadoEn = iso(ahoraMs(s));
-        s.nota = 'Handy respondió un caso.';
+        s.nota = 'Handyx respondió un caso.';
         break;
       }
       case 'baja_procesar':
         if (s.baja?.estado === 'solicitada') s.baja = { ...s.baja, estado: 'en_proceso', mensaje: 'Estamos procesando tu baja: borramos tu perfil y tus documentos. Ya no podés cancelarla.' };
         else if (s.baja) s.baja = { ...s.baja, estado: 'completada_con_retencion', mensaje: 'Tu cuenta fue dada de baja. Conservamos solo los registros que la ley nos obliga a guardar (por ejemplo, de trabajos y pagos ya realizados), con acceso restringido.' };
         s.perfil.baja = s.baja?.estado ?? null;
+        break;
+      case 'gps_normal':
+      case 'gps_imprecisa':
+      case 'gps_sin_senal':
+      case 'gps_sin_permiso':
+        s.gps.senal = id.slice(4) as SenalPrueba;
+        s.nota = `GPS simulado: ${ETIQUETA_SENAL[s.gps.senal].toLowerCase()}.`;
+        break;
+      case 'gps_desviar':
+        s.gps.desviar = true;
+        s.nota = 'El GPS simulado se va 150 m de costado. Con dos posiciones fuera, el servidor recalcula el trayecto.';
         break;
       case 'sesion_expira':
         s.sesionExpirada = true;
@@ -260,6 +324,7 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
         { id: 'mensaje', etiqueta: 'Falla el próximo mensaje', activo: s.fallaMensaje },
         { id: 'conflicto', etiqueta: 'Doble aceptación: otra persona gana la próxima respuesta', activo: s.conflictoProximo },
         { id: 'push', etiqueta: 'Rechazar el permiso de avisos del dispositivo', activo: s.pushRechazado },
+        { id: 'gps_rapido', etiqueta: 'GPS simulado rápido (×6)', activo: s.gps.rapido },
       ],
       acciones: acciones(),
       relojes: Object.entries(RELOJES).map(([id, r]) => ({ id, etiqueta: r.etiqueta })),
@@ -276,6 +341,7 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       if (id === 'mensaje') s.fallaMensaje = !s.fallaMensaje;
       if (id === 'conflicto') s.conflictoProximo = !s.conflictoProximo;
       if (id === 'push') s.pushRechazado = !s.pushRechazado;
+      if (id === 'gps_rapido') s.gps.rapido = !s.gps.rapido;
       avisar();
     },
     fijarReloj(id) {

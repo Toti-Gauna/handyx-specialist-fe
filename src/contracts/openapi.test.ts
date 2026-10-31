@@ -2,8 +2,11 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { it } from 'node:test';
-import { CODIGOS_ERROR, FALTANTES_ENVIO, GENEROS, TIPOS_AVISO, TIPOS_PEDIDO } from './dto.ts';
+import { AVANCES_TRABAJO, CODIGOS_ERROR, ESTADOS_TOKEN, ESTADOS_VIAJE, FALTANTES_ENVIO, GENEROS, MODOS_LLEGADA, MOTIVOS_CANCELACION, MOTIVOS_RESPALDO_LLEGADA, PROVEEDORES, TIPOS_ADICIONAL, TIPOS_AVISO, TIPOS_PEDIDO } from './dto.ts';
 import {
+  ESTADOS_ADICIONAL,
+  ESTADOS_ETAPA,
+  ESTADOS_JORNADA,
   ESTADOS_ALTA,
   ESTADOS_DOCUMENTO,
   ESTADOS_PAGO,
@@ -14,6 +17,7 @@ import {
   ESTADOS_TRABAJO,
 } from './maquinas.ts';
 import { RUBROS } from './rubros.ts';
+import { CONTRATO_VERSION } from './version.ts';
 
 const yaml = readFileSync(new URL('../../docs/api/openapi.yaml', import.meta.url), 'utf8').replace(/\s+/g, ' ');
 
@@ -33,8 +37,23 @@ it('los enums del OpenAPI coinciden con el contrato', () => {
     FALTANTES_ENVIO,
     GENEROS,
     TIPOS_AVISO,
+    PROVEEDORES,
+    ESTADOS_TOKEN,
+    ESTADOS_VIAJE,
+    AVANCES_TRABAJO,
+    MODOS_LLEGADA,
+    MOTIVOS_RESPALDO_LLEGADA,
+    MOTIVOS_CANCELACION,
+    TIPOS_ADICIONAL,
+    ESTADOS_ADICIONAL,
+    ESTADOS_ETAPA,
+    ESTADOS_JORNADA,
   };
   for (const [nombre, valores] of Object.entries(listas)) {
     assert.ok(yaml.includes(`enum: [${valores.join(', ')}]`), `${nombre} no aparece igual en openapi.yaml`);
   }
+});
+
+it('la versión del OpenAPI es la del contrato', () => {
+  assert.ok(yaml.includes(`version: ${CONTRATO_VERSION} `), `openapi.yaml no está en la versión ${CONTRATO_VERSION}`);
 });

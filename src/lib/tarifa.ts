@@ -5,10 +5,10 @@ import { avisoFee, type PoliticaFee } from '../contracts/fee.ts';
  * porcentaje: se dice que no hay tarifa definida.
  */
 export function tarifaTexto(politica: PoliticaFee | null, ahora: Date): string | null {
-  if (!politica) return 'Tarifa de Handy: sin tarifa definida.';
+  if (!politica) return 'Tarifa de Handyx: sin tarifa definida.';
   const a = avisoFee(ahora, politica);
-  if (a.fase === 'terminada') return 'Tarifa de Handy: sin tarifa definida.';
+  if (a.fase === 'terminada') return 'Tarifa de Handyx: sin tarifa definida.';
   const bps = politica.bpsEspecialista;
   const texto = bps === 0 ? '0 %' : `${bps / 100} %`;
-  return a.fase === 'antes' ? `Tarifa de Handy: ${texto} durante la demo (empieza el 10/11).` : `Tarifa de Handy: ${texto} durante la demo (hasta el 10/12).`;
+  return a.fase === 'antes' ? `Tarifa de Handyx: ${texto} durante la demo (empieza el 10/11).` : `Tarifa de Handyx: ${texto} durante la demo (hasta el 10/12).`;
 }
