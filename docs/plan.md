@@ -149,7 +149,8 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
   - **Google y Apple** con OpenID Connect, validando el token en el servidor y vinculando cuentas por email verificado.
   - Recuperación con token de un solo uso.
   - Cookie HttpOnly, CSRF y sesiones revocables.
-- [ ] **5.3 Alta, verificación y privacidad:**
+- [x] **5.3 Alta, verificación y privacidad** (hecho el 31/10/2026 en `handyx-specialist-be` `5c1cc4b` + esquema en
+  `handyx-client-be` `6bf939b`; sin sesiones reales: las rutas fallan cerradas hasta el 5.2; ver `docs/operaciones.md` allá):
   - DNI y CUIT/CUIL cifrados.
   - Fotos y documentos privados con URL firmada.
   - Verificación solo por Operations.

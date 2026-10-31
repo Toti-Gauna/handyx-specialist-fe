@@ -1,10 +1,23 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (sí de diseño dado al arrancar la fase 5; mapa base del 4.3 pendiente). Fase 5: 5.1 hecho.**
+Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (sí de diseño dado al arrancar la fase 5; mapa base del 4.3 pendiente). Fase 5: 5.1 y 5.3 hechos; 5.2 en espera de autorizaciones.**
 Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
 Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
 **Nada conectado ni desplegado.**
+
+## Fase 5 · Lote 5.3 (alta, verificación y privacidad, en `handyx-specialist-be`)
+
+- API de especialista nueva (rama `claude/pensive-hypatia-jajjgm`, commit `5c1cc4b`): los endpoints del alta que usa esta
+  app (`perfil`, `perfil/publico`, `alta/datos`, `documentos/{tipo}`, `rubros`, `alta/envio`, `antecedentes/turnos`,
+  `antecedentes/turno`, `cuenta/baja`) con el contrato 0.9.0 copiado byte a byte.
+- DNI y CUIT/CUIL cifrados con HMAC; documentos privados con URL firmada; antecedentes imposibles de subir; verificación
+  solo por Operations (script privado con su rol de base); retención parametrizada (DNI 90 días, ubicación 30) y baja real.
+- **Sin el 5.2 no hay sesiones**: las rutas responden 503. La app sigue usando el mock hasta conectar (5.8).
+- 18 pruebas unitarias y 15 de integración contra PostgreSQL aislado; cambios del esquema en `handyx-client-be` `6bf939b`.
+
+**Próximo paso**: 5.4 (pedidos, negociación y precio sugerido), Opus 5.5 / high. El 5.2 queda pendiente de las
+autorizaciones de Google Cloud, Apple Developer y el proveedor de emails.
 
 ## Fase 5 · Lote 5.1 (modelo y migraciones, en `handyx-client-be`)
 
