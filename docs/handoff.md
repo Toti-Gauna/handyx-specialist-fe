@@ -1,10 +1,30 @@
 # Handoff · PWA Especialista de Handyx
 
-Fecha: 30/10/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (sí de diseño dado al arrancar la fase 5; mapa base del 4.3 pendiente). Fase 5: 5.1 y 5.3 a 5.6 hechos; 5.2 en espera de autorizaciones.**
+Fecha: 02/11/2026 · Rama: `claude/pensive-hypatia-jajjgm` (PR #1 mergeado; PR #2 abierto con 3.2, 3.3, el plan de la fase 4 y los lotes 4.1 a 4.9) · Bloque 4 · **Fase 4 terminada (mapa base del 4.3 pendiente). Fase 5 terminada: 5.1 a 5.8, sin credenciales de proveedores.**
 Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 
-Estado: mockup navegable completo con datos de prueba, sistema visual, accesibilidad WCAG 2.2 AA automática y PWA instalable.
-**Nada conectado ni desplegado.**
+Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta contra la API real en local** (build
+`http`). **Nada desplegado; ningún proveedor con credenciales.**
+
+## Fase 5 · Lotes 5.2, 5.7 y 5.8 (02/11/2026)
+
+- **5.2** (`handyx-specialist-be` `2968e18`, `docs/acceso.md` allá): registro neutro, código de 6 dígitos, ingreso con
+  bloqueo, recuperación de un solo uso, Google y Apple (token validado contra el JWKS), cookie `__Host-handyx_esp`,
+  CSRF derivado de la sesión, límite por IP y cuenta lista para el resto de la API. Email por adaptador (en desarrollo,
+  a una carpeta; en producción, sin proveedor, 503).
+- **5.7** (`92ba310`, `docs/caja.md` allá): caja y resumen, reportado ≠ verificado, discrepancia, formas de cobro,
+  tarifa vigente con aviso versionado, webhook de Mercado Pago firmado (sin credenciales, 503) que consulta el pago y
+  concilia, verificación de Operations; `commission_ledger` inactiva.
+- **5.8** (`29aec4d`, `docs/integracion.md` allá): prueba de contrato con **este** adaptador HTTP contra la API real
+  (todos los métodos, IDOR, opt-out, CSRF, red), métricas sin datos personales y E2E en el navegador:
+  `e2e/backend.cjs` (`npm run e2e:backend`) con el build http servido en 127.0.0.1:5176. Pasó: registro, código,
+  alta guardada en el servidor, tarifa 0 %, urgente entrante, propuesta con el sugerido, API caída con reintento y sin
+  fixtures, salida, y nada guardado en el navegador.
+- `e2e/servidor.cjs` acepta carpeta y puerto (el resto de los recorridos sigue igual).
+- Decisión 18 del plan: la tarifa del acuerdo es la de la política vigente al hacer la propuesta.
+
+**Próximo paso**: credenciales y proveedores (email, Google, Apple, Mercado Pago, almacenamiento, OSRM/Nominatim) y
+la fase 6 (deploy; `docs/plan.md`).
 
 ## Fase 5 · Lote 5.6 (trabajo, obras, chat, agenda y soporte)
 
@@ -23,8 +43,6 @@ Estado: mockup navegable completo con datos de prueba, sistema visual, accesibil
 - Pendiente (5.8 o decisión): contrato con archivos para los adjuntos de soporte (hoy, más de 0 es 400), la suscripción
   push cuando haya proveedor, la llamada por número puente (503 sin proveedor de telefonía) y el plan de obra, que lo
   crea la API de usuario.
-
-**Próximo paso**: 5.7 (caja, Mercado Pago y ledger; modelo y esfuerzo en `docs/plan.md`).
 
 ## Fase 5 · Lote 5.5 (ubicación en tiempo real y trayectos)
 

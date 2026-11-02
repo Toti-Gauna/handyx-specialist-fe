@@ -95,6 +95,16 @@ node e2e/rendimiento.cjs
 
 Ese build es solo para medir: apunta a la API ficticia local y nunca se publica (`build:hostinger` exige https).
 
+## Lote 5.8 · Contra la API real (02/11/2026)
+
+- `npm run e2e:backend` (`e2e/backend.cjs`): el build con `NEXT_PUBLIC_DATA_SOURCE=http` contra la API local de
+  `handyx-specialist-be` (`npm run e2e:api`, base aislada; pasos en el comentario del archivo). Sin banner ni panel de
+  prueba; el control del BE hace de Operations y de la API de usuario.
+- Comprueba: registro y código, alta que sobrevive a recargar, tarifa 0 %, pedido urgente entrante, propuesta con el
+  sugerido, dirección exacta oculta antes de contratar, API caída → «No pudimos conectarnos» con «Reintentar» y sin
+  fixtures, salida, y que no queda nada en `localStorage`, `sessionStorage`, IndexedDB ni en cookies legibles.
+- La prueba de contrato del adaptador vive en el BE (`tests/pwa.integration.test.ts`, con `HANDYX_SPECIALIST_FE`).
+
 ## Lo que esta fase NO demuestra
 
 - Autorización real, IDOR, rate limits, CSRF, cookies y almacenamiento privado: son del backend (fase 4).

@@ -143,7 +143,8 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
   - Login y claves de idempotencia únicos.
   - Sin cascadas que rompan las retenciones.
   - Suma: obras por jornadas y etapas, adicionales, posiciones del viaje y tabla de precios sugeridos.
-- [ ] **5.2 Cuentas, sesiones y acceso** (Opus / xhigh):
+- [x] **5.2 Cuentas, sesiones y acceso** (Opus / xhigh; hecho el 02/11/2026 en `handyx-specialist-be` `2968e18`; email, Google y
+  Apple detrás de adaptadores sin credenciales; ver `docs/acceso.md` allá):
   - Email y contraseña con Argon2id.
   - **Código de 6 dígitos por email**, con vencimiento, intentos limitados y reenvío con espera.
   - **Google y Apple** con OpenID Connect, validando el token en el servidor y vinculando cuentas por email verificado.
@@ -180,12 +181,14 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
   - Outbox con reintento acotado.
   - Push opcional, nunca requisito.
   - Reclamos auditables.
-- [ ] **5.7 Caja, Mercado Pago y ledger:**
+- [x] **5.7 Caja, Mercado Pago y ledger** (hecho el 02/11/2026 en `handyx-specialist-be` `92ba310`; Mercado Pago sin
+  credenciales: el webhook responde 503; ver `docs/caja.md` allá):
   - `payment_records`, `fee_policies` y `fee_acceptances`, con fee 0 % en la demo.
   - Reportado ≠ verificado.
   - Mercado Pago como adaptador, primero en sandbox.
   - Comisiones inactivas hasta que haya una política aprobada.
-- [ ] **5.8 Integración y QA transversal:**
+- [x] **5.8 Integración y QA transversal** (hecho el 02/11/2026: `handyx-specialist-be` `29aec4d` + `e2e/backend.cjs` acá;
+  ver `docs/integracion.md` allá):
   - Adaptador HTTP y pruebas de contrato.
   - E2E contra el backend.
   - Pruebas de IDOR y opt-out.
@@ -266,3 +269,5 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
     de `handyx-client-be` con lo de `fase-4-backend` (esquema `handyx`, roles `handyx_usuario_app` /
     `handyx_especialista_app`, nombres de TECH-03, `down.sql`, guía de base). Detalle:
     `handyx-client-be/docs/conciliacion-fase-4-backend.md`.
+18. **Tarifa del acuerdo**: la de la política que regía cuando se hizo la propuesta, igual que la API de usuario
+    (recomendación aprobada por Ignacio el 02/11).

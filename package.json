@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "test": "node --test --test-reporter=spec \"src/**/*.test.ts\"",
     "e2e": "node e2e/flujos.cjs",
+    "e2e:backend": "node e2e/backend.cjs",
     "accesibilidad": "node e2e/accesibilidad.cjs",
     "capturas": "node e2e/capturas.cjs",
     "capturas:docs": "bash scripts/capturas-docs.sh",

@@ -3,10 +3,11 @@ const { createServer } = require('node:http');
 const { readFileSync, existsSync, statSync } = require('node:fs');
 const { join, extname } = require('node:path');
 
-const RAIZ = join(__dirname, '..', 'out');
 const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.txt': 'text/plain', '.woff2': 'font/woff2', '.pbf': 'application/x-protobuf' };
 
-function servir() {
+// `raiz` y `puerto` opcionales: el E2E contra la API local sirve el build http en el origen exacto que permite la API.
+function servir({ raiz = join(__dirname, '..', 'out'), puerto = 0 } = {}) {
+  const RAIZ = raiz;
   return new Promise((ok) => {
     const s = createServer((req, res) => {
       let ruta = decodeURIComponent(new URL(req.url, 'http://x').pathname);
@@ -16,7 +17,9 @@ function servir() {
       if (!existsSync(f)) { res.writeHead(404, { 'Content-Type': TIPOS['.html'] }); return res.end(readFileSync(join(RAIZ, '404.html'))); }
       res.writeHead(200, { 'Content-Type': TIPOS[extname(f)] ?? 'application/octet-stream' });
       res.end(readFileSync(f));
-    }).listen(0, () => ok(s));
+    });
+    if (puerto) s.listen(puerto, '127.0.0.1', () => ok(s));
+    else s.listen(0, () => ok(s));
   });
 }
 
