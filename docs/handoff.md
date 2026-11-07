@@ -15,7 +15,9 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
 - H1.5 recorrido de caños en 3D, checklists, catálogo de materiales, premios en borrador y
   `docs/revision-tecnica-electricidad.md` (los valores siguen «en revisión técnica» hasta que la hagan).
 - Recorridos R, S, T y U (30/30); pantallas del Taller en la auditoría de accesibilidad (axe en 0).
-- **Próximo lote: D.1** (auditoría y direcciones de arte; pausa para que Ignacio elija).
+- **D.1 hecho** (`docs/rediseno-deluxe.md`): auditoría y 3 direcciones de arte (A Taller de obra, B Noche de obra,
+  C Costa de Mar del Plata) con Inicio, Tu precio y el regalo en un lienzo de diseño privado.
+- **En pausa:** Ignacio elige dirección, regla de gradientes, capa propia o landing y plan de Meshy. Después, **D.2**.
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 
@@ -139,17 +141,18 @@ Developer y el proveedor de emails antes de conectar los proveedores reales.
 
 ### Comandos del lote 4.9 (30/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 144 pruebas: 142 OK y 2 omitidas (sincronías con otros repos) |
-| `npm run e2e` | 26/26 (M1 prueba "Ver el mapa"; M3 espera el texto antes de activar el mapa) |
+| Comando                                                                | Resultado                                                                      |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `npm run lint` · `typecheck`                                           | OK                                                                             |
+| `npm test`                                                             | 144 pruebas: 142 OK y 2 omitidas (sincronías con otros repos)                  |
+| `npm run e2e`                                                          | 26/26 (M1 prueba "Ver el mapa"; M3 espera el texto antes de activar el mapa)   |
 | `npm run accesibilidad` (390, `ANCHO=320x568`, `768x1024`, `1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom, movimiento y estructura |
-| `npm run capturas` · `capturas:docs` | 59/59 y 118/118 |
-| `node e2e/rendimiento.cjs` | Ver arriba: 5 de 14 pantallas en 90 o más |
-| `build:hostinger` con API ficticia | OK, sin fixtures ni banner |
+| `npm run capturas` · `capturas:docs`                                   | 59/59 y 118/118                                                                |
+| `node e2e/rendimiento.cjs`                                             | Ver arriba: 5 de 14 pantallas en 90 o más                                      |
+| `build:hostinger` con API ficticia                                     | OK, sin fixtures ni banner                                                     |
 
 **Pendiente para cerrar la fase 4**:
+
 1. Ignacio: sí de diseño sobre la página de flujos, y decidir si el rendimiento con sesión (83–90) alcanza para la fase 5
    o si se prerenderiza el marco de cada pantalla.
 2. Prueba a mano con VoiceOver (iPhone) y TalkBack (Android), con la lista de la página de flujos.
@@ -197,15 +200,15 @@ Developer y el proveedor de emails antes de conectar los proveedores reales.
 
 ### Comandos del lote 4.8 (30/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 144 pruebas: 142 OK y 2 omitidas (sincronías con otros repos) |
-| `npm run build` | OK |
-| `npm run e2e` | 26/26 recorridos (B, F, I y J actualizados; Q nuevo) |
+| Comando                                                          | Resultado                                                                                                                                                                               |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint` · `typecheck`                                     | OK                                                                                                                                                                                      |
+| `npm test`                                                       | 144 pruebas: 142 OK y 2 omitidas (sincronías con otros repos)                                                                                                                           |
+| `npm run build`                                                  | OK                                                                                                                                                                                      |
+| `npm run e2e`                                                    | 26/26 recorridos (B, F, I y J actualizados; Q nuevo)                                                                                                                                    |
 | `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento. A 320 px, los días de los calendarios miden 36 a 38 px de ancho, como antes (por encima de los 24 px de WCAG 2.5.8) |
-| `ANCHOS=` 7 tamaños `npm run capturas` | 413/413 sin desborde y sanitizadas |
-| `build:hostinger` con API ficticia | OK: 41 páginas (suma Contactos y las 4 de Cuenta), sin `/catalogo/`, fixtures ni las marcas del panel |
+| `ANCHOS=` 7 tamaños `npm run capturas`                           | 413/413 sin desborde y sanitizadas                                                                                                                                                      |
+| `build:hostinger` con API ficticia                               | OK: 41 páginas (suma Contactos y las 4 de Cuenta), sin `/catalogo/`, fixtures ni las marcas del panel                                                                                   |
 
 **Próximo paso** (del 4.8): lote 4.9, hecho (ver arriba).
 
@@ -244,8 +247,8 @@ Developer y el proveedor de emails antes de conectar los proveedores reales.
   - Terminar una etapa.
   - Una obra se cierra solo con todas sus etapas terminadas.
 - **Datos de prueba**:
-  - Obra nueva de *Cliente de prueba 11*: agendada, 3 etapas en 5 jornadas.
-  - La obra de *Cliente de prueba 8*, en curso, ahora tiene jornadas, diario y la etapa 1 cobrada.
+  - Obra nueva de _Cliente de prueba 11_: agendada, 3 etapas en 5 jornadas.
+  - La obra de _Cliente de prueba 8_, en curso, ahora tiene jornadas, diario y la etapa 1 cobrada.
   - En el panel: el cliente acepta o rechaza el cambio de jornada.
 - **Refactor**: el cobro directo pasó a un componente (`CobroDirecto`), que usan ¡Terminaste! y cada etapa del plan.
 - **Pruebas**:
@@ -258,15 +261,15 @@ Developer y el proveedor de emails antes de conectar los proveedores reales.
 
 ### Comandos del lote 4.7 (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 141 pruebas: 139 OK y 2 omitidas (sincronías con otros repos) |
-| `npm run build` | OK |
-| `npm run e2e` | 25/25 recorridos (I actualizado; P nuevo) |
+| Comando                                                          | Resultado                                                                                                                                                                                                                                                            |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint` · `typecheck`                                     | OK                                                                                                                                                                                                                                                                   |
+| `npm test`                                                       | 141 pruebas: 139 OK y 2 omitidas (sincronías con otros repos)                                                                                                                                                                                                        |
+| `npm run build`                                                  | OK                                                                                                                                                                                                                                                                   |
+| `npm run e2e`                                                    | 25/25 recorridos (I actualizado; P nuevo)                                                                                                                                                                                                                            |
 | `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento. A 320 px, los días de los calendarios (agenda, jornadas y catálogo) miden 36 a 38 px de ancho: 7 columnas no entran a 44 px en 288 px útiles. Están por encima del mínimo de 24 px de WCAG 2.5.8 |
-| `ANCHOS=` 7 tamaños `npm run capturas` | 378/378 sin desborde y sanitizadas |
-| `build:hostinger` con API ficticia | OK: 36 páginas (suma las 3 de la obra), sin `/catalogo/`, fixtures ni las marcas del panel |
+| `ANCHOS=` 7 tamaños `npm run capturas`                           | 378/378 sin desborde y sanitizadas                                                                                                                                                                                                                                   |
+| `build:hostinger` con API ficticia                               | OK: 36 páginas (suma las 3 de la obra), sin `/catalogo/`, fixtures ni las marcas del panel                                                                                                                                                                           |
 
 **Siguiente**: lote 4.8 (cerrado, ver arriba).
 
@@ -333,15 +336,15 @@ Developer y el proveedor de emails antes de conectar los proveedores reales.
 
 ### Comandos del lote 4.6 (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 133 pruebas: 131 OK y 2 omitidas (sincronías con otros repos) |
-| `npm run build` | OK |
-| `npm run e2e` | 24/24 recorridos (C, D y M2 rehechos; O nuevo) |
+| Comando                                                          | Resultado                                                                                                                                                        |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint` · `typecheck`                                     | OK                                                                                                                                                               |
+| `npm test`                                                       | 133 pruebas: 131 OK y 2 omitidas (sincronías con otros repos)                                                                                                    |
+| `npm run build`                                                  | OK                                                                                                                                                               |
+| `npm run e2e`                                                    | 24/24 recorridos (C, D y M2 rehechos; O nuevo)                                                                                                                   |
 | `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento; solo días del calendario (agenda y catálogo) por debajo de 44 px a 320 (≥ 30 px), como antes |
-| `ANCHOS=` 7 tamaños `npm run capturas` | 357/357 sin desborde y sanitizadas |
-| `build:hostinger` con API ficticia | OK: 33 páginas (suma las 4 del trabajo), sin `/catalogo/`, fixtures ni las marcas del panel |
+| `ANCHOS=` 7 tamaños `npm run capturas`                           | 357/357 sin desborde y sanitizadas                                                                                                                               |
+| `build:hostinger` con API ficticia                               | OK: 33 páginas (suma las 4 del trabajo), sin `/catalogo/`, fixtures ni las marcas del panel                                                                      |
 
 **Siguiente**: lote 4.7 (cerrado, ver arriba).
 
@@ -386,15 +389,15 @@ Developer y el proveedor de emails antes de conectar los proveedores reales.
 
 ### Comandos del lote 4.5 (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 124 pruebas: 122 OK y 2 omitidas (sincronías con otros repos) |
-| `npm run build` | OK |
-| `npm run e2e` | 23/23 recorridos (B rehecho, N nuevo) |
+| Comando                                                          | Resultado                                                                                                                                                                                                                         |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint` · `typecheck`                                     | OK                                                                                                                                                                                                                                |
+| `npm test`                                                       | 124 pruebas: 122 OK y 2 omitidas (sincronías con otros repos)                                                                                                                                                                     |
+| `npm run build`                                                  | OK                                                                                                                                                                                                                                |
+| `npm run e2e`                                                    | 23/23 recorridos (B rehecho, N nuevo)                                                                                                                                                                                             |
 | `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento (incluidas las hojas del pedido entrante y de borrar avisos); solo días del calendario (agenda y catálogo) por debajo de 44 px a 320 (≥ 30 px), como en el 4.4 |
-| `ANCHOS=` 7 tamaños `npm run capturas` | 336/336 sin desborde y sanitizadas |
-| `build:hostinger` con API ficticia | OK: 29 páginas (suma Tu precio), sin `/catalogo/`, fixtures, cámara simulada ni la tabla de precios de prueba |
+| `ANCHOS=` 7 tamaños `npm run capturas`                           | 336/336 sin desborde y sanitizadas                                                                                                                                                                                                |
+| `build:hostinger` con API ficticia                               | OK: 29 páginas (suma Tu precio), sin `/catalogo/`, fixtures, cámara simulada ni la tabla de precios de prueba                                                                                                                     |
 
 **Siguiente**: lote 4.6 (cerrado, ver arriba).
 
@@ -443,15 +446,15 @@ Developer y el proveedor de emails antes de conectar los proveedores reales.
 
 ### Comandos del lote 4.4 (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 118 pruebas: 116 OK y 2 omitidas (sincronías con otros repos) |
-| `npm run build` | OK |
-| `npm run e2e` | 22/22 recorridos (A y H rehechos) |
+| Comando                                                          | Resultado                                                                                                                               |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint` · `typecheck`                                     | OK                                                                                                                                      |
+| `npm test`                                                       | 118 pruebas: 116 OK y 2 omitidas (sincronías con otros repos)                                                                           |
+| `npm run build`                                                  | OK                                                                                                                                      |
+| `npm run e2e`                                                    | 22/22 recorridos (A y H rehechos)                                                                                                       |
 | `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento; solo días del calendario del catálogo por debajo de 44 px (≥ 30 px) |
-| `ANCHOS=` 7 tamaños `npm run capturas` | 322/322 sin desborde y sanitizadas |
-| `build:hostinger` con API ficticia | OK: 28 páginas, sin `/catalogo/`, fixtures ni la cámara simulada |
+| `ANCHOS=` 7 tamaños `npm run capturas`                           | 322/322 sin desborde y sanitizadas                                                                                                      |
+| `build:hostinger` con API ficticia                               | OK: 28 páginas, sin `/catalogo/`, fixtures ni la cámara simulada                                                                        |
 
 **Siguiente**: lote 4.5 (cerrado, ver arriba).
 
@@ -502,16 +505,16 @@ Detalle completo en `docs/mapa.md`.
 
 ### Comandos del lote 4.3 (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 109 pruebas: 107 OK y 2 omitidas (sincronías con otros repos) |
-| `npm run build` | OK, 29 páginas + `out/sw.js` |
-| `npm run e2e` | 22/22 recorridos (nuevos: M1–M3) |
+| Comando                                                          | Resultado                                                                                                                               |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint` · `typecheck`                                     | OK                                                                                                                                      |
+| `npm test`                                                       | 109 pruebas: 107 OK y 2 omitidas (sincronías con otros repos)                                                                           |
+| `npm run build`                                                  | OK, 29 páginas + `out/sw.js`                                                                                                            |
+| `npm run e2e`                                                    | 22/22 recorridos (nuevos: M1–M3)                                                                                                        |
 | `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento; solo días del calendario del catálogo por debajo de 44 px (≥ 30 px) |
-| `ANCHOS=` 7 tamaños `npm run capturas` | 273/273 sin desborde y sanitizadas |
-| `build:hostinger` con API ficticia | OK: 28 páginas, sin `/catalogo/` ni fixtures; el motor del mapa no se precarga |
-| Cuadros por segundo (arrastre en En camino, CPU ×4) | 57 (sin mapa base: hay que volver a medir) |
+| `ANCHOS=` 7 tamaños `npm run capturas`                           | 273/273 sin desborde y sanitizadas                                                                                                      |
+| `build:hostinger` con API ficticia                               | OK: 28 páginas, sin `/catalogo/` ni fixtures; el motor del mapa no se precarga                                                          |
+| Cuadros por segundo (arrastre en En camino, CPU ×4)              | 57 (sin mapa base: hay que volver a medir)                                                                                              |
 
 **Pendiente de autorización (fase 5)**: el motor de trayectos real (OSRM o Valhalla propio en Render, o un servicio con plan
 gratis). No se contrató nada.
@@ -562,17 +565,18 @@ gratis). No se contrató nada.
 
 ### Comandos del lote 4.2 (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 89 pruebas: 87 OK y 2 omitidas (sincronías con otros repos) |
-| `npm run build` | OK, 28 páginas + `out/sw.js` |
-| `npm run e2e` | 19/19 recorridos (nuevos: L1–L6) |
+| Comando                                                          | Resultado                                                                                                                               |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint` · `typecheck`                                     | OK                                                                                                                                      |
+| `npm test`                                                       | 89 pruebas: 87 OK y 2 omitidas (sincronías con otros repos)                                                                             |
+| `npm run build`                                                  | OK, 28 páginas + `out/sw.js`                                                                                                            |
+| `npm run e2e`                                                    | 19/19 recorridos (nuevos: L1–L6)                                                                                                        |
 | `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento; solo días del calendario del catálogo por debajo de 44 px (≥ 30 px) |
-| `ANCHOS=` 7 tamaños `npm run capturas` | 266/266 sin desborde y sanitizadas |
-| `build:hostinger` con API ficticia | OK: 27 páginas, sin `/catalogo/`, fixtures, tokens ni cuentas de prueba |
+| `ANCHOS=` 7 tamaños `npm run capturas`                           | 266/266 sin desborde y sanitizadas                                                                                                      |
+| `build:hostinger` con API ficticia                               | OK: 27 páginas, sin `/catalogo/`, fixtures, tokens ni cuentas de prueba                                                                 |
 
 **Pendiente de autorización (fase 5)**:
+
 - Cuenta de Apple Developer (≈ USD 99 al año).
 - Proyecto de Google Cloud con OAuth.
 - Proveedor de email transaccional.
@@ -612,15 +616,15 @@ No se contrató nada.
 
 ### Comandos del lote 4.1 (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 79 pruebas: 77 OK y 2 omitidas (sincronías con otros repos) |
-| `npm run build` | OK, 24 páginas (con `/catalogo/`) + `out/sw.js` |
-| `npm run e2e` | 13/13 recorridos (nuevo: K) |
+| Comando                                                          | Resultado                                                                                                                 |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint` · `typecheck`                                     | OK                                                                                                                        |
+| `npm test`                                                       | 79 pruebas: 77 OK y 2 omitidas (sincronías con otros repos)                                                               |
+| `npm run build`                                                  | OK, 24 páginas (con `/catalogo/`) + `out/sw.js`                                                                           |
+| `npm run e2e`                                                    | 13/13 recorridos (nuevo: K)                                                                                               |
 | `npm run accesibilidad` (390, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe; 0 problemas de teclado, foco, zoom y movimiento; solo días de calendario por debajo de 44 px (≥ 30 px) |
-| `ANCHOS=` 7 tamaños `npm run capturas` | 231/231 sin desborde y sanitizadas |
-| `build:hostinger` con API ficticia | OK: 23 páginas, sin `/catalogo/` ni fixtures |
+| `ANCHOS=` 7 tamaños `npm run capturas`                           | 231/231 sin desborde y sanitizadas                                                                                        |
+| `build:hostinger` con API ficticia                               | OK: 23 páginas, sin `/catalogo/` ni fixtures                                                                              |
 
 **Siguiente**: lote 4.2 (cerrado, ver arriba).
 
@@ -662,22 +666,24 @@ No se contrató nada.
 
 ### Comandos del lote 3.3 (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 66 pruebas: 64 OK, 2 omitidas (sincronías con otros repos); +5 de la política del service worker |
-| `npm run build` | OK, 23 páginas + `out/sw.js` (9 archivos precargados) |
-| `npm run e2e` | 12/12 recorridos, incluido J (sin conexión: franja, `/sin-conexion/`, copia de pantalla y caché solo con archivos permitidos) |
-| `npm run accesibilidad` (390×844, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe en 32 pantallas y 6 diálogos; 0 áreas < 24 px; 0 problemas de teclado, foco, zoom y movimiento |
-| `ANCHOS=` 7 tamaños `npm run capturas` | 224/224 sin desborde y sanitizadas |
-| `build:hostinger` con API ficticia | OK, sin fixtures ni banner; `sw.js` no menciona la API |
+| Comando                                                              | Resultado                                                                                                                     |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint` · `typecheck`                                         | OK                                                                                                                            |
+| `npm test`                                                           | 66 pruebas: 64 OK, 2 omitidas (sincronías con otros repos); +5 de la política del service worker                              |
+| `npm run build`                                                      | OK, 23 páginas + `out/sw.js` (9 archivos precargados)                                                                         |
+| `npm run e2e`                                                        | 12/12 recorridos, incluido J (sin conexión: franja, `/sin-conexion/`, copia de pantalla y caché solo con archivos permitidos) |
+| `npm run accesibilidad` (390×844, `ANCHO=320x568`, `ANCHO=1280x800`) | 0 violaciones axe en 32 pantallas y 6 diálogos; 0 áreas < 24 px; 0 problemas de teclado, foco, zoom y movimiento              |
+| `ANCHOS=` 7 tamaños `npm run capturas`                               | 224/224 sin desborde y sanitizadas                                                                                            |
+| `build:hostinger` con API ficticia                                   | OK, sin fixtures ni banner; `sw.js` no menciona la API                                                                        |
 
 **Límites**:
+
 - La instalación real (Android/iOS), el modo avión en un teléfono y los lectores de pantalla quedan para el lote 5.2.
 - iOS no muestra aviso de instalación: hay que usar "Agregar a inicio".
 - Para el deploy: servir `sw.js` con `Cache-Control: no-cache` y configurar `404.html` en el hosting (`docs/pwa.md`).
 
 **Próximo paso** (actualizado el 29/10/2026):
+
 - Ignacio reorganizó el plan en 6 fases: **fase 4 = rediseño premium Handyx** (lotes 4.1–4.9, `docs/rediseno.md`), fase 5 =
   backend y fase 6 = deploy.
 - Las decisiones del rediseño están tomadas (`docs/rediseno.md` §8):
@@ -692,7 +698,6 @@ No se contrató nada.
 - Empieza el lote **4.1**: marca Handyx, sistema visual v2 y kit.
 - Las imágenes nuevas de los Handys se generan con `docs/handys-prompt.md`. Hasta que lleguen, se usan las actuales animadas.
 - Antes de la fase 5 hace falta autorizar las cuentas y costos de §8: Apple Developer, Google Cloud, emails y motor de trayectos.
-
 
 ## Fase 3 · Lote 3.2 (responsive y accesibilidad)
 
@@ -716,18 +721,17 @@ No se contrató nada.
 
 ### Comandos del lote 3.2 (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` · `npm test` | OK · 59/61 (2 omitidas) |
-| `npm run build` | OK, 22 páginas |
-| `npm run e2e` | 11/11 recorridos |
-| `npm run accesibilidad` (390×844) y con `ANCHO=320x568` / `ANCHO=1280x800` | 0 violaciones axe, 0 áreas < 24 px, 0 problemas de teclado/foco/zoom |
-| (a 320×568) | 30 días del calendario de 38×46 px: por encima de 24 px (WCAG 2.5.8), documentado |
-| `build:hostinger` con API ficticia | OK, sin fixtures ni banner en `out/` |
-| `ANCHOS=320x568,…,1280x800 npm run capturas` | 196/196 sin desborde |
+| Comando                                                                    | Resultado                                                                         |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `npm run lint` · `typecheck` · `npm test`                                  | OK · 59/61 (2 omitidas)                                                           |
+| `npm run build`                                                            | OK, 22 páginas                                                                    |
+| `npm run e2e`                                                              | 11/11 recorridos                                                                  |
+| `npm run accesibilidad` (390×844) y con `ANCHO=320x568` / `ANCHO=1280x800` | 0 violaciones axe, 0 áreas < 24 px, 0 problemas de teclado/foco/zoom              |
+| (a 320×568)                                                                | 30 días del calendario de 38×46 px: por encima de 24 px (WCAG 2.5.8), documentado |
+| `build:hostinger` con API ficticia                                         | OK, sin fixtures ni banner en `out/`                                              |
+| `ANCHOS=320x568,…,1280x800 npm run capturas`                               | 196/196 sin desborde                                                              |
 
 **Límite**: sin lectores de pantalla reales ni dispositivos físicos (lote 5.2).
-
 
 ## Fase 3 · Lote 3.1 (sistema visual y jerarquía de acción)
 
@@ -747,13 +751,13 @@ No se contrató nada.
 
 ### Comandos del lote 3.1 (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `typecheck` | OK |
-| `npm test` | 61 pruebas: 59 OK, 2 omitidas (sincronías con otros repos) |
-| `npm run build` | OK, 22 páginas |
-| `node e2e/flujos.cjs` | 11/11 recorridos OK |
-| `node e2e/capturas.cjs` (390×844) | 28/28 capturas, sin desborde horizontal |
+| Comando                           | Resultado                                                  |
+| --------------------------------- | ---------------------------------------------------------- |
+| `npm run lint` · `typecheck`      | OK                                                         |
+| `npm test`                        | 61 pruebas: 59 OK, 2 omitidas (sincronías con otros repos) |
+| `npm run build`                   | OK, 22 páginas                                             |
+| `node e2e/flujos.cjs`             | 11/11 recorridos OK                                        |
+| `node e2e/capturas.cjs` (390×844) | 28/28 capturas, sin desborde horizontal                    |
 
 ---
 
@@ -775,15 +779,15 @@ No se contrató nada.
 
 ## Comandos ejecutados (29/10/2026, local, desde `npm ci` limpio)
 
-| Comando | Resultado |
-|---|---|
-| `npm run lint` · `npm run typecheck` | OK |
-| `npm test` | 60 pruebas: 58 OK, 2 omitidas (sincronías que piden rutas a otros repos) |
-| `HANDY_LANDING_TOKENS=… node --test src/brand/tokens.test.ts` | 2 OK |
-| `npm run build` (origen de prueba) | OK, 22 páginas estáticas |
-| `node e2e/flujos.cjs` (Chromium 390×844, movimiento reducido) | **11/11 recorridos OK**, 0 errores de consola |
-| `NEXT_PUBLIC_DATA_SOURCE=http … npm run build:hostinger` | OK; `verificar-bundle`: sin fixtures, panel, credenciales ni correos de prueba |
-| `npm audit --omit=dev` | 0 vulnerabilidades |
+| Comando                                                       | Resultado                                                                      |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `npm run lint` · `npm run typecheck`                          | OK                                                                             |
+| `npm test`                                                    | 60 pruebas: 58 OK, 2 omitidas (sincronías que piden rutas a otros repos)       |
+| `HANDY_LANDING_TOKENS=… node --test src/brand/tokens.test.ts` | 2 OK                                                                           |
+| `npm run build` (origen de prueba)                            | OK, 22 páginas estáticas                                                       |
+| `node e2e/flujos.cjs` (Chromium 390×844, movimiento reducido) | **11/11 recorridos OK**, 0 errores de consola                                  |
+| `NEXT_PUBLIC_DATA_SOURCE=http … npm run build:hostinger`      | OK; `verificar-bundle`: sin fixtures, panel, credenciales ni correos de prueba |
+| `npm audit --omit=dev`                                        | 0 vulnerabilidades                                                             |
 
 ## Defectos corregidos durante la fase (por si reaparecen)
 
@@ -864,17 +868,17 @@ Operations y no existe campo, estado ni endpoint para archivos de antecedentes (
 
 ## Comandos ejecutados (29/10/2026, local)
 
-| Comando | Resultado |
-|---|---|
-| `npm install` | OK, 140 paquetes |
-| `npm run lint` | OK, sin avisos |
-| `npm run typecheck` | OK |
-| `npm test` | 37 pruebas: 35 OK, 2 omitidas (sincronías que piden variables) |
-| `HANDY_LANDING_TOKENS=../Handy-landing-page-fe/src/brand/tokens.ts node --test src/brand/tokens.test.ts` | 2 OK (tokens idénticos a la landing) |
-| `npm run build` (mock) | OK, 19 páginas estáticas |
-| `NEXT_PUBLIC_DATA_SOURCE=http NEXT_PUBLIC_API_BASE_URL=https://api.example.test npm run build:hostinger` | OK; `verificar-bundle`: sin fixtures ni banner en `out/` |
-| `npm run build:hostinger` sin variables | Rechazado (esperado: producción exige `http` + https) |
-| Playwright 390×844 sobre `out/` | `/` → `/inicio/`; nav a Cuenta con `aria-current`; 0 errores de consola |
+| Comando                                                                                                  | Resultado                                                               |
+| -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `npm install`                                                                                            | OK, 140 paquetes                                                        |
+| `npm run lint`                                                                                           | OK, sin avisos                                                          |
+| `npm run typecheck`                                                                                      | OK                                                                      |
+| `npm test`                                                                                               | 37 pruebas: 35 OK, 2 omitidas (sincronías que piden variables)          |
+| `HANDY_LANDING_TOKENS=../Handy-landing-page-fe/src/brand/tokens.ts node --test src/brand/tokens.test.ts` | 2 OK (tokens idénticos a la landing)                                    |
+| `npm run build` (mock)                                                                                   | OK, 19 páginas estáticas                                                |
+| `NEXT_PUBLIC_DATA_SOURCE=http NEXT_PUBLIC_API_BASE_URL=https://api.example.test npm run build:hostinger` | OK; `verificar-bundle`: sin fixtures ni banner en `out/`                |
+| `npm run build:hostinger` sin variables                                                                  | Rechazado (esperado: producción exige `http` + https)                   |
+| Playwright 390×844 sobre `out/`                                                                          | `/` → `/inicio/`; nav a Cuenta con `aria-current`; 0 errores de consola |
 
 Primera medición: el build http **sí** llevaba fixtures cuando la elección era un ternario en tiempo de ejecución.
 Se corrigió con el alias de build y se agregó `scripts/verificar-bundle.mjs` para que no vuelva a pasar.
@@ -883,6 +887,7 @@ Se corrigió con el alias de build y se agregó `scripts/verificar-bundle.mjs` p
 
 Leídos: TECH-03 (modelo lógico), TECH-20 (api-usuario / api-especialista), PROD-21 (mapa de flujo) y PROD-06/11
 (herramientas y chat). Incorporado al mapa y al contrato:
+
 - Inicio sin tasas de aceptación, tiempos ni puntualidad.
 - La oferta muestra cuánto cobra Handy.
 - Datos mínimos antes de que el usuario elija.
@@ -915,6 +920,7 @@ No encontrados como página propia: PROD-15, PROD-26, LEG-39 y LEG-40 (se usan l
 ## Próximo paso
 
 Fase 2 · lote 2.1 (registro, perfil y verificación mock) con Sonnet 5.5 high. Pasos:
+
 1. Ampliar `EspecialistaApi` y el mock con auth, documentos, envío de alta y aviso de fee.
 2. Agregar escenarios por `?escenario=` en vista previa.
 3. Construir A1–A4, B1–B7, G1–G3 de `docs/screens.md`.
