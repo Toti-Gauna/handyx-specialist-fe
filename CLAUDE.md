@@ -2,6 +2,7 @@
 
 Retomar siempre desde `docs/handoff.md`. Plan de 6 fases (no inventar más): `docs/plan.md`:
 1 bases · 2 mockup · 3 refinación · 4 **rediseño premium Handyx** (`docs/rediseno.md`) · 5 backend · 6 deploy.
+Aparte, el bloque **Taller** de herramientas por oficio (H0–H6, pedido por Ignacio el 07/11/2026): `docs/herramientas.md`.
 En los textos visibles, la marca es **Handyx**; "los Handys" son los personajes.
 
 ## Stack

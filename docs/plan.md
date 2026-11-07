@@ -219,6 +219,10 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
   - Guías de alta, operación y pagos.
   - QA ejecutado, deploy y rollback, y handoff.
 
+### Bloque aparte · Herramientas por oficio («Taller Handyx»)
+Pedido por Ignacio el 07/11/2026. No cambia las 6 fases de arriba: es un bloque propio con las fases H0 (base común) y
+H1–H6 (Electricidad, Aire acondicionado, Plomería, Gas, Albañilería y Cerrajería). Plan completo en `docs/herramientas.md`.
+
 ## 5. Dependencias y límites
 
 - **Legal:** avisos provisionales; la landing-be responde 503 en producción salvo `PRIVACY_NOTICE_PROVISIONAL_OK=true`. Recolectar DNI, CUIT/CUIL, nacimiento y género en producción requiere aviso aprobado (LEG-39/40).
