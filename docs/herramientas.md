@@ -90,19 +90,28 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
 ### Fase H0 · Base común y Modo trabajo — Opus 5.5 / xhigh
 - ✔ **H0.1 Base del Taller:** grilla por oficio, motor de calculadoras, nivel con el giroscopio.
 - **H0.2 Presupuestador y lista de precios** (Jobber, Housecall Pro, presupuestadores de corralones): mano de obra,
-  materiales y margen; plantillas, versiones y vigencia; lo del Taller pasa con un toque; se manda por el chat. Precios
-  a mano, por planilla o con foto de la lista del corralón (lectura en el teléfono), con fecha visible.
+  materiales y margen; plantillas, versiones y vigencia; lo del Taller pasa con un toque. **Se manda directo por el
+  chat** (sin pantalla de vista previa, pedido de Ignacio del 08/11). Cada material se agrega con **precio fijo** (se
+  congela en ese presupuesto) o **que se actualiza** con la lista (si cambia antes de que el cliente acepte, aviso y
+  versión nueva); se pueden agregar de a uno o **varios a la vez** (kits). Al agregar, dos casillas a la vez: **cobrarlo
+  en el presupuesto** y **registrarlo como gasto** (con la foto del ticket al comprarlo). **Lista de precios** con flujo
+  completo: materiales y tarifas de mano de obra (hora, visita, urgencia, por tarea), foto de la lista del corralón
+  leída en el teléfono, revisión de lo leído (sube, igual, nuevo, revisar), detalle con historial y margen, aviso de
+  precios viejos. Después: **catálogo con los productos de las ferreterías de Mar del Plata** (se les pide la lista a
+  las ferreterías para armar la base).
 - **H0.3 Ingresos y gastos** (apps de monotributistas, QuickBooks Self-Employed): para que el especialista sepa su
   **bruto y su neto**. Bruto: lo cobrado en Handyx (verificado e informado, por separado) y por fuera. Gastos:
   materiales (con la foto del ticket o desde el presupuesto, el pedido de repuestos y el Modo trabajo), combustible y
   viáticos, herramientas. Neto = bruto − gastos − tarifa de Handyx (0 % en la demo). Ganancia por trabajo, por obra (con
   sus etapas) y por mes; metas; exportar el mes; ayuda de monotributo orientativa (tabla vigente de ARCA). Los gastos
-  son del especialista y no se le muestran al cliente.
-- **H0.4 Modo trabajo** (se abre al pasar a «en curso»; botones grandes para usar con guantes): cronómetro por tarea;
-  checklist que empieza por la seguridad; fotos con anotaciones y comparador antes/después; materiales con código de
-  barras que pasan a adicional (lo acepta el cliente); notas de voz; hoja de herramientas a mano (calculadoras, nivel,
-  linterna, lupa); pedir repuesto; informe automático para el cliente al cerrar. Lo que se guarda necesita conexión (sin
-  cola offline); si no hay red, se avisa.
+  son del especialista y no se le muestran al cliente. Al cargar un gasto también se puede marcar **cobrárselo al cliente** (va como adicional y lo acepta en el chat).
+- **H0.4 Modo trabajo** (rediseñado el 08/11: claro, cómodo y fluido; se abre al pasar a «en curso»): cabecera azul
+  con el trabajo, el cronómetro y el avance; **lista de tareas** grande que empieza por la seguridad; un toque para
+  **foto**, **repuestos** (agregar al trabajo o pedir), **pedir ayuda** (llamar o escribirle a otro profesional de tus
+  contactos, o sumarlo al trabajo) y **agenda** (lo que sigue y avisarle al próximo cliente una demora, siempre
+  mandado por el especialista); **herramientas** a mano (nivel, linterna, lupa, medir, calculadoras, código de barras,
+  nota de voz, checklist); pausar, «tarea lista» y «terminé» con el informe automático para el cliente. Botones de 56 px
+  o más para usar con guantes. Lo que se guarda necesita conexión (sin cola offline); si no hay red, se avisa.
 - **H0.5 Rutas y stock:** orden de visitas con el OSRM propio; kilómetros del mes; stock de la camioneta; lista de
   compras.
 - **H0.6 Backend:** contrato, esquema en `handyx-client-be`, endpoints y pruebas en `handyx-specialist-be`.

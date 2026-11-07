@@ -28,6 +28,9 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
   `docs/herramientas.md`. Decisiones de Ignacio: **0 % de comisión al especialista siempre**; **antecedentes por foto o
   PDF** con resguardos (falta revisión legal); matrícula obligatoria en Gas y Aire. Orden: D → V → H0 → O → R → G → Q →
   deploy. Ignacio sigue mandando pedidos de diseño antes de desarrollar.
+- **Tercera vuelta (08/11):** 103 tableros con **10 flujos completos** arriba (`docs/rediseno-deluxe.md` §10).
+  Presupuesto directo por el chat, materiales con precio fijo o que se actualiza y las casillas «cobrar» y «gasto»,
+  lista de precios completa y Modo trabajo rehecho. Plan: H0.2, H0.3 y H0.4 actualizados.
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 

@@ -199,3 +199,16 @@ Pedidos de Ignacio sobre el lienzo, ya dibujados (85 pantallas):
 Todo quedó en el plan: fases **V** (acceso, registro y verificación) y **O** (obras en equipo, mensajes y cuenta) en
 `docs/herramientas.md`. Nombres ficticios del lienzo: Julián Ortiz (el especialista), Martín Sosa, Lucía Ferreyra,
 Carla Ibáñez (clientes), Sofía Ruiz, Diego Herrera y Pablo Vega (profesionales).
+
+## 10. Flujos completos y H0 rehecho (08/11/2026)
+
+- **Flujos de la app** arriba del lienzo: 10 diagramas que muestran cómo se recorre todo, con cada pantalla (se toca
+  para abrirla), lo que hace el cliente, lo que hace Handyx u Operations y otro profesional: alta y verificación,
+  entrar y segunda verificación, recibir un pedido y cotizar, hacer el trabajo y cobrar, presupuestos y lista de
+  precios, obra de varios días, obra en equipo, mensajes y tarjetas, gastos, repuestos e ingresos, y Camino Handyx.
+- **Presupuesto:** se manda directo por el chat (se quitó la vista del cliente). Materiales con precio fijo o que se
+  actualiza; de a uno o varios; y las dos casillas: cobrarlo y registrarlo como gasto.
+- **Lista de precios** en 6 pantallas: qué es y de dónde salen los precios, foto del corralón, revisar lo leído,
+  detalle con historial, tarifas de mano de obra. El catálogo de ferreterías queda marcado «pronto».
+- **Cargar gasto** también permite cobrárselo al cliente.
+- **Modo trabajo** nuevo, claro: tareas, cronómetro, foto, repuestos, pedir ayuda, agenda y herramientas a un toque.
