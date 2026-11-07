@@ -6,6 +6,13 @@ Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta contra la API real en local** (build
 `http`). **Nada desplegado; ningún proveedor con credenciales.**
 
+## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
+
+- Pedido de Ignacio: publicar el build mock «por ahora» en `specialist.handyx.pro` (Hostinger). `public/.htaccess`
+  nuevo (HTTPS, 404, cabeceras, noindex, `no-cache` del HTML y `sw.js`) y pasos en `docs/deploy.md`.
+- Paquete armado con `npm run build` y verificado con `npm run e2e` (26/26). La subida al hosting la hace Ignacio (no hay
+  acceso desde las sesiones).
+
 ## Fase 5 · Lotes 5.2, 5.7 y 5.8 (02/11/2026)
 
 - **5.2** (`handyx-specialist-be` `2968e18`, `docs/acceso.md` allá): registro neutro, código de 6 dígitos, ingreso con

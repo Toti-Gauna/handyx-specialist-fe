@@ -1,0 +1,31 @@
+# Hostinger (Apache/LiteSpeed), como la landing. Va con el contenido de out/ en la raíz del subdominio
+# (hoy: specialist.handyx.pro con el build de datos de prueba, `npm run build`). Ver docs/deploy.md.
+Options -Indexes
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Robots-Tag "noindex, nofollow"
+  # HSTS: activar recién cuando el dominio y HTTPS estén verificados.
+  # Header always set Strict-Transport-Security "max-age=31536000"
+
+  # Un deploy nuevo tiene que llegar enseguida: el HTML, el service worker y el manifest no se guardan (docs/pwa.md).
+  <FilesMatch "(\.html|sw\.js|\.webmanifest|\.txt)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
