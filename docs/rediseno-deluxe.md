@@ -1,7 +1,7 @@
 # Rediseño deluxe · D.1 Auditoría y direcciones de arte
 
-Fase D del bloque Taller (`docs/herramientas.md`). Este documento cierra el lote D.1. Ignacio eligió la
-dirección **C · Costa de Mar del Plata** el 08/11/2026, con los ajustes del §6. D.2 empieza con su OK.
+Fase D del bloque Taller (`docs/herramientas.md`). Este documento cierra el lote D.1. La dirección
+elegida es **«Handyx de hoy, mejorada»** (§7, 08/11/2026). D.2 empieza con el OK de Ignacio.
 
 - Lienzo con las 3 direcciones (9 pantallas de 390 × 844, navegables entre sí): artifact privado «Handyx Deluxe ·
   Direcciones de arte», enlazado en el handoff de la sesión. Es una maqueta: los textos y montos son los de la demo,
@@ -95,7 +95,7 @@ horizonte (cielo, mar, arena) y el regalo sale del mar con el sol detrás.
 Con la elección, D.2 arma el kit v3 en `src/kit/` (tokens, componentes y biblioteca de movimiento) y lo muestra en
 `/catalogo/`; D.3 a D.7 siguen el plan de `docs/herramientas.md`. Después: H0, R, G, Q y la fase 6 (deploy).
 
-## 6. Elección: C · Costa de Mar del Plata (08/11/2026)
+## 6. Primera elección: C · Costa de Mar del Plata (08/11/2026, después descartada, ver §7)
 
 Ignacio eligió C con estos ajustes, ya dibujados en la fila C del lienzo (Inicio con mapa, Tus obras, Obra día por
 día, Tus ingresos, Tu precio y el regalo):
@@ -119,3 +119,24 @@ día, Tus ingresos, Tu precio y el regalo):
    gradientes ni vidrio) se mantiene. El anillo de avance usa cortes netos, no un degradé.
 
 Siguen pendientes: capa propia de la app o también la landing (§4.3) y el plan de Meshy (§4.4).
+
+## 7. Dirección elegida: Handyx de hoy, mejorada (08/11/2026)
+
+Después de ver C, Ignacio pidió volver a la estética que ya tiene la app (la de la demo de la landing) con mejores
+componentes. Es la fila «Elegida» del lienzo, arriba de todo (Inicio con mapa, Tus obras, Obra día por día, Tus ingresos,
+Tu precio y el regalo). La fila C queda como descartada.
+
+- **Fondo blanco** y sin la costa ni bandas de cielo, mar o arena. El mapa del Inicio sigue siendo el mapa real.
+- **Cabecera como ahora:** bloque azul redondeado abajo con «Handyx» y «Soluciones, no problemas», y los botones
+  cuadrados de avisos y zonas, solo en el Inicio. En el resto, la barra compacta con el botón de volver y el título.
+- **Barra de pestañas flotante, redondeada y de vidrio esmerilado** (`backdrop-filter: blur() saturate()`, blanco
+  translúcido, borde claro y sombra en capas); la pestaña activa es un botón azul con base que se hunde. Pestañas:
+  Inicio · Obras · Agenda · Mensajes · Cuenta. Es la **única excepción** a la regla de «sin vidrio» y solo en la app (la
+  landing no cambia). Accesibilidad: fondo blanco sólido si no hay `backdrop-filter` o con
+  `prefers-reduced-transparency: reduce`, y contraste AA medido sobre el peor fondo (el mapa y las tarjetas).
+- **Componentes mejores con el lenguaje actual:** mosaicos grises, tarjetas blancas con borde fino, sombra en capas y la
+  franja gris de «Ver …», botones azules con base, etiquetas en mayúsculas espaciadas, marcador amarillo en una palabra
+  del título, pastillas de estado con ícono y texto, anillo de etapas, tira de jornadas y los Handys en mosaicos.
+- **Se mantienen las ideas de contenido del §6:** Disponible y los pedidos solo en el Inicio con mapa, el apartado
+  Obras con seguimiento día por día y Tus ingresos con bruto, gastos y neto.
+- Sin gradientes: el anillo usa cortes netos y el marcador amarillo es una sombra interna.

@@ -61,7 +61,7 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
 ## 4. Fases
 
 ### Fase D · Rediseño deluxe — Opus 5.5 / xhigh
-- ✔ **D.1 Auditoría y dirección de arte** (`docs/rediseno-deluxe.md`; Ignacio eligió **C · Costa de Mar del Plata** el 08/11, con ajustes): revisión de las 120 pantallas; moodboard y 2 o 3 direcciones visuales con 3
+- ✔ **D.1 Auditoría y dirección de arte** (`docs/rediseno-deluxe.md`; dirección elegida el 08/11: **la estética de hoy, mejorada**, fondo blanco y pestañas flotantes de vidrio): revisión de las 120 pantallas; moodboard y 2 o 3 direcciones visuales con 3
   pantallas clave cada una (Inicio, Tu precio, el regalo); principios de movimiento, vibración y sonido. **Pausa para
   que Ignacio elija una.**
 - **D.2 Kit v3:** paleta con profundidad (superficies, sombras en capas, materiales), tipografía con números

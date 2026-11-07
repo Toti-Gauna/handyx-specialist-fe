@@ -17,9 +17,11 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
 - Recorridos R, S, T y U (30/30); pantallas del Taller en la auditoría de accesibilidad (axe en 0).
 - **D.1 hecho** (`docs/rediseno-deluxe.md`): auditoría y 3 direcciones de arte (A Taller de obra, B Noche de obra,
   C Costa de Mar del Plata) con Inicio, Tu precio y el regalo en un lienzo de diseño privado.
-- **Elección (08/11):** C · Costa de Mar del Plata, con ajustes (`docs/rediseno-deluxe.md` §6): Disponible y pedidos solo
-  en el Inicio con mapa, apartado Obras con pestaña propia, Tus ingresos con bruto y neto, y bandas planas (la regla de
-  gradientes se mantiene). Pendientes: capa propia o landing, y Meshy. **Próximo lote: D.2**, con el OK de Ignacio.
+- **Dirección elegida (08/11):** la estética de hoy, mejorada (`docs/rediseno-deluxe.md` §7): fondo blanco, cabecera
+  azul como ahora, mejores componentes y la barra de pestañas flotante de vidrio (única excepción a «sin vidrio», con
+  fondo sólido de respaldo). C quedó descartada, pero se mantienen sus ideas: Disponible y pedidos solo en el Inicio con
+  mapa, apartado Obras y Tus ingresos con bruto y neto. Pendientes: capa propia o landing, y Meshy. **Próximo lote:
+  D.2**, con el OK de Ignacio.
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 

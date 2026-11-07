@@ -52,7 +52,9 @@ React 19 + Next.js 16 (App Router) + TypeScript `strict`, exportación estática
 Español rioplatense con voseo; montos `$ 45.000`; "verificados" sí, "matriculados"/"despachamos" no; sin "inmediato"
 ni "al instante". Tokens de `src/brand/tokens.ts` = copia byte a byte de la landing
 (`HANDY_LANDING_TOKENS=<ruta> npm test` lo verifica). Lenguaje visual de la demo de la landing (`demo-app.css`):
-mosaicos grises, botones con base que se hunde, Archivo 900 ensanchado + DM Sans, sin gradientes ni vidrio.
+mosaicos grises, botones con base que se hunde, Archivo 900 ensanchado + DM Sans, sin gradientes ni vidrio
+(única excepción, decisión de Ignacio del 08/11/2026: la barra de pestañas flotante es de vidrio esmerilado, con fondo
+sólido si el navegador no tiene `backdrop-filter` o si se pide reducir la transparencia; `docs/rediseno-deluxe.md` §7).
 Reglas de forma (tokens `--hd-*`, `ChipTipo` vs chips de estado, una acción primaria, aceptar verde / rechazar en contorno
 rojo, urgencia en texto neutro, sin estilos inline, movimiento solo con `no-preference`, Handys decorativos): `docs/diseno.md`;
 catálogo en `docs/componentes.md`. Capturas sanitizadas: `npm run capturas` (catálogo: `npm run capturas:docs`).
