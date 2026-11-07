@@ -196,7 +196,7 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
   - Nunca caer a fixtures.
   - Analytics sin PII.
 
-### Fase 6 · Deploy — Sonnet 5.5 / high
+### Fase 6 · Deploy — Sonnet 5.5 / high (va al final, después del bloque Taller; decisión de Ignacio del 08/11/2026)
 - [ ] **6.1 CI, staging y readiness:**
   - Lint, tipos, build, unitarias, integración, E2E y pruebas de contrato en el CI.
   - Base aislada con datos sintéticos.

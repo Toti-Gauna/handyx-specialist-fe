@@ -183,8 +183,9 @@ Schneider y Hager.
 
 ## 5. Orden
 
-El orden propuesto era D → H0 → R → G → H1 → H2 → H3 → H4 → H5 → H6 → Q. **El 08/11 Ignacio pidió arrancar por H1**
-(Electricidad); después se sigue con el orden propuesto salvo que diga otra cosa.
+Orden acordado con Ignacio (08/11/2026): **H1** (lo que falta de Electricidad) → **D** → **H0** → **R** → **G** → **H2** →
+**H3** → **H4** → **H5** → **H6** → **Q**, y recién al final la **fase 6 · Deploy** del producto (`docs/plan.md`). En el
+medio, lo pendiente de la fase 4 (mapa base del 4.3 y revisión del 4.9) se cierra cuando se destrabe.
 
 ## 6. Lo que necesita decisión o autorización de Ignacio
 
