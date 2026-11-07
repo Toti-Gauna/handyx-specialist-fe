@@ -25,6 +25,7 @@ Variables: `.env.example`. Todas son públicas (`NEXT_PUBLIC_*`): nunca secretos
 | Documento | Contenido |
 |---|---|
 | `docs/plan.md` | Fases, lotes y decisiones |
+| `docs/despliegue-hostinger.md` | Publicación automática en workers.handyx.pro, variables y rollback |
 | `docs/handoff.md` | Estado, comandos ejecutados, bloqueos y próximo paso |
 | `docs/architecture.md` | Stack, estructura, mock/HTTP, rutas, seguridad del frontend |
 | `docs/screens.md` | Mapa de pantallas, estados y requisitos |

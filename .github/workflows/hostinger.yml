@@ -1,0 +1,138 @@
+name: Publicar en Hostinger (workers.handyx.pro)
+
+# Mismo método que el portal interno y la app de usuario: se compila el export estático, se sube por SSH a una carpeta
+# temporal, scripts/hostinger-publish.sh hace un respaldo y copia el sitio, scripts/hostinger-smoke.sh prueba el sitio
+# público y, si algo falla, se restaura el respaldo. Solo publica desde `main` y solo si HOSTINGER_DEPLOY_ENABLED es "true".
+# ci.yml sigue corriendo aparte; acá van los checks mínimos para no publicar roto.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hostinger-${{ github.ref }}
+  # Una publicación a medias no se cancela: solo se cancelan las corridas viejas de un pull request.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm test
+
+      - run: bash -n scripts/hostinger-publish.sh && bash -n scripts/hostinger-smoke.sh
+
+      # Sin API_BASE_URL (variable pública del repo) sale la vista previa: datos ficticios con el banner "Datos de prueba".
+      - name: Build de vista previa (mock, con banner)
+        if: vars.API_BASE_URL == ''
+        run: npm run build
+
+      # Con API_BASE_URL (origen HTTPS de api-especialista) sale producción: solo el adaptador HTTP, sin fixtures ni banner.
+      # build:hostinger exige DATA_SOURCE=http + https y falla si el bundle trae datos de prueba.
+      - name: Build de producción (API real)
+        if: vars.API_BASE_URL != ''
+        run: npm run build:hostinger
+        env:
+          NEXT_PUBLIC_DATA_SOURCE: http
+          NEXT_PUBLIC_API_BASE_URL: ${{ vars.API_BASE_URL }}
+
+      - name: Armar y revisar el paquete
+        run: |
+          set -euo pipefail
+          cp deploy/hostinger.htaccess out/.htaccess
+          cp deploy/hostinger-static.htaccess out/_next/static/.htaccess
+          test -s out/index.html && test -s out/404.html && test -s out/.htaccess && test -d out/_next/static
+          if find out \( -name '*.map' -o -name '.env*' \) -print -quit | grep -q .; then
+            echo 'El paquete trae mapas de código o archivos .env.' >&2
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: workers-hostinger
+          path: out
+          include-hidden-files: true
+          retention-days: 14
+
+  publicar:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.HOSTINGER_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: hostinger-production
+      url: https://workers.handyx.pro
+    env:
+      # Variables del repositorio (públicas; Settings → Secrets and variables → Actions → Variables).
+      HOSTINGER_HOST: ${{ vars.HOSTINGER_HOST }}
+      HOSTINGER_PORT: ${{ vars.HOSTINGER_PORT }}
+      HOSTINGER_USER: ${{ vars.HOSTINGER_USER }}
+      HOSTINGER_PATH: ${{ vars.HOSTINGER_PATH }}
+      RELEASE: ${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: workers-hostinger
+          path: site
+
+      - name: Configurar el acceso SSH verificado
+        env:
+          SSH_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.HOSTINGER_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          test -n "$HOSTINGER_HOST" && test -n "$HOSTINGER_PORT" && test -n "$HOSTINGER_USER" && test -n "$HOSTINGER_PATH"
+          test -n "$SSH_KEY" && test -n "$KNOWN_HOSTS"
+          mkdir -m 700 -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/hostinger
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/hostinger ~/.ssh/known_hosts
+          ssh-keygen -y -P '' -f ~/.ssh/hostinger >/dev/null
+          ssh-keygen -F "[$HOSTINGER_HOST]:$HOSTINGER_PORT" -f ~/.ssh/known_hosts >/dev/null
+
+      - name: Subir, respaldar y publicar
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh_args=(-p "$HOSTINGER_PORT" -i ~/.ssh/hostinger -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=3)
+          destination="$HOSTINGER_USER@$HOSTINGER_HOST"
+          stage="${HOSTINGER_PATH%%/public_html*}/.handyx-deploy/staging/$RELEASE"
+          tar -cf "$RUNNER_TEMP/hostinger.tar" -C site .
+          ssh "${ssh_args[@]}" "$destination" "umask 077; mkdir -p '$stage' && tar -xf - -C '$stage'" < "$RUNNER_TEMP/hostinger.tar"
+          ssh "${ssh_args[@]}" "$destination" "bash -s -- publish '$HOSTINGER_PATH' '$RELEASE'" < scripts/hostinger-publish.sh
+          if ! bash scripts/hostinger-smoke.sh https://workers.handyx.pro; then
+            echo 'Falló la prueba pública: se restauran los archivos anteriores.' >&2
+            ssh "${ssh_args[@]}" "$destination" "bash -s -- rollback '$HOSTINGER_PATH' '$RELEASE'" < scripts/hostinger-publish.sh
+            exit 1
+          fi
+
+      - name: Borrar los archivos SSH del runner
+        if: always()
+        run: rm -f ~/.ssh/hostinger ~/.ssh/known_hosts
