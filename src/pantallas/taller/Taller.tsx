@@ -26,6 +26,8 @@ export const RUTA_HERRAMIENTA: Record<string, string> = {
   'etiquetas-ia': RUTAS.tallerEtiquetas.ruta,
   dictado: RUTAS.tallerDictado.ruta,
   informe: RUTAS.tallerInforme.ruta,
+  canalizacion: RUTAS.tallerCanalizacion.ruta,
+  checklists: RUTAS.tallerChecklists.ruta,
 };
 
 const NOMBRE_RUBRO: Record<Rubro, string> = {

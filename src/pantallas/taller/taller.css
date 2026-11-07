@@ -857,3 +857,69 @@
   font-weight: 700;
   text-align: center;
 }
+
+/* ── Recorrido de caños ─────────────────────────────────────────────── */
+.tl-leyenda {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0 var(--esp-2);
+  list-style: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.tl-leyenda li {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+}
+.tl-leyenda__color {
+  flex: none;
+  width: 22px;
+  height: 8px;
+  border-radius: 4px;
+}
+.tl-leyenda__color--iug {
+  background: var(--hd-azul);
+}
+.tl-leyenda__color--tug {
+  background: var(--hd-naranja);
+}
+
+/* ── Checklists ─────────────────────────────────────────────────────── */
+.tl-progreso {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: var(--esp-3) var(--esp-4);
+  border-radius: 22px;
+  background: var(--hd-noche);
+  color: #fff;
+}
+.tl-progreso p {
+  display: grid;
+  margin: 0;
+}
+.tl-progreso strong {
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.4rem;
+  font-weight: 900;
+  font-stretch: 120%;
+}
+.tl-progreso__fondo,
+.tl-progreso__barra {
+  fill: none;
+  stroke-width: 6;
+}
+.tl-progreso__fondo {
+  stroke: rgb(255 255 255 / 0.15);
+}
+.tl-progreso__barra {
+  stroke: var(--hd-amarillo);
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+.tl-progreso--listo {
+  background: var(--hd-exito-boton);
+}

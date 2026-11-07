@@ -11,7 +11,11 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
 - H1.1 calculadoras, H1.2 tablero 3D (Three.js + GSAP, AR Quick Look) y nivel con giroscopio (H0.1).
 - H1.3 IA: contrato **0.10.0** (`/v1/especialista/taller/ia/tablero` y `/presupuesto`), mock simulado, adaptador http,
   pantallas «Etiquetas con IA» y «Presupuesto dictado». Sin proveedor autorizado, el BE responde 503.
-- Recorridos R y S; pantallas del Taller en la auditoría de accesibilidad.
+- H1.4 informe eléctrico con semáforo y AR (WebXR en Android, Quick Look en iPhone; falta probar en dispositivos).
+- H1.5 recorrido de caños en 3D, checklists, catálogo de materiales, premios en borrador y
+  `docs/revision-tecnica-electricidad.md` (los valores siguen «en revisión técnica» hasta que la hagan).
+- Recorridos R, S, T y U (30/30); pantallas del Taller en la auditoría de accesibilidad (axe en 0).
+- **Próximo lote: D.1** (auditoría y direcciones de arte; pausa para que Ignacio elija).
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 

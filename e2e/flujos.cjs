@@ -1136,6 +1136,24 @@ async function main() {
     assert.equal(await p.getByRole('button', { name: /Ver en el techo/ }).count(), 0, 'sin AR en este navegador');
   }, { capturas });
 
+  await escenario('U-canalizacion-y-checklists', nav_, base, async ({ p, foto }) => {
+    await p.goto(`${base}/taller/canalizacion/?escenario=habilitado`);
+    await ver(p, 'Iluminación (luces y llaves) · 1,5 mm²');
+    await ver(p, 'Caja octogonal (luces)');
+    await p.getByLabel('Tomas', { exact: true }).fill('6');
+    await ver(p, /Tomacorrientes · 2,5 mm²/);
+    await p.getByLabel('Luces', { exact: true }).fill('0');
+    await p.getByLabel('Llaves', { exact: true }).fill('0');
+    assert.equal(await p.getByText('Caja octogonal (luces)').count(), 0, 'sin luces no hay cajas octogonales');
+    await foto('01-canalizacion');
+    await p.goto(`${base}/taller/checklists/?escenario=habilitado`);
+    await ver(p, '0 de');
+    await p.getByRole('radio', { name: 'Cambio de toma o llave' }).click();
+    for (const c of await p.getByRole('checkbox').all()) await c.check();
+    await ver(p, '¡Listo!');
+    await foto('02-checklist');
+  }, { capturas });
+
   await escenario('J-sin-conexion-service-worker', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/?escenario=habilitado`);
     await p.waitForURL('**/inicio/');

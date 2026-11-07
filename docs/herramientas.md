@@ -129,7 +129,7 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
 - **3D:** el camino nativo por paisajes de Mar del Plata (rambla, puerto, faro) y la caja de regalo nativa; adentro,
   el premio y el Handy que festeja con los modelos de Meshy (fase D).
 
-### Fase H1 · Electricidad — Opus 5.5 / high
+### Fase H1 · Electricidad — Opus 5.5 / high ✔ (08/11/2026; falta la revisión técnica y la prueba de AR en dispositivos reales)
 Referentes: Ugly's Electrical References, Electrical Calc Elite, Southwire, Fluke Connect, configuradores de ABB,
 Schneider y Hager.
 - ✔ **H1.1 Calculadoras:** sección y caída de tensión, planificador de vivienda, iluminación, consumo y ahorro, Ohm y
@@ -148,9 +148,14 @@ Schneider y Hager.
   superficies en Android y AR Quick Look en iPhone: el tablero en la pared (tamaño real) y la luminaria en el techo
   (plafón o panel, modelos nativos en `src/taller/modelos3d.ts`). Sin ninguno de los dos, no aparece. **Falta probarlo
   en un Android y un iPhone reales** (fase 6.2).
-- **H1.5 Checklists, materiales y premios** de Electricidad, más la lista de valores para la revisión técnica.
-- **3D nativo:** ✔ tablero; ambiente 3D con bocas, cajas y el recorrido de caños y cables (alimenta el cómputo);
-  luminarias para AR.
+- ✔ **H1.5 Recorrido, checklists, materiales y premios** (08/11/2026): **Recorrido de caños** (`/taller/canalizacion/`:
+  ambiente en 3D nativo con bocas, tablero y un caño por circuito que se dibuja con GSAP; metros de caño, cable por
+  sección, cajas y curvas); **Checklists** (`/taller/checklists/`: cinco tipos de trabajo, siempre con la seguridad
+  primero, con anillo de progreso); catálogo de materiales eléctricos (`src/taller/materiales.ts`, para la fase R);
+  premios del oficio en borrador (`src/taller/premios.ts`, para la fase G) y **`docs/revision-tecnica-electricidad.md`**
+  con todos los valores que tiene que revisar un profesional y Legal.
+- **3D nativo:** ✔ tablero; ✔ ambiente con bocas y el recorrido de caños y cables (alimenta el cómputo); ✔ luminarias
+  (plafón y panel) para AR.
 - Fuera de alcance: «detector de tensión» con el celular.
 
 ### Después del deploy (con el tiempo, un oficio por vez)

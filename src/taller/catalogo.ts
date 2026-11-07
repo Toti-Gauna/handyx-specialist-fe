@@ -25,6 +25,8 @@ export const HERRAMIENTAS: readonly Herramienta[] = [
   { id: 'ohm', rubro: 'electricidad', titulo: 'Ohm y referencias', bajada: 'Ley de Ohm, colores y seguridad', icono: 'escudo', fase: 'H1', lista: true, sinConexion: true },
   { id: 'etiquetas-ia', rubro: 'electricidad', titulo: 'Etiquetas con IA', bajada: 'Una foto del tablero y te propone las etiquetas', icono: 'camara', fase: 'H1', lista: true },
   { id: 'informe', rubro: 'electricidad', titulo: 'Informe eléctrico', bajada: 'Mediciones con semáforo y recomendaciones para el cliente', icono: 'checkCirculo', fase: 'H1', lista: true },
+  { id: 'canalizacion', rubro: 'electricidad', titulo: 'Recorrido de caños', bajada: 'Ambiente en 3D, caños por circuito y materiales', icono: 'pin', fase: 'H1', lista: true, sinConexion: true },
+  { id: 'checklists', rubro: 'electricidad', titulo: 'Checklists', bajada: 'Paso a paso, con la seguridad primero', icono: 'check', fase: 'H1', lista: true, sinConexion: true },
   { id: 'dictado', rubro: 'electricidad', titulo: 'Presupuesto dictado', bajada: 'Contá el trabajo y sale la lista de tareas y materiales', icono: 'chat', fase: 'H1', lista: true },
   // Comunes (H0)
   { id: 'nivel', rubro: 'todos', titulo: 'Nivel y pendiente', bajada: 'Con el giroscopio del celular', icono: 'reintentar', fase: 'H0', lista: true, sinConexion: true },
