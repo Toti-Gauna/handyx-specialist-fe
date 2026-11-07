@@ -1,4 +1,4 @@
-// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.9.0, borrador; versión en version.ts).
+// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.10.0, borrador; versión en version.ts).
 // El servidor valida con los mismos esquemas; el cliente valida cada respuesta y trata un desajuste
 // como error de contrato (nunca lo "arregla" con datos de muestra). OpenAPI: docs/api/openapi.yaml.
 import { z } from 'zod';
@@ -852,3 +852,43 @@ export type Pago = z.infer<typeof PagoSchema>;
 export type CasoSoporte = z.infer<typeof CasoSoporteSchema>;
 export type NuevaPropuesta = z.infer<typeof NuevaPropuestaSchema>;
 export type RespuestaPropuesta = z.infer<typeof RespuestaPropuestaSchema>;
+
+// ── Taller · IA (0.10.0) ─────────────────────────────────────────────────────────────────────────
+// La IA propone y el profesional confirma. Pasa por api-especialista con un proveedor autorizado y sin datos
+// personales (la foto llega achicada y sin metadatos; del texto se quitan teléfonos, emails y direcciones antes de
+// enviarlo). Sin proveedor autorizado: 503 servicio_no_disponible. Con el tope de uso agotado: 429 limite.
+export const DISPOSITIVOS_TABLERO = ['termica_1p', 'termica_2p', 'termica_4p', 'diferencial_2p', 'diferencial_4p', 'sobretension', 'contactor', 'borneras'] as const;
+export const CONFIANZAS_IA = ['alta', 'media', 'baja'] as const;
+export const UNIDADES_MATERIAL = ['unidad', 'metro', 'rollo', 'caja', 'bolsa', 'kg', 'litro'] as const;
+
+/** Lo que la IA ve en la foto de un tablero, de izquierda a derecha y de arriba abajo. */
+export const SugerenciaTableroSchema = z.strictObject({
+  dispositivos: z
+    .array(
+      z.strictObject({
+        tipo: z.enum(DISPOSITIVOS_TABLERO),
+        calibre: z.int().positive().max(250).nullable(),
+        /** Lo que protege si se lee en el tablero; si no, vacío. */
+        circuito: z.string().max(40),
+        confianza: z.enum(CONFIANZAS_IA),
+      }),
+    )
+    .max(48),
+  avisos: z.array(z.string().max(200)).max(5),
+});
+export type SugerenciaTablero = z.infer<typeof SugerenciaTableroSchema>;
+
+/** Lo que el profesional dicta o escribe sobre el trabajo (ya sin datos personales). */
+export const PresupuestoDictadoSchema = z.strictObject({
+  rubro: z.enum(RUBROS),
+  texto: z.string().trim().min(10).max(1500),
+});
+export type PresupuestoDictado = z.infer<typeof PresupuestoDictadoSchema>;
+
+/** Tareas y materiales para editar. Sin precios: los pone el profesional con su lista. */
+export const PresupuestoSugeridoSchema = z.strictObject({
+  tareas: z.array(z.strictObject({ descripcion: z.string().min(1).max(200), horas: z.number().positive().max(200).nullable() })).max(30),
+  materiales: z.array(z.strictObject({ descripcion: z.string().min(1).max(200), cantidad: z.number().positive().max(10_000), unidad: z.enum(UNIDADES_MATERIAL) })).max(60),
+  avisos: z.array(z.string().max(200)).max(5),
+});
+export type PresupuestoSugerido = z.infer<typeof PresupuestoSugeridoSchema>;

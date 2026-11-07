@@ -23,7 +23,8 @@ export const HERRAMIENTAS: readonly Herramienta[] = [
   { id: 'iluminacion', rubro: 'electricidad', titulo: 'Iluminación', bajada: 'Lúmenes y cantidad de luminarias', icono: 'info', fase: 'H1', lista: true, sinConexion: true },
   { id: 'consumo', rubro: 'electricidad', titulo: 'Consumo y ahorro', bajada: 'Cuánto gasta y cuánto ahorra tu cliente', icono: 'billetera', fase: 'H1', lista: true, sinConexion: true },
   { id: 'ohm', rubro: 'electricidad', titulo: 'Ohm y referencias', bajada: 'Ley de Ohm, colores y seguridad', icono: 'escudo', fase: 'H1', lista: true, sinConexion: true },
-  { id: 'etiquetas-ia', rubro: 'electricidad', titulo: 'Etiquetado de tablero con IA', bajada: 'Una foto y te propone las etiquetas', icono: 'camara', fase: 'H1', lista: false },
+  { id: 'etiquetas-ia', rubro: 'electricidad', titulo: 'Etiquetas con IA', bajada: 'Una foto del tablero y te propone las etiquetas', icono: 'camara', fase: 'H1', lista: true },
+  { id: 'dictado', rubro: 'electricidad', titulo: 'Presupuesto dictado', bajada: 'Contá el trabajo y sale la lista de tareas y materiales', icono: 'chat', fase: 'H1', lista: true },
   // Comunes (H0)
   { id: 'nivel', rubro: 'todos', titulo: 'Nivel y pendiente', bajada: 'Con el giroscopio del celular', icono: 'reintentar', fase: 'H0', lista: true, sinConexion: true },
   { id: 'presupuesto', rubro: 'todos', titulo: 'Presupuestador', bajada: 'Mano de obra, materiales y tu margen', icono: 'etiqueta', fase: 'H0', lista: false },

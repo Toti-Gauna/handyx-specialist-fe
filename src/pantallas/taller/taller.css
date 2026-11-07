@@ -696,3 +696,59 @@
   min-width: var(--toque-min);
   justify-content: center;
 }
+
+/* ── Etiquetas con IA ───────────────────────────────────────────────── */
+.tl-foto img {
+  display: block;
+  width: 100%;
+  max-height: 46dvh;
+  object-fit: contain;
+  border-radius: 20px;
+}
+.tl-foto__vacia {
+  display: grid;
+  justify-items: center;
+  gap: var(--esp-2);
+  padding: var(--esp-6) var(--esp-4);
+  color: var(--hd-texto);
+  text-align: center;
+}
+.tl-foto__vacia .icono {
+  width: 40px;
+  height: 40px;
+  color: var(--hd-azul);
+}
+.tl-foto__vacia p {
+  margin: 0;
+  font-weight: 600;
+}
+.tl-nota .icono {
+  width: 16px;
+  height: 16px;
+  vertical-align: -3px;
+}
+
+/* Imprimir: solo la hoja de etiquetas, grande y recortable. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .tl-imprimible,
+  .tl-imprimible * {
+    visibility: visible;
+  }
+  .tl-imprimible {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    box-shadow: none;
+  }
+  .tl-imprimible button {
+    display: none;
+  }
+  .tl-etiquetas li {
+    border: 1.5px dashed #000;
+    color: #000;
+    font-size: 12pt;
+  }
+}

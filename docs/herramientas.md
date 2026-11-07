@@ -135,7 +135,12 @@ Schneider y Hager.
 - ✔ **H1.1 Calculadoras:** sección y caída de tensión, planificador de vivienda, iluminación, consumo y ahorro, Ohm y
   referencias.
 - ✔ **H1.2 Tablero 3D:** riel DIN, gabinete, materiales, etiquetas, compartir, AR en iPhone.
-- **H1.3 IA:** etiquetado del tablero por foto y presupuesto dictado, sin datos personales.
+- ✔ **H1.3 IA** (08/11/2026; contrato 0.10.0, `handyx-specialist-be` `7dc3e2d`): **Etiquetas con IA** (`/taller/etiquetas/`:
+  la foto se achica y pierde los metadatos en el teléfono; la IA propone cada protección con su confianza; se corrige,
+  se imprimen las etiquetas o se abre en el armador 3D) y **Presupuesto dictado** (`/taller/dictado/`: se quitan
+  teléfonos, emails, documentos y direcciones antes de enviar, y se muestra qué se quitó; tareas y materiales sin
+  precios). Sin proveedor autorizado la API responde 503: la foto lo avisa y el dictado usa reglas del teléfono. En
+  el mock el resultado es simulado y se dice.
 - **H1.4 Informe eléctrico y AR en Android:** mediciones (puesta a tierra, disyuntor, aislación, tensión) con semáforo,
   estado del tablero, fotos y recomendaciones; tablero y luminarias en la pared con WebXR.
 - **H1.5 Checklists, materiales y premios** de Electricidad, más la lista de valores para la revisión técnica.

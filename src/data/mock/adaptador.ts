@@ -18,6 +18,7 @@ import { cargarGrafo } from './mapa.ts';
 import { viajes } from './viajes.ts';
 import { obras } from './obras.ts';
 import { turnos } from './turnos.ts';
+import { taller } from './taller.ts';
 import { fallo } from './estado.ts';
 
 export interface OpcionesMock {
@@ -57,6 +58,7 @@ export function crearApiMockConEstado(o: OpcionesMock = {}): ApiMock {
     ...caja(s),
     ...soporte(s),
     ...cuenta(s),
+    ...taller(),
   } as unknown as Sincrono;
 
   const api = { origen: 'mock' as const, ahora: () => ahora(s) } as Record<string, unknown>;

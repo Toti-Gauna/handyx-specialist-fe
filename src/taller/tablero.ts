@@ -1,7 +1,9 @@
 // Armador de tablero (fase H1). Lógica pura: dispositivos sobre riel DIN, módulos, gabinete, materiales y etiquetas.
 // La vista 3D (Three.js) solo dibuja lo que devuelve este módulo.
+import { DISPOSITIVOS_TABLERO } from '../contracts/dto.ts';
 
-export const TIPOS_DISPOSITIVO = ['termica_1p', 'termica_2p', 'termica_4p', 'diferencial_2p', 'diferencial_4p', 'sobretension', 'contactor', 'borneras'] as const;
+/** Los tipos son los del contrato (0.10.0): la IA del Taller devuelve los mismos. */
+export const TIPOS_DISPOSITIVO = DISPOSITIVOS_TABLERO;
 export type TipoDispositivo = (typeof TIPOS_DISPOSITIVO)[number];
 
 export const DISPOSITIVO: Record<TipoDispositivo, { texto: string; corto: string; modulos: number; calibres: readonly number[]; color: string }> = {

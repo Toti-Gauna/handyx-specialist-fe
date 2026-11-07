@@ -36,6 +36,8 @@ import {
   ContactoSchema,
   MediosCobroSchema,
   TrabajoSchema,
+  SugerenciaTableroSchema,
+  PresupuestoSugeridoSchema,
 } from '../../contracts/dto.ts';
 import type { EspecialistaApi } from '../api.ts';
 import { ClienteHttp, type OpcionesCliente } from './cliente.ts';
@@ -190,6 +192,12 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
       c.pedir('POST', `/v1/soporte/casos/${id(cid)}/mensajes`, CasoSoporteDetalleSchema, { cuerpo: { texto }, idempotencyKey: clave }),
 
     feeVigente: () => c.pedir('GET', '/v1/fee/vigente', FeeVigenteSchema),
+    iaTablero(foto) {
+      const f = new FormData();
+      f.set('foto', foto, 'tablero.jpg');
+      return c.pedir('POST', '/v1/especialista/taller/ia/tablero', SugerenciaTableroSchema, { formulario: f });
+    },
+    iaPresupuesto: (entrada) => c.pedir('POST', '/v1/especialista/taller/ia/presupuesto', PresupuestoSugeridoSchema, { cuerpo: entrada }),
     aceptarAvisoFee: (politicaId, version) => c.pedir('POST', '/v1/fee/aviso', FeeVigenteSchema, { cuerpo: { politicaId, version } }),
     contactos: () => c.pedir('GET', '/v1/especialista/contactos', z.array(ContactoSchema)),
     agregarContacto: (cid) => c.pedir('POST', '/v1/especialista/contactos', ContactoSchema, { cuerpo: { conversacionId: cid } }),

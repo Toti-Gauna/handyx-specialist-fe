@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: api-especialista (Handyx)
-  version: 0.9.0
+  version: 0.10.0
   description: |
     BORRADOR del contrato de api-especialista (TECH-20). Fuente de los esquemas: src/contracts/dto.ts
     (contrato compartido v0.6.0, dueño handyx-client-be). Nada implementado todavía: lo construye
@@ -28,6 +28,7 @@ tags:
   - name: caja
   - name: soporte
   - name: fee
+  - name: taller
   - name: cuenta
 
 paths:
@@ -683,6 +684,45 @@ paths:
           description: Abierto
           content: { application/json: { schema: { $ref: '#/components/schemas/CasoSoporte' } } }
 
+  /v1/especialista/taller/ia/tablero:
+    post:
+      tags: [taller]
+      summary: Propuesta de dispositivos a partir de la foto de un tablero (0.10.0). La IA propone; el profesional confirma
+      description: La foto llega achicada (lado mayor ≤ 1280 px) y re-codificada sin metadatos. Sin proveedor autorizado, 503.
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [foto]
+              properties:
+                foto: { type: string, format: binary, description: 'image/jpeg|png|webp, hasta 5 MB' }
+      responses:
+        '200':
+          description: Propuesta
+          content: { application/json: { schema: { $ref: '#/components/schemas/SugerenciaTablero' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '415': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+  /v1/especialista/taller/ia/presupuesto:
+    post:
+      tags: [taller]
+      summary: Tareas y materiales a partir de lo que el profesional dicta o escribe (0.10.0). Sin precios
+      description: El texto llega sin teléfonos, emails ni direcciones (los quita la PWA). Sin proveedor autorizado, 503.
+      parameters: [{ $ref: '#/components/parameters/Csrf' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/PresupuestoDictado' } } }
+      responses:
+        '200':
+          description: Propuesta
+          content: { application/json: { schema: { $ref: '#/components/schemas/PresupuestoSugerido' } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
   /v1/fee/vigente:
     get:
       tags: [fee]
@@ -1551,6 +1591,58 @@ components:
         bpsUsuario: { type: integer, minimum: 0, maximum: 10000 }
         bpsEspecialista: { type: integer, minimum: 0, maximum: 10000 }
         estado: { type: string, enum: [activa, borrador] }
+    SugerenciaTablero:
+      type: object
+      additionalProperties: false
+      required: [dispositivos, avisos]
+      properties:
+        dispositivos:
+          type: array
+          maxItems: 48
+          items:
+            type: object
+            additionalProperties: false
+            required: [tipo, calibre, circuito, confianza]
+            properties:
+              tipo: { type: string, enum: [termica_1p, termica_2p, termica_4p, diferencial_2p, diferencial_4p, sobretension, contactor, borneras] }
+              calibre: { type: [integer, 'null'], minimum: 1, maximum: 250 }
+              circuito: { type: string, maxLength: 40 }
+              confianza: { type: string, enum: [alta, media, baja] }
+        avisos: { type: array, maxItems: 5, items: { type: string, maxLength: 200 } }
+    PresupuestoDictado:
+      type: object
+      additionalProperties: false
+      required: [rubro, texto]
+      properties:
+        rubro: { $ref: '#/components/schemas/Rubro' }
+        texto: { type: string, minLength: 10, maxLength: 1500 }
+    PresupuestoSugerido:
+      type: object
+      additionalProperties: false
+      required: [tareas, materiales, avisos]
+      properties:
+        tareas:
+          type: array
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: false
+            required: [descripcion, horas]
+            properties:
+              descripcion: { type: string, minLength: 1, maxLength: 200 }
+              horas: { type: [number, 'null'], exclusiveMinimum: 0, maximum: 200 }
+        materiales:
+          type: array
+          maxItems: 60
+          items:
+            type: object
+            additionalProperties: false
+            required: [descripcion, cantidad, unidad]
+            properties:
+              descripcion: { type: string, minLength: 1, maxLength: 200 }
+              cantidad: { type: number, exclusiveMinimum: 0, maximum: 10000 }
+              unidad: { type: string, enum: [unidad, metro, rollo, caja, bolsa, kg, litro] }
+        avisos: { type: array, maxItems: 5, items: { type: string, maxLength: 200 } }
     FeeVigente:
       type: object
       additionalProperties: false

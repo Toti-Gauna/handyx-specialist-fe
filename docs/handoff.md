@@ -6,6 +6,13 @@ Modelo y esfuerzo de cada lote: según el plan (`docs/rediseno.md`).
 Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta contra la API real en local** (build
 `http`). **Nada desplegado; ningún proveedor con credenciales.**
 
+## Taller · Electricidad (07–08/11/2026, `docs/herramientas.md`)
+
+- H1.1 calculadoras, H1.2 tablero 3D (Three.js + GSAP, AR Quick Look) y nivel con giroscopio (H0.1).
+- H1.3 IA: contrato **0.10.0** (`/v1/especialista/taller/ia/tablero` y `/presupuesto`), mock simulado, adaptador http,
+  pantallas «Etiquetas con IA» y «Presupuesto dictado». Sin proveedor autorizado, el BE responde 503.
+- Recorridos R y S; pantallas del Taller en la auditoría de accesibilidad.
+
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 
 - Pedido de Ignacio: publicar el build mock «por ahora» en `specialist.handyx.pro` (Hostinger). `public/.htaccess`

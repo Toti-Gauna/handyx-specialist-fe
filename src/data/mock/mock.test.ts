@@ -5,7 +5,7 @@ import {
   AceptacionSchema, AgendaItemSchema, AvisoSchema, BajaSchema, CajaResumenSchema, CasoSoporteDetalleSchema, CasoSoporteSchema, ConversacionSchema,
   DatosAltaSchema, DisponibilidadSchema, FeeVigenteSchema, InicioSchema, MensajeSchema, PagoSchema, PedidoDetalleSchema, PedidoElegibleSchema,
   MediosCobroSchema, PerfilEspecialistaSchema, PerfilPublicoSchema, PreferenciasSchema, PropuestaSchema, SesionSchema, TrabajoDetalleSchema, TrabajoSchema,
-  BarrioSchema, ViajeSchema, TurnoAntecedentesSchema,
+  BarrioSchema, ViajeSchema, TurnoAntecedentesSchema, SugerenciaTableroSchema, PresupuestoSugeridoSchema,
 } from '../../contracts/dto.ts';
 import type { FalloApi } from '../errores.ts';
 import { desplazar, distanciaM } from '../../lib/geo.ts';
@@ -827,5 +827,23 @@ describe('contactos y formas de cobro (lote 4.8)', () => {
     const n = await api.guardarMediosCobro({ efectivo: false, mercadoPago: true, version: m.version });
     assert.deepEqual([n.efectivo, n.mercadoPago, n.version], [false, true, m.version + 1]);
     await assert.rejects(api.guardarMediosCobro({ efectivo: true, mercadoPago: true, version: m.version }), { tipo: 'conflicto' });
+  });
+});
+
+describe('Taller · IA (0.10.0)', () => {
+  it('tablero: propuesta válida con una foto; otro tipo de archivo, 415', async () => {
+    const { api } = nuevo();
+    const s = await api.iaTablero(new Blob([new Uint8Array([0xff, 0xd8, 0xff])], { type: 'image/jpeg' }));
+    assert.ok(SugerenciaTableroSchema.safeParse(s).success);
+    assert.ok(s.dispositivos.some((d) => d.confianza === 'baja'));
+    await assert.rejects(api.iaTablero(new Blob(['%PDF'], { type: 'application/pdf' })), (e: FalloApi) => e.status === 415);
+  });
+
+  it('presupuesto: valida el texto como el servidor y nunca devuelve precios', async () => {
+    const { api } = nuevo();
+    const r = await api.iaPresupuesto({ rubro: 'electricidad', texto: 'Agregar 3 tomas en el living' });
+    assert.ok(PresupuestoSugeridoSchema.safeParse(r).success);
+    assert.deepEqual(r.tareas.map((t) => t.descripcion), ['Agregar 3 tomas']);
+    await assert.rejects(api.iaPresupuesto({ rubro: 'electricidad', texto: 'corto' }), (e: FalloApi) => e.status === 400);
   });
 });

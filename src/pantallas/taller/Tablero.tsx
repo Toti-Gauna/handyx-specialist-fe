@@ -9,6 +9,7 @@ import { Aviso } from '../../components/ui.tsx';
 import { useIsla } from '../../kit/Efectos.tsx';
 import { BarraSuperior } from '../../kit/Navegacion.tsx';
 import { armarTablero, DISPOSITIVO, etiquetas, materialesTablero, tableroInicial, TIPOS_DISPOSITIVO, type Dispositivo, type TipoDispositivo } from '../../taller/tablero.ts';
+import { tomarParaTablero } from '../../taller/traspaso.ts';
 import { Tablero3D, type ManejoTablero } from './Tablero3D.tsx';
 import './taller.css';
 
@@ -20,7 +21,8 @@ function soportaQuickLook(): boolean {
 }
 
 export function Tablero() {
-  const [dispositivos, setDispositivos] = useState<Dispositivo[]>(tableroInicial);
+  // Si venís de la foto con IA, arranca con lo que confirmaste; si no, con un tablero de casa típico.
+  const [dispositivos, setDispositivos] = useState<Dispositivo[]>(() => tomarParaTablero() ?? tableroInicial());
   const [siguiente, setSiguiente] = useState(10);
   const [nuevoTipo, setNuevoTipo] = useState<TipoDispositivo>('termica_1p');
   const [quickLook, setQuickLook] = useState(false);
@@ -195,13 +197,16 @@ export function Tablero() {
         <p className="tl-nota">Pronto: pasar esta lista al presupuestador con tus precios.</p>
       </section>
 
-      <section className="tl-tarjeta" aria-labelledby="tl-et-t">
+      <section className="tl-tarjeta tl-imprimible" aria-labelledby="tl-et-t">
         <h2 id="tl-et-t" className="tl-tarjeta__titulo">Etiquetas</h2>
         <ol className="tl-etiquetas">
           {textos.map((t, i) => (
             <li key={`${dispositivos[i]?.id}`}>{t}</li>
           ))}
         </ol>
+        <button type="button" className="boton boton--claro" onClick={() => window.print()}>
+          <Icono nombre="etiqueta" /> Imprimir etiquetas
+        </button>
       </section>
     </div>
   );

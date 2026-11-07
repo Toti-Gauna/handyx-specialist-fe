@@ -21,6 +21,9 @@ import type {
   DatosAlta,
   Disponibilidad,
   FeeVigente,
+  PresupuestoDictado,
+  PresupuestoSugerido,
+  SugerenciaTablero,
   GuardarDatosAlta,
   Ingreso,
   Inicio,
@@ -201,6 +204,11 @@ export interface EspecialistaApi {
 
   // Fee y cuenta
   feeVigente(): Promise<FeeVigente>;
+
+  /** Taller · IA (0.10.0): propuesta a partir de la foto de un tablero (ya achicada y sin metadatos). */
+  iaTablero(foto: Blob): Promise<SugerenciaTablero>;
+  /** Taller · IA (0.10.0): tareas y materiales a partir de lo dictado (ya sin datos personales). Sin precios. */
+  iaPresupuesto(entrada: PresupuestoDictado): Promise<PresupuestoSugerido>;
   aceptarAvisoFee(politicaId: string, version: number): Promise<FeeVigente>;
   preferencias(): Promise<Preferencias>;
   guardarPreferencias(p: Omit<Preferencias, 'push'>): Promise<Preferencias>;

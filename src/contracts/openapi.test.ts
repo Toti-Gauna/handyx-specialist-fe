@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { it } from 'node:test';
-import { AVANCES_TRABAJO, CODIGOS_ERROR, ESTADOS_TOKEN, ESTADOS_VIAJE, FALTANTES_ENVIO, GENEROS, MODOS_LLEGADA, MOTIVOS_CANCELACION, MOTIVOS_RESPALDO_LLEGADA, PROVEEDORES, TIPOS_ADICIONAL, TIPOS_AVISO, TIPOS_PEDIDO } from './dto.ts';
+import { AVANCES_TRABAJO, CODIGOS_ERROR, CONFIANZAS_IA, DISPOSITIVOS_TABLERO, UNIDADES_MATERIAL, ESTADOS_TOKEN, ESTADOS_VIAJE, FALTANTES_ENVIO, GENEROS, MODOS_LLEGADA, MOTIVOS_CANCELACION, MOTIVOS_RESPALDO_LLEGADA, PROVEEDORES, TIPOS_ADICIONAL, TIPOS_AVISO, TIPOS_PEDIDO } from './dto.ts';
 import {
   ESTADOS_ADICIONAL,
   ESTADOS_ETAPA,
@@ -48,6 +48,9 @@ it('los enums del OpenAPI coinciden con el contrato', () => {
     ESTADOS_ADICIONAL,
     ESTADOS_ETAPA,
     ESTADOS_JORNADA,
+    DISPOSITIVOS_TABLERO,
+    CONFIANZAS_IA,
+    UNIDADES_MATERIAL,
   };
   for (const [nombre, valores] of Object.entries(listas)) {
     assert.ok(yaml.includes(`enum: [${valores.join(', ')}]`), `${nombre} no aparece igual en openapi.yaml`);

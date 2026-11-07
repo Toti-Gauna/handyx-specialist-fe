@@ -1089,6 +1089,33 @@ async function main() {
     await foto('05-nivel');
   }, { capturas });
 
+  await escenario('S-taller-ia', nav_, base, async ({ p, foto }) => {
+    // Etiquetas con IA: la foto se achica en el teléfono; la IA (simulada en datos de prueba) propone y vos confirmás
+    await p.goto(`${base}/taller/etiquetas/?escenario=habilitado`);
+    await ver(p, 'Tu foto se cuida');
+    await p.getByLabel('Foto del tablero').setInputFiles(join(__dirname, '..', 'public', 'icono-app-512.png'));
+    await p.getByRole('img', { name: 'La foto del tablero que elegiste' }).waitFor();
+    await p.getByRole('button', { name: 'Leer el tablero' }).click();
+    await ver(p, 'Lo que encontró, de izquierda a derecha');
+    await ver(p, 'No se lee');
+    await p.getByLabel('Qué protege').nth(4).fill('Aire del dormitorio');
+    await ver(p, 'Aire del dormitorio · 20 A');
+    await foto('01-etiquetas');
+    await p.getByRole('button', { name: 'Abrir en el armador 3D' }).click();
+    await p.waitForURL('**/taller/tablero/');
+    await ver(p, 'Aire del dormitorio · 20 A');
+    await ver(p, 'Luces · 10 A');
+    // Presupuesto dictado: los datos personales no salen del teléfono
+    await p.goto(`${base}/taller/dictado/?escenario=habilitado`);
+    await p.getByLabel('Contá qué hay que hacer').fill('Agregar 4 tomas en la cocina, llamar al 0223 155551234');
+    await ver(p, 'Antes de mandarlo sacamos: teléfono.');
+    await p.getByRole('button', { name: 'Armar tareas y materiales' }).click();
+    await ver(p, 'Agregar 4 tomas');
+    await ver(p, 'Cable unipolar 2,5 mm²');
+    await ver(p, 'Sin precios: los ponés vos');
+    await foto('02-dictado');
+  }, { capturas });
+
   await escenario('J-sin-conexion-service-worker', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/?escenario=habilitado`);
     await p.waitForURL('**/inicio/');

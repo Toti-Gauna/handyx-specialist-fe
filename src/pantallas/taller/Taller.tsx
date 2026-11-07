@@ -23,6 +23,8 @@ export const RUTA_HERRAMIENTA: Record<string, string> = {
   consumo: RUTAS.tallerConsumo.ruta,
   ohm: RUTAS.tallerOhm.ruta,
   nivel: RUTAS.tallerNivel.ruta,
+  'etiquetas-ia': RUTAS.tallerEtiquetas.ruta,
+  dictado: RUTAS.tallerDictado.ruta,
 };
 
 const NOMBRE_RUBRO: Record<Rubro, string> = {
