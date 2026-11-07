@@ -61,7 +61,7 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
 ## 4. Fases
 
 ### Fase D · Rediseño deluxe — Opus 5.5 / xhigh
-- ✔ **D.1 Auditoría y dirección de arte** (`docs/rediseno-deluxe.md`; esperando la elección de Ignacio): revisión de las 120 pantallas; moodboard y 2 o 3 direcciones visuales con 3
+- ✔ **D.1 Auditoría y dirección de arte** (`docs/rediseno-deluxe.md`; Ignacio eligió **C · Costa de Mar del Plata** el 08/11, con ajustes): revisión de las 120 pantallas; moodboard y 2 o 3 direcciones visuales con 3
   pantallas clave cada una (Inicio, Tu precio, el regalo); principios de movimiento, vibración y sonido. **Pausa para
   que Ignacio elija una.**
 - **D.2 Kit v3:** paleta con profundidad (superficies, sombras en capas, materiales), tipografía con números
@@ -71,7 +71,10 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
   premios (gorra, campera, herramientas por oficio), retocados, livianos y con versión AR.
 - **D.4 Base 3D nativa:** luces, materiales y entorno de la app; visor 3D con gestos; exportación a AR (Quick Look en
   iPhone, WebXR en Android).
-- **D.5 Pantallas núcleo:** Inicio, pedidos, Tu precio, trabajo, caja y el Taller con el kit v3.
+- **D.5 Pantallas núcleo:** Inicio con mapa (el único lugar con «Disponible» y los pedidos), pedidos, Tu precio,
+  trabajo, el **apartado Obras** (pestaña propia: lista en curso, próximas y terminadas, y el seguimiento día por día
+  con jornadas, etapa, diario y plata de la obra), **Tus ingresos** (bruto, gastos y neto del mes) y el Taller con el
+  kit v3. Pestañas: Inicio · Obras · Agenda · Mensajes · Cuenta.
 - **D.6 El resto de la app:** bienvenida, acceso y alta, mensajes, agenda, cuenta, ayuda, avisos, vacíos y errores.
 - **D.7 Movimiento entre pantallas:** View Transitions, esqueletos con brillo, celebraciones coreografiadas, vibración
   en Android, sonido opcional apagado.
@@ -83,8 +86,12 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
 - **H0.2 Presupuestador y lista de precios** (Jobber, Housecall Pro, presupuestadores de corralones): mano de obra,
   materiales y margen; plantillas, versiones y vigencia; lo del Taller pasa con un toque; se manda por el chat. Precios
   a mano, por planilla o con foto de la lista del corralón (lectura en el teléfono), con fecha visible.
-- **H0.3 Ingresos y gastos** (apps de monotributistas, QuickBooks Self-Employed): cobrado en Handyx y por fuera;
-  tickets con foto; ganancia por trabajo y por mes; metas; ayuda de monotributo orientativa (tabla vigente de ARCA).
+- **H0.3 Ingresos y gastos** (apps de monotributistas, QuickBooks Self-Employed): para que el especialista sepa su
+  **bruto y su neto**. Bruto: lo cobrado en Handyx (verificado e informado, por separado) y por fuera. Gastos:
+  materiales (con la foto del ticket o desde el presupuesto, el pedido de repuestos y el Modo trabajo), combustible y
+  viáticos, herramientas. Neto = bruto − gastos − tarifa de Handyx (0 % en la demo). Ganancia por trabajo, por obra (con
+  sus etapas) y por mes; metas; exportar el mes; ayuda de monotributo orientativa (tabla vigente de ARCA). Los gastos
+  son del especialista y no se le muestran al cliente.
 - **H0.4 Modo trabajo** (se abre al pasar a «en curso»; botones grandes para usar con guantes): cronómetro por tarea;
   checklist que empieza por la seguridad; fotos con anotaciones y comparador antes/después; materiales con código de
   barras que pasan a adicional (lo acepta el cliente); notas de voz; hoja de herramientas a mano (calculadoras, nivel,

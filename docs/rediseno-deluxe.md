@@ -1,7 +1,7 @@
 # Rediseño deluxe · D.1 Auditoría y direcciones de arte
 
-Fase D del bloque Taller (`docs/herramientas.md`). Este documento cierra el lote D.1 y se pausa hasta que Ignacio elija
-una dirección. D.2 a D.7 no empiezan sin esa elección.
+Fase D del bloque Taller (`docs/herramientas.md`). Este documento cierra el lote D.1. Ignacio eligió la
+dirección **C · Costa de Mar del Plata** el 08/11/2026, con los ajustes del §6. D.2 empieza con su OK.
 
 - Lienzo con las 3 direcciones (9 pantallas de 390 × 844, navegables entre sí): artifact privado «Handyx Deluxe ·
   Direcciones de arte», enlazado en el handoff de la sesión. Es una maqueta: los textos y montos son los de la demo,
@@ -94,3 +94,28 @@ horizonte (cielo, mar, arena) y el regalo sale del mar con el sol detrás.
 
 Con la elección, D.2 arma el kit v3 en `src/kit/` (tokens, componentes y biblioteca de movimiento) y lo muestra en
 `/catalogo/`; D.3 a D.7 siguen el plan de `docs/herramientas.md`. Después: H0, R, G, Q y la fase 6 (deploy).
+
+## 6. Elección: C · Costa de Mar del Plata (08/11/2026)
+
+Ignacio eligió C con estos ajustes, ya dibujados en la fila C del lienzo (Inicio con mapa, Tus obras, Obra día por
+día, Tus ingresos, Tu precio y el regalo):
+
+1. **Disponible y los pedidos viven solo en el Inicio con mapa.** El Inicio sigue siendo el mapa de la app actual
+   (barrios, la costa y el Mar Argentino a la derecha, zona aproximada del pedido y la posición del especialista) con el
+   interruptor «Disponible» flotante y la hoja de «Pedidos para vos». Ninguna otra pantalla deja ponerse disponible ni
+   aceptar o cotizar. Debajo de los pedidos, dos accesos chicos: el neto del mes y Tu camino.
+2. **Apartado Obras.** Hoy las obras (lote 4.7: plan, jornadas, diario y cobro por etapas) están adentro del detalle de
+   cada trabajo y no tienen un lugar propio. Pasan a una **pestaña Obras**: lista con «En curso», «Próximas» y
+   «Terminadas», cada una con el anillo de etapas y la tira de jornadas; y el seguimiento **día por día** (las jornadas
+   en una tira con hechas, hoy y las que vienen; la etapa en curso; el último avance del diario con fotos; acordado,
+   cobrado, materiales y lo que falta cobrar) con una sola acción principal: «Cargar el avance de hoy». Pestañas:
+   Inicio · Obras · Agenda · Mensajes · Cuenta.
+3. **Tus ingresos: bruto y neto.** La caja pasa a ser «Tus ingresos» por mes: el **neto** (lo que le queda) como cifra
+   protagonista, el **bruto** cobrado (en Handyx, con lo verificado aparte, y por fuera), los **gastos** (materiales,
+   combustible y viáticos) restados, la tarifa de Handyx (0 % en la demo), una barra que reparte el bruto, la ganancia
+   por trabajo y «Cargar un gasto con la foto del ticket». Lo informado sin verificar se sigue diciendo como tal. El
+   diseño se arma en D.5 y la carga de gastos llega con H0.3; hasta entonces el neto dice «sin gastos cargados».
+4. **Sin gradientes.** Cielo, mar y arena se dibujan como bandas planas, así que la regla de `docs/diseno.md` (sin
+   gradientes ni vidrio) se mantiene. El anillo de avance usa cortes netos, no un degradé.
+
+Siguen pendientes: capa propia de la app o también la landing (§4.3) y el plan de Meshy (§4.4).
