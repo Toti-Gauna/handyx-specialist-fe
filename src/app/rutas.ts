@@ -80,6 +80,14 @@ export const RUTAS = {
   cuentaNotificaciones: { ruta: '/cuenta/notificaciones/', titulo: 'Notificaciones', lote: '4.8', descripcion: 'Qué avisos recibís y los avisos del dispositivo.' },
   cuentaPrivacidad: { ruta: '/cuenta/privacidad/', titulo: 'Privacidad y baja', lote: '4.8', descripcion: 'Quién ve qué, documentos, políticas y eliminar tu cuenta.' },
   soporte: { ruta: '/soporte/', titulo: 'Centro de ayuda', lote: '4.8', descripcion: 'Asistencia y reclamos con su historial.' },
+  taller: { ruta: '/taller/', titulo: 'Taller', lote: 'H0.1', descripcion: 'Herramientas por oficio: las de tu rubro primero, después las comunes y las de otros oficios.' },
+  tallerConductores: { ruta: '/taller/conductores/', titulo: 'Sección y caída de tensión', lote: 'H1.1', descripcion: 'Sección del cable, protección y caída de tensión con el porqué.' },
+  tallerVivienda: { ruta: '/taller/vivienda/', titulo: 'Planificador de vivienda', lote: 'H1.1', descripcion: 'Grado de electrificación, circuitos y bocas mínimas por ambiente.' },
+  tallerTablero: { ruta: '/taller/tablero/', titulo: 'Armador de tablero', lote: 'H1.2', descripcion: 'Tablero en 3D, gabinete, materiales, etiquetas y vista en la pared (iPhone).' },
+  tallerIluminacion: { ruta: '/taller/iluminacion/', titulo: 'Iluminación', lote: 'H1.1', descripcion: 'Lúmenes y cantidad de luminarias por ambiente.' },
+  tallerConsumo: { ruta: '/taller/consumo/', titulo: 'Consumo y ahorro', lote: 'H1.1', descripcion: 'Consumo del mes y ahorro de pasar a LED con la tarifa que carga el profesional.' },
+  tallerOhm: { ruta: '/taller/ohm/', titulo: 'Ohm y referencias', lote: 'H1.1', descripcion: 'Ley de Ohm, colores de conductores y seguridad antes de trabajar.' },
+  tallerNivel: { ruta: '/taller/nivel/', titulo: 'Nivel y pendiente', lote: 'H0.1', descripcion: 'Nivel, plomada y pendiente con el giroscopio.' },
   notificaciones: { ruta: '/notificaciones/', titulo: 'Avisos', lote: '2.2', descripcion: 'Avisos dentro de la app, urgentes y programados diferenciados.' },
 } as const satisfies Record<string, Ruta>;
 

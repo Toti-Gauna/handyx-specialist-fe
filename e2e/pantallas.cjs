@@ -62,6 +62,14 @@ const PANTALLAS = [
   ['sin-conexion', '/sin-conexion/', 'Se nos cortó el caño', 'habilitado'],
   ['no-encontrada', '/no-existe/', 'No encontramos esta pantalla', 'habilitado'],
   ['catalogo', '/catalogo/', 'Todavía no hay pedidos para vos', 'habilitado'],
+  ['taller', '/taller/', 'De tu oficio', 'habilitado'],
+  ['taller-conductores', '/taller/conductores/', 'La decide', 'habilitado'],
+  ['taller-vivienda', '/taller/vivienda/', 'Bocas mínimas por ambiente', 'habilitado'],
+  ['taller-tablero', '/taller/tablero/', 'Lista de materiales', 'habilitado'],
+  ['taller-iluminacion', '/taller/iluminacion/', 'Nivel recomendado', 'habilitado'],
+  ['taller-consumo', '/taller/consumo/', 'Consumo del mes', 'habilitado'],
+  ['taller-ohm', '/taller/ohm/', 'Antes de trabajar', 'habilitado'],
+  ['taller-nivel', '/taller/nivel/', 'Pendiente buscada', 'habilitado'],
 ];
 
 /** Espera a que los mapas de la pantalla terminen de cargar (o queden con su texto de respaldo). */

@@ -73,6 +73,7 @@ export function Cuenta() {
           <Fila icono="maletin" titulo="Rubros y zonas" detalle="Cobertura, días y horarios" href={RUTAS.disponibilidad.ruta} />
           <Fila icono="billetera" titulo="Cómo te paga el cliente" detalle="Mercado Pago o efectivo, directo a vos" href={RUTAS.cuentaCobros.ruta} />
           <Fila icono="caja" titulo="Caja: pagos directos" detalle="Cobros del mes y su estado" href={RUTAS.caja.ruta} />
+          <Fila icono="engranaje" titulo="Taller" detalle="Herramientas de tu oficio" href={RUTAS.taller.ruta} />
           <Fila icono="verificado" titulo="Tu alta y tus documentos" detalle={ALTA[perfil.estadoAlta].texto} href={RUTAS.alta.ruta} />
         </div>
       </section>

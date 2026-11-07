@@ -1040,6 +1040,55 @@ async function main() {
     await foto('07-ayuda');
   }, { capturas });
 
+  await escenario('R-taller-electricidad', nav_, base, async ({ p, foto }) => {
+    await p.goto(`${base}/inicio/?escenario=habilitado`);
+    await p.getByRole('link', { name: /Tu taller/ }).click();
+    await p.waitForURL('**/taller/');
+    await ver(p, 'De tu oficio');
+    await foto('01-taller');
+    // Sección y caída de tensión: un circuito de tomas corto lo decide el mínimo; uno largo, la caída de tensión
+    await p.getByRole('link', { name: /Sección y caída de tensión/ }).click();
+    await p.waitForURL('**/taller/conductores/');
+    await ver(p, 'La decide la sección mínima del circuito');
+    await p.getByLabel('Largo del recorrido').fill('90');
+    await ver(p, 'La decide la caída de tensión');
+    await p.getByLabel('Potencia', { exact: true }).fill('');
+    await ver(p, 'Escribí la potencia mayor que cero.');
+    await p.getByLabel('Potencia', { exact: true }).fill('3500');
+    await foto('02-conductores');
+    assert.ok(await p.getByText('Valores de referencia en revisión técnica').isVisible(), 'el aviso de revisión está a la vista');
+    // Planificador de vivienda: sumar un ambiente cambia el grado
+    await p.goto(`${base}/taller/vivienda/?escenario=habilitado`);
+    await ver(p, 'Grado Mínima');
+    await p.getByLabel('Agregar ambiente').selectOption('estar');
+    await p.getByRole('button', { name: 'Agregar' }).click();
+    await p.getByLabel('Living o comedor', { exact: true }).nth(1).fill('30');
+    await ver(p, 'Grado Media');
+    await foto('03-vivienda');
+    // Tablero: agregar una térmica suma módulos y una etiqueta; quitar el diferencial avisa
+    await p.goto(`${base}/taller/tablero/?escenario=habilitado`);
+    await ver(p, 'usás 7 + 2 de reserva');
+    await p.getByRole('button', { name: 'Agregar' }).click();
+    await ver(p, 'usás 8 + 2 de reserva');
+    await p.getByRole('button', { name: 'Quitar Diferencial 2P 2' }).click();
+    await ver(p, 'Falta un disyuntor diferencial de 30 mA');
+    await foto('04-tablero');
+    // Ohm con dos datos
+    await p.goto(`${base}/taller/ohm/?escenario=habilitado`);
+    await ver(p, 'Corriente: 10 A');
+    // Nivel: en una computadora no hay giroscopio y se dice
+    await p.goto(`${base}/taller/nivel/?escenario=habilitado`);
+    await ver(p, 'En 3 m tiene que bajar 60 mm.');
+    // Sin permiso del navegador, se explica cómo habilitarlo; con permiso pero sin sensor (computadora), se dice.
+    await p.getByRole('button', { name: 'Usar el giroscopio' }).click();
+    await ver(p, /No diste permiso al sensor|Este dispositivo no tiene giroscopio/);
+    await p.context().grantPermissions(['accelerometer', 'gyroscope', 'magnetometer'], { origin: base });
+    await p.reload();
+    await p.getByRole('button', { name: 'Usar el giroscopio' }).click();
+    await ver(p, 'Este dispositivo no tiene giroscopio');
+    await foto('05-nivel');
+  }, { capturas });
+
   await escenario('J-sin-conexion-service-worker', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/?escenario=habilitado`);
     await p.waitForURL('**/inicio/');

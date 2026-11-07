@@ -6,6 +6,7 @@ import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
 import { RUTAS } from '../app/rutas.ts';
 import { Cargando, ErrorCaja, Vacio } from '../components/Estados.tsx';
+import { Handy } from '../components/Handy.tsx';
 import { usePerfil } from '../components/GuardiaApp.tsx';
 import { Icono } from '../components/Icono.tsx';
 import { ModalFee } from '../components/ModalFee.tsx';
@@ -189,6 +190,14 @@ function PanelInicio({ nombre }: { nombre: string | null }) {
           </li>
         </ul>
         <p className="texto-suave texto-chico">Lo cobrado es plata que te pagaron directamente a vos. Handyx no guarda ni te transfiere dinero.</p>
+
+        <Link className="in-taller" href={RUTAS.taller.ruta}>
+          <span className="in-taller__texto">
+            <strong>Tu taller</strong>
+            <small>Calculá cables, armá tableros y medí pendientes, también sin conexión.</small>
+          </span>
+          <Handy nombre="lamparita" alto={64} />
+        </Link>
       </div>
 
       <PedidoEntrante pedidos={abiertos} />

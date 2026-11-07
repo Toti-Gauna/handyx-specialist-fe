@@ -203,3 +203,38 @@
     transition: background-color 0.25s ease, color 0.25s ease;
   }
 }
+
+/* Entrada al Taller (bloque H) */
+.in-taller {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--esp-3);
+  padding: var(--esp-4) var(--esp-4) 0;
+  border-radius: var(--hx-radio-mosaico);
+  background: var(--hd-azul);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 var(--hx-base-boton) 0 var(--hd-azul-hondo);
+  overflow: hidden;
+}
+.in-taller:active {
+  transform: translateY(var(--hx-base-boton));
+  box-shadow: 0 0 0 var(--hd-azul-hondo);
+}
+.in-taller__texto {
+  display: grid;
+  gap: 4px;
+  padding-bottom: var(--esp-4);
+}
+.in-taller__texto strong {
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.2rem;
+  font-weight: 900;
+  font-stretch: 120%;
+}
+.in-taller__texto small {
+  color: #dfe7f5;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
