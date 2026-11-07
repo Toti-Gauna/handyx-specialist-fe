@@ -381,7 +381,7 @@
    "title": "Lista"
   },
   "F-Obra.dc.html": {
-   "x": 470,
+   "x": 940,
    "y": 60080,
    "w": 390,
    "h": 1100,
@@ -395,28 +395,28 @@
    "title": "Equipo · Buscar un profesional"
   },
   "F-ObraDia.dc.html": {
-   "x": 940,
+   "x": 1410,
    "y": 60080,
    "w": 390,
    "h": 1230,
    "title": "Jornada"
   },
   "F-ObraDiaAvance.dc.html": {
-   "x": 2350,
+   "x": 2820,
    "y": 60080,
    "w": 390,
    "h": 844,
    "title": "Cargar el avance"
   },
   "F-ObraDiaHorario.dc.html": {
-   "x": 1410,
+   "x": 1880,
    "y": 60080,
    "w": 390,
    "h": 844,
    "title": "Horario de la jornada"
   },
   "F-ObraDiaTarea.dc.html": {
-   "x": 1880,
+   "x": 2350,
    "y": 60080,
    "w": 390,
    "h": 844,
@@ -430,7 +430,7 @@
    "title": "Equipo de la obra"
   },
   "F-ObraFecha.dc.html": {
-   "x": 4230,
+   "x": 4700,
    "y": 60080,
    "w": 390,
    "h": 844,
@@ -444,14 +444,14 @@
    "title": "Equipo · Postulantes"
   },
   "F-ObraRepuesto.dc.html": {
-   "x": 3760,
+   "x": 4230,
    "y": 60080,
    "w": 390,
    "h": 844,
    "title": "Agregar repuesto"
   },
   "F-ObraRepuestos.dc.html": {
-   "x": 2820,
+   "x": 3290,
    "y": 60080,
    "w": 390,
    "h": 844,
@@ -507,7 +507,7 @@
    "title": "Reparto del pago"
   },
   "F-RepuestoOrigen.dc.html": {
-   "x": 3290,
+   "x": 3760,
    "y": 60080,
    "w": 390,
    "h": 844,
@@ -1366,6 +1366,13 @@
    "w": 1440,
    "h": 900,
    "title": "Escritorio · Solo en el celular"
+  },
+  "F-ObraNueva.dc.html": {
+   "x": 470,
+   "y": 60080,
+   "w": 390,
+   "h": 844,
+   "title": "Obras · Proponer una obra nueva"
   }
  },
  "createdOnFiles": {
@@ -1542,7 +1549,7 @@
    "size": 24,
    "text": "Obra con cabecera protagonista y días en línea de tiempo; jornada clara con modales para horario, tareas y avance. Repuestos: «Lo consigo yo» o «En una ferretería adherida», con precios distintos en cada una.",
    "w": 380,
-   "x": 4740,
+   "x": 5210,
    "y": 60080
   },
   "nota7": {
@@ -1714,7 +1721,7 @@
   },
   "titulo6": {
    "kind": "title1",
-   "maxW": 4620,
+   "maxW": 5090,
    "text": "Obras · seguimiento de varios días",
    "w": 240,
    "x": 0,
@@ -1893,6 +1900,7 @@
   "CU-Notificaciones.dc.html",
   "CU-Privacidad.dc.html",
   "F-Obras.dc.html",
+  "F-ObraNueva.dc.html",
   "F-Obra.dc.html",
   "F-ObraDia.dc.html",
   "F-ObraDiaHorario.dc.html",

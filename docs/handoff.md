@@ -46,7 +46,10 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
 - **Séptima vuelta (08/11):** 195 tableros (`docs/rediseno-deluxe.md` §14): textos sin cortes, Inicio con panel de
   estado, pestaña **Taller** en lugar de Agenda, chats rehechos, modales con su pantalla detrás, agregar material en un
   paso con «Material nuevo», ver perfil del postulante, vista de escritorio (solo celular) y descripciones con «Cómo
-  llegás» en recorridos y flujos. Ignacio dio el diseño por completo: **siguiente paso, D.2** (kit v3).
+  llegás» en recorridos y flujos.
+- **Última pasada (08/11):** onboarding con ilustración propia, Disponible dentro de la cabecera, login con la
+  ciudad, recorrido continuo, «Pedir ayuda» en las herramientas del Modo trabajo y obra nueva desde Obras
+  (`docs/rediseno-deluxe.md` §15). **Siguiente paso: D.2** (kit v3).
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 

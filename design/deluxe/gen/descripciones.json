@@ -112,7 +112,7 @@
   "titulo": "Propuesta de obra",
   "que": "Armás la propuesta de obra: etapas, jornadas, montos y el equipo que necesitás.",
   "llegas": [
-   "«Nueva obra» en Tus obras",
+   "«Seguir: etapas y montos» en Proponer una obra nueva",
    "«Propuesta de obra» en Mandar en el chat"
   ]
  },
@@ -188,7 +188,7 @@
   "llegas": [
    "«Revisá zonas y horarios» en Primeros pasos",
    "«Disponibilidad y zonas» en Tu cuenta",
-   "«TUS ZONAS 4 barrios» en Inicio con mapa"
+   "«Tus zonas» en Inicio con tu día"
   ]
  },
  "H0-Presupuesto": {
@@ -259,7 +259,7 @@
  },
  "F-Obras": {
   "titulo": "Tus obras",
-  "que": "Tus obras de varios días: en curso, próximas y terminadas, con el avance de cada una.",
+  "que": "Tus obras de varios días: en curso, próximas y terminadas, con el avance de cada una. Desde acá proponés una obra nueva.",
   "llegas": [
    "Pestaña «Obras» de la barra de abajo"
   ]
@@ -371,6 +371,13 @@
    "«Proponer de 6:15 a 8:00» en Horario a medida"
   ]
  },
+ "F-ObraNueva": {
+  "titulo": "Proponer una obra nueva",
+  "que": "Proponés una obra nueva: elegís para quién (un cliente tuyo o uno nuevo con un enlace), el nombre y los oficios; después armás etapas y montos.",
+  "llegas": [
+   "«Proponer una obra nueva» en Tus obras"
+  ]
+ },
  "FE-Inicio": {
   "titulo": "Hoy, martes 17",
   "que": "El día de la ferretería: pedidos nuevos, preparando, listos y retirados.",
@@ -469,7 +476,7 @@
  },
  "H0-ModoHerramientas": {
   "titulo": "Herramientas a mano",
-  "que": "Las herramientas a mano mientras trabajás: nivel, linterna, medir, calculadoras y más.",
+  "que": "Las herramientas a mano mientras trabajás: nivel, linterna, medir, calculadoras, y «Pedir ayuda» para llamar a un contacto o buscar un profesional nuevo.",
   "llegas": [
    "«Herramientas» en Modo trabajo"
   ]
@@ -827,8 +834,9 @@
  },
  "H0-ModoAyuda": {
   "titulo": "Pedir ayuda",
-  "que": "Llamás o le escribís a otro profesional de tus contactos, o lo sumás al trabajo.",
+  "que": "Llamás o le escribís a un contacto, lo sumás al trabajo o buscás un profesional nuevo para terminar la obra.",
   "llegas": [
+   "«Pedir ayuda» en Herramientas a mano",
    "«Pedir ayuda» en Modo trabajo"
   ]
  },
@@ -1006,6 +1014,7 @@
   "titulo": "Buscar un profesional",
   "que": "Publicás una búsqueda: oficio, jornadas, su parte del pago y un mensaje. La ven verificados de la zona.",
   "llegas": [
+   "«Buscar un profesional nuevo» en Pedir ayuda",
    "«Buscar uno nuevo» en Equipo de la obra"
   ]
  },
@@ -1047,7 +1056,7 @@
   "llegas": [
    "«Sumar» en Jornada",
    "«Agregar personas» en Grupo de la obra",
-   "«Sumarlo a este trabajo» en Pedir ayuda"
+   "«Sumar un contacto a este trabajo» en Pedir ayuda"
   ]
  },
  "G-Camino": {

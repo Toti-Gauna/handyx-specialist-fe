@@ -173,6 +173,7 @@ def herr(ic, t, sub, href, prim=False):
 cuerpo = '  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(14,29,54,0.45)"></div>\n' + hoja(f'''
     <div style="display: flex; justify-content: space-between; align-items: center"><h1 style="margin: 0; {TIT}; font-size: 26px">Herramientas</h1>{chip("Sin salir del trabajo","herramienta","tinte")}</div>
     <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px">{herr('nivel','Nivel','Giroscopio','T-Taller.dc.html',True)}{herr('linterna','Linterna','Flash','H0-Modo.dc.html')}{herr('lupa','Lupa','Cámara con zoom','H0-Modo.dc.html')}{herr('regla','Medir','Con la cámara','H0-Modo.dc.html')}{herr('rayo','Calculadoras','Del Taller','T-Cables.dc.html')}{herr('escaner','Código de barras','Sumar material','H0-AgregarMaterial.dc.html')}</div>
+    <a href="H0-ModoAyuda.dc.html" style="display: flex; gap: 12px; align-items: center; min-height: 64px; padding: 10px 14px; border-radius: 22px; background: {AMARILLO}; color: {TINTA}; box-shadow: 0 4px 0 #C9C85A; text-decoration: none">{mosaico_ic('usuario2',42,fondo='#FFFFFF',radio=14,iconsize=20)}<span style="flex: 1; display: flex; flex-direction: column"><strong style="font-size: 15px">Pedir ayuda</strong><span style="font-size: 12px">Llamar a un contacto o buscar un profesional nuevo</span></span>{svg(IC['flecha'],TINTA,18)}</a>
     {tarjeta(fila_ic('micro','Nota de voz','Se guarda en el trabajo',href='H0-Modo.dc.html',borde=False)+fila_ic('escudo','Checklist de seguridad','Plomería · 6 puntos',href='H0-Modo.dc.html'))}''', 210)
 guardar('H0-ModoHerramientas.dc.html','H0 · Herramientas a mano',cuerpo)
 
@@ -184,7 +185,7 @@ def btn_ic(ic, label, prim=False):
 cuerpo = barra_compacta('Pedir ayuda','H0-Modo.dc.html',sub='Pierde la canilla') + contenido(f'''
     {titulo_grande("SIN SALIR DEL TRABAJO","¿A quién ","llamás","?")}
     {tarjeta(etiqueta("TUS CONTACTOS")+pro('diego','Electricidad',chip("Disponible","check","exito"),f'<span style="display: flex; gap: 6px">{btn_ic("chat","Mensaje")}{btn_ic("telefono","Llamar",True)}</span>')+pro('pablo','Gas',chip("Ocupado hasta 19","reloj","amarillo"),f'<span style="display: flex; gap: 6px">{btn_ic("chat","Mensaje")}{btn_ic("telefono","Llamar",True)}</span>')+pro('sofia','Albañilería',chip("En obra","obra","tinte"),f'<span style="display: flex; gap: 6px">{btn_ic("chat","Mensaje")}{btn_ic("telefono","Llamar",True)}</span>'))}
-    {tarjeta(fila_ic('usuario2','Sumarlo a este trabajo','Lo invitás y se acuerda el reparto',href='F-Invitar.dc.html',borde=False)+fila_ic('herramienta','Consultar al Taller','Calculadoras y referencias del oficio',href='T-Taller.dc.html'))}''')
+    {tarjeta(fila_ic('lupa','Buscar un profesional nuevo','Para terminar la obra: lo ven verificados de la zona',href='F-ObraBuscar.dc.html',borde=False)+fila_ic('usuario2','Sumar un contacto a este trabajo','Lo invitás y se acuerda el reparto',href='F-Invitar.dc.html')+fila_ic('herramienta','Consultar al Taller','Calculadoras y referencias del oficio',href='T-Taller.dc.html'))}''')
 guardar('H0-ModoAyuda.dc.html','H0 · Pedir ayuda',cuerpo)
 
 # Organizar la agenda desde el trabajo.

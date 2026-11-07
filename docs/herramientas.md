@@ -185,6 +185,8 @@ Pedido de Ignacio del 08/11/2026. Diseño en las filas «Obras», «Obras en equ
   flujos con pantallas y datos distintos. Se cargan repuestos **a comprar a futuro** por jornada; el cliente los **aprueba** en el
   chat (esperando aprobación → aprobado → comprado); **aviso el día anterior si falta comprar** y de lo que se va a
   comprar; se conectan con la fase R y con los gastos (H0.3).
+- **O.1b Obra nueva:** el especialista propone una obra desde Obras a un cliente suyo o a uno nuevo (enlace), con
+  nombre y oficios; después, etapas y montos como en la propuesta del chat.
 - **O.3 Cambios de fecha:** mover una jornada o esta y las que siguen; el cliente acepta; hasta entonces, siguen las
   fechas de ahora; se avisa al equipo.
 - **O.4 Equipo de obra:** se suman profesionales **invitados** (contactos de Handyx o enlace con código que vence) o

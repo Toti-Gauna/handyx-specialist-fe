@@ -189,7 +189,7 @@ def avatar(k, tam=44, borde=False):
     b='box-shadow: 0 0 0 3px #FFFFFF;' if borde else ''
     return f'<span aria-hidden="true" style="width: {tam}px; height: {tam}px; flex: none; border-radius: 50%; background: {f}; color: {c}; display: inline-flex; align-items: center; justify-content: center; font-family: \'Archivo\', sans-serif; font-weight: 900; font-stretch: 112%; font-size: {max(11,int(tam*0.36))}px; {b}">{ini}</span>'
 def avatares(ks, tam=30):
-    return '<span style="display: inline-flex">'+''.join(f'<span style="margin-left: {0 if i==0 else -10}px">{avatar(k,tam,True)}</span>' for i,k in enumerate(ks))+'</span>'
+    return '<span style="display: inline-flex">'+''.join(f'<span style="position: relative; z-index: {len(ks)-i}; margin-left: {0 if i==0 else -8}px">{avatar(k,tam,True)}</span>' for i,k in enumerate(ks))+'</span>'
 def nombre(k): return GENTE[k][1]
 def tabs(items, activa):
     out=[]
@@ -253,3 +253,30 @@ def burbuja(k, texto, hora, mio=False, con_nombre=True, reac=None, editado=False
 def contenido_chat(html, top=72, bottom=84):
     """Mensajes pegados abajo, justo arriba de la caja para escribir (como en cualquier chat)."""
     return f'<div style="position: absolute; top: {top}px; bottom: {bottom}px; left: 14px; right: 14px; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; overflow: hidden; padding-bottom: 6px">{html}</div>'
+
+def cabecera_estado(stats, sub='Te llegan pedidos de tus zonas', on=True):
+    """Inicio: la cabecera azul trae adentro el estado (Disponible) y los tres datos del día, como una sola pieza."""
+    pista = '#1E9E57' if on else 'rgba(255,255,255,0.3)'; lado = 'right: 3px' if on else 'left: 3px'
+    def dato(ic, et, v, href=None):
+        tag = 'a' if href else 'span'; h = f' href="{href}"' if href else ''
+        return (f'<{tag}{h} style="flex: 1; min-width: 0; min-height: 52px; padding: 6px 4px; box-sizing: border-box; border-radius: 16px; background: rgba(14,29,54,0.24); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: #FFFFFF; text-decoration: none; text-align: center">'
+                f'<span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; color: #E6EEFA">{svg(IC[ic],AMARILLO,14)}{et}</span>'
+                f'<strong style="font-size: 15px; white-space: nowrap; font-variant-numeric: tabular-nums">{v}</strong></{tag}>')
+    datos = ''.join(dato(*s) for s in stats)
+    return f'''  <header style="position: absolute; top: 0; left: 0; right: 0; padding: 20px 14px 14px 20px; background: {AZUL}; border-radius: 0 0 32px 32px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 14px 30px -16px rgba(14,29,54,0.55)">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <span style="display: flex; flex-direction: column; gap: 2px"><span style="{TIT}; font-size: 36px; line-height: 1; color: #FFFFFF">Handyx</span><span style="font-size: 11px; font-weight: 700; color: #FFFFFF">Soluciones, no problemas</span></span>
+      <span style="display: flex; gap: 8px">
+        <a href="D6-Avisos.dc.html" aria-label="Avisos" style="position: relative; width: 52px; height: 52px; border-radius: 17px; background: rgba(255,255,255,0.16); display: flex; align-items: center; justify-content: center">{svg(IC['campana'],'#FFFFFF',23)}<span style="position: absolute; top: 11px; right: 12px; width: 10px; height: 10px; border-radius: 50%; background: {AMARILLO}"></span></a>
+        <a href="CU-Disponibilidad.dc.html" aria-label="Tus zonas" style="width: 52px; height: 52px; border-radius: 17px; background: rgba(255,255,255,0.16); display: flex; align-items: center; justify-content: center">{svg(IC['pin'],'#FFFFFF',23)}</a>
+      </span>
+    </div>
+    <div style="padding: 6px; border-radius: 24px; background: rgba(14,29,54,0.16); border: 1px solid rgba(255,255,255,0.22); display: flex; flex-direction: column; gap: 6px">
+      <div role="switch" aria-checked="{str(on).lower()}" aria-label="Disponible" style="display: flex; align-items: center; gap: 12px; min-height: 54px; padding: 0 8px 0 12px; border-radius: 18px; background: #FFFFFF">
+        <span aria-hidden="true" style="width: 12px; height: 12px; flex: none; border-radius: 50%; background: {"#1E9E57" if on else "#C9CFDA"}; box-shadow: 0 0 0 5px {"rgba(30,158,87,0.18)" if on else "rgba(0,0,0,0.06)"}"></span>
+        <span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><strong style="font-size: 16px; color: {TINTA}">{"Disponible" if on else "No disponible"}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span></span>
+        <span aria-hidden="true" style="width: 54px; height: 32px; flex: none; border-radius: 16px; background: {pista if on else "#C9CFDA"}; position: relative"><span style="position: absolute; top: 3px; {lado}; width: 26px; height: 26px; border-radius: 50%; background: #FFFFFF; box-shadow: {ELEV1}"></span></span>
+      </div>
+      <div style="display: flex; gap: 6px">{datos}</div>
+    </div>
+  </header>'''

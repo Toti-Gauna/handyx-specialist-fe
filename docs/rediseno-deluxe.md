@@ -293,3 +293,15 @@ Carla Ibáñez (clientes), Sofía Ruiz, Diego Herrera y Pablo Vega (profesionale
 - **Escritorio:** una pantalla de muestra de cómo se ve desde una computadora (solo celular).
 - 195 tableros: 161 pantallas (una de escritorio), 16 recorridos y 17 flujos; axe en 0, 0 áreas táctiles chicas, 0
   textos chicos y nada tapado por los botones fijos (`medir.cjs` ahora se corre sobre todas las pantallas).
+
+## 15. Última pasada (08/11/2026)
+
+- **¡Estás habilitado!** con ilustración propia (escudo verificado, herramientas y cinta) y el título entero; la remera
+  del kit rehecha en SVG con el nombre siempre adentro.
+- **Inicio:** Disponible y los datos del día viven adentro de la cabecera azul, como una sola pieza.
+- **Iniciar sesión** con la misma ciudad de la bienvenida, en chico.
+- **Tu recorrido:** una línea continua con los tramos sobre ella.
+- **Modo trabajo → Herramientas → «Pedir ayuda»**, y desde ahí también **buscar un profesional nuevo** para la obra.
+- **Proponer una obra nueva** desde Obras (a un cliente tuyo o a uno nuevo con un enlace) y después etapas y montos.
+- Avatares de varias personas sin cortes. 196 tableros; axe en 0, 0 áreas táctiles chicas, 0 textos chicos, nada
+  tapado y sin enlaces rotos.

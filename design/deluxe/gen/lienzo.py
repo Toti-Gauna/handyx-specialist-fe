@@ -31,7 +31,7 @@ for i,f in enumerate(fe): puesto(f+'.dc.html',(i%4)*1360,y+(i//4)*1000)
 y+=2000-200+300+300
 
 filas_pant=[fila_de('D6-Bienvenida.dc.html'),fila_de('RG-1.dc.html'),fila_de('OB-Aprobado.dc.html'),fila_de('F-Inicio.dc.html'),['F-InicioDia.dc.html','F-InicioRuta.dc.html','TR-EnCamino.dc.html','TR-Cobro.dc.html','F-Herramientas.dc.html','F-Agenda.dc.html','F-AgendaPasadas.dc.html','F-AgendaMes.dc.html','F-Trabajo.dc.html','F-Ingresos.dc.html'],fila_de('F-Cuenta.dc.html'),
- [f+'.dc.html' for f in 'F-Obras F-Obra F-ObraDia F-ObraDiaHorario F-ObraDiaTarea F-ObraDiaAvance F-ObraRepuestos F-RepuestoOrigen F-ObraRepuesto F-ObraFecha'.split()],
+ [f+'.dc.html' for f in 'F-Obras F-ObraNueva F-Obra F-ObraDia F-ObraDiaHorario F-ObraDiaTarea F-ObraDiaAvance F-ObraRepuestos F-RepuestoOrigen F-ObraRepuesto F-ObraFecha'.split()],
  [f+'.dc.html' for f in 'F-ObraEquipo F-Invitar F-Reparto F-ObraBuscar F-InicioConvocatoria F-ConvocatoriaDetalle F-ObraPostulantes F-PerfilProfesional'.split()],
  [f+'.dc.html' for f in 'F-Mensajes F-Chat F-ChatGrupo F-ChatAcciones F-ChatEditar F-ChatBorrar F-ChatSeleccion F-ChatMedia F-ChatAdjuntar F-ChatGrupoInfo F-PropuestaObra'.split()],
  [f+'.dc.html' for f in 'H0-Presupuesto H0-AgregarMaterial H0-MaterialOpciones H0-MaterialNuevo H0-AgregarLista H0-Precios H0-PreciosFoto H0-PreciosRevisar H0-PrecioItem H0-ManoObra'.split()],fila_de('H0-Modo.dc.html'),
