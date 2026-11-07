@@ -24,6 +24,10 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
   D.2**, con el OK de Ignacio.
 - **Diseño completo (08/11):** 50 pantallas, una fila por fase, en el lienzo privado de D.1 (`docs/rediseno-deluxe.md`
   §8). Inicio solo con la meta; el neto pasó a Tus ingresos; recibir, cotizar con la cinta y proponer fecha rediseñados.
+- **Segunda vuelta (08/11):** 85 pantallas (`docs/rediseno-deluxe.md` §9). Nuevas fases **V** y **O** en
+  `docs/herramientas.md`. Decisiones de Ignacio: **0 % de comisión al especialista siempre**; **antecedentes por foto o
+  PDF** con resguardos (falta revisión legal); matrícula obligatoria en Gas y Aire. Orden: D → V → H0 → O → R → G → Q →
+  deploy. Ignacio sigue mandando pedidos de diseño antes de desarrollar.
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 

@@ -77,7 +77,11 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
   trabajo, el **apartado Obras** (pestaña propia: lista en curso, próximas y terminadas, y el seguimiento día por día
   con jornadas, etapa, diario y plata de la obra), **Tus ingresos** (bruto, gastos y neto del mes) y el Taller con el
   kit v3. Pestañas: Inicio · Obras · Agenda · Mensajes · Cuenta.
-- **D.6 El resto de la app:** bienvenida, acceso y alta, mensajes, agenda, cuenta, ayuda, avisos, vacíos y errores.
+- **D.6 El resto de la app:** bienvenida con la ciudad en SVG propio (edificios, grúa, Handys en las terrazas), acceso
+  y registro paso a paso (fase V), mensajes, agenda con el **mes completo en pantalla entera** (y meses pasados),
+  **cuenta premium con los azules de la marca**, **ayuda premium** (buscador, temas en mosaicos, respuestas
+  desplegables, soporte a mano), avisos, vacíos y **errores con ilustraciones SVG propias** (sin conexión, error del
+  servidor).
 - **D.7 Movimiento entre pantallas:** View Transitions, esqueletos con brillo, celebraciones coreografiadas, vibración
   en Android, sonido opcional apagado.
 - **Decisiones de Ignacio:** revisar las reglas actuales (sin gradientes ni efecto vidrio, `docs/diseno.md`); capa propia
@@ -104,6 +108,46 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
 - **H0.6 Backend:** contrato, esquema en `handyx-client-be`, endpoints y pruebas en `handyx-specialist-be`.
 - **3D nativo:** caja de herramientas que se abre en la portada del Taller; stock de la camioneta en 3D (estantes con
   cajones que muestran lo que queda).
+
+### Fase V · Acceso, registro y verificación — Opus 5.5 / xhigh
+Pedido de Ignacio del 08/11/2026. Diseño en la fila «Acceso y seguridad» y «Registro paso a paso» del lienzo.
+- **V.1 Acceso:** código por email o **SMS**, Google y Apple; **segunda verificación opcional (MFA)**: app
+  autenticadora (TOTP, recomendada), SMS o email, con códigos de respaldo y lista de dispositivos. El secreto TOTP vive
+  cifrado en el backend; nada en el navegador. SMS necesita proveedor autorizado.
+- **V.2 Registro paso a paso** (10 pasos con barra de avance): datos, **domicilio** (cifrado, nunca se muestra), rubros,
+  zonas en el mapa, **selfie** con óvalo guía, **DNI** frente y dorso con marco, CUIT/CUIL y cómo factura,
+  certificados, antecedentes, revisión y envío; después, el estado del alta. Se puede retomar donde quedó.
+- **V.3 Certificados y matrículas:** **obligatoria la matrícula en Gas y en Aire acondicionado** (sin ella no se
+  habilita ese rubro); el resto (cursos, seguro, otros) es **opcional y suma al perfil** que ven los clientes al
+  elegir. Solo cuenta lo que verifica Operations. En los textos: «matrícula verificada», nunca «matriculado» como
+  promesa de marketing.
+- **V.4 Antecedentes penales por foto o PDF** (decisión de Ignacio del 08/11/2026, reemplaza la regla anterior de no
+  guardar archivos): dato sensible, cifrado, URL firmada de corta duración, **solo lo ve Operations**, nunca a IA, y
+  **se borra al verificar** (queda solo la constancia de verificación). Requiere revisión legal (LEG) del aviso de
+  privacidad y del plazo. Más adelante, con inversión, se suma la validación con escribano: el documento para el
+  escribano lo arman los agentes por separado; la app ya deja el archivo y el estado listos.
+- **V.5 Backend:** contrato, esquema en `handyx-client-be`, endpoints en `handyx-specialist-be`, retención y pruebas.
+
+### Fase O · Obras en equipo, mensajes y cuenta — Opus 5.5 / xhigh
+Pedido de Ignacio del 08/11/2026. Diseño en las filas «Obras», «Obras en equipo» y «Mensajes» del lienzo.
+- **O.1 Obra de varios días:** resumen compacto arriba (días en obra, total gastado, falta cobrar, avance) que no tapa
+  la lista; **días en lista** con su estado; detalle de cada jornada (tareas, quién va, fotos, nota, materiales).
+- **O.2 Repuestos de la obra:** cargar repuestos **a comprar a futuro** por jornada; el cliente los **aprueba** en el
+  chat (esperando aprobación → aprobado → comprado); **aviso el día anterior si falta comprar** y de lo que se va a
+  comprar; se conectan con la fase R y con los gastos (H0.3).
+- **O.3 Cambios de fecha:** mover una jornada o esta y las que siguen; el cliente acepta; hasta entonces, siguen las
+  fechas de ahora; se avisa al equipo.
+- **O.4 Equipo de obra:** se suman profesionales **solo por invitación** (contactos de Handyx o enlace con código que
+  vence), verificados; **chat grupal** con el cliente; cada uno ve los días, el chat y su parte (los gastos del
+  titular, solo él).
+- **O.5 Reparto del pago:** cuánto le toca a cada uno (monto o %), cómo cobra (cada uno su parte, o el titular y
+  reparte por fuera) y aceptación de cada miembro. **Handyx no recibe ni reparte la plata**: registra lo acordado.
+- **O.6 Mensajes:** personas con **iniciales y nombre** (no personajes), filtros (pedidos, obras, equipo, soporte);
+  cada chat atado a un pedido, una obra o el equipo, y accesible desde la obra; **mandar por el chat** presupuestos,
+  **propuestas de obra** (etapas, jornadas y montos), repuestos para aprobar, cambios de fecha, fotos e informes, como
+  tarjetas que el cliente responde ahí mismo.
+- **O.7 Backend:** contrato, esquema (miembros de obra, invitaciones, reparto, repuestos con estado, adjuntos tipados
+  del chat), endpoints, avisos y pruebas.
 
 ### Fase R · Repuestos y ferreterías — Opus 5.5 / high
 - **R.1 Flujo simulado:** pedido desde el presupuesto, el tablero, el Modo trabajo o a mano; mapa de ferreterías
@@ -209,13 +253,17 @@ Schneider y Hager.
 
 ## 5. Orden
 
-Orden acordado con Ignacio (08/11/2026): **H1** (lo que falta de Electricidad) → **D** → **H0** → **R** → **G** → **Q**
+Orden acordado con Ignacio (08/11/2026): **H1** ✔ → **D** → **V** → **H0** → **O** → **R** → **G** → **Q**
 → **fase 6 · Deploy** del producto (`docs/plan.md`). **H2 a H6 quedan para después del deploy**: se desarrollan con el
 tiempo, un oficio por vez. Lo pendiente de la fase 4 (mapa base del 4.3 y revisión del 4.9) se cierra cuando se destrabe.
 
 ## 6. Lo que necesita decisión o autorización de Ignacio
 
-- **Diseño:** dirección de arte (D.1), reglas de estética, si se toca la landing.
+- **Diseño:** ✔ dirección de arte (estética de hoy mejorada, pestañas de vidrio); falta: si se toca la landing.
+- **Tarifa (08/11/2026):** Handyx **no le cobra comisión al especialista, nunca** (0 % siempre): sin modal ni contador de
+  «0 % durante la demo». Hay que alinear el contrato compartido (`feeHandy`) con `handyx-client-be`.
+- **Antecedentes por archivo (08/11/2026):** aprobado por Ignacio con resguardos (V.4); falta la revisión legal.
+- **Proveedores:** SMS (acceso y MFA).
 - **Meshy:** plan pago con uso comercial.
 - **Premios:** presupuesto, escalera definitiva, proveedores y logística.
 - **Legal (LEG):** bases y condiciones (sin azar), impuestos de los premios, aviso de privacidad para la dirección de

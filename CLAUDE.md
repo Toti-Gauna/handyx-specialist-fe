@@ -23,12 +23,12 @@ React 19 + Next.js 16 (App Router) + TypeScript `strict`, exportación estática
 - **Nada en el navegador**: ni `localStorage`, `sessionStorage`, IndexedDB ni `document.cookie`. Sesión = cookie
   HttpOnly del backend; CSRF solo en memoria.
 - `NEXT_PUBLIC_*` es público: sin secretos, claves de DB ni de Mercado Pago.
-- **Verificación**: documento cargado ≠ verificado; solo Operations verifica. Antecedentes **nunca** como archivo.
+- **Verificación**: documento cargado ≠ verificado; solo Operations verifica. Antecedentes penales por foto o PDF
+  (decisión de Ignacio del 08/11/2026, fase V): cifrados, solo Operations, nunca a IA, se borran al verificar.
   Sellos de habilitación solo con estado del servidor.
-- **Plata**: centavos enteros + moneda (`contracts/dinero.ts`). Fee de Handy 0 % del 10/11 al 10/12/2026 (modal de
-  primer ingreso, post-registro y contador en Cuenta); no es descuento sobre el precio del especialista; al terminar
-  no se infiere ninguna tarifa. El pago del servicio va directo al especialista (MP o efectivo): reportado ≠
-  verificado, sin saldo "de Handy".
+- **Plata**: centavos enteros + moneda (`contracts/dinero.ts`). Handyx **no le cobra comisión al especialista, nunca**
+  (decisión de Ignacio del 08/11/2026; el modal y el contador de «0 % durante la demo» se quitan en D.5). El pago del
+  servicio va directo al especialista (MP o efectivo): reportado ≠ verificado, sin saldo "de Handy".
 - **Oferta**: el especialista no está obligado a aceptar ni recibe asignaciones; urgentes solo con opt-in revocable.
   Inicio sin tasas de aceptación, tiempos de respuesta ni puntualidad. Avisos abren el detalle, nunca aceptan.
 - Datos de prueba sintéticos (`*@example.test`, "Especialista De Prueba", ids `00000000-…`). Nada de datos reales en

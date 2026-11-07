@@ -174,3 +174,28 @@ Todo con datos de prueba («Especialista De Prueba», «Cliente De Prueba», `es
 123», ferreterías «Simulación»). Las piezas comunes (cabecera azul, barra compacta, barra de pestañas de vidrio,
 tarjeta con franja, mosaicos, pastillas, anillo, tira de jornadas, calendario, cinta de precio, hoja) son la base del
 kit v3 de D.2.
+
+## 9. Segunda vuelta del diseño completo (08/11/2026)
+
+Pedidos de Ignacio sobre el lienzo, ya dibujados (85 pantallas):
+
+- **Agenda:** sigue la tira deslizable y suma «Ver el mes»: el mes completo en pantalla entera, con flechas a los meses
+  pasados y siguientes, barras de color por obra o trabajo y el detalle del día elegido.
+- **Obras:** resumen compacto arriba (días en obra, gastado, falta cobrar) y los seis días a la vista en lista;
+  detalle de cada jornada; repuestos a futuro con aprobación del cliente y aviso si falta comprar; cambio de fecha de
+  una jornada o de todas las que siguen.
+- **Obras en equipo:** invitación (contactos o enlace con código), chat grupal con el cliente y reparto del pago entre
+  los profesionales; Handyx no toca la plata.
+- **Mensajes:** personas con iniciales y nombres ficticios; chats atados a pedidos, obras o el equipo; botón «+» para
+  mandar presupuestos, propuestas de obra, repuestos para aprobar, cambios de fecha, fotos e informes.
+- **Cuenta:** cabecera azul con avatar, estadísticas y accesos en mosaicos de color; **sin ninguna mención a tarifas**
+  (Handyx no le cobra comisión al especialista, nunca).
+- **Acceso:** bienvenida con la ciudad en SVG propio; elegir cómo entrar (email, SMS, Google, Apple); código de 6
+  dígitos; segunda verificación opcional con app autenticadora, SMS o email.
+- **Registro paso a paso:** 10 pasos, de los datos y el domicilio a la selfie, el DNI, los certificados (matrícula
+  obligatoria en Gas y Aire) y los antecedentes por foto o PDF.
+- **Ayuda** con buscador, temas en mosaicos y respuestas desplegables; **errores** con ilustraciones SVG propias.
+
+Todo quedó en el plan: fases **V** (acceso, registro y verificación) y **O** (obras en equipo, mensajes y cuenta) en
+`docs/herramientas.md`. Nombres ficticios del lienzo: Julián Ortiz (el especialista), Martín Sosa, Lucía Ferreyra,
+Carla Ibáñez (clientes), Sofía Ruiz, Diego Herrera y Pablo Vega (profesionales).
