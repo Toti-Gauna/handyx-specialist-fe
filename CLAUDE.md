@@ -1,6 +1,10 @@
 # Handyx · PWA Especialista (handyx-specialist-fe)
 
-Retomar siempre desde `docs/handoff.md`. Plan de 5 fases (no inventar más): `docs/plan.md`.
+Retomar siempre desde `docs/handoff.md`. Plan de 6 fases (no inventar más): `docs/plan.md`:
+1 bases · 2 mockup · 3 refinación · 4 **rediseño premium Handyx** (`docs/rediseno.md`) · 5 backend · 6 deploy.
+Aparte, el bloque **Taller** (D rediseño deluxe · H0 base y Modo trabajo · R repuestos · G Camino Handyx · H1–H6 oficios · Q),
+pedido por Ignacio el 07 y 08/11/2026: `docs/herramientas.md`.
+En los textos visibles, la marca es **Handyx**; "los Handys" son los personajes.
 
 ## Stack
 
@@ -19,12 +23,12 @@ React 19 + Next.js 16 (App Router) + TypeScript `strict`, exportación estática
 - **Nada en el navegador**: ni `localStorage`, `sessionStorage`, IndexedDB ni `document.cookie`. Sesión = cookie
   HttpOnly del backend; CSRF solo en memoria.
 - `NEXT_PUBLIC_*` es público: sin secretos, claves de DB ni de Mercado Pago.
-- **Verificación**: documento cargado ≠ verificado; solo Operations verifica. Antecedentes **nunca** como archivo.
+- **Verificación**: documento cargado ≠ verificado; solo Operations verifica. Antecedentes penales por foto o PDF
+  (decisión de Ignacio del 08/11/2026, fase V): cifrados, solo Operations, nunca a IA, se borran al verificar.
   Sellos de habilitación solo con estado del servidor.
-- **Plata**: centavos enteros + moneda (`contracts/dinero.ts`). Fee de Handy 0 % del 10/11 al 10/12/2026 (modal de
-  primer ingreso, post-registro y contador en Cuenta); no es descuento sobre el precio del especialista; al terminar
-  no se infiere ninguna tarifa. El pago del servicio va directo al especialista (MP o efectivo): reportado ≠
-  verificado, sin saldo "de Handy".
+- **Plata**: centavos enteros + moneda (`contracts/dinero.ts`). Handyx **no le cobra comisión al especialista, nunca**
+  (decisión de Ignacio del 08/11/2026; el modal y el contador de «0 % durante la demo» se quitan en D.5). El pago del
+  servicio va directo al especialista (MP o efectivo): reportado ≠ verificado, sin saldo "de Handy".
 - **Oferta**: el especialista no está obligado a aceptar ni recibe asignaciones; urgentes solo con opt-in revocable.
   Inicio sin tasas de aceptación, tiempos de respuesta ni puntualidad. Avisos abren el detalle, nunca aceptan.
 - Datos de prueba sintéticos (`*@example.test`, "Especialista De Prueba", ids `00000000-…`). Nada de datos reales en
@@ -48,16 +52,30 @@ React 19 + Next.js 16 (App Router) + TypeScript `strict`, exportación estática
 Español rioplatense con voseo; montos `$ 45.000`; "verificados" sí, "matriculados"/"despachamos" no; sin "inmediato"
 ni "al instante". Tokens de `src/brand/tokens.ts` = copia byte a byte de la landing
 (`HANDY_LANDING_TOKENS=<ruta> npm test` lo verifica). Lenguaje visual de la demo de la landing (`demo-app.css`):
-mosaicos grises, botones con base que se hunde, Archivo 900 ensanchado + DM Sans, sin gradientes ni vidrio.
+mosaicos grises, botones con base que se hunde, Archivo 900 ensanchado + DM Sans, sin gradientes ni vidrio
+(única excepción, decisión de Ignacio del 08/11/2026: la barra de pestañas flotante es de vidrio esmerilado, con fondo
+sólido si el navegador no tiene `backdrop-filter` o si se pide reducir la transparencia; `docs/rediseno-deluxe.md` §7).
 Reglas de forma (tokens `--hd-*`, `ChipTipo` vs chips de estado, una acción primaria, aceptar verde / rechazar en contorno
-rojo, urgencia en texto neutro, sin estilos inline): `docs/diseno.md`. Capturas: `node e2e/capturas.cjs [carpeta]`.
+rojo, urgencia en texto neutro, sin estilos inline, movimiento solo con `no-preference`, Handys decorativos): `docs/diseno.md`;
+catálogo en `docs/componentes.md`. Capturas sanitizadas: `npm run capturas` (catálogo: `npm run capturas:docs`).
+
+**Kit v2 (fase 4)** en `src/kit/`: las pantallas rediseñadas se arman con sus piezas (`BarraSuperior`, `PestanasFlotantes`,
+`HojaArrastrable`, `useIsla`, `useConfeti`, `PrecioStepper`, `TiraDias`, `CalendarioMes`, `SelectorHora`, `Mosaico`…), con estilos
+`hx-*` de `kit.css` y lógica pura con pruebas en `logica.ts`. Se ven en `/catalogo/`, que solo existe en el mock (`page.mock.tsx`
++ `pageExtensions`): no lo pongas en `RUTAS` ni en nada que entre a producción.
+
+**Service worker** (`docs/pwa.md`): `out/sw.js` lo genera `scripts/generar-sw.mjs` con la política de `src/pwa/politica.ts`. Solo
+archivos estáticos públicos; nunca la API, mutaciones ni otros sitios, y sin cola offline. Cambiar la política exige su prueba.
 
 ## Comandos
 
 ```sh
 npm ci
 npm run dev | build | build:hostinger | lint | typecheck | test
+npm run e2e | accesibilidad | capturas | capturas:docs   # después de npm run build (Playwright)
 ```
 
-Antes de cada PR: `lint`, `typecheck`, `test`, `build`, `node e2e/flujos.cjs` y `build:hostinger` con una API ficticia (el CI corre todo menos el E2E hasta el lote 5.1).
+Antes de cada PR: `lint`, `typecheck`, `test`, `build`, `npm run e2e`, `npm run accesibilidad` y `build:hostinger` con una API
+ficticia (el CI corre todo menos el E2E y la accesibilidad hasta el lote 5.1). Accesibilidad mínima: WCAG 2.2 AA con axe en 0,
+áreas táctiles ≥ 44 px, foco visible, foco al primer error y texto al 200 % sin desborde (`docs/diseno.md`).
 Mantener `docs/` (TECH-12) junto al código.

@@ -26,7 +26,7 @@ export const DOCUMENTO: Record<EstadoDocumento, Etiqueta> = {
   faltante: { texto: 'Falta cargarlo', tono: 'neutro', icono: 'mas' },
   cargado: { texto: 'Cargado, sin revisar', tono: 'azul', icono: 'reloj' },
   en_revision: { texto: 'En revisión', tono: 'azul', icono: 'lupa' },
-  verificado: { texto: 'Verificado por Handy', tono: 'exito', icono: 'verificado' },
+  verificado: { texto: 'Verificado por Handyx', tono: 'exito', icono: 'verificado' },
   rechazado: { texto: 'Hay que volver a cargarlo', tono: 'aviso', icono: 'alerta' },
   vencido: { texto: 'Vencido', tono: 'aviso', icono: 'alerta' },
 };

@@ -7,8 +7,10 @@ import { nuevaClave } from '../lib/formato.ts';
 /**
  * Ejecuta una mutación mostrando el estado de envío y el error. La Idempotency-Key se genera una vez por
  * intención y se reusa al reintentar (`clave()`); se renueva con `nueva()` cuando la intención cambia o salió bien.
+ * Un 401 abre el aviso de sesión expirada, salvo con `publica` (Entrar, Google o Apple): ahí un 401 son credenciales
+ * incorrectas, no una sesión vencida.
  */
-export function useAccion() {
+export function useAccion({ publica = false }: { publica?: boolean } = {}) {
   const { expirarSesion } = useSesion();
   const [pendiente, setPendiente] = useState(false);
   const [fallo, setFallo] = useState<FalloApi | null>(null);
@@ -24,14 +26,14 @@ export function useAccion() {
         return { ok: true, valor };
       } catch (e) {
         const f = e instanceof FalloApi ? e : new FalloApi('servidor');
-        if (f.tipo === 'sesion') expirarSesion();
+        if (f.tipo === 'sesion' && !publica) expirarSesion();
         setFallo(f);
         return { ok: false, fallo: f };
       } finally {
         setPendiente(false);
       }
     },
-    [expirarSesion],
+    [expirarSesion, publica],
   );
 
   const clave = useCallback(() => (claveActual.current ??= nuevaClave()), []);

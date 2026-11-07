@@ -41,6 +41,7 @@ const trazos = {
   arriba: '<path d="m6 15 6-6 6 6"/>',
   abajo: '<path d="m6 9 6 6 6-6"/>',
   telefono: '<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/><path d="M3 3l18 18"/>',
+  llamada: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/>',
   tacho: '<path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/><path d="M9 7V4h6v3"/>',
   contactos: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.6 0 4.5 1.9 4.5 4.5"/>',
   etiqueta: '<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9-9-9Z"/><circle cx="8" cy="8" r="1.5"/><path d="M11 14.5c.4.9 1.3 1.5 2.3 1.4 1.2-.1 1.9-1 1.7-2s-1.2-1.3-2.2-1.6-1.9-.8-2-1.8.6-1.8 1.7-1.9c1-.1 1.8.4 2.2 1.2"/>',

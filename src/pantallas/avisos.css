@@ -1,0 +1,136 @@
+/* Avisos (lote 4.5). Prefijo av-. */
+
+.av-grupo {
+  display: grid;
+  gap: var(--esp-2);
+}
+
+.av-grupo h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.av-lista {
+  display: grid;
+  gap: var(--esp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.av-item {
+  position: relative;
+  border-radius: var(--hx-radio-mosaico);
+  background: var(--hd-error-tinte);
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+/* Lo que aparece debajo al deslizar: dice "Borrar" con palabra e ícono. */
+.av-item__fondo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--esp-2);
+  padding-inline: var(--esp-4);
+  color: var(--hd-error-texto);
+  font-weight: 700;
+}
+
+.av-item__fondo--listo {
+  background: var(--hd-error);
+  color: #fff;
+}
+
+.av-item__frente {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  background: #fff;
+  border-radius: inherit;
+  translate: var(--av-dx, 0) 0;
+}
+
+.av-item--nuevo .av-item__frente {
+  background: var(--hd-azul-tinte);
+}
+
+.av-item__enlace {
+  display: flex;
+  flex: 1;
+  gap: var(--esp-3);
+  min-width: 0;
+  padding: var(--esp-3);
+  color: var(--hd-tinta);
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.av-item__ico {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--hd-mosaico);
+}
+
+.av-item--nuevo .av-item__ico {
+  background: var(--hd-azul);
+  color: #fff;
+}
+
+.av-item__texto {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.av-item__titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-1) var(--esp-2);
+}
+
+.av-item__texto small {
+  color: var(--hd-suave);
+  font-weight: 600;
+}
+
+.av-item__borrar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--toque-min);
+  min-height: var(--toque-min);
+  margin: var(--esp-2) var(--esp-2) var(--esp-2) 0;
+  align-self: center;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--hd-suave);
+  cursor: pointer;
+}
+
+.av-item__borrar:hover {
+  background: var(--hd-error-tinte);
+  color: var(--hd-error-texto);
+}
+
+.av-item__borrar:focus-visible,
+.av-item__enlace:focus-visible {
+  outline: 3px solid var(--hd-azul);
+  outline-offset: -3px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .av-item__frente:not([style]) {
+    transition: translate 0.2s var(--hx-salida);
+  }
+}

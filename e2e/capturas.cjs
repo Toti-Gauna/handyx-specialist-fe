@@ -6,39 +6,24 @@ const { join } = require('node:path');
 const { chromium } = require('playwright');
 const { servir } = require('./servidor.cjs');
 
-const id = (n) => `00000000-0000-4000-8000-${n.toString(16).padStart(12, '0')}`;
+const { PANTALLAS, esperarMapas } = require('./pantallas.cjs');
 
-// [nombre, ruta, texto que indica que terminó de cargar, escenario]
-const PANTALLAS = [
-  ['acceso', '/acceso/', 'Entrá a tu cuenta', 'nuevo'],
-  ['registro', '/registro/', 'Crear tu cuenta', 'nuevo'],
-  ['recuperar', '/recuperar/', 'Recuperar el acceso', 'nuevo'],
-  ['alta-borrador', '/alta/', 'Tus datos', 'incompleto'],
-  ['alta-en-revision', '/alta/', 'Próximos pasos', 'en_revision'],
-  ['alta-correccion', '/alta/', 'Hay que corregir algo', 'correccion'],
-  ['alta-rechazada', '/alta/', 'Alta rechazada', 'rechazado'],
-  ['alta-habilitada', '/alta/', 'Alta habilitada', 'habilitado'],
-  ['inicio-sin-habilitar', '/inicio/', 'Todavía no recibís pedidos', 'en_revision'],
-  ['inicio', '/inicio/', 'Tu disponibilidad', 'habilitado'],
-  ['disponibilidad', '/disponibilidad/', 'Zonas que cubrís', 'habilitado'],
-  ['pedidos', '/pedidos/', 'Por orden de llegada', 'habilitado'],
-  ['pedido-programado', `/pedidos/detalle/?id=${id(0xb2)}`, 'Propuesta del usuario', 'habilitado'],
-  ['pedido-obra', `/pedidos/detalle/?id=${id(0xb4)}`, 'visita de presupuesto', 'habilitado'],
-  ['avisos', '/notificaciones/', 'Abrir un aviso solo te muestra', 'habilitado'],
-  ['mensajes', '/mensajes/', 'Cliente de prueba 2', 'habilitado'],
-  ['hilo-cotizando', `/mensajes/hilo/?id=${id(0xd2)}`, 'Propuesta del usuario', 'habilitado'],
-  ['hilo-trabajo', `/mensajes/hilo/?id=${id(0xd1)}`, 'Perfecto, te espero', 'habilitado'],
-  ['trabajos', '/trabajos/', 'Cliente de prueba 5', 'habilitado'],
-  ['trabajo-agendado', `/trabajos/detalle/?id=${id(0xc1)}`, 'Salgo hacia el lugar', 'habilitado'],
-  ['trabajo-obra', `/trabajos/detalle/?id=${id(0xc4)}`, 'Etapas de la obra', 'habilitado'],
-  ['trabajo-finalizado', `/trabajos/detalle/?id=${id(0xc2)}`, 'Trabajo terminado', 'habilitado'],
-  ['agenda', '/agenda/', 'Borde naranja', 'habilitado'],
-  ['caja', '/caja/', 'El pago va directo a vos', 'habilitado'],
-  ['soporte', '/soporte/', 'Abrir un caso', 'habilitado'],
-  ['caso', `/soporte/detalle/?id=${id(0x52)}`, 'El usuario no estaba en el lugar', 'habilitado'],
-  ['cuenta', '/cuenta/', 'Quién ve qué', 'habilitado'],
-  ['baja', '/baja/', 'Baja de tu cuenta', 'baja'],
-];
+// Sanitización: una captura solo puede mostrar datos sintéticos. Emails @example.test, los DNI/CUIT de prueba y,
+// en toda pantalla con datos de la cuenta, el banner amarillo "Datos de prueba".
+const DOCUMENTOS_DE_PRUEBA = new Set(['30111222', '20301112229']);
+const SIN_DATOS_DE_CUENTA = new Set(['sin-conexion', 'no-encontrada']);
+function problemasDeSanitizacion(nombre, texto) {
+  const problemas = [];
+  for (const email of texto.match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g) ?? []) if (!email.endsWith('@example.test')) problemas.push(`email ${email}`);
+  for (const m of texto.matchAll(/(\$\s*)?\b\d[\d.-]{5,}\d\b/g)) {
+    const cifras = m[0].replace(/\D/g, '');
+    const esFecha = /^\d{4}-\d{2}-\d{2}$/.test(m[0]);
+    if (!m[1] && !esFecha && [7, 8, 10, 11].includes(cifras.length) && !DOCUMENTOS_DE_PRUEBA.has(cifras)) problemas.push(`número ${m[0]}`);
+  }
+  if (/\+54/.test(texto)) problemas.push('teléfono');
+  if (!SIN_DATOS_DE_CUENTA.has(nombre) && !texto.includes('Datos de prueba')) problemas.push('falta el banner "Datos de prueba"');
+  return problemas;
+}
 
 async function main() {
   const carpeta = process.argv[2] ?? join(__dirname, '..', 'capturas');
@@ -57,12 +42,21 @@ async function main() {
       try {
         await p.goto(`${base}${ruta}${sep}escenario=${escenario}`);
         await p.getByText(texto).first().waitFor({ timeout: 8000 });
+        await esperarMapas(p);
         await p.waitForTimeout(150);
         // Desborde horizontal: ningún elemento puede hacer scroll lateral la página.
         const desborde = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
         if (desborde > 0) {
           fallas++;
           console.log(`✘ ${w}x${h} ${nombre}: desborde horizontal de ${desborde}px`);
+        }
+        const visible = await p.evaluate(() => [document.body.innerText, ...[...document.querySelectorAll('input, textarea')].map((e) => e.value)].join('\n'));
+        const sucio = problemasDeSanitizacion(nombre, visible);
+        if (sucio.length) {
+          fallas++;
+          console.log(`✘ ${w}x${h} ${nombre}: sin sanitizar (${sucio.join(', ')})`);
+          await p.close();
+          continue;
         }
         await p.screenshot({ path: join(dir, `${nombre}.png`), fullPage: true });
       } catch (e) {

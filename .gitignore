@@ -1,10 +1,13 @@
 node_modules
 .next
 out
+out-http
 next-env.d.ts
 *.tsbuildinfo
 .env
 .env.*
 !.env.example
 .DS_Store
-capturas
+/capturas/
+/public/mapa/motor/
+/.cache/

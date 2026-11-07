@@ -57,6 +57,7 @@ export const alta = (s: EstadoMock) => ({
   },
   // El mock nunca lee ni guarda el archivo: solo registra que se cargó.
   cargarDocumento(tipo: TipoDocumento, rubro?: Rubro): PerfilEspecialista {
+    // Con datos de prueba nunca llega un archivo (ni frente ni dorso): solo se registra la carga.
     // Antecedentes no existen como documento: se verifican en persona con Operations.
     if (!(TIPOS_DOCUMENTO as readonly string[]).includes(tipo)) {
       throw new FalloApi('validacion', 415, { codigo: 'tipo_archivo_prohibido', mensaje: 'Ese tipo de archivo no se acepta.', requestId: 'req-prueba-0001' });

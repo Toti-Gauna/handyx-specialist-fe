@@ -14,7 +14,7 @@ export function FeeAviso() {
   return (
     <div className="tarjeta tarjeta--amarillo">
       <p className="tarjeta__titulo">
-        <Icono nombre="etiqueta" /> Handy no te cobra tarifa durante la demo
+        <Icono nombre="etiqueta" /> Handyx no te cobra tarifa durante la demo
       </p>
       <TextoFee politica={c.datos.politica} />
     </div>
