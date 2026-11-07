@@ -143,6 +143,8 @@ Schneider y Hager.
   luminarias para AR.
 - Fuera de alcance: «detector de tensión» con el celular.
 
+### Después del deploy (con el tiempo, un oficio por vez)
+
 ### Fase H2 · Aire acondicionado — Opus 5.5 / high
 - **H2.1 Cálculos:** frigorías con la brújula, carga adicional de refrigerante, ahorro inverter.
 - **H2.2 Instalación y errores:** paso a paso con cronómetro (nitrógeno y vacío), fotos del manómetro, códigos de
@@ -183,9 +185,9 @@ Schneider y Hager.
 
 ## 5. Orden
 
-Orden acordado con Ignacio (08/11/2026): **H1** (lo que falta de Electricidad) → **D** → **H0** → **R** → **G** → **H2** →
-**H3** → **H4** → **H5** → **H6** → **Q**, y recién al final la **fase 6 · Deploy** del producto (`docs/plan.md`). En el
-medio, lo pendiente de la fase 4 (mapa base del 4.3 y revisión del 4.9) se cierra cuando se destrabe.
+Orden acordado con Ignacio (08/11/2026): **H1** (lo que falta de Electricidad) → **D** → **H0** → **R** → **G** → **Q**
+→ **fase 6 · Deploy** del producto (`docs/plan.md`). **H2 a H6 quedan para después del deploy**: se desarrollan con el
+tiempo, un oficio por vez. Lo pendiente de la fase 4 (mapa base del 4.3 y revisión del 4.9) se cierra cuando se destrabe.
 
 ## 6. Lo que necesita decisión o autorización de Ignacio
 
