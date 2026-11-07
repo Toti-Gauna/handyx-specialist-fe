@@ -28,10 +28,10 @@ guardar('D6-Acceso.dc.html','Resto · Acceso',cuerpo)
 def paso_alta(ic, t, sub, estado):
     m={'listo':chip('Listo','check','exito'),'revision':chip('En revisión','reloj','amarillo'),'falta':chip('Falta','alerta','error'),'cita':chip('Cita en persona','agenda','tinte')}[estado]
     return fila_ic(ic, t, sub, derecha=m, borde=ic!='cuenta')
-pasos=''.join([paso_alta('cuenta','Tus datos','Nombre, teléfono y email','listo'),paso_alta('escudo','DNI y CUIT/CUIL','Cargado: lo revisa Operations','revision'),paso_alta('herramienta','Rubros y zonas','Plomería y Gas · 4 barrios','listo'),paso_alta('camara','Foto de perfil','Con buena luz, sin anteojos de sol','falta'),paso_alta('usuario2','Antecedentes','Se verifican en persona: no se suben archivos','cita')])
+pasos=''.join([paso_alta('cuenta','Tus datos','Nombre, teléfono y email','listo'),paso_alta('escudo','DNI y CUIT/CUIL','Cargado: lo estamos revisando','revision'),paso_alta('herramienta','Rubros y zonas','Plomería y Gas · 4 barrios','listo'),paso_alta('camara','Foto de perfil','Con buena luz, sin anteojos de sol','falta'),paso_alta('usuario2','Antecedentes','Se verifican en persona: no se suben archivos','cita')])
 cuerpo = barra_compacta('Tu alta','D6-Acceso.dc.html') + contenido(f'''
-    <div style="display: flex; align-items: center; gap: 14px">{anillo(2,5,64)}<span style="display: flex; flex-direction: column; gap: 2px">{etiqueta("CASI LISTO")}<strong style="{TIT}; font-size: 26px; line-height: 1">Te faltan 3 pasos</strong><span style="font-size: 13px; color: {SUAVE}">Cargar un documento no es estar verificado.</span></span></div>
-    {tarjeta(pasos, franja("¿Qué revisa Operations?","D6-Ayuda.dc.html"))}''') + '\n' + accion_fija(svg(IC['camara'],'#FFFFFF',20)+'Sacar la foto de perfil','D6-Alta.dc.html')
+    <div style="display: flex; align-items: center; gap: 14px">{anillo(2,5,64)}<span style="display: flex; flex-direction: column; gap: 2px">{etiqueta("CASI LISTO")}<strong style="{TIT}; font-size: 26px; line-height: 1">Te faltan 3 pasos</strong><span style="font-size: 13px; color: {SUAVE}">Cargar un documento todavía no es estar verificado.</span></span></div>
+    {tarjeta(pasos, franja("¿Qué evaluamos de tu perfil?","D6-Ayuda.dc.html"))}''') + '\n' + accion_fija(svg(IC['camara'],'#FFFFFF',20)+'Sacar la foto de perfil','D6-Alta.dc.html')
 guardar('D6-Alta.dc.html','Resto · Alta guiada',cuerpo)
 
 # Avisos: abren el detalle, nunca aceptan.

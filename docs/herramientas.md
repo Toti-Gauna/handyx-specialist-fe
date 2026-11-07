@@ -34,18 +34,18 @@ por fase. ✔ = hecho y subido.
 
 ## 2. Qué del celular se puede usar (hoy, en una PWA)
 
-| Capacidad | Android (Chrome) | iPhone (Safari) | Uso |
-|---|---|---|---|
-| Cámara | Sí | Sí | Fotos de tableros, medidores, tickets; lectura de texto en el teléfono |
-| Acelerómetro y giroscopio | Sí | Sí, con permiso | Nivel, plomada, pendientes |
-| Brújula | Sí | Sí | Orientación de ambientes (frigorías) |
-| Micrófono | Sí | Sí | Notas de voz, dictado |
-| GPS | Sí | Sí | Rutas, ferreterías cercanas |
-| AR inmersiva (WebXR) | Sí | **No** | Ubicar y medir en el lugar |
-| AR del sistema | Sí | Sí (Quick Look, USDZ) | Ver un equipo o un tablero en la casa del cliente |
-| Linterna | Sí | **No** | Modo trabajo |
-| Códigos de barras nativos | Sí | No (librería JS) | Stock y materiales |
-| Bluetooth, NFC, vibración | Sí | **No** | Extras opcionales, nunca requisito |
+| Capacidad                 | Android (Chrome) | iPhone (Safari)       | Uso                                                                    |
+| ------------------------- | ---------------- | --------------------- | ---------------------------------------------------------------------- |
+| Cámara                    | Sí               | Sí                    | Fotos de tableros, medidores, tickets; lectura de texto en el teléfono |
+| Acelerómetro y giroscopio | Sí               | Sí, con permiso       | Nivel, plomada, pendientes                                             |
+| Brújula                   | Sí               | Sí                    | Orientación de ambientes (frigorías)                                   |
+| Micrófono                 | Sí               | Sí                    | Notas de voz, dictado                                                  |
+| GPS                       | Sí               | Sí                    | Rutas, ferreterías cercanas                                            |
+| AR inmersiva (WebXR)      | Sí               | **No**                | Ubicar y medir en el lugar                                             |
+| AR del sistema            | Sí               | Sí (Quick Look, USDZ) | Ver un equipo o un tablero en la casa del cliente                      |
+| Linterna                  | Sí               | **No**                | Modo trabajo                                                           |
+| Códigos de barras nativos | Sí               | No (librería JS)      | Stock y materiales                                                     |
+| Bluetooth, NFC, vibración | Sí               | **No**                | Extras opcionales, nunca requisito                                     |
 
 Toda herramienta funciona en iPhone; si la versión premium usa algo que iPhone no tiene, hay una alternativa digna.
 
@@ -61,6 +61,7 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
 ## 4. Fases
 
 ### Fase D · Rediseño deluxe — Opus 5.5 / xhigh
+
 - ✔ **D.1 Auditoría y dirección de arte** (`docs/rediseno-deluxe.md`; dirección elegida el 08/11: **la estética de hoy, mejorada**, fondo blanco y pestañas flotantes de vidrio): revisión de las 120 pantallas; moodboard y 2 o 3 direcciones visuales con 3
   pantallas clave cada una (Inicio, Tu precio, el regalo); principios de movimiento, vibración y sonido. **Pausa para
   que Ignacio elija una.**
@@ -88,6 +89,7 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
   de la app o actualizar también la landing (los tokens son copia de la landing); plan de Meshy.
 
 ### Fase H0 · Base común y Modo trabajo — Opus 5.5 / xhigh
+
 - ✔ **H0.1 Base del Taller:** grilla por oficio, motor de calculadoras, nivel con el giroscopio.
 - **H0.1b Herramientas para todos los oficios** (pedido de Ignacio del 08/11): **medir con la cámara** (AR, ± 1 cm
   aproximado; WebXR en Android, en iPhone con tarjeta de referencia), **escanear en 3D** (30 fotos alrededor → modelo
@@ -122,6 +124,9 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
   (antes «stock de la camioneta»): herramientas eléctricas y manuales, instrumentos de medición, elementos de
   seguridad, consumibles y repuestos, con foto o código de barras, dónde está cada uno (camioneta, taller, prestado a
   otro profesional), recordatorios de mantenimiento y vencimientos, mínimos y lista de compras que va a la ferretería.
+  **Detalle de cada herramienta** con historial (préstamos y trabajos donde se usó) y acciones prestar, mover y **«ya
+  no la tengo»** (se rompió, la vendí, la perdí, me la robaron, la regalé u otro motivo): sale del equipamiento pero
+  queda en el historial, y se puede reponer comparando ferreterías o sumarla a la lista de compras.
 - **H0.4b Cierre del trabajo:** antes y después en dos vistas (deslizar y lado a lado) con «qué cambiaste» escrito o
   dictado; informe por secciones que se completan solas y no se repiten (causa, antes y después, pruebas, materiales y
   garantía, recomendaciones); conformidad del cliente con un toque, garantía activa, recordatorio de mantenimiento
@@ -131,8 +136,12 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
   cajones que muestran lo que queda).
 
 ### Fase V · Acceso, registro y verificación — Opus 5.5 / xhigh
+
 Pedido de Ignacio del 08/11/2026. Diseño en la fila «Acceso y seguridad» y «Registro paso a paso» del lienzo.
-- **V.1 Acceso:** código por email o **SMS**, Google y Apple; **segunda verificación opcional (MFA)**: app
+
+- **V.1 Acceso:** «Ya tengo cuenta» abre el **inicio de sesión** con email o teléfono y **contraseña** (se crea en el
+  primer paso del registro), «¿Olvidaste la contraseña?» con código, entrar con un código sin contraseña, Google y
+  Apple; después, la segunda verificación si está activada. Código por email o **SMS**; **segunda verificación opcional (MFA)**: app
   autenticadora (TOTP, recomendada), SMS o email, con códigos de respaldo y lista de dispositivos. El secreto TOTP vive
   cifrado en el backend; nada en el navegador. SMS necesita proveedor autorizado.
 - **V.2 Registro paso a paso** (10 pasos con barra de avance): datos, **domicilio** (cifrado, nunca se muestra), rubros,
@@ -150,27 +159,42 @@ Pedido de Ignacio del 08/11/2026. Diseño en la fila «Acceso y seguridad» y «
 - **V.5 Backend:** contrato, esquema en `handyx-client-be`, endpoints en `handyx-specialist-be`, retención y pruebas.
 
 ### Fase O · Obras en equipo, mensajes y cuenta — Opus 5.5 / xhigh
+
 Pedido de Ignacio del 08/11/2026. Diseño en las filas «Obras», «Obras en equipo» y «Mensajes» del lienzo.
+
 - **O.1 Obra de varios días:** resumen compacto arriba (días en obra, total gastado, falta cobrar, avance) que no tapa
   la lista; **días en lista** con su estado; detalle de cada jornada (tareas, quién va, fotos, nota, materiales).
-- **O.2 Repuestos de la obra:** cargar repuestos **a comprar a futuro** por jornada; el cliente los **aprueba** en el
+- **O.2 Repuestos de la obra:** primero se elige cómo se consigue: **«Lo consigo yo»** (precio de la lista propia o
+  a mano, foto del ticket al comprarlo) o **«En una ferretería adherida»** (se comparan los precios de cada ferretería,
+  porque varían, con stock, distancia y horario; el precio puede cambiar hasta que la ferretería confirma). Son dos
+  flujos con pantallas y datos distintos. Se cargan repuestos **a comprar a futuro** por jornada; el cliente los **aprueba** en el
   chat (esperando aprobación → aprobado → comprado); **aviso el día anterior si falta comprar** y de lo que se va a
   comprar; se conectan con la fase R y con los gastos (H0.3).
 - **O.3 Cambios de fecha:** mover una jornada o esta y las que siguen; el cliente acepta; hasta entonces, siguen las
   fechas de ahora; se avisa al equipo.
-- **O.4 Equipo de obra:** se suman profesionales **solo por invitación** (contactos de Handyx o enlace con código que
-  vence), verificados; **chat grupal** con el cliente; cada uno ve los días, el chat y su parte (los gastos del
-  titular, solo él).
+- **O.4 Equipo de obra:** se suman profesionales **invitados** (contactos de Handyx o enlace con código que vence) o
+  con **«Buscar un profesional nuevo»**: el titular publica una búsqueda (oficio, jornadas, su parte del pago, mensaje;
+  «verificado por Handyx» siempre y matrícula verificada si hace falta) que ven **solo especialistas verificados de la
+  zona** en su Inicio, como modal «Te buscan para una obra»; ven la obra (zona aproximada, sin dirección), se postulan
+  y **el titular elige** a quién sumar (nadie entra solo). La búsqueda cierra sola. **Chat grupal** con el cliente;
+  cada uno ve los días, el chat y su parte (los gastos del titular, solo él). También se suma gente desde la propuesta
+  de obra y desde la info del grupo.
 - **O.5 Reparto del pago:** cuánto le toca a cada uno (monto o %), cómo cobra (cada uno su parte, o el titular y
   reparte por fuera) y aceptación de cada miembro. **Handyx no recibe ni reparte la plata**: registra lo acordado.
 - **O.6 Mensajes:** personas con **iniciales y nombre** (no personajes), filtros (pedidos, obras, equipo, soporte);
   cada chat atado a un pedido, una obra o el equipo, y accesible desde la obra; **mandar por el chat** presupuestos,
   **propuestas de obra** (etapas, jornadas y montos), repuestos para aprobar, cambios de fecha, fotos e informes, como
-  tarjetas que el cliente responde ahí mismo.
+  tarjetas que el cliente responde ahí mismo. **Funciones del chat:** reacciones con emojis, responder, copiar,
+  **editar** (en una hoja; queda «editado»; las tarjetas no se editan, se manda una nueva), **borrar para todos con
+  borrado lógico** (se ve «Mensaje eliminado» y el mensaje queda oculto y guardado por si hay un reclamo, con la
+  retención que defina Legal), **seleccionar varios** (copiar, reenviar, borrar), **fotos y videos** (achicados y sin
+  ubicación, videos de hasta 1 minuto), fijar, silenciar e info del grupo con sus personas y archivos, y **agregar
+  personas**.
 - **O.7 Backend:** contrato, esquema (miembros de obra, invitaciones, reparto, repuestos con estado, adjuntos tipados
   del chat), endpoints, avisos y pruebas.
 
 ### Fase R · Repuestos y ferreterías — Opus 5.5 / high
+
 - **R.0 Catálogo por categorías:** fijaciones y tornillería, plomería, electricidad, gas, pintura, albañilería,
   herramientas, seguridad, limpieza y adhesivos; subcategorías, variantes (medida, presentación), buscador, lo del
   presupuesto y la obra ya elegido, y un pedido único agrupado por trabajo con las casillas de gasto y cobro. Primero
@@ -192,8 +216,9 @@ Pedido de Ignacio del 08/11/2026. Diseño en las filas «Obras», «Obras en equ
 - **3D nativo:** bolsa o caja que se llena con cada ítem confirmado; ticket de retiro que se da vuelta al quedar listo.
 
 ### Fase G · Camino Handyx (gamificación) — Opus 5.5 / xhigh
-- **G.0 Bienvenida:** al quedar verificado, **kit de bienvenida**: remera Handyx (talle) y **manual de uso** impreso y
-  en la app (6 capítulos cortos; leerlo da una insignia).
+
+- **G.0 Bienvenida:** al quedar verificado, **kit de bienvenida**: remera Handyx (talle) y **manual de uso**; el
+  especialista elige si lo quiere **en la app, impreso o los dos** (6 capítulos cortos; leerlo da una insignia).
 - **G.0b Mini caminos:** además del camino de trabajos verificados, caminos chicos por **cobros verificados**
   ($ 50.000 → tornillos, $ 100.000 → martillo, $ 250.000 → destornilladores…, montos en borrador), por **oficio** y
   por buenas prácticas; cada uno con su barra y su premio. **Áreas** (taller, obra, ciudad) quedan como concepto
@@ -208,21 +233,23 @@ Pedido de Ignacio del 08/11/2026. Diseño en las filas «Obras», «Obras en equ
   estados disponible → pedido → preparando → listo/enviado → entregado; script de Operations; backend.
 - **Escalera (borrador; Ignacio define cantidades y montos):**
 
-  | Hito | Requisito | Premio |
-  |---|---|---|
-  | 1 | Primer trabajo verificado | Insignia y kit chico: tornillos, tarugos y cinta |
-  | 2 | 5 trabajos | Kit de consumibles del oficio |
-  | 3 | 10 trabajos | Gorra Handyx |
-  | 4 | 25 trabajos + monto PENDIENTE | Herramienta del oficio |
-  | 5 | 50 trabajos + monto PENDIENTE | Campera Handyx |
-  | 6 | 100 trabajos + monto PENDIENTE | Herramienta premium |
+  | Hito | Requisito                      | Premio                                           |
+  | ---- | ------------------------------ | ------------------------------------------------ |
+  | 1    | Primer trabajo verificado      | Insignia y kit chico: tornillos, tarugos y cinta |
+  | 2    | 5 trabajos                     | Kit de consumibles del oficio                    |
+  | 3    | 10 trabajos                    | Gorra Handyx                                     |
+  | 4    | 25 trabajos + monto PENDIENTE  | Herramienta del oficio                           |
+  | 5    | 50 trabajos + monto PENDIENTE  | Campera Handyx                                   |
+  | 6    | 100 trabajos + monto PENDIENTE | Herramienta premium                              |
 
 - **3D:** el camino nativo por paisajes de Mar del Plata (rambla, puerto, faro) y la caja de regalo nativa; adentro,
   el premio y el Handy que festeja con los modelos de Meshy (fase D).
 
 ### Fase H1 · Electricidad — Opus 5.5 / high ✔ (08/11/2026; falta la revisión técnica y la prueba de AR en dispositivos reales)
+
 Referentes: Ugly's Electrical References, Electrical Calc Elite, Southwire, Fluke Connect, configuradores de ABB,
 Schneider y Hager.
+
 - ✔ **H1.1 Calculadoras:** sección y caída de tensión, planificador de vivienda, iluminación, consumo y ahorro, Ohm y
   referencias.
 - ✔ **H1.2 Tablero 3D:** riel DIN, gabinete, materiales, etiquetas, compartir, AR en iPhone.
@@ -252,6 +279,7 @@ Schneider y Hager.
 ### Después del deploy (con el tiempo, un oficio por vez)
 
 ### Fase H2 · Aire acondicionado — Opus 5.5 / high
+
 - **H2.1 Cálculos:** frigorías con la brújula, carga adicional de refrigerante, ahorro inverter.
 - **H2.2 Instalación y errores:** paso a paso con cronómetro (nitrógeno y vacío), fotos del manómetro, códigos de
   error por marca (base propia).
@@ -259,12 +287,14 @@ Schneider y Hager.
 - **3D nativo:** split interior y exterior para AR; ambiente con el sol que se mueve según la orientación.
 
 ### Fase H3 · Plomería — Opus 5.5 / high
+
 - **H3.1 Cálculos y pendiente:** pendiente de desagües con el celular, diámetros, termofusión, termotanque o calefón.
 - **H3.2 Pérdidas e isométrico:** dos fotos del medidor de agua → caudal de pérdida.
 - **H3.3 Checklists, materiales y premios** de Plomería.
 - **3D nativo:** isométrico de cañerías (codos, tees, llaves, diámetros por color); pendiente con el agua corriendo.
 
 ### Fase H4 · Gas — Opus 5.5 / xhigh
+
 - **H4.1 Cálculos:** cañerías por tramo, ventilación, consumo de artefactos.
 - **H4.2 Prueba y emergencia:** prueba de hermeticidad registrada; protocolo ante olor a gas; informe.
 - **H4.3 Revisión técnica y legal**, más checklists, materiales y premios de Gas.
@@ -272,12 +302,14 @@ Schneider y Hager.
 - Fuera de alcance: detectar gas o monóxido con el celular.
 
 ### Fase H5 · Albañilería — Opus 5.5 / high
+
 - **H5.1 Cómputo de materiales:** muros, revoques, contrapisos y hormigón con desperdicio.
 - **H5.2 Cerámicos y nivel:** patrón, cortes y cajas; nivel, plomada, escuadra, pendientes.
 - **H5.3 Obra:** clima para hormigonar (proveedor autorizado), avance con time-lapse, recorrido de la reforma.
 - **3D nativo:** muro que se levanta ladrillo por ladrillo; cerámicos con su patrón; recorrido de la reforma.
 
 ### Fase H6 · Cerrajería — Opus 5.5 / high
+
 - **H6.1 Identificación y medición:** cerradura por foto con IA (nunca decodificar llaves); medidas de la puerta.
 - **H6.2 Aperturas y stock:** constancia de autorización antes de abrir (sin guardar el DNI); recargos de urgencia;
   stock de llaves vírgenes.
@@ -285,6 +317,7 @@ Schneider y Hager.
 - **3D nativo:** cerradura y cilindro genéricos que se despiezan para explicar la seguridad; puerta con sus medidas.
 
 ### Fase Q · QA y demo publicada — Sonnet 5.5 / high
+
 - **Q.1 QA del bloque:** E2E, accesibilidad, Lighthouse móvil ≥ 90, rendimiento 3D en gama baja, alternativa sin
   WebGL, AR en iPhone y Android.
 - **Q.2 Demo en `specialist.handyx.pro`:** paquete nuevo del mock con todo el bloque y guía de uso.

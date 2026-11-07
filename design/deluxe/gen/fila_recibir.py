@@ -66,7 +66,7 @@ cuerpo = barra_compacta('Tu precio','F-Pedido.dc.html',sub='Paso 1 de 2') + cont
       <span style="font-size: 13px; color: {SUAVE}">Deslizá la cinta o tocá un atajo · Handyx sugiere $ 45.000</span>
     </div>
     {cinta}
-    <div style="display: flex; gap: 8px; justify-content: center">{opcion("Sugerido")}{opcion("+ $ 2.000",True)}{opcion("+ $ 5.000")}{opcion("Escribir")}</div>
+    <div style="display: flex; gap: 8px; justify-content: center">{opcion("Sugerido")}{opcion("+ $ 2.000",True)}{opcion("+ $ 5.000")}<a href="F-PrecioTeclado.dc.html" style="min-height: 44px; padding: 0 12px; border-radius: 14px; background: {MOSAICO}; color: {TEXTO}; font-weight: 800; font-size: 14px; display: inline-flex; align-items: center; text-decoration: none">Escribir</a></div>
     <div style="padding: 0 4px">{interr("Incluye materiales","El cliente ve que el precio los incluye",True)}{interr("Garantía de 30 días","Se muestra en tu propuesta",False)}</div>
     <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px 14px; border-radius: 18px; background: #E3F4EA"><span style="font-size: 14px; font-weight: 800; color: #137140">Recibís el 100 % · Handyx no te cobra comisión</span><strong style="{TIT}; font-size: 22px; color: #137140">$ 47.000</strong></div>''') + '\n' + accion_fija('Siguiente: la fecha','F-Fecha.dc.html')
 guardar('F-Precio.dc.html','Núcleo · Tu precio',cuerpo)
@@ -83,10 +83,11 @@ cuerpo = barra_compacta('¿Cuándo vas?','F-Precio.dc.html',sub='Paso 2 de 2') +
       <button role="radio" aria-checked="false" style="min-height: 48px; border-radius: 14px; border: 2px solid {BORDE}; background: #FFFFFF; font-weight: 800; color: {TEXTO}">Voy en ese horario</button>
       <button role="radio" aria-checked="true" style="min-height: 48px; border-radius: 14px; border: 2px solid {AZUL}; background: {TINTE}; font-weight: 800; color: {HONDO}">Propongo otro</button>
     </div>
-    {tarjeta(f'<div style="display: flex; justify-content: space-between; align-items: center"><strong style="{TIT}; font-size: 20px">Noviembre 2026</strong><span style="display: flex; gap: 6px">{mosaico_ic("atras",36,radio=12,iconsize=16)}{mosaico_ic("flecha",36,radio=12,iconsize=16)}</span></div>' + calendario(17, marcados=(18,19,20), ocupados=(18,19,20)) + f'<span style="display: flex; gap: 12px; font-size: 12px; color: {SUAVE}"><span>Recuadro naranja: hoy</span><span>Gris: días con jornada de obra</span></span>')}
+    {tarjeta(f'<div style="display: flex; justify-content: space-between; align-items: center"><strong style="{TIT}; font-size: 20px">Noviembre 2026</strong><span style="display: flex; gap: 6px">{mosaico_ic("atras",36,radio=12,iconsize=16)}{mosaico_ic("flecha",36,radio=12,iconsize=16)}</span></div>' + calendario(17, marcados=(18,19,20), ocupados=(18,19,20)))}
     <div style="display: flex; flex-direction: column; gap: 8px">
       <strong style="font-size: 15px">Hoy, martes 17 · elegí la franja</strong>
       <div style="display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px">{franja_h("9 a 13","ocupada")}{franja_h("13 a 17","ocupada")}{franja_h("17 a 19")}{franja_h("18 a 20","elegida")}</div>
+      <a href="F-FechaHora.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; border-radius: 14px; border: 2px dashed {AZUL}; color: {AZUL}; font-weight: 800; font-size: 14px; text-decoration: none">{svg(IC["reloj"],AZUL,18)}Otro horario o una hora exacta</a>
       <span style="font-size: 12px; color: {SUAVE}">Hasta las 17 estás en «Baño completo». Es una propuesta: el cliente la acepta o elige otra.</span>
     </div>''') + '\n' + accion_fija('Revisar la propuesta','F-Revisar.dc.html')
 guardar('F-Fecha.dc.html','Núcleo · Proponer fecha',cuerpo)

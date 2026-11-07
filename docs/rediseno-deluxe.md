@@ -242,3 +242,32 @@ Carla Ibáñez (clientes), Sofía Ruiz, Diego Herrera y Pablo Vega (profesionale
 - **Flujos:** 17 en total, con «Mapa de la app» primero, panel del ferretero, camino y taller.
 - **Revisión UX/UI** de todo (`docs/revision-ux.md`): 0 errores de accesibilidad, 0 áreas táctiles chicas, 0 textos
   chicos; el tablero «Revisión UX/UI» está arriba de todo en el lienzo.
+
+## 13. Sexta vuelta: acceso, onboarding, cuenta, recorridos y funciones nuevas (08/11/2026)
+
+- **Recorridos con pantallas** (16, debajo de la revisión): cada uno muestra las pantallas reales en orden, con lo que
+  pasa entre ellas, para ver los caminos completos y detectar pantallas faltantes. Se agregaron las que faltaban.
+- **Acceso:** «Ya tengo cuenta» abre el inicio de sesión (email o teléfono y contraseña, Google, Apple o un código),
+  después la segunda verificación y la recuperación de contraseña. En los textos ya no aparece «Operations»: «Estamos
+  evaluando tu perfil para saber si estás apto», «el equipo de verificación de Handyx».
+- **Onboarding completo** (habilitado, permisos explicados, cómo funciona, primeros pasos) y **Cuenta completa** en un
+  tablero alto con todas las secciones (perfil, datos, disponibilidad, cobros, avisos, privacidad); «Próxima
+  recompensa: Gorra».
+- **Inicio:** barra de pestañas azul de vidrio con la pestaña activa en blanco; los pedidos son modales redondeados
+  flotantes con el mapa siempre detrás. **Tu día** con paso a paso de paradas y la próxima con hora estimada.
+  **Agenda** con «Pasadas · Hoy · Futuras».
+- **Precio y horario:** teclado para escribir el precio; horario a medida (franja «de 6 a 8» u hora exacta, también
+  a las 6 de la mañana).
+- **Obra y jornada:** cabecera protagonista con avance, días como línea de tiempo; jornada con cambiar horario,
+  agregar tarea y cargar avance en hojas.
+- **Obras en equipo:** «Buscar uno nuevo» publica una búsqueda que ven especialistas verificados de la zona en su
+  Inicio; se postulan y el titular elige (`docs/herramientas.md` O.4).
+- **Chat:** reacciones, editar, borrar para todos con borrado lógico, seleccionar varios, fotos y videos, info del
+  grupo y agregar personas (O.6).
+- **Repuestos:** «Lo consigo yo» o «En una ferretería adherida», con la comparación de precios por ferretería (O.2).
+- **Tu equipamiento:** detalle de cada herramienta y «Ya no la tengo» (H0.5). Se corrigieron las tarjetas de
+  categorías que se rompían con números largos.
+- **Camino:** el manual se elige en la app, impreso o los dos (G.0).
+- **Textos que se salían:** regla general de corte de palabras y espacios duros en montos y unidades.
+- Revisión: 190 tableros (156 pantallas, 16 recorridos, 17 flujos), axe en 0, 0 áreas táctiles chicas, 0 textos
+  chicos y nada tapado por los botones fijos.

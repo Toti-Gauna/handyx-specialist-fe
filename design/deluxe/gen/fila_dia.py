@@ -16,7 +16,7 @@ cuerpo = barra_compacta('Trabajo','F-Agenda.dc.html',sub='Hoy · 18 a 20') + con
       <a href="F-Chat.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; border-radius: 18px; background: {MOSAICO}; color: {TINTA}; text-decoration: none; font-size: 13px; font-weight: 800">{svg(IC['chat'],TINTA,22)}Mensaje</a>
       <a href="F-Fecha.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; border-radius: 18px; background: {MOSAICO}; color: {TINTA}; text-decoration: none; font-size: 13px; font-weight: 800">{svg(IC['agenda'],TINTA,22)}Cambiar fecha</a>
       <a href="H0-Modo.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 0; border-radius: 18px; background: {MOSAICO}; color: {TINTA}; text-decoration: none; font-size: 13px; font-weight: 800">{svg(IC['herramienta'],TINTA,22)}Modo trabajo</a>
-    </div>''') + '\n' + accion_fija(svg(IC['camion'],'#FFFFFF',20)+'Salir para allá','F-InicioRuta.dc.html')
+    </div>''') + '\n' + accion_fija(svg(IC['camion'],'#FFFFFF',20)+'Salir para allá','TR-EnCamino.dc.html')
 guardar('F-Trabajo.dc.html','Núcleo · Trabajo agendado',cuerpo)
 
 # Agenda: semana en tira y el día con horas en mosaicos.

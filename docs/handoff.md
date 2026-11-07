@@ -36,8 +36,14 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
   `design/deluxe/` para pasarla a Figma.
 - **Quinta vuelta (08/11):** 139 tableros, 17 flujos y la revisión UX/UI (`docs/revision-ux.md`, axe en 0). Panel web
   del ferretero, QR a pantalla completa, camino con kit de bienvenida y mini caminos, taller con herramientas para
-  todos. Prompt para llevar la experiencia a la app del usuario: `docs/prompt-app-usuario.md`. **Esperando el OK de
-  Ignacio para empezar a desarrollar (D.2).**
+  todos. Prompt para llevar la experiencia a la app del usuario: `docs/prompt-app-usuario.md`.
+- **Sexta vuelta (08/11):** 190 tableros: 156 pantallas, **16 recorridos con pantallas** y 17 flujos
+  (`docs/rediseno-deluxe.md` §13). Inicio de sesión con contraseña y 2FA, onboarding y cuenta completos, pedidos como
+  modales flotantes sobre el mapa, barra azul de vidrio, horario a medida, obra y jornada rehechas, búsqueda de
+  profesionales para la obra, chat con reacciones/editar/borrado lógico/fotos y videos, repuestos «lo consigo yo» o
+  «en una ferretería adherida», «ya no la tengo» en el equipamiento y manual en la app o impreso. Plan actualizado en
+  `docs/herramientas.md` (V.1, O.2, O.4, O.6, H0.5, G.0). **Esperando el OK de Ignacio para empezar a desarrollar
+  (D.2).**
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 

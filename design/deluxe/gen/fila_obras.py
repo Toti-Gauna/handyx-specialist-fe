@@ -106,7 +106,7 @@ cuerpo = barra_compacta('Repuestos','F-Obra.dc.html',sub='Baño completo') + con
     {banner("Mañana (mié 18) faltan 2: pegamento y pastina","F-ObraRepuestos.dc.html")}
     {tarjeta(etiqueta("ESPERAN LA APROBACIÓN DE MARTÍN")+rep("Pegamento para porcelanato × 4","Para la jornada 4 · mié 18 · $ 36.000",chip("Enviado hoy 12:10","reloj","amarillo"),"Recordarle")+rep("Inodoro corto con mochila","Para la jornada 6 · vie 20 · $ 145.000",chip("Sin mandar","alerta","error"),"Mandar a aprobación"))}
     {tarjeta(etiqueta("APROBADOS · SE COMPRAN")+rep("Pastina gris × 2","Martín aprobó · comprar mañana 8:00",chip("Ferretería Simulación","pin","tinte"),"Pedir"))}
-    {tarjeta(etiqueta("COMPRADOS")+rep("Porcelanato, caños y 3 más","Del 12/11 al 14/11 · $ 210.000 en total",chip("5 tickets cargados","check","exito"),"Ver"))}''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.2fr); gap: 10px">{boton2("Agregar","F-ObraRepuesto.dc.html","mas")}{boton("Pedir en ferretería","R-Pedir.dc.html",alto=52)}</div>')
+    {tarjeta(etiqueta("COMPRADOS")+rep("Porcelanato, caños y 3 más","Del 12/11 al 14/11 · $ 210.000 en total",chip("5 tickets cargados","check","exito"),"Ver"))}''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.2fr); gap: 10px">{boton2("Agregar","F-RepuestoOrigen.dc.html","mas")}{boton("Pedir en ferretería","R-Comparar.dc.html",alto=52)}</div>')
 guardar('F-ObraRepuestos.dc.html','Obras · Repuestos',cuerpo)
 
 # ── Obra · agregar un repuesto para comprar a futuro ───────────────
@@ -116,7 +116,7 @@ def interr(t, sub, on):
 def op(t, on=False):
     s=f'background: {AZUL}; color: #FFFFFF; box-shadow: 0 3px 0 {HONDO}' if on else f'background: {MOSAICO}; color: {TEXTO}'
     return f'<span style="min-height: 44px; padding: 0 12px; border-radius: 14px; {s}; font-weight: 800; font-size: 13px; display: inline-flex; align-items: center">{t}</span>'
-cuerpo = barra_compacta('Agregar repuesto','F-ObraRepuestos.dc.html',sub='Baño completo') + contenido(f'''
+cuerpo = barra_compacta('Lo consigo yo','F-RepuestoOrigen.dc.html',sub='Agregar repuesto · Baño completo') + contenido(f'''
     <span style="min-height: 52px; border-radius: 16px; background: #FFFFFF; border: 2px solid {AZUL}; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-weight: 800">{svg(IC['caja'],AZUL,20)}Pegamento para porcelanato<span style="margin-left: auto">{chip("De tu lista","lista","gris")}</span></span>
     <div style="display: flex; justify-content: space-between; align-items: center"><strong style="font-size: 15px">Cantidad</strong><span style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 14px; background: {MOSAICO}; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900">−</span><strong style="{TIT}; font-size: 26px; min-width: 30px; text-align: center">4</strong><span style="width: 44px; height: 44px; border-radius: 14px; background: {AZUL}; color: #FFFFFF; box-shadow: 0 3px 0 {HONDO}; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900">+</span></span></div>
     <div style="display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 15px">¿Para qué jornada?</strong><div style="display: flex; gap: 8px; flex-wrap: wrap">{op("Mié 18 · j. 4",True)}{op("Jue 19 · j. 5")}{op("Vie 20 · j. 6")}{op("Sin fecha")}</div></div>
@@ -132,6 +132,7 @@ cuerpo = barra_compacta('Cambiar fecha','F-ObraDia.dc.html',sub='Jornada 5 · Sa
     <strong style="font-size: 15px">¿A qué día la pasás?</strong>
     <div style="display: flex; gap: 6px; margin: 0 -16px; padding: 0 16px; overflow: hidden">{dias_f}</div>
     <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px">{op("8:30 a 13")}{op("8:30 a 17",True)}{op("13 a 17")}</div>
+    <a href="F-ObraDiaHorario.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; border-radius: 14px; border: 2px dashed {AZUL}; color: {AZUL}; font-weight: 800; font-size: 14px; text-decoration: none">{svg(IC["reloj"],AZUL,18)}Otro horario o una hora exacta</a>
     <div role="radiogroup" aria-label="Qué se mueve" style="display: flex; flex-direction: column; gap: 8px">
       <span role="radio" aria-checked="false" style="padding: 12px 14px; border-radius: 16px; border: 2px solid {BORDE}; font-weight: 800">Mover solo esta jornada</span>
       <span role="radio" aria-checked="true" style="padding: 12px 14px; border-radius: 16px; border: 2px solid {AZUL}; background: {TINTE}; color: {HONDO}; font-weight: 800">Correr esta y las que siguen</span>
@@ -147,7 +148,7 @@ cuerpo = barra_compacta('Equipo','F-Obra.dc.html',sub='Baño completo',accion=bt
     {tabs([("Días","F-Obra.dc.html"),("Repuestos <span role='img' aria-label='faltan comprar' style='display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: #D93025'></span>","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Equipo")}
     {tarjeta(etiqueta("PROFESIONALES")+miembro('yo','Titular · Plomería','60 %',chip("Armó la obra","estrella","tinte"))+miembro('sofia','Albañilería · jornadas 1, 3 y 4','30 %',chip("Aceptó","check","exito"))+miembro('diego','Electricidad · jornada 6','10 %',chip("Invitación enviada","reloj","amarillo")), franja("Ver el reparto del pago","F-Reparto.dc.html"))}
     {tarjeta(etiqueta("CLIENTE")+f'<div style="display: flex; gap: 12px; align-items: center">{avatar("martin",46)}<span style="display: flex; flex-direction: column"><strong style="font-size: 15px">Martín Sosa</strong><span style="font-size: 12px; color: {SUAVE}">Ve los días, las fotos y el chat del grupo</span></span></div>')}
-    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: {SUAVE}"><span>· Solo se suma quien vos invitás, y tiene que estar verificado por Handyx.</span><span>· Cada uno ve los días, el chat y su parte. Tus gastos los ves solo vos.</span></div>''') + '\n' + accion_fija(svg(IC['usuario2'],'#FFFFFF',20)+'Invitar a un profesional','F-Invitar.dc.html')
+    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: {SUAVE}"><span>· Se suma quien vos invitás o elegís entre los que se postulan; siempre verificados por Handyx.</span><span>· Cada uno ve los días, el chat y su parte. Tus gastos los ves solo vos.</span></div>''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.3fr); gap: 10px">{boton2("Invitar a un contacto","F-Invitar.dc.html","usuario2")}{boton(svg(IC["mas"],"#FFFFFF",20)+"Buscar uno nuevo","F-ObraBuscar.dc.html",alto=52)}</div>')
 guardar('F-ObraEquipo.dc.html','Equipo · Equipo de la obra',cuerpo)
 
 # ── Invitar ────────────────────────────────────────────────────────
@@ -277,7 +278,8 @@ cuerpo = f'''  <section style="position: absolute; top: 0; left: 0; right: 0; pa
       {tile('herramienta','Tu taller','4 herramientas','Electricidad','T-Taller.dc.html',TINTE,HONDO,'#C9D6EC')}
       {tile('ticket','Presupuestos','3 plantillas','Y tu lista de precios','H0-Precios.dc.html',TINTE,HONDO,'#C9D6EC')}
     </div>
-    {tarjeta(etiqueta("TU TRABAJO")+fila_ic('pin','Disponibilidad y zonas','4 barrios · urgentes con tu permiso',href='F-Inicio.dc.html')+fila_ic('billete','Medios de cobro','Mercado Pago y efectivo',href='F-Cuenta.dc.html')+fila_ic('usuario2','Contactos y equipos','Profesionales con los que trabajás',href='F-ObraEquipo.dc.html'))}
+    {tarjeta(etiqueta("TU TRABAJO")+fila_ic('cuenta','Tu perfil','Cómo te ven los clientes',href='CU-Perfil.dc.html')+fila_ic('pin','Disponibilidad y zonas','4 barrios · urgentes con tu permiso',href='CU-Disponibilidad.dc.html')+fila_ic('billete','Medios de cobro','Mercado Pago y efectivo',href='CU-Cobros.dc.html'))}
+    {tarjeta(etiqueta("TU CUENTA")+fila_ic('escudo','Datos y verificación','DNI, CUIT y documentos',href='CU-Datos.dc.html')+fila_ic('llave2','Seguridad','Contraseña y segunda verificación',href='D6-Seguridad.dc.html')+fila_ic('campana','Avisos','Qué te llega y cuándo',href='CU-Notificaciones.dc.html')+fila_ic('candado','Privacidad y baja','Tus datos y cómo darte de baja',href='CU-Privacidad.dc.html'))}
   </div>
 ''' + barra_vidrio('Cuenta')
 guardar('F-Cuenta.dc.html','Cuenta · Tu cuenta',cuerpo)

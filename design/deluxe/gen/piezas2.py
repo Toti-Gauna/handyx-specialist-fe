@@ -1,5 +1,10 @@
 from piezas import *
 IC.update({
+ 'llave2':'<circle cx="8" cy="15" r="4"></circle><path d="M11 12l9-9M17 6l2 2M15 8l2 2"></path>',
+ 'sobre':'<rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path>',
+ 'telefono':'<rect x="7" y="2" width="10" height="20" rx="2.5"></rect><path d="M11 18h2"></path>',
+ 'documento':'<path d="M6 2h9l5 5v15H6V2Z"></path><path d="M14 2v6h6M9 13h8M9 17h6"></path>',
+ 'lupa':'<circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l5 5"></path>',
  'flechas':'<path d="M4 9h13l-4-4M20 15H7l4 4"></path>',
  'billete':'<rect x="3" y="6" width="18" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.5"></circle>',
  'herramienta':'<path d="M14 6a4 4 0 0 0 5 5l-8 8a2 2 0 0 1-3-3l8-8a4 4 0 0 0-2-2Z"></path>',
@@ -164,8 +169,11 @@ def qr(tam=150):
             if on: rects.append(f'<rect x="{x*c:.1f}" y="{y*c:.1f}" width="{c:.1f}" height="{c:.1f}"></rect>')
     return f'<svg role="img" aria-label="Código QR de retiro (simulación)" width="{tam}" height="{tam}" viewBox="0 0 {tam} {tam}" fill="{TINTA}">{"".join(rects)}</svg>'
 
-def guardar(nombre, titulo, cuerpo):
-    open('deluxe/project/'+nombre,'w').write(documento(titulo, cuerpo))
+def guardar(nombre, titulo, cuerpo, alto=844):
+    d=documento(titulo, cuerpo)
+    if alto!=844:
+        d=d.replace('width: 390px; height: 844px;', f'width: 390px; height: {alto}px;',1).replace('{"width":390,"height":844}', '{"width":390,"height":%d}' % alto)
+    open('deluxe/project/'+nombre,'w').write(d)
 
 GENTE = {
  'yo': ('JO','Julián Ortiz',AZUL,'#FFFFFF'),
