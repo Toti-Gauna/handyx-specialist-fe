@@ -271,3 +271,25 @@ Carla Ibáñez (clientes), Sofía Ruiz, Diego Herrera y Pablo Vega (profesionale
 - **Textos que se salían:** regla general de corte de palabras y espacios duros en montos y unidades.
 - Revisión: 190 tableros (156 pantallas, 16 recorridos, 17 flujos), axe en 0, 0 áreas táctiles chicas, 0 textos
   chicos y nada tapado por los botones fijos.
+
+## 14. Séptima vuelta: textos sin cortes, Inicio, pestaña Taller, chats y descripciones (08/11/2026)
+
+- **Textos:** se quitó el corte de palabras con guion («pro-puesta», «Suge-rido»); las palabras pasan enteras a la línea
+  de abajo. Componentes reorganizados donde no entraban (columnas, `wrap`, anchos): reparto del pago, agenda desde el
+  trabajo, tablero 3D, herramientas en dos columnas, mini caminos en lista y la semana entera en la agenda.
+- **Inicio:** Disponible y los datos del día (pedidos, zonas, camino; o cobrado, recorrido y camino) en un **panel
+  colgado de la cabecera**, en vez de chips sueltos sobre el mapa. Sin la tarjeta fantasma detrás del pedido.
+- **Botones** largos uno arriba del otro con todo el ancho (la acción principal arriba).
+- **Pestaña Taller** en lugar de Agenda (`docs/herramientas.md`).
+- **Equipo:** «Ver perfil» del postulante, como lo ve un cliente.
+- **Materiales:** agregar en un paso, opciones resumidas y «Material nuevo» que alimenta el catálogo.
+- **Fotos y videos:** botón para sacar una foto o grabar, y pestaña de archivos.
+- **Chats:** avatar pegado a su burbuja, nombre y hora adentro, reacciones apoyadas en el borde, avatar de grupo en
+  mosaico (sin superposiciones) y **los mensajes pegados abajo**, arriba de la caja para escribir.
+- **Hojas y modales:** detrás del velo se ve la pantalla de la que salen, no un fondo gris vacío.
+- **Recorridos y flujos:** cada pantalla con una descripción de lo que se puede hacer y **«Cómo llegás»**, calculado
+  desde los botones reales que llevan a ella. Se agregaron los accesos que faltaban (gasto desde ingresos, insignias
+  desde la vitrina, otros oficios desde el taller).
+- **Escritorio:** una pantalla de muestra de cómo se ve desde una computadora (solo celular).
+- 195 tableros: 161 pantallas (una de escritorio), 16 recorridos y 17 flujos; axe en 0, 0 áreas táctiles chicas, 0
+  textos chicos y nada tapado por los botones fijos (`medir.cjs` ahora se corre sobre todas las pantallas).

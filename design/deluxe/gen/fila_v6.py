@@ -30,7 +30,7 @@ pedido=f'''<div style="display: flex; justify-content: space-between; align-item
       {boton("Ver pedido", "F-Pedido.dc.html", alto=52)}
     </div>'''
 detras=f'<div aria-hidden="true" style="position: absolute; left: 30px; right: 30px; bottom: 108px; height: 260px; border-radius: 30px; background: #FFFFFF; opacity: 0.7; box-shadow: {ELEV1}; transform: translateY(-14px)"></div>'
-cuerpo = mapa(zona=(215,330,60), punto=(95,420)) + '\n' + cabecera_azul() + '\n' + interruptor(True) + '\n' + camino_chip + detras + modal(pedido) + '\n' + barra_vidrio('Inicio')
+cuerpo = mapa(zona=(215,330,60), punto=(95,420)) + '\n' + cabecera_estado([('campana','PEDIDOS','2 nuevos'),('pin','TUS ZONAS','4 barrios','CU-Disponibilidad.dc.html'),('estrella','CAMINO','8 de 10','G-Inicio.dc.html')]) + '\n' + modal(pedido) + '\n' + barra_vidrio('Inicio')
 guardar('F-Inicio.dc.html','Núcleo · Inicio con mapa',cuerpo)
 
 ruta=[(95,420),(140,350),(205,320),(240,240),(270,210)]
@@ -210,7 +210,7 @@ cuerpo = mapa(ruta=[(95,600),(130,520),(200,470),(230,380),(270,330)], punto=(13
 ''' + modal(f'''
     <div style="display: flex; justify-content: space-between; align-items: center"><span style="display: flex; flex-direction: column"><strong style="{TIT}; font-size: 30px; line-height: 1">12 min</strong><span style="font-size: 13px; color: {SUAVE}">Llegás 18:12 · 4,1 km</span></span>{chip("Lucía ve que vas en camino","pin","tinte")}</div>
     <div style="display: flex; gap: 12px; align-items: center">{avatar('lucia',44)}<span style="flex: 1; display: flex; flex-direction: column"><strong style="font-size: 15px">Lucía Ferreyra</strong><span style="font-size: 12px; color: {SUAVE}">Calle De Prueba 123 · timbre 2</span></span><a href="F-Chat.dc.html" aria-label="Escribirle" style="width: 48px; height: 48px; border-radius: 16px; background: {MOSAICO}; display: flex; align-items: center; justify-content: center">{svg(IC['chat'],TINTA,22)}</a></div>
-    <div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 10px">{boton2("Dejar de compartir","F-Trabajo.dc.html")}{boton("Ya llegué","H0-Modo.dc.html",alto=52)}</div>
+    <div style="display: flex; flex-direction: column; gap: 10px">{boton("Ya llegué","H0-Modo.dc.html",alto=52)}{boton2("Dejar de compartir","F-Trabajo.dc.html")}</div>
     <span style="font-size: 11px; color: {SUAVE}">Tu ubicación se comparte solo hasta que llegás. Se marca sola al estar en la puerta.</span>''', bottom=14)
 guardar('TR-EnCamino.dc.html','Trabajo · En camino',cuerpo)
 

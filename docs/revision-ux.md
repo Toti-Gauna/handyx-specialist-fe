@@ -1,6 +1,6 @@
 # Revisión UX/UI del diseño completo (08/11/2026)
 
-Revisión de las 156 pantallas, 16 recorridos con pantallas y 17 flujos del lienzo (fuente en `design/deluxe/`). Se hizo en el navegador, pantalla por
+Revisión de las 161 pantallas (una de escritorio), 16 recorridos con pantallas y 17 flujos del lienzo (fuente en `design/deluxe/`). Se hizo en el navegador, pantalla por
 pantalla, con tres chequeos automáticos (`design/deluxe/gen/revisar.cjs`) y revisión a ojo de las capturas.
 
 | Chequeo                                                      | Resultado final           |
@@ -22,6 +22,8 @@ pantalla, con tres chequeos automáticos (`design/deluxe/gen/revisar.cjs`) y rev
 - Sexta vuelta: textos y montos que se salían de sus tarjetas (corte de palabras y espacios duros), contraste
   de las ruedas de hora y de los mosaicos sobre azul, listas de opciones con nombre y enlaces de las miniaturas de
   los recorridos de 44 px.
+- Séptima vuelta: sin cortes de palabras con guion (`quiebres.cjs` detecta palabras que no entran y controles
+  partidos), contenido tapado por los botones fijos en cinco pantallas (ahora tableros altos), chats rehechos.
 - Nombres del chat grupal legibles; tarjetas del tablero del ferretero sin cortes; camino de trabajos y QR sin
   superposiciones.
 

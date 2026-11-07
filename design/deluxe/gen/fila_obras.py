@@ -24,7 +24,7 @@ cuerpo = contenido(f'''
     <strong style="font-size: 15px">Hoy, martes 17</strong>
     {turno("9:00","17:00","Baño completo","Obra · jornada 3 de 6 · Los Troncos","F-ObraDia.dc.html", chip("Obra","obra","tinte"), avatares(['yo','sofia']))}
     {turno("18:00","20:00","Pierde la canilla","Plomería · Centro · $ 47.000","F-Trabajo.dc.html", chip("Agendado","agenda","noche"), avatares(['lucia']))}
-    {banner("Mañana: faltan 2 repuestos para «Baño completo»","F-ObraRepuestos.dc.html")}''', top=26) + '\n' + barra_vidrio('Agenda')
+    {banner("Mañana: faltan 2 repuestos para «Baño completo»","F-ObraRepuestos.dc.html")}''', top=26) + '\n' + barra_vidrio('Taller')
 guardar('F-Agenda.dc.html','Núcleo · Agenda',cuerpo)
 
 # ── Agenda: mes completo en pantalla entera, con meses pasados ──────
@@ -83,7 +83,7 @@ cuerpo = barra_compacta('Obra','F-Obras.dc.html',accion=btn_circ('chat','F-ChatG
     <div style="display: flex; align-items: center; gap: 12px">{anillo(2,4,58)}<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><strong style="{TIT}; font-size: 24px; line-height: 1">Baño completo</strong><span style="font-size: 13px; color: {SUAVE}">Martín Sosa · Los Troncos</span></span>{avatares(['yo','sofia','diego'],30)}</div>
     <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px">{dato_mini("EN OBRA","Día 3 de 6","7 días desde el 12/11")}{dato_mini("GASTADO","$ 210.000","en materiales")}{dato_mini("FALTA COBRAR","$ 450.000","de $ 850.000",TINTE,AZUL)}</div>
     {tabs([("Días","F-Obra.dc.html"),("Repuestos <span role='img' aria-label='faltan comprar' style='display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: #D93025'></span>","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Días")}
-    <div style="margin-top: -8px">{dias}</div>''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 10px">{boton2("Agregar","F-ObraRepuesto.dc.html","mas")}{boton(svg(IC["camara"],"#FFFFFF",20)+"Cargar el avance","F-ObraDia.dc.html",alto=52)}</div>')
+    <div style="margin-top: -8px">{dias}</div>''') + '\n' + acciones_fijas(f'<div style="display: flex; flex-direction: column; gap: 10px">{boton(svg(IC["camara"],"#FFFFFF",20)+"Cargar el avance","F-ObraDia.dc.html",alto=52)}{boton2("Agregar","F-ObraRepuesto.dc.html","mas")}</div>')
 guardar('F-Obra.dc.html','Obras · Obra (resumen y días)',cuerpo)
 
 # ── Obra · una jornada ─────────────────────────────────────────────
@@ -95,7 +95,7 @@ cuerpo = barra_compacta('Jornada 3 de 6','F-Obra.dc.html',sub='Hoy · martes 17 
     <div style="display: flex; justify-content: space-between; align-items: center">{chip("Revestimiento · etapa 3","obra","tinte")}<span style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: {SUAVE}">{avatares(['yo','sofia'],28)}Julián y Sofía</span></div>
     {tarjeta(etiqueta("TAREAS DE HOY")+tarea("Pared de la ducha",True,'sofia')+tarea("Pared del lavatorio",False,'sofia')+tarea("Cortes alrededor de la grifería",False,'yo'))}
     {tarjeta(f'<div style="display: flex; justify-content: space-between">{etiqueta("FOTOS Y NOTA · LAS VE MARTÍN")}<span style="font-size: 12px; color: {SUAVE}">2 de hoy</span></div><div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px">{fotos}</div><span style="font-size: 14px; color: {TEXTO}">«Ducha terminada. Mañana sigue la pared del lavatorio.»</span>')}
-    {tarjeta(etiqueta("MATERIALES DE HOY")+fila_ic('caja','Porcelanato 60 × 60 y pegamento × 2','Comprado el 14/11 y de tu stock',href='F-ObraRepuestos.dc.html',borde=False))}''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 10px">{boton2("Cambiar fecha","F-ObraFecha.dc.html","agenda")}{boton("Guardar el avance","F-Obra.dc.html",alto=52)}</div>')
+    {tarjeta(etiqueta("MATERIALES DE HOY")+fila_ic('caja','Porcelanato 60 × 60 y pegamento × 2','Comprado el 14/11 y de tu stock',href='F-ObraRepuestos.dc.html',borde=False))}''') + '\n' + acciones_fijas(f'<div style="display: flex; flex-direction: column; gap: 10px">{boton("Guardar el avance","F-Obra.dc.html",alto=52)}{boton2("Cambiar fecha","F-ObraFecha.dc.html","agenda")}</div>')
 guardar('F-ObraDia.dc.html','Obras · Jornada',cuerpo)
 
 # ── Obra · repuestos (comprar a futuro, aprobación, avisos) ─────────
@@ -106,7 +106,7 @@ cuerpo = barra_compacta('Repuestos','F-Obra.dc.html',sub='Baño completo') + con
     {banner("Mañana (mié 18) faltan 2: pegamento y pastina","F-ObraRepuestos.dc.html")}
     {tarjeta(etiqueta("ESPERAN LA APROBACIÓN DE MARTÍN")+rep("Pegamento para porcelanato × 4","Para la jornada 4 · mié 18 · $ 36.000",chip("Enviado hoy 12:10","reloj","amarillo"),"Recordarle")+rep("Inodoro corto con mochila","Para la jornada 6 · vie 20 · $ 145.000",chip("Sin mandar","alerta","error"),"Mandar a aprobación"))}
     {tarjeta(etiqueta("APROBADOS · SE COMPRAN")+rep("Pastina gris × 2","Martín aprobó · comprar mañana 8:00",chip("Ferretería Simulación","pin","tinte"),"Pedir"))}
-    {tarjeta(etiqueta("COMPRADOS")+rep("Porcelanato, caños y 3 más","Del 12/11 al 14/11 · $ 210.000 en total",chip("5 tickets cargados","check","exito"),"Ver"))}''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.2fr); gap: 10px">{boton2("Agregar","F-RepuestoOrigen.dc.html","mas")}{boton("Pedir en ferretería","R-Comparar.dc.html",alto=52)}</div>')
+    {tarjeta(etiqueta("COMPRADOS")+rep("Porcelanato, caños y 3 más","Del 12/11 al 14/11 · $ 210.000 en total",chip("5 tickets cargados","check","exito"),"Ver"))}''') + '\n' + acciones_fijas(f'<div style="display: flex; flex-direction: column; gap: 10px">{boton("Pedir en ferretería","R-Comparar.dc.html",alto=52)}{boton2("Agregar","F-RepuestoOrigen.dc.html","mas")}</div>')
 guardar('F-ObraRepuestos.dc.html','Obras · Repuestos',cuerpo)
 
 # ── Obra · agregar un repuesto para comprar a futuro ───────────────
@@ -148,8 +148,8 @@ cuerpo = barra_compacta('Equipo','F-Obra.dc.html',sub='Baño completo',accion=bt
     {tabs([("Días","F-Obra.dc.html"),("Repuestos <span role='img' aria-label='faltan comprar' style='display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: #D93025'></span>","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Equipo")}
     {tarjeta(etiqueta("PROFESIONALES")+miembro('yo','Titular · Plomería','60 %',chip("Armó la obra","estrella","tinte"))+miembro('sofia','Albañilería · jornadas 1, 3 y 4','30 %',chip("Aceptó","check","exito"))+miembro('diego','Electricidad · jornada 6','10 %',chip("Invitación enviada","reloj","amarillo")), franja("Ver el reparto del pago","F-Reparto.dc.html"))}
     {tarjeta(etiqueta("CLIENTE")+f'<div style="display: flex; gap: 12px; align-items: center">{avatar("martin",46)}<span style="display: flex; flex-direction: column"><strong style="font-size: 15px">Martín Sosa</strong><span style="font-size: 12px; color: {SUAVE}">Ve los días, las fotos y el chat del grupo</span></span></div>')}
-    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: {SUAVE}"><span>· Se suma quien vos invitás o elegís entre los que se postulan; siempre verificados por Handyx.</span><span>· Cada uno ve los días, el chat y su parte. Tus gastos los ves solo vos.</span></div>''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.3fr); gap: 10px">{boton2("Invitar a un contacto","F-Invitar.dc.html","usuario2")}{boton(svg(IC["mas"],"#FFFFFF",20)+"Buscar uno nuevo","F-ObraBuscar.dc.html",alto=52)}</div>')
-guardar('F-ObraEquipo.dc.html','Equipo · Equipo de la obra',cuerpo)
+    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: {SUAVE}"><span>· Se suma quien vos invitás o elegís entre los que se postulan; siempre verificados por Handyx.</span><span>· Cada uno ve los días, el chat y su parte. Tus gastos los ves solo vos.</span></div>''') + '\n' + acciones_fijas(f'<div style="display: flex; flex-direction: column; gap: 10px">{boton(svg(IC["mas"],"#FFFFFF",20)+"Buscar uno nuevo","F-ObraBuscar.dc.html",alto=52)}{boton2("Invitar a un contacto","F-Invitar.dc.html","usuario2")}</div>')
+guardar('F-ObraEquipo.dc.html','Equipo · Equipo de la obra',cuerpo,900)
 
 # ── Invitar ────────────────────────────────────────────────────────
 def contacto(k, rubro, sel=False):
@@ -165,7 +165,7 @@ guardar('F-Invitar.dc.html','Equipo · Invitar',cuerpo)
 
 # ── Reparto del pago ──────────────────────────────────────────────
 def parte(k, rubro, monto, pct, est):
-    return f'<div style="display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid {BORDE}">{avatar(k,44)}<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px"><strong style="font-size: 15px">{nombre(k)}</strong><span style="font-size: 12px; color: {SUAVE}">{rubro} · {pct}</span>{est}</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 32px; height: 32px; border-radius: 10px; background: {MOSAICO}; display: flex; align-items: center; justify-content: center; font-weight: 900">−</span><strong style="{TIT}; font-size: 17px; min-width: 84px; text-align: center">{monto}</strong><span style="width: 32px; height: 32px; border-radius: 10px; background: {MOSAICO}; display: flex; align-items: center; justify-content: center; font-weight: 900">+</span></span></div>'
+    return f'<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-top: 1px solid {BORDE}"><div style="display: flex; gap: 12px; align-items: center">{avatar(k,44)}<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">{nombre(k)}</strong><span style="font-size: 12px; color: {SUAVE}">{rubro} · {pct} del total</span></span>{est}</div><div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 6px 6px 14px; border-radius: 16px; background: #F6F7F9"><span style="font-size: 13px; font-weight: 700; color: {SUAVE}">Su parte</span><span style="display: flex; align-items: center; gap: 8px"><span style="width: 36px; height: 36px; border-radius: 12px; background: #FFFFFF; border: 1px solid {BORDE}; display: flex; align-items: center; justify-content: center; font-weight: 900">−</span><strong style="{TIT}; font-size: 18px; min-width: 100px; text-align: center; white-space: nowrap">{monto}</strong><span style="width: 36px; height: 36px; border-radius: 12px; background: #FFFFFF; border: 1px solid {BORDE}; display: flex; align-items: center; justify-content: center; font-weight: 900">+</span></span></div></div>'
 barra_rep=f'<div role="img" aria-label="Reparto: Julián 60 %, Sofía 30 %, Diego 10 %" style="display: flex; height: 16px; border-radius: 8px; overflow: hidden"><span style="width: 60%; background: {AZUL}"></span><span style="width: 30%; background: #8CCBA3"></span><span style="width: 10%; background: {AMARILLO}"></span></div>'
 cuerpo = barra_compacta('Reparto del pago','F-ObraEquipo.dc.html',sub='Baño completo') + contenido(f'''
     {tabs([("Días","F-Obra.dc.html"),("Repuestos <span role='img' aria-label='faltan comprar' style='display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: #D93025'></span>","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Plata")}
@@ -175,14 +175,11 @@ cuerpo = barra_compacta('Reparto del pago','F-ObraEquipo.dc.html',sub='Baño com
       <div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px"><span role="radio" aria-checked="true" style="padding: 10px 12px; border-radius: 16px; border: 2px solid {AZUL}; background: {TINTE}; color: {HONDO}; font-size: 13px; font-weight: 800">Cada uno le cobra su parte a Martín</span><span role="radio" aria-checked="false" style="padding: 10px 12px; border-radius: 16px; border: 2px solid {BORDE}; font-size: 13px; font-weight: 800">Cobrás vos y repartís por fuera</span></div>
     </div>
     <span style="font-size: 12px; color: {SUAVE}">Handyx no recibe ni reparte la plata: registra lo que acuerdan entre ustedes.</span>''') + '\n' + accion_fija('Mandar el reparto al equipo','F-ObraEquipo.dc.html')
-guardar('F-Reparto.dc.html','Equipo · Reparto del pago',cuerpo)
+guardar('F-Reparto.dc.html','Equipo · Reparto del pago',cuerpo,1000)
 
 # ── Chats ──────────────────────────────────────────────────────────
 def msg(k, t, hora, mio=False, con_nombre=True):
-    if mio:
-        return f'<div style="align-self: flex-end; max-width: 78%; padding: 10px 14px; background: {AZUL}; color: #FFFFFF; border-radius: 20px 20px 6px 20px; font-size: 15px">{t}<span style="display: block; margin-top: 2px; font-size: 11px; opacity: 0.75; text-align: right">{hora}</span></div>'
-    n=f'<span style="font-size: 12px; font-weight: 800; color: {GENTE[k][2] if GENTE[k][3]=="#FFFFFF" else (TINTA if GENTE[k][2] in (AMARILLO,"#F6D7A7") else GENTE[k][3])}">{nombre(k)}</span>' if con_nombre else ''
-    return f'<div style="align-self: flex-start; display: flex; gap: 8px; align-items: flex-end; max-width: 86%">{avatar(k,30)}<div style="padding: 8px 14px 10px; background: {MOSAICO}; border-radius: 20px 20px 20px 6px; font-size: 15px; display: flex; flex-direction: column; gap: 2px">{n}<span>{t}</span><span style="font-size: 11px; color: {SUAVE}; text-align: right">{hora}</span></div></div>'
+    return burbuja(k, t, hora, mio, con_nombre)
 def sistema(t, ic='usuario2'):
     return f'<span style="align-self: center; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #F6F7F9; border: 1px solid {BORDE}; font-size: 12px; color: {SUAVE}">{svg(IC[ic],SUAVE,14)}{t}</span>'
 def tarjeta_chat(sup, titulo, sub, chip_html, href, ic='caja'):
@@ -198,7 +195,7 @@ def cabecera_chat(av_html, titulo, sub, atras, accion):
     {btn_circ('atras',atras,'Volver')}{av_html}<span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><strong style="font-size: 16px">{titulo}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span></span>{accion}
   </header>'''
 
-cuerpo = cabecera_chat(avatares(['martin','sofia','diego'],32),'Baño completo','Grupo · Martín, Sofía, Diego y vos','F-Obra.dc.html',btn_circ('obra','F-Obra.dc.html','Ver la obra')) + contenido(f'''
+cuerpo = cabecera_chat(avatar_grupo(['martin','sofia','diego'],46),'Baño completo','4 personas · tocá para ver','F-Obra.dc.html',btn_circ('obra','F-Obra.dc.html','Ver la obra')) + contenido(f'''
     {sistema("Diego se sumó por tu invitación")}
     {msg('sofia','Mañana arranco 8:30 con la pared del lavatorio.','16:02')}
     {msg('martin','¡Genial! ¿Hace falta comprar algo más?','16:05')}
@@ -207,7 +204,7 @@ cuerpo = cabecera_chat(avatares(['martin','sofia','diego'],32),'Baño completo',
     {tarjeta_chat("AVANCE DE HOY","Jornada 3 · Revestimiento","Ducha terminada · 2 fotos",chip("Lo vio Martín","check","exito"),"F-ObraDia.dc.html","camara")}''', top=84) + '\n' + entrada_chat()
 guardar('F-ChatGrupo.dc.html','Equipo · Chat grupal de la obra',cuerpo)
 
-cuerpo = cabecera_chat(avatar('lucia',40),'Lucía Ferreyra','Pedido · Pierde la canilla','F-Mensajes.dc.html',btn_circ('herramienta','F-Trabajo.dc.html','Ver el pedido')) + contenido(f'''
+cuerpo = cabecera_chat(avatar('lucia',40),'Lucía Ferreyra','Pedido · Pierde la canilla','F-Mensajes.dc.html',btn_circ('herramienta','F-Trabajo.dc.html','Ver el pedido')) + contenido_chat(f'''
     <span style="align-self: center">{chip("Hoy","agenda","gris")}</span>
     {msg('lucia','Hola, ¿podés venir hoy? La canilla gotea todo el tiempo.','17:20',con_nombre=False)}
     {tarjeta_chat("TU PROPUESTA","$ 47.000 · hoy de 18 a 20","Incluye materiales",chip("Aceptada","check","exito"),"F-Trabajo.dc.html","billete")}
@@ -247,7 +244,7 @@ def hilo(av_html, t, etiqueta_html, ult, hora, sin_leer=0, href='F-Chat.dc.html'
     b=f'<span style="min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: {AZUL}; color: #FFFFFF; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center">{sin_leer}</span>' if sin_leer else ''
     return f'<a href="{href}" style="display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid {BORDE}; color: {TINTA}; text-decoration: none"><span style="width: 52px; flex: none; display: flex; justify-content: center">{av_html}</span><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="display: flex; justify-content: space-between; gap: 8px"><strong style="font-size: 15px">{t}</strong><span style="font-size: 12px; color: {SUAVE}">{hora}</span></span>{etiqueta_html}<span style="font-size: 13px; color: {TEXTO if sin_leer else SUAVE}; font-weight: {700 if sin_leer else 400}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{ult}</span></span>{b}</a>'
 soporte=f'<span aria-hidden="true" style="width: 48px; height: 48px; border-radius: 50%; background: {AZUL}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; {TIT}; font-size: 20px">H</span>'
-grupo=f'<span style="position: relative; width: 52px; height: 48px">'+f'<span style="position: absolute; left: 0; top: 0">{avatar("martin",32,True)}</span><span style="position: absolute; right: 0; top: 4px">{avatar("sofia",30,True)}</span><span style="position: absolute; left: 12px; bottom: -2px">{avatar("diego",28,True)}</span></span>'
+grupo=avatar_grupo(['martin','sofia','diego'],48)
 def tag(t, ic, tono='gris'): return f'<span>{chip(t,ic,tono)}</span>'
 cuerpo = contenido(f'''
     {titulo_grande("4 SIN LEER","Tus ","mensajes")}

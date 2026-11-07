@@ -46,7 +46,7 @@ def documento(titulo, cuerpo):
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&amp;family=DM+Sans:opsz,wght@9..40,400..800&amp;display=swap">
 <style>
 body{{margin:0}}
-*{{overflow-wrap:break-word;hyphens:auto}}
+*{{overflow-wrap:normal}}
 a{{color:{AZUL}}}a:hover{{color:{HONDO}}}
 </style>
 </helmet>
@@ -66,7 +66,7 @@ return {{}};
 '''
 
 def barra_vidrio(activa):
-    tabs=[('Inicio','casa','F-Inicio.dc.html'),('Obras','obra','F-Obras.dc.html'),('Agenda','agenda','F-Agenda.dc.html'),('Mensajes','chat','F-Mensajes.dc.html'),('Cuenta','cuenta','F-Cuenta.dc.html')]
+    tabs=[('Inicio','casa','F-Inicio.dc.html'),('Obras','obra','F-Obras.dc.html'),('Taller','herramienta','F-Herramientas.dc.html'),('Mensajes','chat','F-Mensajes.dc.html'),('Cuenta','cuenta','F-Cuenta.dc.html')]
     items=[]
     for nombre,ic,href in tabs:
         on = nombre==activa

@@ -105,7 +105,10 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
   completo: materiales y tarifas de mano de obra (hora, visita, urgencia, por tarea), foto de la lista del corralón
   leída en el teléfono, revisión de lo leído (sube, igual, nuevo, revisar), detalle con historial y margen, aviso de
   precios viejos. Después: **catálogo con los productos de las ferreterías de Mar del Plata** (se les pide la lista a
-  las ferreterías para armar la base).
+  las ferreterías para armar la base). **Agregar un material, simple** (pedido de Ignacio del 08/11): buscar en la
+  lista, tocar y elegir la cantidad; las opciones (cobrar, gasto, congelar el precio) quedan resumidas y se cambian en
+  una hoja aparte. Si no está, **«Material nuevo»**: nombre, categoría y precio; queda en la lista del especialista y
+  **el nombre** (nunca su precio) suma al catálogo de Handyx.
 - **H0.3 Ingresos y gastos** (apps de monotributistas, QuickBooks Self-Employed): para que el especialista sepa su
   **bruto y su neto**. Bruto: lo cobrado en Handyx (verificado e informado, por separado) y por fuera. Gastos:
   materiales (con la foto del ticket o desde el presupuesto, el pedido de repuestos y el Modo trabajo), combustible y
@@ -158,6 +161,18 @@ Pedido de Ignacio del 08/11/2026. Diseño en la fila «Acceso y seguridad» y «
   escribano lo arman los agentes por separado; la app ya deja el archivo y el estado listos.
 - **V.5 Backend:** contrato, esquema en `handyx-client-be`, endpoints en `handyx-specialist-be`, retención y pruebas.
 
+### Pestaña Taller (pedido de Ignacio del 08/11/2026)
+
+La pestaña «Agenda» de la barra se reemplaza por **«Taller»** («Herramientas» no entra en la barra con letra legible):
+una pantalla con accesos premium a la **agenda** (resumen de la semana), **ingresos y gastos**, **presupuestos y
+precios**, **tu equipamiento**, **herramientas del teléfono** (medir, nivel, 3D y el oficio) y la **ferretería**. Se
+desarrolla con H0 (D.2 arma la barra nueva).
+
+### Solo celular
+
+La app es solo para el celular. Desde una computadora se muestra una pantalla que lo explica, con una vista de muestra
+vertical y un QR para abrirla en el teléfono (sin funciones de escritorio).
+
 ### Fase O · Obras en equipo, mensajes y cuenta — Opus 5.5 / xhigh
 
 Pedido de Ignacio del 08/11/2026. Diseño en las filas «Obras», «Obras en equipo» y «Mensajes» del lienzo.
@@ -176,7 +191,7 @@ Pedido de Ignacio del 08/11/2026. Diseño en las filas «Obras», «Obras en equ
   con **«Buscar un profesional nuevo»**: el titular publica una búsqueda (oficio, jornadas, su parte del pago, mensaje;
   «verificado por Handyx» siempre y matrícula verificada si hace falta) que ven **solo especialistas verificados de la
   zona** en su Inicio, como modal «Te buscan para una obra»; ven la obra (zona aproximada, sin dirección), se postulan
-  y **el titular elige** a quién sumar (nadie entra solo). La búsqueda cierra sola. **Chat grupal** con el cliente;
+  y **el titular elige** a quién sumar (nadie entra solo), después de **ver su perfil** como lo ve un cliente. La búsqueda cierra sola. **Chat grupal** con el cliente;
   cada uno ve los días, el chat y su parte (los gastos del titular, solo él). También se suma gente desde la propuesta
   de obra y desde la info del grupo.
 - **O.5 Reparto del pago:** cuánto le toca a cada uno (monto o %), cómo cobra (cada uno su parte, o el titular y
@@ -187,8 +202,8 @@ Pedido de Ignacio del 08/11/2026. Diseño en las filas «Obras», «Obras en equ
   tarjetas que el cliente responde ahí mismo. **Funciones del chat:** reacciones con emojis, responder, copiar,
   **editar** (en una hoja; queda «editado»; las tarjetas no se editan, se manda una nueva), **borrar para todos con
   borrado lógico** (se ve «Mensaje eliminado» y el mensaje queda oculto y guardado por si hay un reclamo, con la
-  retención que defina Legal), **seleccionar varios** (copiar, reenviar, borrar), **fotos y videos** (achicados y sin
-  ubicación, videos de hasta 1 minuto), fijar, silenciar e info del grupo con sus personas y archivos, y **agregar
+  retención que defina Legal), **seleccionar varios** (copiar, reenviar, borrar), **fotos y videos** (sacar o grabar en el momento, o elegir de la galería o archivos;
+  achicados y sin ubicación, videos de hasta 1 minuto), fijar, silenciar e info del grupo con sus personas y archivos, y **agregar
   personas**.
 - **O.7 Backend:** contrato, esquema (miembros de obra, invitaciones, reparto, repuestos con estado, adjuntos tipados
   del chat), endpoints, avisos y pruebas.

@@ -42,8 +42,11 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
   modales flotantes sobre el mapa, barra azul de vidrio, horario a medida, obra y jornada rehechas, búsqueda de
   profesionales para la obra, chat con reacciones/editar/borrado lógico/fotos y videos, repuestos «lo consigo yo» o
   «en una ferretería adherida», «ya no la tengo» en el equipamiento y manual en la app o impreso. Plan actualizado en
-  `docs/herramientas.md` (V.1, O.2, O.4, O.6, H0.5, G.0). **Esperando el OK de Ignacio para empezar a desarrollar
-  (D.2).**
+  `docs/herramientas.md` (V.1, O.2, O.4, O.6, H0.5, G.0).
+- **Séptima vuelta (08/11):** 195 tableros (`docs/rediseno-deluxe.md` §14): textos sin cortes, Inicio con panel de
+  estado, pestaña **Taller** en lugar de Agenda, chats rehechos, modales con su pantalla detrás, agregar material en un
+  paso con «Material nuevo», ver perfil del postulante, vista de escritorio (solo celular) y descripciones con «Cómo
+  llegás» en recorridos y flujos. Ignacio dio el diseño por completo: **siguiente paso, D.2** (kit v3).
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 

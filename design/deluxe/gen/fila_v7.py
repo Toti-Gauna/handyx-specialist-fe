@@ -26,7 +26,7 @@ dia=f'''<div style="display: flex; justify-content: space-between; align-items: 
       <div style="display: flex; gap: 8px">{icbtn('chat','Escribirle','F-Chat.dc.html','#FFFFFF',AZUL)}{icbtn('reloj','Avisar demora','H0-ModoAgenda.dc.html','#FFFFFF',AZUL)}<a href="TR-EnCamino.dc.html" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border-radius: 18px; background: {AZUL}; color: #FFFFFF; font-weight: 900; text-decoration: none; box-shadow: 0 4px 0 {HONDO}">{svg(IC['camion'],'#FFFFFF',20)}Salir ahora</a></div>
     </div>'''
 resumen=f'<div style="position: absolute; top: 132px; left: 12px; display: flex; gap: 8px">' + ''.join(f'<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border-radius: 999px; background: #FFFFFF; box-shadow: {ELEV2}; font-size: 13px; font-weight: 800; white-space: nowrap">{svg(IC[i],AZUL,16)}{t}</span>' for i,t in [('camion','14 km'),('billete','$ 47.000 hoy'),('estrella','8 de 10')]) + '</div>'
-cuerpo = mapa(ruta=ruta, punto=(95,410), extra=paradas) + '\n' + cabecera_azul() + '\n' + interruptor(True, top=184) + '\n' + resumen + modal(dia) + '\n' + barra_vidrio('Inicio')
+cuerpo = mapa(ruta=ruta, punto=(95,410), extra=paradas) + '\n' + cabecera_estado([('billete','HOY','$ 47.000','F-Ingresos.dc.html'),('camion','RECORRIDO','14 km','F-InicioRuta.dc.html'),('estrella','CAMINO','8 de 10','G-Inicio.dc.html')], sub='Tenés 3 paradas hoy') + '\n' + modal(dia) + '\n' + barra_vidrio('Inicio')
 guardar('F-InicioDia.dc.html','Núcleo · Inicio con tu día',cuerpo)
 
 def tl(h, t, sub, est, href, ultimo=False):
@@ -49,18 +49,18 @@ guardar('F-InicioRuta.dc.html','Núcleo · Tu recorrido',cuerpo)
 def dia_tira(n, d, est=''):
     s=f'background: {AZUL}; color: #FFFFFF; box-shadow: 0 3px 0 {HONDO}' if est=='sel' else f'background: {MOSAICO}; color: {TEXTO}'
     pt=f'<span style="width: 5px; height: 5px; border-radius: 50%; background: {NARANJA if est=="sel" else AZUL}"></span>' if est in ('sel','pt') else '<span style="height: 5px"></span>'
-    return f'<span style="flex: none; width: 52px; padding: 8px 0; border-radius: 16px; {s}; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 11px; font-weight: 800">{d}</span><strong style="{TIT}; font-size: 18px">{n}</strong>{pt}</span>'
+    return f'<span style="flex: 1; min-width: 0; padding: 8px 0; border-radius: 14px; {s}; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 11px; font-weight: 800">{d}</span><strong style="{TIT}; font-size: 18px">{n}</strong>{pt}</span>'
 def turno(h1, h2, t, sub, href, chip_html='', gente=''):
     g=f'<span style="margin-top: 2px">{gente}</span>' if gente else ''
     return f'<a href="{href}" style="display: flex; gap: 12px; align-items: stretch; color: {TINTA}; text-decoration: none"><span style="width: 64px; flex: none; border-radius: 18px; background: {MOSAICO}; display: flex; flex-direction: column; align-items: center; justify-content: center"><strong style="{TIT}; font-size: 17px">{h1}</strong><span style="font-size: 11px; color: {SUAVE}">a {h2}</span></span><span style="flex: 1; min-width: 0; padding: 12px 14px; border-radius: 18px; background: #FFFFFF; border: 1px solid {BORDE}; box-shadow: {ELEV1}; display: flex; flex-direction: column; gap: 4px"><span style="display: flex; justify-content: space-between; gap: 8px"><strong style="font-size: 15px">{t}</strong>{chip_html}</span><span style="font-size: 13px; color: {SUAVE}">{sub}</span>{g}</span></a>'
-tira=''.join([dia_tira(16,'LUN'),dia_tira(17,'MAR','sel'),dia_tira(18,'MIÉ','pt'),dia_tira(19,'JUE','pt'),dia_tira(20,'VIE','pt'),dia_tira(21,'SÁB'),dia_tira(23,'LUN','pt')])
+tira=''.join([dia_tira(16,'LUN'),dia_tira(17,'MAR','sel'),dia_tira(18,'MIÉ','pt'),dia_tira(19,'JUE','pt'),dia_tira(20,'VIE','pt'),dia_tira(21,'SÁB'),dia_tira(22,'DOM')])
 cuerpo = contenido(f'''
     <div style="display: flex; justify-content: space-between; align-items: flex-end">{titulo_grande("NOVIEMBRE 2026","Tu ","agenda")}<a href="F-AgendaMes.dc.html" style="display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 14px; background: {AZUL}; color: #FFFFFF; font-size: 13px; font-weight: 800; text-decoration: none; box-shadow: 0 3px 0 {HONDO}">{svg(IC['agenda'],'#FFFFFF',18)}Ver el mes</a></div>
     {segmento([("Pasadas · 12","F-AgendaPasadas.dc.html"),("Hoy · 2","F-Agenda.dc.html"),("Futuras · 6","F-Agenda.dc.html")],1)}
-    <div style="display: flex; gap: 6px; margin: 0 -16px; padding: 0 16px; overflow: hidden">{tira}</div>
+    <div style="display: flex; gap: 5px">{tira}</div>
     <div style="display: flex; justify-content: space-between; align-items: baseline"><strong style="font-size: 15px">Hoy, martes 17</strong><span style="font-size: 13px; color: {SUAVE}">2 turnos · $ 47.000</span></div>
     {turno("9:00","17:00","Baño completo","Obra · jornada 3 de 6 · Los Troncos","F-ObraDia.dc.html", chip("Obra","obra","tinte"), avatares(['yo','sofia']))}
-    {turno("18:00","20:00","Pierde la canilla","Plomería · Centro · $ 47.000","F-Trabajo.dc.html", chip("Agendado","agenda","noche"), avatares(['lucia']))}''', top=26) + '\n' + barra_vidrio('Agenda')
+    {turno("18:00","20:00","Pierde la canilla","Plomería · Centro · $ 47.000","F-Trabajo.dc.html", chip("Agendado","agenda","noche"), avatares(['lucia']))}''', top=26) + '\n' + barra_vidrio('Taller')
 guardar('F-Agenda.dc.html','Núcleo · Agenda',cuerpo)
 
 def pasado(t, sub, monto, est, href):
@@ -71,7 +71,7 @@ cuerpo = contenido(f'''
     {segmento([("Pasadas · 12","F-AgendaPasadas.dc.html"),("Hoy · 2","F-Agenda.dc.html"),("Futuras · 6","F-Agenda.dc.html")],0)}
     <div style="display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px"><div style="padding: 12px; border-radius: 18px; background: {AZUL}; color: #FFFFFF; box-shadow: 0 4px 0 {HONDO}"><span style="font-size: 11px; font-weight: 800; color: #F0F5FD">ESTE MES</span><strong style="display: block; {TIT}; font-size: 22px">12 trabajos</strong></div><div style="padding: 12px; border-radius: 18px; background: {MOSAICO}"><span style="font-size: 11px; font-weight: 800; color: {SUAVE}">COBRADO</span><strong style="display: block; {TIT}; font-size: 22px; white-space: nowrap">$ 320.000</strong></div></div>
     {tarjeta(etiqueta("AYER · LUNES 16")+pasado('Revisión de termotanque','Chauvín · Carla Ibáñez','$ 28.000','ver','H0-InformeEnviado.dc.html'))}
-    {tarjeta(etiqueta("VIERNES 13")+pasado('Baño completo · jornada 2','Los Troncos · Martín Sosa','$ 180.000','ver','F-ObraDia.dc.html')+pasado('Cambio de flexible','Centro · cliente nuevo','$ 15.000','inf','H0-InformeEnviado.dc.html'))}''', top=26) + '\n' + barra_vidrio('Agenda')
+    {tarjeta(etiqueta("VIERNES 13")+pasado('Baño completo · jornada 2','Los Troncos · Martín Sosa','$ 180.000','ver','F-ObraDia.dc.html')+pasado('Cambio de flexible','Centro · cliente nuevo','$ 15.000','inf','H0-InformeEnviado.dc.html'))}''', top=26) + '\n' + barra_vidrio('Taller')
 guardar('F-AgendaPasadas.dc.html','Núcleo · Agenda: pasadas',cuerpo)
 
 # ── Cuenta completa (tablero alto: todo lo que hay al hacer scroll) ─────
@@ -130,8 +130,8 @@ cuerpo = barra_compacta('Obra','F-Obras.dc.html',accion=f'<a href="F-ChatGrupo.d
     {hero}
     <a href="F-ObraRepuestos.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border-radius: 16px; background: {AMARILLO}; color: {TINTA}; text-decoration: none; font-size: 13px; font-weight: 800">{svg(IC['alerta'],TINTA,18)}<span style="flex: 1">Mañana faltan 2 repuestos · 1 espera aprobación</span>{svg(IC['flecha'],TINTA,16)}</a>
     {tabs([("Días","F-Obra.dc.html"),("Repuestos","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Días")}
-    <div>{dias}</div>''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 10px">{boton2("Repuesto","F-RepuestoOrigen.dc.html","mas")}{boton(svg(IC["camara"],"#FFFFFF",20)+"Cargar el avance","F-ObraDiaAvance.dc.html",alto=52)}</div>')
-guardar('F-Obra.dc.html','Obras · Obra (resumen y días)',cuerpo,1060)
+    <div>{dias}</div>''') + '\n' + acciones_fijas(f'<div style="display: flex; flex-direction: column; gap: 10px">{boton(svg(IC["camara"],"#FFFFFF",20)+"Cargar el avance","F-ObraDiaAvance.dc.html",alto=52)}{boton2("Repuesto","F-RepuestoOrigen.dc.html","mas")}</div>')
+guardar('F-Obra.dc.html','Obras · Obra (resumen y días)',cuerpo,1100)
 
 # ── Jornada: todo claro y cada cosa con su modal (tablero alto) ────────
 def tarea(t, ok, quien):
@@ -149,8 +149,8 @@ cuerpo = barra_compacta('Jornada','F-Obra.dc.html',sub='Baño completo · Martí
     {seccion("QUIÉN VIENE","Sumar","F-Invitar.dc.html", f'<div style="display: flex; gap: 10px; align-items: center">{avatar("yo",40)}{avatar("sofia",40)}<span style="font-size: 13px; color: {SUAVE}">Julián y Sofía · Diego viene el viernes</span></div>')}
     {seccion("TAREAS","Agregar tarea","F-ObraDiaTarea.dc.html", tarea("Pared de la ducha",True,'sofia')+tarea("Pared del lavatorio",False,'sofia')+tarea("Cortes alrededor de la grifería",False,'yo'))}
     {seccion("AVANCE DEL DÍA · LO VE MARTÍN","Cargar","F-ObraDiaAvance.dc.html", f'<div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px">{fotos}</div><span style="font-size: 14px; color: {TEXTO}">«Ducha terminada. Mañana sigue la pared del lavatorio.»</span>')}
-    {seccion("MATERIALES DE HOY","Agregar","F-RepuestoOrigen.dc.html", fila_ic('caja','Porcelanato 60 × 60','12 m² · comprado el 14/11',borde=False)+fila_ic('caja','Pegamento × 2','De tu stock'))}''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 10px">{boton2("Cambiar fecha","F-ObraFecha.dc.html","agenda")}{boton(svg(IC["camara"],"#FFFFFF",20)+"Cargar el avance","F-ObraDiaAvance.dc.html",alto=52)}</div>')
-guardar('F-ObraDia.dc.html','Obras · Jornada',cuerpo,1200)
+    {seccion("MATERIALES DE HOY","Agregar","F-RepuestoOrigen.dc.html", fila_ic('caja','Porcelanato 60 × 60','12 m² · comprado el 14/11',borde=False)+fila_ic('caja','Pegamento × 2','De tu stock'))}''') + '\n' + acciones_fijas(f'<div style="display: flex; flex-direction: column; gap: 10px">{boton(svg(IC["camara"],"#FFFFFF",20)+"Cargar el avance","F-ObraDiaAvance.dc.html",alto=52)}{boton2("Cambiar fecha","F-ObraFecha.dc.html","agenda")}</div>')
+guardar('F-ObraDia.dc.html','Obras · Jornada',cuerpo,1230)
 
 # Modal: horario de la jornada
 def rueda(valores, sel, nombre):

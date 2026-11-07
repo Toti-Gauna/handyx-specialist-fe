@@ -93,6 +93,7 @@ def premio(t, sub, e, h):
 cuerpo = barra_compacta('Tus premios','G-Camino.dc.html') + contenido(f'''
     {titulo_grande("VITRINA","Lo que ","ganaste")}
     <div style="display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px">{premio('Kit chico','','ok','engranaje')}{premio('Kit de consumibles','','canje','cano')}{premio('Gorra Handyx','A 2 trabajos','bloq','llave')}{premio('Herramienta del oficio','A 17 trabajos','bloq','lamparita')}</div>
+    <a href="G-Insignias.dc.html" style="display: flex; gap: 12px; align-items: center; min-height: 56px; padding: 8px 14px; border-radius: 18px; background: {TINTE}; color: {TINTA}; text-decoration: none">{svg(IC['medalla'],AZUL,24)}<span style="flex: 1; display: flex; flex-direction: column"><strong style="font-size: 14px">Tus insignias</strong><span style="font-size: 12px; color: {SUAVE}">Por usar la app; sin premio físico</span></span>{svg(IC['flecha'],AZUL,18)}</a>
     <span style="font-size: 12px; color: {SUAVE}">Revisamos cada premio antes de entregarlo. Las cantidades de la escalera son un borrador.</span>''')
 guardar('G-Vitrina.dc.html','G · Vitrina de premios',cuerpo)
 

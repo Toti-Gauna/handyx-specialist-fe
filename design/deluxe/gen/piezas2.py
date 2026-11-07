@@ -198,3 +198,58 @@ def tabs(items, activa):
         s=f'background: #FFFFFF; color: {TINTA}; box-shadow: {ELEV1}' if on else f'color: {SUAVE}'
         out.append(f'<a href="{href}"{" aria-current=\"page\"" if on else ""} style="flex: 1; min-height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; text-decoration: none; {s}">{t}</a>')
     return f'<nav aria-label="Secciones de la obra" style="display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: {MOSAICO}">{"".join(out)}</nav>'
+
+def cabecera_estado(stats, sub='Te llegan pedidos de tus zonas', on=True):
+    """Cabecera azul del Inicio con un panel blanco colgado: Disponible arriba y tres datos del día en columnas."""
+    cab = cabecera_azul().replace('padding: 22px 16px 20px 22px', 'padding: 22px 16px 62px 22px', 1)
+    pista = '#1E9E57' if on else '#C9CFDA'; lado = 'right: 3px' if on else 'left: 3px'
+    def dato(ic, et, v, href=None):
+        tag = 'a' if href else 'span'; h = f' href="{href}"' if href else ''
+        return (f'<{tag}{h} style="flex: 1; min-width: 0; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: {TINTA}; text-decoration: none; text-align: center">'
+                f'<span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; color: {SUAVE}">{svg(IC[ic],AZUL,14)}{et}</span>'
+                f'<strong style="font-size: 15px; white-space: nowrap; font-variant-numeric: tabular-nums">{v}</strong></{tag}>')
+    sep = f'<span aria-hidden="true" style="width: 1px; align-self: stretch; margin: 6px 0; background: {BORDE}"></span>'
+    datos = sep.join(dato(*s) for s in stats)
+    panel = f'''  <section aria-label="Tu estado" style="position: absolute; top: 104px; left: 12px; right: 12px; padding: 6px 14px 8px; border-radius: 26px; background: #FFFFFF; box-shadow: 0 2px 6px rgba(14,29,54,0.08), 0 22px 40px -22px rgba(14,29,54,0.5); display: flex; flex-direction: column">
+    <div role="switch" aria-checked="{str(on).lower()}" aria-label="Disponible" style="display: flex; align-items: center; gap: 12px; min-height: 56px">
+      <span aria-hidden="true" style="width: 12px; height: 12px; flex: none; border-radius: 50%; background: {pista}; box-shadow: 0 0 0 5px {"rgba(30,158,87,0.18)" if on else "rgba(0,0,0,0.06)"}"></span>
+      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><strong style="font-size: 16px">{"Disponible" if on else "No disponible"}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span></span>
+      <span aria-hidden="true" style="width: 54px; height: 32px; flex: none; border-radius: 16px; background: {pista}; position: relative"><span style="position: absolute; top: 3px; {lado}; width: 26px; height: 26px; border-radius: 50%; background: #FFFFFF; box-shadow: {ELEV1}"></span></span>
+    </div>
+    <div style="height: 1px; background: {BORDE}"></div>
+    <div style="display: flex; align-items: stretch; padding-top: 6px">{datos}</div>
+  </section>'''
+    return cab + '\n' + panel
+
+def avatar_grupo(ks, tam=44):
+    """Avatar de un grupo: mosaico con las iniciales de hasta 4 personas, sin superposiciones."""
+    c = (tam - 6) // 2
+    celdas = ''.join(f'<span style="width: {c}px; height: {c}px; border-radius: {c//3}px; background: {GENTE[k][2]}; color: {GENTE[k][3]}; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; letter-spacing: -0.3px">{GENTE[k][0]}</span>' for k in ks[:4])
+    if len(ks) == 3:
+        celdas += f'<span style="width: {c}px; height: {c}px; border-radius: {c//3}px; background: #FFFFFF; color: {HONDO}; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900">+1</span>'
+    return f'<span aria-hidden="true" style="width: {tam}px; height: {tam}px; flex: none; box-sizing: border-box; padding: 2px; border-radius: {tam//3}px; background: {TINTE}; display: grid; grid-template-columns: {c}px {c}px; gap: 2px">{celdas}</span>'
+
+def _color_nombre(k):
+    f, t = GENTE[k][2], GENTE[k][3]
+    return f if t == '#FFFFFF' else (TINTA if f in (AMARILLO, '#F6D7A7') else t)
+
+def burbuja(k, texto, hora, mio=False, con_nombre=True, reac=None, editado=False, ancho='82%'):
+    """Mensaje de chat: avatar pegado a su burbuja, nombre y hora dentro, reacciones apoyadas en el borde."""
+    pie = f'<span style="align-self: flex-end; font-size: 11px; {"color: #DCE7F7" if mio else "color: "+SUAVE}; white-space: nowrap">{"editado · " if editado else ""}{hora}</span>'
+    r = ''
+    if reac:
+        lado = 'left: 12px'
+        r = (f'<span style="position: absolute; bottom: -16px; {lado}; display: flex; gap: 4px">' +
+             ''.join(f'<span style="display: inline-flex; align-items: center; gap: 3px; height: 26px; padding: 0 8px; border-radius: 13px; background: #FFFFFF; border: 1px solid {BORDE}; box-shadow: {ELEV1}; font-size: 13px">{e}<strong style="font-size: 11px">{n}</strong></span>' for e, n in reac) + '</span>')
+    mb = 'margin-bottom: 14px;' if reac else ''
+    if mio:
+        return (f'<div style="align-self: flex-end; max-width: {ancho}; position: relative; {mb}"><div style="padding: 10px 14px 8px; background: {AZUL}; color: #FFFFFF; border-radius: 20px 20px 6px 20px; '
+                f'display: flex; flex-direction: column; gap: 4px"><span style="font-size: 15px; line-height: 1.35">{texto}</span>{pie}</div>{r}</div>')
+    n = f'<span style="font-size: 12px; font-weight: 800; color: {_color_nombre(k)}">{nombre(k)}</span>' if con_nombre else ''
+    return (f'<div style="align-self: flex-start; max-width: {ancho}; display: flex; gap: 8px; align-items: flex-end; {mb}">{avatar(k, 34)}'
+            f'<div style="position: relative; min-width: 0"><div style="padding: 8px 14px 8px; background: {MOSAICO}; border-radius: 20px 20px 20px 6px; display: flex; flex-direction: column; gap: 3px">{n}'
+            f'<span style="font-size: 15px; line-height: 1.35">{texto}</span>{pie}</div>{r}</div></div>')
+
+def contenido_chat(html, top=72, bottom=84):
+    """Mensajes pegados abajo, justo arriba de la caja para escribir (como en cualquier chat)."""
+    return f'<div style="position: absolute; top: {top}px; bottom: {bottom}px; left: 14px; right: 14px; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; overflow: hidden; padding-bottom: 6px">{html}</div>'

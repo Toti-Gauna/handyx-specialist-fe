@@ -13,21 +13,23 @@ IC.update({
 })
 def herr(ic, t, sub, href, fondo=MOSAICO, color=TINTA, nuevo=False):
     n=f'<span style="position: absolute; top: 10px; right: 10px">{chip("AR",tono="amarillo")}</span>' if nuevo else ''
-    return f'<a href="{href}" style="position: relative; padding: 14px; border-radius: 22px; background: {fondo}; color: {color}; text-decoration: none; display: flex; flex-direction: column; gap: 6px; min-height: 112px; box-sizing: border-box; {"box-shadow: 0 4px 0 "+HONDO+";" if fondo==AZUL else ""}">{n}{svg(IC[ic],AMARILLO if fondo==AZUL else AZUL,28)}<strong style="font-size: 14px; line-height: 1.15">{t}</strong><span style="font-size: 11px; opacity: 0.8">{sub}</span></a>'
-caja3d=f'''<div aria-hidden="true" style="position: relative; height: 150px; border-radius: 26px; background: {AZUL}; overflow: hidden; perspective: 600px">
-      <div style="position: absolute; left: 50%; bottom: 18px; margin-left: -100px; width: 200px; height: 78px; border-radius: 14px; background: #2F6BFF; box-shadow: 0 8px 0 {HONDO}; transform: rotateX(12deg)"></div>
-      <div style="position: absolute; left: 50%; bottom: 92px; margin-left: -106px; width: 212px; height: 26px; border-radius: 10px; background: {AMARILLO}; transform: rotate(-9deg); transform-origin: left bottom"></div>
-      <div style="position: absolute; left: 50%; bottom: 56px; margin-left: -32px; width: 64px; height: 14px; border-radius: 7px; background: {HONDO}"></div>
-      <img src="{BLOB['lamparita']}" alt="" style="position: absolute; right: 26px; top: 10px; width: 54px; height: 74px; object-fit: contain">
-      <img src="{BLOB['llave']}" alt="" style="position: absolute; left: 22px; top: 18px; width: 54px; height: 60px; object-fit: contain; transform: rotate(-12deg)">
+    n=''
+    return f'<a href="{href}" style="position: relative; padding: 12px; border-radius: 22px; background: {fondo}; color: {color}; text-decoration: none; display: flex; align-items: center; gap: 10px; min-height: 76px; box-sizing: border-box; {"box-shadow: 0 4px 0 "+HONDO+";" if fondo==AZUL else ""}">{n}<span style="width: 40px; height: 40px; flex: none; border-radius: 13px; background: {"rgba(255,255,255,0.16)" if fondo==AZUL else "#FFFFFF"}; display: flex; align-items: center; justify-content: center">{svg(IC[ic],AMARILLO if fondo==AZUL else AZUL,22)}</span><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap"><strong style="font-size: 14px; line-height: 1.15">{t}</strong>{chip("AR",tono="amarillo") if nuevo else ""}</span><span style="font-size: 11px; opacity: 0.8">{sub}</span></span></a>'
+caja3d=f'''<div aria-hidden="true" style="position: relative; height: 104px; border-radius: 26px; background: {AZUL}; overflow: hidden; perspective: 600px">
+      <div style="position: absolute; left: 50%; bottom: 14px; margin-left: -100px; width: 200px; height: 52px; border-radius: 14px; background: #2F6BFF; box-shadow: 0 8px 0 {HONDO}; transform: rotateX(12deg)"></div>
+      <div style="position: absolute; left: 50%; bottom: 66px; margin-left: -106px; width: 212px; height: 22px; border-radius: 10px; background: {AMARILLO}; transform: rotate(-9deg); transform-origin: left bottom"></div>
+      <div style="position: absolute; left: 50%; bottom: 36px; margin-left: -32px; width: 64px; height: 14px; border-radius: 7px; background: {HONDO}"></div>
+      <img src="{BLOB['lamparita']}" alt="" style="position: absolute; right: 26px; top: 8px; width: 44px; height: 60px; object-fit: contain">
+      <img src="{BLOB['llave']}" alt="" style="position: absolute; left: 22px; top: 10px; width: 44px; height: 50px; object-fit: contain; transform: rotate(-12deg)">
       <span style="position: absolute; left: 14px; bottom: 12px">{chip("Girala con el dedo","cubo","blanco")}</span>
     </div>'''
 cuerpo = contenido(f'''
-    {titulo_grande("HERRAMIENTAS EN TU TELÉFONO","Tu ","taller")}
+    {titulo_grande("PARA TODOS LOS OFICIOS","Herramientas del ","teléfono")}
     {caja3d}
     <strong style="font-size: 16px">Para todos los oficios</strong>
-    <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px">{herr('regla','Medir','Con la cámara','T-Medir.dc.html',AZUL,'#FFFFFF',True)}{herr('cubo','Escanear en 3D','De fotos a modelo','T-Escanear.dc.html')}{herr('nivel','Nivel','Con el giroscopio','T-Nivel.dc.html')}{herr('plomada','Plomada y ángulos','Paredes y caídas','T-Nivel.dc.html')}{herr('linterna','Linterna y lupa','Flash y zoom','T-Taller.dc.html')}{herr('conversor','Conversor','Pulgadas, m², litros','T-Taller.dc.html')}</div>
-    <a href="T-Electricidad.dc.html" style="display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 22px; background: {NOCHE}; color: #FFFFFF; text-decoration: none">{mosaico_ic('rayo',48,fondo=AMARILLO,color=TINTA,radio=16,iconsize=24)}<span style="flex: 1; display: flex; flex-direction: column"><strong style="font-size: 16px">Tu oficio: Electricidad</strong><span style="font-size: 12px; color: #C9D5EA">Cables, tablero 3D, informe y 5 más</span></span>{svg(IC['flecha'],'#FFFFFF',20)}</a>''', top=26) + '\n' + barra_vidrio('Cuenta')
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px">{herr('regla','Medir','Con la cámara','T-Medir.dc.html',AZUL,'#FFFFFF',True)}{herr('cubo','Escanear en 3D','De fotos a modelo','T-Escanear.dc.html')}{herr('nivel','Nivel','Con el giroscopio','T-Nivel.dc.html')}{herr('plomada','Plomada y ángulos','Paredes y caídas','T-Nivel.dc.html')}{herr('linterna','Linterna y lupa','Flash y zoom','T-Taller.dc.html')}{herr('conversor','Conversor','Pulgadas, m², litros','T-Taller.dc.html')}</div>
+    <a href="T-Electricidad.dc.html" style="display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 22px; background: {NOCHE}; color: #FFFFFF; text-decoration: none">{mosaico_ic('rayo',48,fondo=AMARILLO,color=TINTA,radio=16,iconsize=24)}<span style="flex: 1; display: flex; flex-direction: column"><strong style="font-size: 16px">Tu oficio: Electricidad</strong><span style="font-size: 12px; color: #C9D5EA">Cables, tablero 3D, informe y 5 más</span></span>{svg(IC['flecha'],'#FFFFFF',20)}</a>
+    <div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 13px; font-weight: 800; color: {SUAVE}">Otros oficios · llegan más adelante</span><div style="display: flex; gap: 8px; flex-wrap: wrap">{"".join(f'<a href="{h}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 14px; background: {MOSAICO}; color: {TINTA}; font-size: 13px; font-weight: 800; text-decoration: none">{t}</a>' for t,h in [('Plomería','OF-Plomeria.dc.html'),('Gas','OF-Gas.dc.html'),('Aire','OF-Aire.dc.html'),('Albañilería','OF-Albanileria.dc.html'),('Cerrajería','OF-Cerrajeria.dc.html')])}</div></div>''', top=26) + '\n' + barra_vidrio('Taller')
 guardar('T-Taller.dc.html','Taller · Portada',cuerpo)
 
 # Medir con la cámara (AR)
@@ -76,7 +78,7 @@ modelo=f'''<div aria-hidden="true" style="position: relative; height: 330px; bor
 cuerpo = barra_compacta('Termotanque en 3D','T-Escanear.dc.html',sub='Listo · 30 fotos') + contenido(f'''
     {modelo}
     {tarjeta(fila_ic('regla','Medidas','Alto 85 cm · diámetro 45 cm · aprox.',borde=False)+fila_ic('cubo','Ver en el lugar (AR)','Cómo queda el equipo nuevo en esa pared',href='T-TableroPared.dc.html'))}
-    <div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px">{boton2("Al presupuesto","H0-Presupuesto.dc.html","ticket")}{boton2("Mandar por chat","F-Chat.dc.html","chat")}</div>''') + '\n' + accion_fija('Guardar en el trabajo','F-Trabajo.dc.html')
+    <div style="display: flex; flex-direction: column; gap: 10px">{boton2("Mandar por chat","F-Chat.dc.html","chat")}{boton2("Al presupuesto","H0-Presupuesto.dc.html","ticket")}</div>''') + '\n' + accion_fija('Guardar en el trabajo','F-Trabajo.dc.html')
 guardar('T-Modelo3D.dc.html','Taller · Modelo 3D',cuerpo)
 
 # Nivel premium
@@ -112,7 +114,7 @@ tablero=f'''<div aria-hidden="true" style="position: relative; height: 330px; bo
     </div>'''
 cuerpo = barra_compacta('Tablero 3D','T-Electricidad.dc.html',sub='Vivienda · 3 circuitos') + contenido(f'''
     {tablero}
-    <div style="display: flex; gap: 8px; overflow: hidden">{''.join(f'<span style="flex: none; min-height: 52px; padding: 0 14px; border-radius: 16px; background: {MOSAICO}; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13px">{svg(IC[i],AZUL,20)}{t}</span>' for i,t in [('mas','Térmica'),('escudo','Diferencial'),('ticket','Etiquetas'),('camara','Leer de una foto')])}</div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">{''.join(f'<span style="flex: 1 1 auto; justify-content: center; min-height: 52px; padding: 0 14px; border-radius: 16px; background: {MOSAICO}; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13px">{svg(IC[i],AZUL,20)}{t}</span>' for i,t in [('mas','Térmica'),('escudo','Diferencial'),('ticket','Etiquetas'),('camara','Leer de una foto')])}</div>
     {tarjeta(fila_ic('lista','Cómputo','1 diferencial 40 A · 3 térmicas · gabinete de 8',borde=False)+fila_ic('billete','Materiales al presupuesto','$ 86.400 de tu lista',href='H0-Presupuesto.dc.html'))}''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px">{boton2("Compartir","F-Chat.dc.html","enviar")}{boton("Ver en la pared","T-TableroPared.dc.html",alto=52)}</div>')
 guardar('T-Tablero.dc.html','Taller · Tablero 3D',cuerpo)
 

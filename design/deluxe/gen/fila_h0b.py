@@ -169,7 +169,7 @@ guardar('H0-Modo.dc.html','H0 · Modo trabajo',cuerpo)
 # Herramientas a mano dentro del Modo trabajo.
 def herr(ic, t, sub, href, prim=False):
     s=f'background: {AZUL}; color: #FFFFFF; box-shadow: 0 4px 0 {HONDO}' if prim else f'background: {MOSAICO}; color: {TINTA}'
-    return f'<a href="{href}" style="padding: 14px; border-radius: 22px; {s}; text-decoration: none; display: flex; flex-direction: column; gap: 6px; min-height: 112px; box-sizing: border-box">{svg(IC[ic],"#FFFFFF" if prim else AZUL,28)}<strong style="font-size: 15px">{t}</strong><span style="font-size: 11px; opacity: 0.8">{sub}</span></a>'
+    return f'<a href="{href}" style="padding: 12px; border-radius: 22px; {s}; text-decoration: none; display: flex; flex-direction: column; gap: 6px; min-height: 112px; box-sizing: border-box">{svg(IC[ic],"#FFFFFF" if prim else AZUL,28)}<strong style="font-size: 14px; line-height: 1.15">{t}</strong><span style="font-size: 11px; opacity: 0.8">{sub}</span></a>'
 cuerpo = '  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(14,29,54,0.45)"></div>\n' + hoja(f'''
     <div style="display: flex; justify-content: space-between; align-items: center"><h1 style="margin: 0; {TIT}; font-size: 26px">Herramientas</h1>{chip("Sin salir del trabajo","herramienta","tinte")}</div>
     <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px">{herr('nivel','Nivel','Giroscopio','T-Taller.dc.html',True)}{herr('linterna','Linterna','Flash','H0-Modo.dc.html')}{herr('lupa','Lupa','Cámara con zoom','H0-Modo.dc.html')}{herr('regla','Medir','Con la cámara','H0-Modo.dc.html')}{herr('rayo','Calculadoras','Del Taller','T-Cables.dc.html')}{herr('escaner','Código de barras','Sumar material','H0-AgregarMaterial.dc.html')}</div>
@@ -189,7 +189,7 @@ guardar('H0-ModoAyuda.dc.html','H0 · Pedir ayuda',cuerpo)
 
 # Organizar la agenda desde el trabajo.
 def sig(h, t, sub, chip_html, href):
-    return f'<a href="{href}" style="display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid {BORDE}; color: {TINTA}; text-decoration: none"><span style="width: 58px; height: 52px; flex: none; border-radius: 16px; background: {MOSAICO}; display: flex; align-items: center; justify-content: center; {TIT}; font-size: 16px">{h}</span><span style="flex: 1; display: flex; flex-direction: column; gap: 3px"><strong style="font-size: 15px">{t}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span></span>{chip_html}</a>'
+    return f'<a href="{href}" style="display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid {BORDE}; color: {TINTA}; text-decoration: none"><span style="width: 58px; height: 52px; flex: none; border-radius: 16px; background: {MOSAICO}; display: flex; align-items: center; justify-content: center; {TIT}; font-size: 16px">{h}</span><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px"><strong style="font-size: 15px">{t}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span>{chip_html}</span></a>'
 def aviso_btn(t):
     return f'<span style="min-height: 46px; padding: 0 14px; border-radius: 14px; background: {MOSAICO}; display: inline-flex; align-items: center; font-size: 14px; font-weight: 800">{t}</span>'
 cuerpo = barra_compacta('Tu agenda','H0-Modo.dc.html',sub='Desde el trabajo') + contenido(f'''

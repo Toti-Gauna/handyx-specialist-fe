@@ -33,7 +33,7 @@ cuerpo = contenido(f'''
     <strong style="font-size: 15px">Hoy, martes 17</strong>
     {turno("9:00","17:00","Baño completo","Obra · jornada 3 de 6 · Los Troncos","", "F-Obra.dc.html", chip("Obra","obra","tinte"))}
     {turno("18:00","20:00","Pierde la canilla","Plomería · Centro · $ 47.000","", "F-Trabajo.dc.html", chip("Agendado","agenda","noche"))}
-    <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; border: 2px dashed {BORDE}; color: {SUAVE}; font-size: 14px">{svg(IC['estrella'],SUAVE,20)}Mañana tenés la jornada 4 de «Baño completo».</div>''', top=26) + '\n' + barra_vidrio('Agenda')
+    <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; border: 2px dashed {BORDE}; color: {SUAVE}; font-size: 14px">{svg(IC['estrella'],SUAVE,20)}Mañana tenés la jornada 4 de «Baño completo».</div>''', top=26) + '\n' + barra_vidrio('Taller')
 guardar('F-Agenda.dc.html','Núcleo · Agenda',cuerpo)
 
 # Mensajes.

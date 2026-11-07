@@ -10,8 +10,8 @@ que el diseño no dependa de una sesión y se pueda pasar a Figma. Contexto y de
 - `gen/` — los generadores en Python que arman las pantallas con piezas comunes (`piezas.py`, `piezas2.py`) y los
   flujos (`flujos.py`), los recorridos (`recorridos.py`), el armado del lienzo (`lienzo.py`) y ayudas con Playwright
   para revisar accesibilidad y desbordes (`revisar.cjs`), medir que nada quede tapado (`medir.cjs`) y sacar capturas
-  (`foto*.cjs`). Orden de generación: las `fila_*.py` (de `fila_rg` a `fila_v8`), `flujos.py`, `revision_board.py` y
-  `recorridos.py`. Se corren desde una carpeta que tenga `gen/` y `deluxe/project/` al lado.
+  (`foto*.cjs`). Todo se regenera en orden con `sh gen/todo.sh` (pantallas, fondos de
+  las hojas, descripciones, flujos, revisión, recorridos y `canvas.json`); `quiebres.cjs` revisa textos que no entran. Se corren desde una carpeta que tenga `gen/` y `deluxe/project/` al lado.
 - Las imágenes de los Handys se sirven desde el lienzo (`/_blob/…`); fuera de él se ven vacías.
 - Datos 100 % de prueba: nombres ficticios (Julián Ortiz, Lucía Ferreyra, Martín Sosa…), `*@example.test`, «Calle De
   Prueba 123», ferreterías «Simulación».
@@ -24,6 +24,7 @@ que el diseño no dependa de una sesión y se pueda pasar a Figma. Contexto y de
 | `FL-`                    | Flujos completos (diagramas)                                       |
 | `D6-`, `RG-`, `OB-`      | Acceso, registro, onboarding, avisos, ayuda y errores              |
 | `CU-`, `TR-`             | Secciones de la cuenta; en camino y cobro del trabajo              |
+| `X-`                     | Vista desde una computadora (la app es solo para el celular)       |
 | `F-`                     | Núcleo: inicio, pedidos, agenda, obras, equipo, mensajes, cuenta   |
 | `H0-`                    | Presupuestos, precios, Modo trabajo, cierre, gastos y equipamiento |
 | `R-`                     | Ferretería                                                         |
