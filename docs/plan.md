@@ -220,8 +220,9 @@ Se trabaja en `handyx-client-be` (dueño del esquema y de las migraciones) y `ha
   - QA ejecutado, deploy y rollback, y handoff.
 
 ### Bloque aparte · Herramientas por oficio («Taller Handyx»)
-Pedido por Ignacio el 07/11/2026. No cambia las 6 fases de arriba: es un bloque propio con las fases H0 (base común) y
-H1–H6 (Electricidad, Aire acondicionado, Plomería, Gas, Albañilería y Cerrajería). Plan completo en `docs/herramientas.md`.
+Pedido por Ignacio el 07 y 08/11/2026. No cambia las 6 fases de arriba: es un bloque propio con las fases D (rediseño
+deluxe), H0 (base común y Modo trabajo), R (repuestos), G (Camino Handyx, gamificación), H1–H6 (un oficio por fase) y Q
+(QA y demo). Plan completo, con modelo y esfuerzo por fase, en `docs/herramientas.md`.
 
 ## 5. Dependencias y límites
 
