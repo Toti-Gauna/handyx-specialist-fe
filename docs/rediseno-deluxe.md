@@ -212,3 +212,19 @@ Carla Ibáñez (clientes), Sofía Ruiz, Diego Herrera y Pablo Vega (profesionale
   detalle con historial, tarifas de mano de obra. El catálogo de ferreterías queda marcado «pronto».
 - **Cargar gasto** también permite cobrárselo al cliente.
 - **Modo trabajo** nuevo, claro: tareas, cronómetro, foto, repuestos, pedir ayuda, agenda y herramientas a un toque.
+
+## 11. Cuarta vuelta y fuente en el repo (08/11/2026)
+
+- **Antes y después** en dos vistas (deslizar y lado a lado), con ilustraciones propias, y «Qué cambiaste» escrito o
+  dictado.
+- **Informe del trabajo** por secciones que no se repiten y se completan solas (qué encontraste, antes y después,
+  pruebas, materiales y garantía, qué conviene hacer después); al enviarlo: conformidad del cliente, garantía activa,
+  recordatorio de mantenimiento y PDF.
+- **La ruta del día pasó al Inicio:** con varios trabajos hoy, el Inicio muestra la próxima parada y el recorrido; «Ver
+  todo» abre el día en el mapa con las paradas en orden.
+- **Tu equipamiento** reemplaza al stock de la camioneta: herramientas eléctricas, manuales, medición, seguridad,
+  consumibles y repuestos; dónde está cada una, préstamos, mantenimiento y lista de compras.
+- **Ferretería** con catálogo por categorías (fijaciones y tornillería, plomería, electricidad, gas, pintura,
+  albañilería, herramientas, seguridad, limpieza y adhesivos), variantes y un pedido único.
+- 14 flujos en total, con los nuevos de tu día, cierre del trabajo, equipamiento y ferretería.
+- **Fuente del lienzo en `design/deluxe/`** (pantallas, `canvas.json` y generadores), lista para pasar a Figma.

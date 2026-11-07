@@ -112,8 +112,15 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
   mandado por el especialista); **herramientas** a mano (nivel, linterna, lupa, medir, calculadoras, código de barras,
   nota de voz, checklist); pausar, «tarea lista» y «terminé» con el informe automático para el cliente. Botones de 56 px
   o más para usar con guantes. Lo que se guarda necesita conexión (sin cola offline); si no hay red, se avisa.
-- **H0.5 Rutas y stock:** orden de visitas con el OSRM propio; kilómetros del mes; stock de la camioneta; lista de
-  compras.
+- **H0.5 Tu día y tu equipamiento:** la ruta del día vive en el **Inicio** cuando hay varios trabajos hoy (próxima
+  parada, recorrido, orden de visitas con el OSRM propio, kilómetros del mes, avisar demora). **Tu equipamiento**
+  (antes «stock de la camioneta»): herramientas eléctricas y manuales, instrumentos de medición, elementos de
+  seguridad, consumibles y repuestos, con foto o código de barras, dónde está cada uno (camioneta, taller, prestado a
+  otro profesional), recordatorios de mantenimiento y vencimientos, mínimos y lista de compras que va a la ferretería.
+- **H0.4b Cierre del trabajo:** antes y después en dos vistas (deslizar y lado a lado) con «qué cambiaste» escrito o
+  dictado; informe por secciones que se completan solas y no se repiten (causa, antes y después, pruebas, materiales y
+  garantía, recomendaciones); conformidad del cliente con un toque, garantía activa, recordatorio de mantenimiento
+  para el especialista y PDF.
 - **H0.6 Backend:** contrato, esquema en `handyx-client-be`, endpoints y pruebas en `handyx-specialist-be`.
 - **3D nativo:** caja de herramientas que se abre en la portada del Taller; stock de la camioneta en 3D (estantes con
   cajones que muestran lo que queda).
@@ -159,6 +166,10 @@ Pedido de Ignacio del 08/11/2026. Diseño en las filas «Obras», «Obras en equ
   del chat), endpoints, avisos y pruebas.
 
 ### Fase R · Repuestos y ferreterías — Opus 5.5 / high
+- **R.0 Catálogo por categorías:** fijaciones y tornillería, plomería, electricidad, gas, pintura, albañilería,
+  herramientas, seguridad, limpieza y adhesivos; subcategorías, variantes (medida, presentación), buscador, lo del
+  presupuesto y la obra ya elegido, y un pedido único agrupado por trabajo con las casillas de gasto y cobro. Primero
+  con datos simulados; después con las listas reales que se les piden a las ferreterías.
 - **R.1 Flujo simulado:** pedido desde el presupuesto, el tablero, el Modo trabajo o a mano; mapa de ferreterías
   ficticias (marcadas «Simulación») con horario y distancia; estados enviado → confirmado con precios → listo para
   retirar → retirado (o cancelado); reemplazos sugeridos; código QR de retiro; el gasto queda registrado y, si

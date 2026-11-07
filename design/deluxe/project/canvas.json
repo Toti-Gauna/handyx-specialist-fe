@@ -1,0 +1,1240 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "FL-Alta.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1560,
+      "h": 726,
+      "title": "Flujo · Alta y verificación"
+    },
+    "FL-Acceso.dc.html": {
+      "x": 0,
+      "y": 886,
+      "w": 1346,
+      "h": 550,
+      "title": "Flujo · Entrar y segunda verificación"
+    },
+    "FL-Pedido.dc.html": {
+      "x": 0,
+      "y": 1596,
+      "w": 1560,
+      "h": 726,
+      "title": "Flujo · Recibir un pedido y cotizar"
+    },
+    "FL-Trabajo.dc.html": {
+      "x": 0,
+      "y": 2482,
+      "w": 1774,
+      "h": 550,
+      "title": "Flujo · Hacer el trabajo y cobrar"
+    },
+    "FL-Presupuesto.dc.html": {
+      "x": 0,
+      "y": 3192,
+      "w": 1346,
+      "h": 726,
+      "title": "Flujo · Presupuestos y lista de precios"
+    },
+    "FL-Obra.dc.html": {
+      "x": 0,
+      "y": 4078,
+      "w": 1774,
+      "h": 726,
+      "title": "Flujo · Una obra de varios días"
+    },
+    "FL-Equipo.dc.html": {
+      "x": 0,
+      "y": 4964,
+      "w": 1560,
+      "h": 550,
+      "title": "Flujo · Obra en equipo"
+    },
+    "FL-Mensajes.dc.html": {
+      "x": 0,
+      "y": 5674,
+      "w": 1560,
+      "h": 726,
+      "title": "Flujo · Mensajes y tarjetas"
+    },
+    "FL-Plata.dc.html": {
+      "x": 0,
+      "y": 6560,
+      "w": 1346,
+      "h": 550,
+      "title": "Flujo · Gastos, repuestos e ingresos"
+    },
+    "FL-Camino.dc.html": {
+      "x": 0,
+      "y": 7270,
+      "w": 1560,
+      "h": 550,
+      "title": "Flujo · Camino Handyx"
+    },
+    "FL-Dia.dc.html": {
+      "x": 0,
+      "y": 7980,
+      "w": 1560,
+      "h": 726,
+      "title": "Flujo · Tu día de trabajo"
+    },
+    "FL-Cierre.dc.html": {
+      "x": 0,
+      "y": 8866,
+      "w": 1560,
+      "h": 550,
+      "title": "Flujo · Cerrar un trabajo: antes y después e informe"
+    },
+    "FL-Equipamiento.dc.html": {
+      "x": 0,
+      "y": 9576,
+      "w": 1346,
+      "h": 726,
+      "title": "Flujo · Tu equipamiento"
+    },
+    "FL-Ferreteria.dc.html": {
+      "x": 0,
+      "y": 10462,
+      "w": 1560,
+      "h": 550,
+      "title": "Flujo · Pedir en la ferretería"
+    },
+    "D6-Bienvenida.dc.html": {
+      "x": 0,
+      "y": 11572,
+      "w": 390,
+      "h": 844,
+      "title": "Bienvenida"
+    },
+    "D6-Acceso.dc.html": {
+      "x": 470,
+      "y": 11572,
+      "w": 390,
+      "h": 844,
+      "title": "Elegir cómo entrar"
+    },
+    "D6-Codigo.dc.html": {
+      "x": 940,
+      "y": 11572,
+      "w": 390,
+      "h": 844,
+      "title": "Código"
+    },
+    "D6-Seguridad.dc.html": {
+      "x": 1410,
+      "y": 11572,
+      "w": 390,
+      "h": 844,
+      "title": "Segunda verificación"
+    },
+    "D6-TOTP.dc.html": {
+      "x": 1880,
+      "y": 11572,
+      "w": 390,
+      "h": 844,
+      "title": "App autenticadora"
+    },
+    "RG-1.dc.html": {
+      "x": 0,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "1 · Tus datos"
+    },
+    "RG-2.dc.html": {
+      "x": 470,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "2 · Domicilio"
+    },
+    "RG-3.dc.html": {
+      "x": 940,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "3 · Rubros"
+    },
+    "RG-4.dc.html": {
+      "x": 1410,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "4 · Zonas"
+    },
+    "RG-5.dc.html": {
+      "x": 1880,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "5 · Selfie"
+    },
+    "RG-6.dc.html": {
+      "x": 2350,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "6 · DNI"
+    },
+    "RG-7.dc.html": {
+      "x": 2820,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "7 · CUIT/CUIL"
+    },
+    "RG-8.dc.html": {
+      "x": 3290,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "8 · Certificados"
+    },
+    "RG-9.dc.html": {
+      "x": 3760,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "9 · Antecedentes"
+    },
+    "RG-10.dc.html": {
+      "x": 4230,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "10 · Revisar y enviar"
+    },
+    "D6-Alta.dc.html": {
+      "x": 4700,
+      "y": 12836,
+      "w": 390,
+      "h": 844,
+      "title": "Estado del alta"
+    },
+    "F-Inicio.dc.html": {
+      "x": 0,
+      "y": 14100,
+      "w": 390,
+      "h": 844,
+      "title": "Inicio con mapa"
+    },
+    "F-Pedido.dc.html": {
+      "x": 470,
+      "y": 14100,
+      "w": 390,
+      "h": 844,
+      "title": "Pedido entrante"
+    },
+    "F-Precio.dc.html": {
+      "x": 940,
+      "y": 14100,
+      "w": 390,
+      "h": 844,
+      "title": "Tu precio"
+    },
+    "F-Fecha.dc.html": {
+      "x": 1410,
+      "y": 14100,
+      "w": 390,
+      "h": 844,
+      "title": "Proponer fecha"
+    },
+    "F-Revisar.dc.html": {
+      "x": 1880,
+      "y": 14100,
+      "w": 390,
+      "h": 844,
+      "title": "Revisar y enviar"
+    },
+    "F-Enviada.dc.html": {
+      "x": 2350,
+      "y": 14100,
+      "w": 390,
+      "h": 844,
+      "title": "Propuesta enviada"
+    },
+    "F-InicioDia.dc.html": {
+      "x": 0,
+      "y": 15364,
+      "w": 390,
+      "h": 844,
+      "title": "Inicio con tu día"
+    },
+    "F-InicioRuta.dc.html": {
+      "x": 470,
+      "y": 15364,
+      "w": 390,
+      "h": 844,
+      "title": "Tu día en el mapa"
+    },
+    "F-Agenda.dc.html": {
+      "x": 940,
+      "y": 15364,
+      "w": 390,
+      "h": 844,
+      "title": "Agenda (tira)"
+    },
+    "F-AgendaMes.dc.html": {
+      "x": 1410,
+      "y": 15364,
+      "w": 390,
+      "h": 844,
+      "title": "Agenda · mes completo"
+    },
+    "F-Trabajo.dc.html": {
+      "x": 1880,
+      "y": 15364,
+      "w": 390,
+      "h": 844,
+      "title": "Trabajo agendado"
+    },
+    "F-Ingresos.dc.html": {
+      "x": 2350,
+      "y": 15364,
+      "w": 390,
+      "h": 844,
+      "title": "Tus ingresos"
+    },
+    "F-Cuenta.dc.html": {
+      "x": 2820,
+      "y": 15364,
+      "w": 390,
+      "h": 844,
+      "title": "Cuenta"
+    },
+    "F-Obras.dc.html": {
+      "x": 0,
+      "y": 16628,
+      "w": 390,
+      "h": 844,
+      "title": "Tus obras"
+    },
+    "F-Obra.dc.html": {
+      "x": 470,
+      "y": 16628,
+      "w": 390,
+      "h": 844,
+      "title": "Obra: resumen y días"
+    },
+    "F-ObraDia.dc.html": {
+      "x": 940,
+      "y": 16628,
+      "w": 390,
+      "h": 844,
+      "title": "Una jornada"
+    },
+    "F-ObraRepuestos.dc.html": {
+      "x": 1410,
+      "y": 16628,
+      "w": 390,
+      "h": 844,
+      "title": "Repuestos de la obra"
+    },
+    "F-ObraRepuesto.dc.html": {
+      "x": 1880,
+      "y": 16628,
+      "w": 390,
+      "h": 844,
+      "title": "Agregar repuesto"
+    },
+    "F-ObraFecha.dc.html": {
+      "x": 2350,
+      "y": 16628,
+      "w": 390,
+      "h": 844,
+      "title": "Cambiar fecha"
+    },
+    "F-ObraEquipo.dc.html": {
+      "x": 0,
+      "y": 17892,
+      "w": 390,
+      "h": 844,
+      "title": "Equipo de la obra"
+    },
+    "F-Invitar.dc.html": {
+      "x": 470,
+      "y": 17892,
+      "w": 390,
+      "h": 844,
+      "title": "Invitar a un profesional"
+    },
+    "F-Reparto.dc.html": {
+      "x": 940,
+      "y": 17892,
+      "w": 390,
+      "h": 844,
+      "title": "Reparto del pago"
+    },
+    "F-ChatGrupo.dc.html": {
+      "x": 1410,
+      "y": 17892,
+      "w": 390,
+      "h": 844,
+      "title": "Chat grupal"
+    },
+    "F-Mensajes.dc.html": {
+      "x": 0,
+      "y": 19156,
+      "w": 390,
+      "h": 844,
+      "title": "Lista de chats"
+    },
+    "F-Chat.dc.html": {
+      "x": 470,
+      "y": 19156,
+      "w": 390,
+      "h": 844,
+      "title": "Chat con un cliente"
+    },
+    "F-ChatAdjuntar.dc.html": {
+      "x": 940,
+      "y": 19156,
+      "w": 390,
+      "h": 844,
+      "title": "Mandar en el chat"
+    },
+    "F-PropuestaObra.dc.html": {
+      "x": 1410,
+      "y": 19156,
+      "w": 390,
+      "h": 844,
+      "title": "Propuesta de obra"
+    },
+    "H0-Presupuesto.dc.html": {
+      "x": 0,
+      "y": 20420,
+      "w": 390,
+      "h": 844,
+      "title": "Presupuestador"
+    },
+    "H0-AgregarMaterial.dc.html": {
+      "x": 470,
+      "y": 20420,
+      "w": 390,
+      "h": 844,
+      "title": "Agregar un material"
+    },
+    "H0-AgregarLista.dc.html": {
+      "x": 940,
+      "y": 20420,
+      "w": 390,
+      "h": 844,
+      "title": "Agregar varios"
+    },
+    "H0-Precios.dc.html": {
+      "x": 1410,
+      "y": 20420,
+      "w": 390,
+      "h": 844,
+      "title": "Lista de precios"
+    },
+    "H0-PreciosFoto.dc.html": {
+      "x": 1880,
+      "y": 20420,
+      "w": 390,
+      "h": 844,
+      "title": "Foto de la lista"
+    },
+    "H0-PreciosRevisar.dc.html": {
+      "x": 2350,
+      "y": 20420,
+      "w": 390,
+      "h": 844,
+      "title": "Revisar lo leído"
+    },
+    "H0-PrecioItem.dc.html": {
+      "x": 2820,
+      "y": 20420,
+      "w": 390,
+      "h": 844,
+      "title": "Detalle de un precio"
+    },
+    "H0-ManoObra.dc.html": {
+      "x": 3290,
+      "y": 20420,
+      "w": 390,
+      "h": 844,
+      "title": "Mano de obra"
+    },
+    "H0-Modo.dc.html": {
+      "x": 0,
+      "y": 21684,
+      "w": 390,
+      "h": 844,
+      "title": "Modo trabajo"
+    },
+    "H0-ModoHerramientas.dc.html": {
+      "x": 470,
+      "y": 21684,
+      "w": 390,
+      "h": 844,
+      "title": "Herramientas a mano"
+    },
+    "H0-ModoAyuda.dc.html": {
+      "x": 940,
+      "y": 21684,
+      "w": 390,
+      "h": 844,
+      "title": "Pedir ayuda"
+    },
+    "H0-ModoAgenda.dc.html": {
+      "x": 1410,
+      "y": 21684,
+      "w": 390,
+      "h": 844,
+      "title": "Agenda desde el trabajo"
+    },
+    "H0-AntesDespues.dc.html": {
+      "x": 1880,
+      "y": 21684,
+      "w": 390,
+      "h": 844,
+      "title": "Antes y después · deslizar"
+    },
+    "H0-AntesLado.dc.html": {
+      "x": 2350,
+      "y": 21684,
+      "w": 390,
+      "h": 844,
+      "title": "Antes y después · lado a lado"
+    },
+    "H0-Informe.dc.html": {
+      "x": 2820,
+      "y": 21684,
+      "w": 390,
+      "h": 844,
+      "title": "Informe del trabajo"
+    },
+    "H0-InformeEnviado.dc.html": {
+      "x": 3290,
+      "y": 21684,
+      "w": 390,
+      "h": 844,
+      "title": "Informe enviado"
+    },
+    "H0-Gasto.dc.html": {
+      "x": 3760,
+      "y": 21684,
+      "w": 390,
+      "h": 844,
+      "title": "Cargar gasto"
+    },
+    "H0-Equipo.dc.html": {
+      "x": 0,
+      "y": 22948,
+      "w": 390,
+      "h": 844,
+      "title": "Tu equipamiento"
+    },
+    "H0-EquipoCategoria.dc.html": {
+      "x": 470,
+      "y": 22948,
+      "w": 390,
+      "h": 844,
+      "title": "Categoría"
+    },
+    "H0-EquipoAgregar.dc.html": {
+      "x": 940,
+      "y": 22948,
+      "w": 390,
+      "h": 844,
+      "title": "Agregar herramienta"
+    },
+    "R-Catalogo.dc.html": {
+      "x": 0,
+      "y": 24212,
+      "w": 390,
+      "h": 844,
+      "title": "Catálogo por categorías"
+    },
+    "R-Categoria.dc.html": {
+      "x": 470,
+      "y": 24212,
+      "w": 390,
+      "h": 844,
+      "title": "Categoría con variantes"
+    },
+    "R-Pedir.dc.html": {
+      "x": 940,
+      "y": 24212,
+      "w": 390,
+      "h": 844,
+      "title": "Tu pedido"
+    },
+    "R-Ferreterias.dc.html": {
+      "x": 1410,
+      "y": 24212,
+      "w": 390,
+      "h": 844,
+      "title": "Ferreterías"
+    },
+    "R-Estado.dc.html": {
+      "x": 1880,
+      "y": 24212,
+      "w": 390,
+      "h": 844,
+      "title": "Estado del pedido"
+    },
+    "R-Retiro.dc.html": {
+      "x": 2350,
+      "y": 24212,
+      "w": 390,
+      "h": 844,
+      "title": "Retiro con QR"
+    },
+    "R-Panel.dc.html": {
+      "x": 2820,
+      "y": 24212,
+      "w": 390,
+      "h": 844,
+      "title": "Panel de la ferretería"
+    },
+    "D6-Avisos.dc.html": {
+      "x": 0,
+      "y": 25476,
+      "w": 390,
+      "h": 844,
+      "title": "Avisos"
+    },
+    "D6-Ayuda.dc.html": {
+      "x": 470,
+      "y": 25476,
+      "w": 390,
+      "h": 844,
+      "title": "Ayuda"
+    },
+    "D6-Error.dc.html": {
+      "x": 940,
+      "y": 25476,
+      "w": 390,
+      "h": 844,
+      "title": "Sin conexión"
+    },
+    "D6-Fallo.dc.html": {
+      "x": 1410,
+      "y": 25476,
+      "w": 390,
+      "h": 844,
+      "title": "Error del servidor"
+    },
+    "G-Camino.dc.html": {
+      "x": 0,
+      "y": 26740,
+      "w": 390,
+      "h": 844,
+      "title": "Camino"
+    },
+    "F-Regalo.dc.html": {
+      "x": 470,
+      "y": 26740,
+      "w": 390,
+      "h": 844,
+      "title": "El regalo"
+    },
+    "G-Vitrina.dc.html": {
+      "x": 940,
+      "y": 26740,
+      "w": 390,
+      "h": 844,
+      "title": "Vitrina de premios"
+    },
+    "G-Canje.dc.html": {
+      "x": 1410,
+      "y": 26740,
+      "w": 390,
+      "h": 844,
+      "title": "Canje"
+    },
+    "G-Insignias.dc.html": {
+      "x": 1880,
+      "y": 26740,
+      "w": 390,
+      "h": 844,
+      "title": "Insignias"
+    },
+    "T-Taller.dc.html": {
+      "x": 0,
+      "y": 28004,
+      "w": 390,
+      "h": 844,
+      "title": "Portada del Taller"
+    },
+    "T-Cables.dc.html": {
+      "x": 470,
+      "y": 28004,
+      "w": 390,
+      "h": 844,
+      "title": "Cables"
+    },
+    "T-Tablero.dc.html": {
+      "x": 940,
+      "y": 28004,
+      "w": 390,
+      "h": 844,
+      "title": "Tablero 3D"
+    },
+    "T-Informe.dc.html": {
+      "x": 1410,
+      "y": 28004,
+      "w": 390,
+      "h": 844,
+      "title": "Informe eléctrico"
+    },
+    "OF-Aire.dc.html": {
+      "x": 0,
+      "y": 29268,
+      "w": 390,
+      "h": 844,
+      "title": "Aire acondicionado"
+    },
+    "OF-Plomeria.dc.html": {
+      "x": 470,
+      "y": 29268,
+      "w": 390,
+      "h": 844,
+      "title": "Plomería"
+    },
+    "OF-Gas.dc.html": {
+      "x": 940,
+      "y": 29268,
+      "w": 390,
+      "h": 844,
+      "title": "Gas"
+    },
+    "OF-Albanileria.dc.html": {
+      "x": 1410,
+      "y": 29268,
+      "w": 390,
+      "h": 844,
+      "title": "Albañilería"
+    },
+    "OF-Cerrajeria.dc.html": {
+      "x": 1880,
+      "y": 29268,
+      "w": 390,
+      "h": 844,
+      "title": "Cerrajería"
+    },
+    "Main.dc.html": {
+      "x": 0,
+      "y": 30932,
+      "w": 390,
+      "h": 844,
+      "title": "A · Inicio"
+    },
+    "A-Precio.dc.html": {
+      "x": 470,
+      "y": 30932,
+      "w": 390,
+      "h": 844,
+      "title": "A · Tu precio"
+    },
+    "A-Regalo.dc.html": {
+      "x": 940,
+      "y": 30932,
+      "w": 390,
+      "h": 844,
+      "title": "A · El regalo"
+    },
+    "B-Inicio.dc.html": {
+      "x": 0,
+      "y": 32196,
+      "w": 390,
+      "h": 844,
+      "title": "B · Inicio"
+    },
+    "B-Precio.dc.html": {
+      "x": 470,
+      "y": 32196,
+      "w": 390,
+      "h": 844,
+      "title": "B · Tu precio"
+    },
+    "B-Regalo.dc.html": {
+      "x": 940,
+      "y": 32196,
+      "w": 390,
+      "h": 844,
+      "title": "B · El regalo"
+    },
+    "C-Inicio.dc.html": {
+      "x": 0,
+      "y": 33460,
+      "w": 390,
+      "h": 844,
+      "title": "C · Inicio con mapa"
+    },
+    "C-Obras.dc.html": {
+      "x": 470,
+      "y": 33460,
+      "w": 390,
+      "h": 844,
+      "title": "C · Tus obras"
+    },
+    "C-Obra.dc.html": {
+      "x": 940,
+      "y": 33460,
+      "w": 390,
+      "h": 844,
+      "title": "C · Obra día por día"
+    },
+    "C-Ingresos.dc.html": {
+      "x": 1410,
+      "y": 33460,
+      "w": 390,
+      "h": 844,
+      "title": "C · Tus ingresos"
+    },
+    "C-Precio.dc.html": {
+      "x": 1880,
+      "y": 33460,
+      "w": 390,
+      "h": 844,
+      "title": "C · Tu precio"
+    },
+    "C-Regalo.dc.html": {
+      "x": 2350,
+      "y": 33460,
+      "w": 390,
+      "h": 844,
+      "title": "C · El regalo"
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-11-08T15:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "noteOrder": [
+    "tituloFlujos",
+    "notaFlujos",
+    "titulo0",
+    "nota0",
+    "titulo1",
+    "nota1",
+    "titulo2",
+    "nota2",
+    "titulo3",
+    "nota3",
+    "titulo4",
+    "nota4",
+    "titulo5",
+    "nota5",
+    "titulo6",
+    "nota6",
+    "titulo7",
+    "nota7",
+    "titulo8",
+    "nota8",
+    "titulo9",
+    "nota9",
+    "titulo10",
+    "nota10",
+    "titulo11",
+    "nota11",
+    "titulo12",
+    "nota12",
+    "titulo13",
+    "nota13",
+    "titulo14",
+    "nota14",
+    "tituloExp",
+    "notaExp"
+  ],
+  "notes": {
+    "tituloFlujos": {
+      "x": 0,
+      "y": -300,
+      "text": "Flujos de la app",
+      "kind": "title1",
+      "maxW": 1800,
+      "w": 240
+    },
+    "notaFlujos": {
+      "x": 1900,
+      "y": 0,
+      "w": 420,
+      "size": 24,
+      "fill": "yellow",
+      "text": "Cómo se recorre toda la app: cada caja es una pantalla (se toca para abrirla), un paso del cliente, algo que hace Handyx u Operations u otro profesional. Abajo están todas las pantallas, una fila por fase."
+    },
+    "titulo0": {
+      "x": 0,
+      "y": 11272,
+      "text": "Acceso y seguridad",
+      "kind": "title1",
+      "maxW": 2350,
+      "w": 240
+    },
+    "nota0": {
+      "x": 2390,
+      "y": 11572,
+      "w": 380,
+      "size": 24,
+      "fill": "blue",
+      "text": "Bienvenida con la ciudad en SVG propio. Código por email o SMS, o Google y Apple. Segunda verificación opcional."
+    },
+    "titulo1": {
+      "x": 0,
+      "y": 12536,
+      "text": "Registro paso a paso",
+      "kind": "title1",
+      "maxW": 5170,
+      "w": 240
+    },
+    "nota1": {
+      "x": 5210,
+      "y": 12836,
+      "w": 380,
+      "size": 24,
+      "fill": "green",
+      "text": "Matrícula obligatoria en Gas y Aire; el resto suma al perfil. Antecedentes por foto o PDF con resguardos."
+    },
+    "titulo2": {
+      "x": 0,
+      "y": 13800,
+      "text": "Núcleo · Recibir un trabajo y cotizar",
+      "kind": "title1",
+      "maxW": 2820,
+      "w": 240
+    },
+    "nota2": {
+      "x": 2860,
+      "y": 14100,
+      "w": 380,
+      "size": 24,
+      "fill": "blue",
+      "text": "Disponible y los pedidos solo en el Inicio con mapa. El aviso abre el detalle, nunca acepta."
+    },
+    "titulo3": {
+      "x": 0,
+      "y": 15064,
+      "text": "Núcleo · Tu día, agenda, ingresos y cuenta",
+      "kind": "title1",
+      "maxW": 3290,
+      "w": 240
+    },
+    "nota3": {
+      "x": 3330,
+      "y": 15364,
+      "w": 380,
+      "size": 24,
+      "fill": "blue",
+      "text": "Con varios trabajos hoy, el Inicio muestra la próxima parada y el recorrido (la ruta del día pasó al Inicio)."
+    },
+    "titulo4": {
+      "x": 0,
+      "y": 16328,
+      "text": "Obras · seguimiento de varios días",
+      "kind": "title1",
+      "maxW": 2820,
+      "w": 240
+    },
+    "nota4": {
+      "x": 2860,
+      "y": 16628,
+      "w": 380,
+      "size": 24,
+      "fill": "green",
+      "text": "Resumen compacto y los días a la vista. Repuestos a futuro con aprobación del cliente."
+    },
+    "titulo5": {
+      "x": 0,
+      "y": 17592,
+      "text": "Obras en equipo",
+      "kind": "title1",
+      "maxW": 1880,
+      "w": 240
+    },
+    "nota5": {
+      "x": 1920,
+      "y": 17892,
+      "w": 380,
+      "size": 24,
+      "fill": "green",
+      "text": "Solo por invitación. Reparto registrado; Handyx no toca la plata."
+    },
+    "titulo6": {
+      "x": 0,
+      "y": 18856,
+      "text": "Mensajes",
+      "kind": "title1",
+      "maxW": 1880,
+      "w": 240
+    },
+    "nota6": {
+      "x": 1920,
+      "y": 19156,
+      "w": 380,
+      "size": 24,
+      "fill": "blue",
+      "text": "Personas con iniciales; tarjetas para presupuestos, obras, repuestos y fechas."
+    },
+    "titulo7": {
+      "x": 0,
+      "y": 20120,
+      "text": "H0 · Presupuestos y lista de precios",
+      "kind": "title1",
+      "maxW": 3760,
+      "w": 240
+    },
+    "nota7": {
+      "x": 3800,
+      "y": 20420,
+      "w": 380,
+      "size": 24,
+      "fill": "green",
+      "text": "Presupuesto directo por el chat. Precio fijo o que se actualiza; cobrar y registrar gasto a la vez."
+    },
+    "titulo8": {
+      "x": 0,
+      "y": 21384,
+      "text": "H0 · Modo trabajo, cierre y gastos",
+      "kind": "title1",
+      "maxW": 4230,
+      "w": 240
+    },
+    "nota8": {
+      "x": 4270,
+      "y": 21684,
+      "w": 380,
+      "size": 24,
+      "fill": "green",
+      "text": "Antes y después en dos vistas (deslizar y lado a lado) con lo que cambiaste escrito o dictado. Informe que se completa solo, sin repetir datos, con conformidad del cliente, garantía y recordatorio."
+    },
+    "titulo9": {
+      "x": 0,
+      "y": 22648,
+      "text": "H0 · Tu equipamiento",
+      "kind": "title1",
+      "maxW": 1410,
+      "w": 240
+    },
+    "nota9": {
+      "x": 1450,
+      "y": 22948,
+      "w": 380,
+      "size": 24,
+      "fill": "green",
+      "text": "Herramientas, instrumentos, seguridad y consumibles: dónde están, préstamos, mantenimiento y qué reponer."
+    },
+    "titulo10": {
+      "x": 0,
+      "y": 23912,
+      "text": "R · Ferretería",
+      "kind": "title1",
+      "maxW": 3290,
+      "w": 240
+    },
+    "nota10": {
+      "x": 3330,
+      "y": 24212,
+      "w": 380,
+      "size": 24,
+      "fill": "orange",
+      "text": "Catálogo por categorías (fijaciones, plomería, electricidad, gas, pintura, albañilería, herramientas, seguridad) con variantes y un pedido único. Primero simulado."
+    },
+    "titulo11": {
+      "x": 0,
+      "y": 25176,
+      "text": "D.6 · Avisos, ayuda y errores",
+      "kind": "title1",
+      "maxW": 1880,
+      "w": 240
+    },
+    "nota11": {
+      "x": 1920,
+      "y": 25476,
+      "w": 380,
+      "size": 24,
+      "fill": "gray",
+      "text": "Ayuda premium y errores con SVG propios."
+    },
+    "titulo12": {
+      "x": 0,
+      "y": 26440,
+      "text": "G · Camino Handyx",
+      "kind": "title1",
+      "maxW": 2350,
+      "w": 240
+    },
+    "nota12": {
+      "x": 2390,
+      "y": 26740,
+      "w": 380,
+      "size": 24,
+      "fill": "yellow",
+      "text": "Solo trabajos verificados. Sin azar, sin rankings, sin presión."
+    },
+    "titulo13": {
+      "x": 0,
+      "y": 27704,
+      "text": "H1 · Taller de Electricidad",
+      "kind": "title1",
+      "maxW": 1880,
+      "w": 240
+    },
+    "nota13": {
+      "x": 1920,
+      "y": 28004,
+      "w": 380,
+      "size": 24,
+      "fill": "teal",
+      "text": "Tablas en revisión técnica."
+    },
+    "titulo14": {
+      "x": 0,
+      "y": 28968,
+      "text": "H2–H6 · Oficios (después del deploy)",
+      "kind": "title1",
+      "maxW": 2350,
+      "w": 240
+    },
+    "nota14": {
+      "x": 2390,
+      "y": 29268,
+      "w": 380,
+      "size": 24,
+      "fill": "gray",
+      "text": "El teléfono no detecta tensión, gas ni monóxido."
+    },
+    "tituloExp": {
+      "x": 0,
+      "y": 30632,
+      "text": "Exploraciones de D.1 (descartadas)",
+      "kind": "title1",
+      "maxW": 2740,
+      "w": 240
+    },
+    "notaExp": {
+      "x": 2860,
+      "y": 30932,
+      "w": 380,
+      "size": 24,
+      "fill": "gray",
+      "text": "A Taller de obra, B Noche de obra y C Costa de Mar del Plata. Se eligió la estética de hoy mejorada."
+    }
+  },
+  "order": [
+    "FL-Alta.dc.html",
+    "FL-Acceso.dc.html",
+    "FL-Pedido.dc.html",
+    "FL-Trabajo.dc.html",
+    "FL-Presupuesto.dc.html",
+    "FL-Obra.dc.html",
+    "FL-Equipo.dc.html",
+    "FL-Mensajes.dc.html",
+    "FL-Plata.dc.html",
+    "FL-Camino.dc.html",
+    "FL-Dia.dc.html",
+    "FL-Cierre.dc.html",
+    "FL-Equipamiento.dc.html",
+    "FL-Ferreteria.dc.html",
+    "D6-Bienvenida.dc.html",
+    "D6-Acceso.dc.html",
+    "D6-Codigo.dc.html",
+    "D6-Seguridad.dc.html",
+    "D6-TOTP.dc.html",
+    "RG-1.dc.html",
+    "RG-2.dc.html",
+    "RG-3.dc.html",
+    "RG-4.dc.html",
+    "RG-5.dc.html",
+    "RG-6.dc.html",
+    "RG-7.dc.html",
+    "RG-8.dc.html",
+    "RG-9.dc.html",
+    "RG-10.dc.html",
+    "D6-Alta.dc.html",
+    "F-Inicio.dc.html",
+    "F-Pedido.dc.html",
+    "F-Precio.dc.html",
+    "F-Fecha.dc.html",
+    "F-Revisar.dc.html",
+    "F-Enviada.dc.html",
+    "F-InicioDia.dc.html",
+    "F-InicioRuta.dc.html",
+    "F-Agenda.dc.html",
+    "F-AgendaMes.dc.html",
+    "F-Trabajo.dc.html",
+    "F-Ingresos.dc.html",
+    "F-Cuenta.dc.html",
+    "F-Obras.dc.html",
+    "F-Obra.dc.html",
+    "F-ObraDia.dc.html",
+    "F-ObraRepuestos.dc.html",
+    "F-ObraRepuesto.dc.html",
+    "F-ObraFecha.dc.html",
+    "F-ObraEquipo.dc.html",
+    "F-Invitar.dc.html",
+    "F-Reparto.dc.html",
+    "F-ChatGrupo.dc.html",
+    "F-Mensajes.dc.html",
+    "F-Chat.dc.html",
+    "F-ChatAdjuntar.dc.html",
+    "F-PropuestaObra.dc.html",
+    "H0-Presupuesto.dc.html",
+    "H0-AgregarMaterial.dc.html",
+    "H0-AgregarLista.dc.html",
+    "H0-Precios.dc.html",
+    "H0-PreciosFoto.dc.html",
+    "H0-PreciosRevisar.dc.html",
+    "H0-PrecioItem.dc.html",
+    "H0-ManoObra.dc.html",
+    "H0-Modo.dc.html",
+    "H0-ModoHerramientas.dc.html",
+    "H0-ModoAyuda.dc.html",
+    "H0-ModoAgenda.dc.html",
+    "H0-AntesDespues.dc.html",
+    "H0-AntesLado.dc.html",
+    "H0-Informe.dc.html",
+    "H0-InformeEnviado.dc.html",
+    "H0-Gasto.dc.html",
+    "H0-Equipo.dc.html",
+    "H0-EquipoCategoria.dc.html",
+    "H0-EquipoAgregar.dc.html",
+    "R-Catalogo.dc.html",
+    "R-Categoria.dc.html",
+    "R-Pedir.dc.html",
+    "R-Ferreterias.dc.html",
+    "R-Estado.dc.html",
+    "R-Retiro.dc.html",
+    "R-Panel.dc.html",
+    "D6-Avisos.dc.html",
+    "D6-Ayuda.dc.html",
+    "D6-Error.dc.html",
+    "D6-Fallo.dc.html",
+    "G-Camino.dc.html",
+    "F-Regalo.dc.html",
+    "G-Vitrina.dc.html",
+    "G-Canje.dc.html",
+    "G-Insignias.dc.html",
+    "T-Taller.dc.html",
+    "T-Cables.dc.html",
+    "T-Tablero.dc.html",
+    "T-Informe.dc.html",
+    "OF-Aire.dc.html",
+    "OF-Plomeria.dc.html",
+    "OF-Gas.dc.html",
+    "OF-Albanileria.dc.html",
+    "OF-Cerrajeria.dc.html",
+    "Main.dc.html",
+    "A-Precio.dc.html",
+    "A-Regalo.dc.html",
+    "B-Inicio.dc.html",
+    "B-Precio.dc.html",
+    "B-Regalo.dc.html",
+    "C-Inicio.dc.html",
+    "C-Obras.dc.html",
+    "C-Obra.dc.html",
+    "C-Ingresos.dc.html",
+    "C-Precio.dc.html",
+    "C-Regalo.dc.html"
+  ],
+  "pages": [],
+  "title": "Handyx · Diseño completo del bloque Taller"
+}

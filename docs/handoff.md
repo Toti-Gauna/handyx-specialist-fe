@@ -31,6 +31,9 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
 - **Tercera vuelta (08/11):** 103 tableros con **10 flujos completos** arriba (`docs/rediseno-deluxe.md` §10).
   Presupuesto directo por el chat, materiales con precio fijo o que se actualiza y las casillas «cobrar» y «gasto»,
   lista de precios completa y Modo trabajo rehecho. Plan: H0.2, H0.3 y H0.4 actualizados.
+- **Cuarta vuelta (08/11):** 114 tableros y 14 flujos (`docs/rediseno-deluxe.md` §11): antes y después en dos vistas,
+  informe nuevo, ruta del día en el Inicio, Tu equipamiento y catálogo de ferretería. Fuente del lienzo en
+  `design/deluxe/` para pasarla a Figma.
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 
