@@ -72,6 +72,7 @@ const PANTALLAS = [
   ['taller-nivel', '/taller/nivel/', 'Pendiente buscada', 'habilitado'],
   ['taller-etiquetas', '/taller/etiquetas/', 'Tu foto se cuida', 'habilitado'],
   ['taller-dictado', '/taller/dictado/', 'Contá qué hay que hacer', 'habilitado'],
+  ['taller-informe', '/taller/informe/', 'Estado del tablero', 'habilitado'],
 ];
 
 /** Espera a que los mapas de la pantalla terminen de cargar (o queden con su texto de respaldo). */

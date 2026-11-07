@@ -25,6 +25,7 @@ export const RUTA_HERRAMIENTA: Record<string, string> = {
   nivel: RUTAS.tallerNivel.ruta,
   'etiquetas-ia': RUTAS.tallerEtiquetas.ruta,
   dictado: RUTAS.tallerDictado.ruta,
+  informe: RUTAS.tallerInforme.ruta,
 };
 
 const NOMBRE_RUBRO: Record<Rubro, string> = {

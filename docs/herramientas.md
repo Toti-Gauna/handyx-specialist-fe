@@ -141,8 +141,13 @@ Schneider y Hager.
   teléfonos, emails, documentos y direcciones antes de enviar, y se muestra qué se quitó; tareas y materiales sin
   precios). Sin proveedor autorizado la API responde 503: la foto lo avisa y el dictado usa reglas del teléfono. En
   el mock el resultado es simulado y se dice.
-- **H1.4 Informe eléctrico y AR en Android:** mediciones (puesta a tierra, disyuntor, aislación, tensión) con semáforo,
-  estado del tablero, fotos y recomendaciones; tablero y luminarias en la pared con WebXR.
+- ✔ **H1.4 Informe eléctrico y AR** (08/11/2026): `/taller/informe/` con mediciones de los instrumentos (puesta a tierra,
+  disparo del diferencial, aislación, tensión) y semáforo, estado del tablero, fotos (achicadas y sin metadatos),
+  observaciones y recomendaciones automáticas; imprimir o guardar en PDF y compartir. Sin datos del cliente; no es un
+  certificado; guardarlo en el trabajo llega con H0.6. **AR:** botón común (`BotonAr`) que usa WebXR con detección de
+  superficies en Android y AR Quick Look en iPhone: el tablero en la pared (tamaño real) y la luminaria en el techo
+  (plafón o panel, modelos nativos en `src/taller/modelos3d.ts`). Sin ninguno de los dos, no aparece. **Falta probarlo
+  en un Android y un iPhone reales** (fase 6.2).
 - **H1.5 Checklists, materiales y premios** de Electricidad, más la lista de valores para la revisión técnica.
 - **3D nativo:** ✔ tablero; ambiente 3D con bocas, cajas y el recorrido de caños y cables (alimenta el cómputo);
   luminarias para AR.

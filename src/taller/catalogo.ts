@@ -24,6 +24,7 @@ export const HERRAMIENTAS: readonly Herramienta[] = [
   { id: 'consumo', rubro: 'electricidad', titulo: 'Consumo y ahorro', bajada: 'Cuánto gasta y cuánto ahorra tu cliente', icono: 'billetera', fase: 'H1', lista: true, sinConexion: true },
   { id: 'ohm', rubro: 'electricidad', titulo: 'Ohm y referencias', bajada: 'Ley de Ohm, colores y seguridad', icono: 'escudo', fase: 'H1', lista: true, sinConexion: true },
   { id: 'etiquetas-ia', rubro: 'electricidad', titulo: 'Etiquetas con IA', bajada: 'Una foto del tablero y te propone las etiquetas', icono: 'camara', fase: 'H1', lista: true },
+  { id: 'informe', rubro: 'electricidad', titulo: 'Informe eléctrico', bajada: 'Mediciones con semáforo y recomendaciones para el cliente', icono: 'checkCirculo', fase: 'H1', lista: true },
   { id: 'dictado', rubro: 'electricidad', titulo: 'Presupuesto dictado', bajada: 'Contá el trabajo y sale la lista de tareas y materiales', icono: 'chat', fase: 'H1', lista: true },
   // Comunes (H0)
   { id: 'nivel', rubro: 'todos', titulo: 'Nivel y pendiente', bajada: 'Con el giroscopio del celular', icono: 'reintentar', fase: 'H0', lista: true, sinConexion: true },

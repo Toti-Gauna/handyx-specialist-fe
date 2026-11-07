@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { RUTAS } from '../../app/rutas.ts';
 import { BarraSuperior } from '../../kit/Navegacion.tsx';
 import { iluminacion, LUX, USOS_LUZ, type UsoLuz } from '../../taller/electricidad.ts';
+import { crearPanel, crearPlafon } from '../../taller/modelos3d.ts';
+import { BotonAr } from './BotonAr.tsx';
 import { AvisoRevision, CampoNumero, mostrar, numero, Opciones, Resultado } from './piezas.tsx';
 import './taller.css';
 
@@ -11,6 +13,7 @@ export function Iluminacion() {
   const [uso, setUso] = useState<UsoLuz>('cocina');
   const [m2, setM2] = useState('9');
   const [lumenes, setLumenes] = useState('1200');
+  const [modelo, setModelo] = useState<'plafon' | 'panel'>('plafon');
   const vm = numero(m2);
   const vl = numero(lumenes);
   const errM2 = vm === null || vm <= 0 ? 'Escribí los metros del ambiente.' : null;
@@ -33,6 +36,12 @@ export function Iluminacion() {
           </dl>
         ) : null}
       </Resultado>
+      <section className="tl-tarjeta" aria-labelledby="tl-ar-luz-t">
+        <h2 id="tl-ar-luz-t" className="tl-tarjeta__titulo">Mostrale al cliente cómo queda</h2>
+        <Opciones etiqueta="Luminaria" opciones={[{ valor: 'plafon' as const, texto: 'Plafón redondo 30 cm' }, { valor: 'panel' as const, texto: 'Panel 60 × 60 cm' }]} valor={modelo} onCambio={setModelo} />
+        <BotonAr key={modelo} crear={() => (modelo === 'plafon' ? crearPlafon() : crearPanel())} escala={1} superficie="techo" texto="Ver en el techo" miniatura={() => fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/icono-app-192.png`).then((r) => r.blob())} />
+        <p className="tl-nota">La realidad aumentada funciona en Android (Chrome) y en iPhone (Safari).</p>
+      </section>
       <AvisoRevision texto="Estimación con un rendimiento típico del ambiente (paredes claras, luminarias limpias). Para locales con exigencias especiales, hacé un cálculo fotométrico." />
     </div>
   );

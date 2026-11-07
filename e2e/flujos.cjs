@@ -1116,6 +1116,26 @@ async function main() {
     await foto('02-dictado');
   }, { capturas });
 
+  await escenario('T-informe-electrico', nav_, base, async ({ p, foto }) => {
+    await p.goto(`${base}/taller/informe/?escenario=habilitado`);
+    await ver(p, 'Cargá mediciones para ver el resultado');
+    await p.getByLabel('Resistencia de puesta a tierra').fill('25');
+    await ver(p, 'Para revisar');
+    await ver(p, 'Mejorar la puesta a tierra para bajar de 10 Ω');
+    await p.getByLabel('Disparo del diferencial a su corriente nominal').fill('28');
+    await p.getByRole('group', { name: 'Tiene disyuntor diferencial de 30 mA' }).getByRole('radio', { name: 'Sí' }).click();
+    await p.getByRole('group', { name: 'Bornes ajustados' }).getByRole('radio', { name: 'No', exact: true }).click();
+    await ver(p, 'Reajustar los bornes flojos.');
+    await ver(p, 'La instalación funciona, pero hay puntos para mejorar.');
+    await p.getByLabel('Fotos del informe').setInputFiles(join(__dirname, '..', 'public', 'icono-app-512.png'));
+    await p.getByRole('img', { name: 'Foto 1 del informe' }).first().waitFor();
+    await foto('01-informe');
+    // Sin WebXR ni Quick Look (Chromium de escritorio) no se ofrece la realidad aumentada
+    await p.goto(`${base}/taller/iluminacion/?escenario=habilitado`);
+    await ver(p, 'Mostrale al cliente cómo queda');
+    assert.equal(await p.getByRole('button', { name: /Ver en el techo/ }).count(), 0, 'sin AR en este navegador');
+  }, { capturas });
+
   await escenario('J-sin-conexion-service-worker', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/?escenario=habilitado`);
     await p.waitForURL('**/inicio/');

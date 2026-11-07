@@ -89,6 +89,7 @@ export const RUTAS = {
   tallerOhm: { ruta: '/taller/ohm/', titulo: 'Ohm y referencias', lote: 'H1.1', descripcion: 'Ley de Ohm, colores de conductores y seguridad antes de trabajar.' },
   tallerEtiquetas: { ruta: '/taller/etiquetas/', titulo: 'Etiquetas con IA', lote: 'H1.3', descripcion: 'Foto del tablero, propuesta de la IA, corrección, etiquetas y armador.' },
   tallerDictado: { ruta: '/taller/dictado/', titulo: 'Presupuesto dictado', lote: 'H1.3', descripcion: 'Del trabajo contado a tareas y materiales, sin datos personales y sin precios.' },
+  tallerInforme: { ruta: '/taller/informe/', titulo: 'Informe eléctrico', lote: 'H1.4', descripcion: 'Mediciones con semáforo, estado del tablero, fotos y recomendaciones para el cliente.' },
   tallerNivel: { ruta: '/taller/nivel/', titulo: 'Nivel y pendiente', lote: 'H0.1', descripcion: 'Nivel, plomada y pendiente con el giroscopio.' },
   notificaciones: { ruta: '/notificaciones/', titulo: 'Avisos', lote: '2.2', descripcion: 'Avisos dentro de la app, urgentes y programados diferenciados.' },
 } as const satisfies Record<string, Ruta>;

@@ -2,7 +2,7 @@
 // Armador de tablero (fase H1): agregás protecciones, se encastran en el riel DIN en 3D, y sale el gabinete, la lista de
 // materiales y las etiquetas. Inspirado en los configuradores de ABB, Schneider y Hager. La lista es la representación
 // accesible del tablero; la vista 3D es un apoyo visual.
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { RUTAS } from '../../app/rutas.ts';
 import { Icono } from '../../components/Icono.tsx';
 import { Aviso } from '../../components/ui.tsx';
@@ -10,42 +10,21 @@ import { useIsla } from '../../kit/Efectos.tsx';
 import { BarraSuperior } from '../../kit/Navegacion.tsx';
 import { armarTablero, DISPOSITIVO, etiquetas, materialesTablero, tableroInicial, TIPOS_DISPOSITIVO, type Dispositivo, type TipoDispositivo } from '../../taller/tablero.ts';
 import { tomarParaTablero } from '../../taller/traspaso.ts';
+import { BotonAr } from './BotonAr.tsx';
 import { Tablero3D, type ManejoTablero } from './Tablero3D.tsx';
 import './taller.css';
-
-/** AR Quick Look: solo Safari en iPhone y iPad lo soporta (así lo detecta Apple). */
-function soportaQuickLook(): boolean {
-  if (typeof document === 'undefined') return false;
-  const a = document.createElement('a');
-  return Boolean(a.relList?.supports?.('ar'));
-}
 
 export function Tablero() {
   // Si venís de la foto con IA, arranca con lo que confirmaste; si no, con un tablero de casa típico.
   const [dispositivos, setDispositivos] = useState<Dispositivo[]>(() => tomarParaTablero() ?? tableroInicial());
   const [siguiente, setSiguiente] = useState(10);
   const [nuevoTipo, setNuevoTipo] = useState<TipoDispositivo>('termica_1p');
-  const [quickLook, setQuickLook] = useState(false);
-  const [ar, setAr] = useState<{ modelo: string; miniatura: string } | null>(null);
   const vista = useRef<ManejoTablero>(null);
   const isla = useIsla();
   const a = armarTablero(dispositivos);
   const materiales = materialesTablero(dispositivos);
   const textos = etiquetas(dispositivos);
 
-  useEffect(() => setQuickLook(soportaQuickLook()), []);
-  useEffect(
-    () => () => {
-      if (ar) {
-        URL.revokeObjectURL(ar.modelo);
-        URL.revokeObjectURL(ar.miniatura);
-      }
-    },
-    [ar],
-  );
-
-  // Si cambia el tablero, la vista en la pared preparada ya no corresponde.
-  useEffect(() => setAr(null), [dispositivos]);
 
   const cambiar = (id: string, parcial: Partial<Dispositivo>) => setDispositivos((ds) => ds.map((d) => (d.id === id ? { ...d, ...parcial } : d)));
   const quitar = (id: string) => setDispositivos((ds) => ds.filter((d) => d.id !== id));
@@ -85,16 +64,6 @@ export function Tablero() {
     }
   }
 
-  async function prepararAr() {
-    try {
-      const [modelo, foto] = await Promise.all([vista.current?.usdz(), vista.current?.imagen()]);
-      if (!modelo || !foto) return;
-      setAr({ modelo: URL.createObjectURL(modelo), miniatura: URL.createObjectURL(foto) });
-    } catch {
-      isla({ titulo: 'No pudimos preparar la vista en tu pared', texto: 'Probá de nuevo.', icono: 'alerta', tono: 'amarillo' });
-    }
-  }
-
   return (
     <div className="fl-pantalla tl">
       <BarraSuperior titulo="Armador de tablero" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
@@ -108,18 +77,8 @@ export function Tablero() {
         <button type="button" className="boton boton--claro" onClick={() => void compartir()}>
           <Icono nombre="enviar" /> Compartir
         </button>
-        {quickLook ? (
-          ar ? (
-            // AR Quick Look exige un enlace rel="ar" con una sola imagen adentro.
-            <a className="tl-ar" rel="ar" href={ar.modelo}>
-              <img src={ar.miniatura} alt="Ver el tablero en tu pared con realidad aumentada" width={96} height={72} />
-            </a>
-          ) : (
-            <button type="button" className="boton" onClick={() => void prepararAr()}>
-              <Icono nombre="camara" /> Preparar vista en la pared
-            </button>
-          )
-        ) : null}
+        {/* AR: en Android, en la app con WebXR; en iPhone, con AR Quick Look. El tablero se dibuja en decímetros. */}
+        <BotonAr key={dispositivos.map((d) => `${d.tipo}${d.calibre ?? ''}`).join()} crear={() => vista.current?.objeto() ?? null} escala={0.1} superficie="pared" texto="Ver en la pared" miniatura={() => vista.current?.imagen() ?? Promise.resolve(null)} />
       </div>
       {a.avisos.map((t) => (
         <Aviso key={t} tono="aviso" icono="alerta">

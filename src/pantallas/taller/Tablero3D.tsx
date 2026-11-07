@@ -21,6 +21,8 @@ export interface ManejoTablero {
   imagen(): Promise<Blob | null>;
   /** Modelo USDZ para AR Quick Look en iPhone. */
   usdz(): Promise<Blob>;
+  /** Copia del tablero armado (para la AR), en decímetros. */
+  objeto(): THREE.Object3D | null;
 }
 
 function etiquetaTextura(texto: string): THREE.CanvasTexture {
@@ -165,6 +167,7 @@ export const Tablero3D = forwardRef<ManejoTablero, { dispositivos: readonly Disp
   }, [dispositivos]);
 
   useImperativeHandle(ref, () => ({
+    objeto: () => motor.current?.grupo.clone(true) ?? null,
     imagen: () =>
       new Promise((ok) => {
         const m = motor.current;
