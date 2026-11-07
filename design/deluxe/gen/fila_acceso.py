@@ -77,7 +77,7 @@ def cabecera_ilustrada(ic_grande, atras, alto=230, texto=''):
 def metodo(ic, t, sub, href, on=False, tag=''):
     b=f'border: 2px solid {AZUL}; background: {TINTE};' if on else f'border: 1px solid {BORDE}; background: #FFFFFF;'
     tg=f'<span>{tag}</span>' if tag else ''
-    return f'<a href="{href}" style="display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px; {b} color: {TINTA}; text-decoration: none">{mosaico_ic(ic,42,fondo=AZUL if on else MOSAICO,color="#FFFFFF" if on else TINTA,radio=14,iconsize=20)}<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">{t}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span></span>{tg}{svg(IC["flecha"],SUAVE,18)}</a>'
+    return f'<a href="{href}" style="display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px; {b} color: {TINTA}; text-decoration: none">{mosaico_ic(ic,42,fondo=AZUL if on else MOSAICO,color="#FFFFFF" if on else TINTA,radio=14,iconsize=20)}<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 3px"><strong style="font-size: 15px">{t}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span>{tg}</span>{svg(IC["flecha"],SUAVE,18)}</a>'
 
 # Acceso: elegir cómo entrar.
 cuerpo = cabecera_ilustrada('llave2','D6-Bienvenida.dc.html') + contenido(f'''

@@ -28,7 +28,7 @@ QUE = {
 'OB-Permisos':'Te explicamos para qué sirven los avisos y la ubicación, y los activás si querés.',
 'OB-Tour':'Tres pasos de cómo funciona Handyx: te llega un pedido, ponés tu precio y cobrás directo.',
 'OB-PrimerosPasos':'Lista de primeros pasos: completar el perfil, elegir los horarios, cargar cómo cobrás y ponerte disponible.',
-'F-Inicio':'Tu Inicio: el mapa siempre detrás, arriba el panel con Disponible y tus datos del día, y los pedidos que llegan en tarjetas flotantes. Tocás «Ver pedido» para ver el detalle.',
+'F-Inicio':'Tu Inicio: el mapa siempre detrás, arriba Disponible dentro de la cabecera, y los pedidos que llegan en tarjetas flotantes. Tocás «Ver pedido» para ver el detalle.',
 'F-InicioDia':'Cuando tenés trabajos hoy, el Inicio muestra tu día: la próxima parada con la hora estimada, chatear, avisar una demora y salir para allá.',
 'F-InicioRuta':'Tu recorrido del día en orden, con el tiempo de cada tramo. Podés reordenar las paradas.',
 'F-InicioConvocatoria':'Lo que ve otro profesional en su Inicio cuando un titular busca su oficio cerca: puede ver la obra o descartarla.',

@@ -7,9 +7,8 @@ const fs = require('fs');
   const files = process.argv.slice(3);
   for (const f of files) {
     let html = fs.readFileSync(dir + '/' + f, 'utf8').replace('<script src="./support.js"></script>', '');
-    html = html.replace(/<link rel="stylesheet"[^>]*>/, '');
     const mm = html.match(/"width":(\d+),"height":(\d+)/); const p = await b2.newPage({ viewport: { width: +mm[1], height: +mm[2] } });
-    await p.setContent(html);
+    await p.setContent(html, { waitUntil: 'networkidle' }); await p.evaluate(() => document.fonts.ready);
     const r = await p.evaluate(() => {
       const raiz = document.querySelector('x-dc > div');
       const hijos = [...raiz.children];

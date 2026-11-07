@@ -46,8 +46,8 @@ for i in range(0,41):
 cinta=f'''<div style="position: relative; height: 104px">
       <div role="slider" aria-label="Tu precio" aria-valuemin="0" aria-valuenow="47000" aria-valuetext="$ 47.000" tabindex="0" style="position: absolute; left: -16px; right: -16px; top: 20px; height: 64px; background: {AMARILLO}; box-shadow: inset 0 -4px 0 #D8D36A, {ELEV1}; overflow: hidden">
         <div style="position: absolute; top: 0; left: {195-14*25}px; width: 600px; height: 64px">{''.join(marcas)}</div>
-        <span style="position: absolute; left: {195-14*25+14*20-28}px; top: 54px; padding: 1px 6px; border-radius: 6px; background: {AZUL}; color: #FFFFFF; font-size: 11px; font-weight: 800">sugerido</span>
       </div>
+      <span style="position: absolute; left: {195-14*25+14*20-16-30}px; top: 0; padding: 1px 6px; border-radius: 6px; background: {AZUL}; color: #FFFFFF; font-size: 11px; font-weight: 800">sugerido · 45</span>
       <span aria-hidden="true" style="position: absolute; left: 50%; top: 4px; margin-left: -9px; width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 14px solid {AZUL}"></span>
       <span aria-hidden="true" style="position: absolute; left: 50%; top: 16px; margin-left: -1.5px; width: 3px; height: 72px; background: {AZUL}"></span>
     </div>'''
@@ -68,7 +68,7 @@ cuerpo = barra_compacta('Tu precio','F-Pedido.dc.html',sub='Paso 1 de 2') + cont
     {cinta}
     <div style="display: flex; gap: 8px; justify-content: center">{opcion("Sugerido")}{opcion("+ $ 2.000",True)}{opcion("+ $ 5.000")}<a href="F-PrecioTeclado.dc.html" style="min-height: 44px; padding: 0 12px; border-radius: 14px; background: {MOSAICO}; color: {TEXTO}; font-weight: 800; font-size: 14px; display: inline-flex; align-items: center; text-decoration: none">Escribir</a></div>
     <div style="padding: 0 4px">{interr("Incluye materiales","El cliente ve que el precio los incluye",True)}{interr("Garantía de 30 días","Se muestra en tu propuesta",False)}</div>
-    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px 14px; border-radius: 18px; background: #E3F4EA"><span style="font-size: 14px; font-weight: 800; color: #137140">Recibís el 100 % · Handyx no te cobra comisión</span><strong style="{TIT}; font-size: 22px; color: #137140">$ 47.000</strong></div>''') + '\n' + accion_fija('Siguiente: la fecha','F-Fecha.dc.html')
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px; background: #E3F4EA"><span style="display: flex; flex-direction: column"><strong style="font-size: 14px; color: #137140">Recibís el 100 %</strong><span style="font-size: 12px; color: #137140">Handyx no te cobra comisión</span></span><strong style="{TIT}; font-size: 22px; color: #137140; white-space: nowrap">$ 47.000</strong></div>''') + '\n' + accion_fija('Siguiente: la fecha','F-Fecha.dc.html')
 guardar('F-Precio.dc.html','Núcleo · Tu precio',cuerpo)
 
 # Proponer fecha en el calendario.

@@ -305,3 +305,14 @@ Carla Ibáñez (clientes), Sofía Ruiz, Diego Herrera y Pablo Vega (profesionale
 - **Proponer una obra nueva** desde Obras (a un cliente tuyo o a uno nuevo con un enlace) y después etapas y montos.
 - Avatares de varias personas sin cortes. 196 tableros; axe en 0, 0 áreas táctiles chicas, 0 textos chicos, nada
   tapado y sin enlaces rotos.
+
+## 16. Inicio sin datos extra y revisión con las fuentes reales (08/11/2026)
+
+- **Inicio:** solo Disponible dentro de la cabecera; los tres datos del día se quitaron para dejar ver el mapa.
+- **Fuentes reales en los chequeos:** las capturas y `revisar.cjs`, `medir.cjs` y `quiebres.cjs` ahora cargan Archivo
+  ensanchado y DM Sans (antes se veía con una fuente de reemplazo más angosta y no aparecían varios desbordes).
+  `quiebres.cjs` detecta además texto que pasa el borde de su caja.
+- Corregido con las fuentes reales: montos en mosaicos chicos (cifras con ancho normal), tarjetas de la cuenta
+  (número grande y unidad chica), avatares de varias personas uno al lado del otro, «Tu agenda» con el botón «Mes»,
+  título de equipamiento, encabezado de herramientas, tarjeta de la app autenticadora, monto del pago en la búsqueda,
+  «sugerido» de la cinta y caja de comisión; seis tableros más altos donde el contenido quedaba bajo los botones.

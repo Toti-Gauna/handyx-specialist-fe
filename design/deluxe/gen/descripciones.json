@@ -253,8 +253,8 @@
   "que": "Tu recorrido del día en orden, con el tiempo de cada tramo. Podés reordenar las paradas.",
   "llegas": [
    "«Ya lo retiré» en Retiro con QR",
-   "«RECORRIDO 14 km» en Inicio con tu día",
-   "«Ver recorrido» en Inicio con tu día"
+   "«Ver recorrido» en Inicio con tu día",
+   "«Ya lo retiré» en Lista para el mostrador"
   ]
  },
  "F-Obras": {
@@ -842,7 +842,7 @@
  },
  "F-Inicio": {
   "titulo": "Inicio con mapa",
-  "que": "Tu Inicio: el mapa siempre detrás, arriba el panel con Disponible y tus datos del día, y los pedidos que llegan en tarjetas flotantes. Tocás «Ver pedido» para ver el detalle.",
+  "que": "Tu Inicio: el mapa siempre detrás, arriba Disponible dentro de la cabecera, y los pedidos que llegan en tarjetas flotantes. Tocás «Ver pedido» para ver el detalle.",
   "llegas": [
    "Pestaña «Inicio» de la barra de abajo",
    "«Ir al inicio y ponerme disponible» en Primeros pasos",
@@ -871,8 +871,8 @@
   "titulo": "Agenda del mes",
   "que": "El mes completo con obras y trabajos por día.",
   "llegas": [
-   "«Ver el mes» en Agenda",
-   "«Ver el mes» en Agenda: pasadas",
+   "«Mes» en Agenda",
+   "«Mes» en Agenda: pasadas",
    "«Ver el mes» en Agenda desde el trabajo"
   ]
  },
@@ -932,8 +932,7 @@
   "que": "Tu camino: el próximo premio, el kit de bienvenida y tus mini caminos.",
   "llegas": [
    "«Tu camino» en Tu cuenta",
-   "«Confirmar talle L» en Kit de bienvenida",
-   "«CAMINO 8 de 10» en Inicio con tu día"
+   "«Confirmar talle L» en Kit de bienvenida"
   ]
  },
  "F-InicioConvocatoria": {

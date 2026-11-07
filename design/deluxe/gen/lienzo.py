@@ -55,7 +55,7 @@ for fila in (['Main','A-Precio','A-Regalo'],['B-Inicio','B-Precio','B-Regalo'],[
     y+=844+420
 N['titulo4']['text']='Núcleo · Tu día y la pestaña Taller'
 N['nota4']['text']='Tu día con el paso a paso de las paradas; en camino e informar el cobro. La pestaña Taller (antes Agenda) junta la agenda, ingresos y gastos, presupuestos, equipamiento y herramientas.'
-N['nota3']['text']='Mapa siempre detrás, panel de estado colgado de la cabecera (Disponible y los datos del día), pedidos en modales flotantes y barra azul de vidrio.'
+N['nota3']['text']='Mapa siempre detrás, Disponible dentro de la cabecera azul, pedidos en modales flotantes y barra azul de vidrio.'
 N['nota9']['text']='Agregar un material: buscar y tocar; las opciones quedan resumidas y, si no está, se carga como material nuevo (suma al catálogo).'
 N['nota7']['text']='Invitás a alguien que conocés o buscás uno nuevo: la búsqueda la ven solo especialistas verificados de la zona, se postulan y vos elegís. Reparto registrado; Handyx no toca la plata.'
 N['nota8']['text']='Chat con reacciones, editar (queda «editado»), borrar para todos (queda «Mensaje eliminado» y se guarda oculto por si hay un reclamo), seleccionar varios, fotos y videos, y sumar personas al grupo. Las tarjetas no se editan.'

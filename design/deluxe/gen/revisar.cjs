@@ -9,7 +9,7 @@ const axe = fs.readFileSync('/home/user/handyx-specialist-fe/node_modules/axe-co
     const m = h.match(/"width":(\d+),"height":(\d+)/); const W = m ? +m[1] : 390, H = m ? +m[2] : 844;
     const p = await b.newPage({ viewport: { width: W, height: H } });
     const estilo = (h.match(/<style>([\s\S]*?)<\/style>/) || ['', ''])[1];
-    await p.setContent('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>x</title><style>' + estilo + '</style></head><body>' + h.split('<x-dc>')[1].split('</x-dc>')[0].replace(/<helmet>[\s\S]*?<\/helmet>/, '') + '</body></html>');
+    await p.setContent('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>x</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=DM+Sans:opsz,wght@9..40,400..800&display=swap"><style>' + estilo + '</style></head><body>' + h.split('<x-dc>')[1].split('</x-dc>')[0].replace(/<helmet>[\s\S]*?<\/helmet>/, '') + '</body></html>', { waitUntil: 'networkidle' }); await p.evaluate(() => document.fonts.ready);
     await p.addScriptTag({ content: axe });
     const r = await p.evaluate(async () => {
       const res = await axe.run(document, { runOnly: ['wcag2a', 'wcag2aa'], rules: { 'page-has-heading-one': { enabled: false }, 'landmark-one-main': { enabled: false }, region: { enabled: false } } });

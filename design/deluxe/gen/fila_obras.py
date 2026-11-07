@@ -7,7 +7,7 @@ def banner(texto, href, ic='alerta'):
     return f'<a href="{href}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; box-sizing: border-box; padding: 11px 14px; border-radius: 16px; background: {AMARILLO}; color: {TINTA}; text-decoration: none; font-size: 13px; font-weight: 800">{svg(IC[ic],TINTA,18)}<span style="flex: 1">{texto}</span>{svg(IC["flecha"],TINTA,16)}</a>'
 def dato_mini(et, v, sub='', fondo=MOSAICO, color=TINTA):
     s=f'<span style="font-size: 11px; color: {SUAVE}">{sub}</span>' if sub else ''
-    return f'<div style="min-width: 0; padding: 10px 12px; border-radius: 16px; background: {fondo}; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 11px; font-weight: 800; color: {SUAVE}">{et}</span><strong style="{TIT}; font-size: 17px; color: {color}; white-space: nowrap">{v}</strong>{s}</div>'
+    return f'<div style="min-width: 0; padding: 10px 12px; border-radius: 16px; background: {fondo}; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 11px; font-weight: 800; color: {SUAVE}">{et}</span><strong style="{TIT}; font-size: 16px; color: {color}; font-stretch: 100%; letter-spacing: -0.2px; white-space: nowrap">{v}</strong>{s}</div>'
 
 # ── Agenda (tira horizontal) con acceso al mes completo ─────────────
 def dia_tira(n, d, est=''):
