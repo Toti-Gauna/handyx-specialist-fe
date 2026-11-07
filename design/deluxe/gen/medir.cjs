@@ -13,7 +13,7 @@ const fs = require('fs');
       const raiz = document.querySelector('x-dc > div');
       const hijos = [...raiz.children];
       const abajo = hijos.filter(e => { const s = getComputedStyle(e); return s.position === 'absolute' && s.bottom === '0px' && e.tagName !== 'SECTION' && e.getBoundingClientRect().bottom >= 840 && e.getBoundingClientRect().height < 300; });
-      const cont = hijos.filter(e => { const s = getComputedStyle(e); return s.position === 'absolute' && ['72px','26px','84px','90px','196px','262px','268px','312px','370px','380px','488px'].includes(s.top); });
+      const cont = hijos.filter(e => { const s = getComputedStyle(e); return s.position === 'absolute' && ['72px','26px','84px','90px','196px','232px','92px','262px','268px','312px','370px','380px','488px'].includes(s.top); });
       const topAbajo = abajo.length ? Math.min(...abajo.map(e => e.getBoundingClientRect().top)) : 844;
       const finCont = cont.length ? Math.max(...cont.map(e => e.getBoundingClientRect().bottom)) : 0;
       const ancho = Math.max(...[...raiz.querySelectorAll('*')].map(e => e.getBoundingClientRect().right));

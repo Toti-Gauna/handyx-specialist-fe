@@ -31,13 +31,13 @@ cuerpo = barra_compacta('Cables','T-Taller.dc.html',sub='Electricidad') + conten
     <div style="padding: 18px; border-radius: 26px; background: {AZUL}; color: #FFFFFF; box-shadow: 0 5px 0 {HONDO}; display: flex; flex-direction: column; gap: 6px">
       {etiqueta("SECCIÓN SUGERIDA","#CFE0FA")}
       <div style="display: flex; align-items: baseline; gap: 10px"><span style="{TIT}; font-size: 56px; line-height: 1">4</span><span style="font-size: 18px; font-weight: 800">mm²</span><span style="margin-left: auto">{chip("Caída 2,1 %","check","blanco")}</span></div>
-      <span style="font-size: 13px; color: #E3ECFA">Corriente 15,9 A · protección sugerida 20 A</span>
+      <span style="font-size: 13px; color: #F0F5FD">Corriente 15,9 A · protección sugerida 20 A</span>
     </div>
     <div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 18px; background: {AMARILLO}">{svg(IC['alerta'],TINTA,20)}<span style="font-size: 13px; font-weight: 700">Tabla en revisión técnica. Es orientativa: no reemplaza la norma ni tu criterio.</span></div>''') + '\n' + accion_fija('Sumar al presupuesto','H0-Presupuesto.dc.html')
 guardar('T-Cables.dc.html','Taller · Cables',cuerpo)
 
 # Tablero 3D.
-modulos=''.join(f'<span style="width: {w}px; height: 70px; border-radius: 6px; background: {c}; box-shadow: inset 0 -6px 0 rgba(0,0,0,0.12); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; box-sizing: border-box; font-size: 10px; font-weight: 800; color: {t}">{l}</span>' for w,c,t,l in [(56,'#FFFFFF',TINTA,'ID 40A'),(28,'#FFFFFF',TINTA,'C16'),(28,'#FFFFFF',TINTA,'C16'),(28,'#FFFFFF',TINTA,'C20'),(28,AMARILLO,TINTA,'+')])
+modulos=''.join(f'<span style="width: {w}px; height: 70px; border-radius: 6px; background: {c}; box-shadow: inset 0 -6px 0 rgba(0,0,0,0.12); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; box-sizing: border-box; font-size: 11px; font-weight: 800; color: {t}">{l}</span>' for w,c,t,l in [(56,'#FFFFFF',TINTA,'ID 40A'),(28,'#FFFFFF',TINTA,'C16'),(28,'#FFFFFF',TINTA,'C16'),(28,'#FFFFFF',TINTA,'C20'),(28,AMARILLO,TINTA,'+')])
 tablero=f'''<div aria-hidden="true" style="height: 300px; border-radius: 26px; background: {NOCHE}; display: flex; align-items: center; justify-content: center; perspective: 600px">
       <div style="width: 250px; padding: 20px 16px; border-radius: 18px; background: #E9ECF2; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6); transform: rotateY(-14deg) rotateX(6deg)">
         <div style="height: 10px; border-radius: 5px; background: #B8BFCC; margin-bottom: 10px"></div>
@@ -94,7 +94,7 @@ oficio_pant('Oficios · Plomería','OF-Plomeria.dc.html','Plomería','gota','Pen
 prueba=f'''<div style="padding: 18px; border-radius: 26px; background: {AZUL}; color: #FFFFFF; box-shadow: 0 5px 0 {HONDO}; display: flex; flex-direction: column; align-items: center; gap: 6px">
       {etiqueta("PRUEBA DE HERMETICIDAD","#CFE0FA")}
       <span style="{TIT}; font-size: 60px; line-height: 1; font-variant-numeric: tabular-nums">09:42</span>
-      <span style="font-size: 13px; color: #E3ECFA">Presión inicial 0,20 · lectura actual 0,20 (la cargás vos del manómetro)</span>
+      <span style="font-size: 13px; color: #F0F5FD">Presión inicial 0,20 · lectura actual 0,20 (la cargás vos del manómetro)</span>
     </div>'''
 oficio_pant('Oficios · Gas','OF-Gas.dc.html','Gas','llama','Prueba ','registrada','H4 · CON REVISIÓN TÉCNICA Y LEGAL',prueba,
  tarjeta(fila_ic('camara','Foto del manómetro al empezar','18:02',derecha=chip("Lista","check","exito"),borde=False)+fila_ic('camara','Foto al terminar','A los 15 minutos')+fila_ic('alerta','Si hay olor a gas','Protocolo de emergencia paso a paso')),

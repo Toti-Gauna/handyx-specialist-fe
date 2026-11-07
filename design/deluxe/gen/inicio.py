@@ -40,7 +40,7 @@ a{{color:#1F57A8}}a:hover{{color:#143E7E}}
   <header style="position: absolute; top: 14px; left: 14px; right: 14px; display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 18px; border-radius: 26px; background: #FFFFFF; box-shadow: 0 18px 34px -18px rgba(31,87,168,0.55)">
     <span style="display: flex; flex-direction: column">
       <span style="font-family: 'Archivo', sans-serif; font-weight: 900; font-stretch: 125%; font-size: 22px; line-height: 1; color: #1F57A8">Handyx</span>
-      <span style="font-size: 10px; font-weight: 700; color: #5F6B84">Soluciones, no problemas</span>
+      <span style="font-size: 11px; font-weight: 700; color: #5F6B84">Soluciones, no problemas</span>
     </span>
     <span style="display: flex; gap: 8px">
       <button aria-label="Avisos" style="width: 44px; height: 44px; border-radius: 50%; border: 0; background: #EAF3FC; display: flex; align-items: center; justify-content: center">

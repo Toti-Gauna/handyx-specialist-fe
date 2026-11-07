@@ -4,7 +4,7 @@ from piezas2 import *
 def btn_circ(ic, href, label, fondo='#FFFFFF', color=TINTA):
     return f'<a href="{href}" aria-label="{label}" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid {BORDE}; background: {fondo}; box-shadow: {ELEV1}; display: flex; align-items: center; justify-content: center">{svg(IC[ic],color,20)}</a>'
 def banner(texto, href, ic='alerta'):
-    return f'<a href="{href}" style="display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 16px; background: {AMARILLO}; color: {TINTA}; text-decoration: none; font-size: 13px; font-weight: 800">{svg(IC[ic],TINTA,18)}<span style="flex: 1">{texto}</span>{svg(IC["flecha"],TINTA,16)}</a>'
+    return f'<a href="{href}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; box-sizing: border-box; padding: 11px 14px; border-radius: 16px; background: {AMARILLO}; color: {TINTA}; text-decoration: none; font-size: 13px; font-weight: 800">{svg(IC[ic],TINTA,18)}<span style="flex: 1">{texto}</span>{svg(IC["flecha"],TINTA,16)}</a>'
 def dato_mini(et, v, sub='', fondo=MOSAICO, color=TINTA):
     s=f'<span style="font-size: 11px; color: {SUAVE}">{sub}</span>' if sub else ''
     return f'<div style="min-width: 0; padding: 10px 12px; border-radius: 16px; background: {fondo}; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 11px; font-weight: 800; color: {SUAVE}">{et}</span><strong style="{TIT}; font-size: 17px; color: {color}; white-space: nowrap">{v}</strong>{s}</div>'
@@ -13,7 +13,7 @@ def dato_mini(et, v, sub='', fondo=MOSAICO, color=TINTA):
 def dia_tira(n, d, est=''):
     s=f'background: {AZUL}; color: #FFFFFF; box-shadow: 0 3px 0 {HONDO}' if est=='sel' else f'background: {MOSAICO}; color: {TEXTO}'
     pt=f'<span style="width: 5px; height: 5px; border-radius: 50%; background: {NARANJA if est=="sel" else AZUL}"></span>' if est in ('sel','pt') else '<span style="height: 5px"></span>'
-    return f'<span style="flex: none; width: 52px; padding: 8px 0; border-radius: 16px; {s}; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 10px; font-weight: 800">{d}</span><strong style="{TIT}; font-size: 18px">{n}</strong>{pt}</span>'
+    return f'<span style="flex: none; width: 52px; padding: 8px 0; border-radius: 16px; {s}; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 11px; font-weight: 800">{d}</span><strong style="{TIT}; font-size: 18px">{n}</strong>{pt}</span>'
 def turno(h1, h2, t, sub, href, chip_html='', gente=''):
     g=f'<span style="margin-top: 2px">{gente}</span>' if gente else ''
     return f'<a href="{href}" style="display: flex; gap: 12px; align-items: stretch; color: {TINTA}; text-decoration: none"><span style="width: 64px; flex: none; border-radius: 18px; background: {MOSAICO}; display: flex; flex-direction: column; align-items: center; justify-content: center"><strong style="{TIT}; font-size: 17px">{h1}</strong><span style="font-size: 11px; color: {SUAVE}">a {h2}</span></span><span style="flex: 1; min-width: 0; padding: 12px 14px; border-radius: 18px; background: #FFFFFF; border: 1px solid {BORDE}; box-shadow: {ELEV1}; display: flex; flex-direction: column; gap: 4px"><span style="display: flex; justify-content: space-between; gap: 8px"><strong style="font-size: 15px">{t}</strong>{chip_html}</span><span style="font-size: 13px; color: {SUAVE}">{sub}</span>{g}</span></a>'
@@ -35,7 +35,7 @@ celdas=['<span></span>']*6
 for d in range(1,31):
     barras=''.join(f'<span style="height: 5px; border-radius: 3px; background: {col[e]}"></span>' for e in ev.get(d,[]))
     if d==17: est=f'background: {AZUL}; color: #FFFFFF; box-shadow: 0 3px 0 {HONDO}'; barras=barras.replace(f'background: {AZUL}','background: #FFFFFF')
-    elif d<17: est=f'background: #F6F7F9; color: #9AA3B2'
+    elif d<17: est=f'background: #F6F7F9; color: #56627A'
     else: est=f'background: #F6F7F9'
     actual=' aria-current="date"' if d==17 else ''
     celdas.append(f'<span{actual} style="height: 58px; padding: 6px 5px; box-sizing: border-box; border-radius: 12px; {est}; display: flex; flex-direction: column; gap: 3px"><strong style="font-size: 13px">{d}</strong>{barras}</span>')
@@ -57,7 +57,7 @@ def obra_card(titulo, cliente, zona, anillo_html, chip_html, equipo, datos, href
     return f'<section style="border-radius: 24px; background: #FFFFFF; border: 1px solid {BORDE}; box-shadow: {ELEV1}; overflow: hidden"><div style="padding: 16px; display: flex; flex-direction: column; gap: 10px">{cont}</div>{al}{franja("Ver la obra", href)}</section>'
 cuerpo = contenido(f'''
     <div style="display: flex; justify-content: space-between; align-items: flex-end">{titulo_grande("2 EN CURSO · 1 PRÓXIMA","Tus ","obras")}<a href="F-PropuestaObra.dc.html" aria-label="Nueva obra" style="width: 48px; height: 48px; border-radius: 16px; background: {AZUL}; box-shadow: 0 3px 0 {HONDO}; display: flex; align-items: center; justify-content: center">{svg(IC['mas'],'#FFFFFF',22)}</a></div>
-    <div role="tablist" style="display: flex; gap: 8px">{chip("En curso · 2",tono="azul")}{chip("Próximas · 1",tono="gris")}{chip("Terminadas · 4",tono="gris")}</div>
+    <div style="display: flex; gap: 8px">{chip("En curso · 2",tono="azul")}{chip("Próximas · 1",tono="gris")}{chip("Terminadas · 4",tono="gris")}</div>
     {obra_card("Baño completo","Martín Sosa","Los Troncos",anillo(2,4),chip("Hoy · día 3 de 6","reloj","amarillo"),['yo','sofia','diego'],"Gastado $ 210.000","F-Obra.dc.html",banner("Faltan 2 repuestos para mañana","F-ObraRepuestos.dc.html"))}
     {obra_card("Tablero y circuitos","Carla Ibáñez","Punta Mogotes",anillo(0,3),chip("Empieza el jueves 19","agenda","noche"),['yo','diego'],"3 jornadas","F-Obra.dc.html")}''', top=26) + '\n' + barra_vidrio('Obras')
 guardar('F-Obras.dc.html','Obras · Tus obras',cuerpo)
@@ -70,7 +70,7 @@ def dia_fila(dsem, num, titulo, sub, est, extra='', href='F-ObraDia.dc.html'):
     else: m=f'background: {MOSAICO}; color: {TEXTO}'; c=''
     x=f'<span style="font-size: 12px; font-weight: 800; color: {"#A8261C" if "falta" in extra.lower() else HONDO}">{extra}</span>' if extra else ''
     fondo = f'background: {TINTE};' if est=='hoy' else ''
-    return f'<a href="{href}" style="display: flex; gap: 12px; align-items: center; padding: 7px 8px; border-radius: 16px; {fondo} border-top: 1px solid {BORDE}; color: {TINTA}; text-decoration: none"><span style="width: 50px; height: 52px; flex: none; border-radius: 14px; {m}; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-size: 10px; font-weight: 800">{dsem}</span><strong style="{TIT}; font-size: 17px">{num}</strong></span><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px"><strong style="font-size: 14px">{titulo}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span>{x}</span>{c}</a>'
+    return f'<a href="{href}" style="display: flex; gap: 12px; align-items: center; padding: 7px 8px; border-radius: 16px; {fondo} border-top: 1px solid {BORDE}; color: {TINTA}; text-decoration: none"><span style="width: 50px; height: 52px; flex: none; border-radius: 14px; {m}; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-size: 11px; font-weight: 800">{dsem}</span><strong style="{TIT}; font-size: 17px">{num}</strong></span><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px"><strong style="font-size: 14px">{titulo}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span>{x}</span>{c}</a>'
 dias=''.join([
  dia_fila('JUE','12','Jornada 1 · Demolición','Julián y Sofía · 4 fotos','hecha'),
  dia_fila('VIE','13','Jornada 2 · Cañerías','Julián · prueba sin pérdidas','hecha'),
@@ -82,7 +82,7 @@ dias=''.join([
 cuerpo = barra_compacta('Obra','F-Obras.dc.html',accion=btn_circ('chat','F-ChatGrupo.dc.html','Chat de la obra')) + contenido(f'''
     <div style="display: flex; align-items: center; gap: 12px">{anillo(2,4,58)}<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><strong style="{TIT}; font-size: 24px; line-height: 1">Baño completo</strong><span style="font-size: 13px; color: {SUAVE}">Martín Sosa · Los Troncos</span></span>{avatares(['yo','sofia','diego'],30)}</div>
     <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px">{dato_mini("EN OBRA","Día 3 de 6","7 días desde el 12/11")}{dato_mini("GASTADO","$ 210.000","en materiales")}{dato_mini("FALTA COBRAR","$ 450.000","de $ 850.000",TINTE,AZUL)}</div>
-    {tabs([("Días","F-Obra.dc.html"),("Repuestos <span aria-label='faltan comprar' style='display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: #D93025'></span>","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Días")}
+    {tabs([("Días","F-Obra.dc.html"),("Repuestos <span role='img' aria-label='faltan comprar' style='display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: #D93025'></span>","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Días")}
     <div style="margin-top: -8px">{dias}</div>''') + '\n' + acciones_fijas(f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 10px">{boton2("Agregar","F-ObraRepuesto.dc.html","mas")}{boton(svg(IC["camara"],"#FFFFFF",20)+"Cargar el avance","F-ObraDia.dc.html",alto=52)}</div>')
 guardar('F-Obra.dc.html','Obras · Obra (resumen y días)',cuerpo)
 
@@ -112,7 +112,7 @@ guardar('F-ObraRepuestos.dc.html','Obras · Repuestos',cuerpo)
 # ── Obra · agregar un repuesto para comprar a futuro ───────────────
 def interr(t, sub, on):
     pista=AZUL if on else '#C9CFDA'; lado='right: 3px' if on else 'left: 3px'
-    return f'<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid {BORDE}"><span style="display: flex; flex-direction: column"><strong style="font-size: 14px">{t}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span></span><span role="switch" aria-checked="{str(on).lower()}" style="width: 50px; height: 30px; flex: none; border-radius: 15px; background: {pista}; position: relative"><span style="position: absolute; top: 3px; {lado}; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; box-shadow: {ELEV1}"></span></span></div>'
+    return f'<div role="switch" aria-checked="{str(on).lower()}" aria-label="{t}" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 10px 0; border-top: 1px solid {BORDE}"><span style="display: flex; flex-direction: column"><strong style="font-size: 14px">{t}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span></span><span aria-hidden="true" style="width: 50px; height: 30px; flex: none; border-radius: 15px; background: {pista}; position: relative"><span style="position: absolute; top: 3px; {lado}; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; box-shadow: {ELEV1}"></span></span></div>'
 def op(t, on=False):
     s=f'background: {AZUL}; color: #FFFFFF; box-shadow: 0 3px 0 {HONDO}' if on else f'background: {MOSAICO}; color: {TEXTO}'
     return f'<span style="min-height: 44px; padding: 0 12px; border-radius: 14px; {s}; font-weight: 800; font-size: 13px; display: inline-flex; align-items: center">{t}</span>'
@@ -144,7 +144,7 @@ guardar('F-ObraFecha.dc.html','Obras · Cambiar fecha',cuerpo)
 def miembro(k, rol, parte, est):
     return f'<div style="display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid {BORDE}">{avatar(k,46)}<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px"><strong style="font-size: 15px">{nombre(k)}{" (vos)" if k=="yo" else ""}</strong><span style="font-size: 12px; color: {SUAVE}">{rol}</span>{est}</span><strong style="{TIT}; font-size: 17px">{parte}</strong></div>'
 cuerpo = barra_compacta('Equipo','F-Obra.dc.html',sub='Baño completo',accion=btn_circ('chat','F-ChatGrupo.dc.html','Chat del grupo')) + contenido(f'''
-    {tabs([("Días","F-Obra.dc.html"),("Repuestos <span aria-label='faltan comprar' style='display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: #D93025'></span>","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Equipo")}
+    {tabs([("Días","F-Obra.dc.html"),("Repuestos <span role='img' aria-label='faltan comprar' style='display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: #D93025'></span>","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Equipo")}
     {tarjeta(etiqueta("PROFESIONALES")+miembro('yo','Titular · Plomería','60 %',chip("Armó la obra","estrella","tinte"))+miembro('sofia','Albañilería · jornadas 1, 3 y 4','30 %',chip("Aceptó","check","exito"))+miembro('diego','Electricidad · jornada 6','10 %',chip("Invitación enviada","reloj","amarillo")), franja("Ver el reparto del pago","F-Reparto.dc.html"))}
     {tarjeta(etiqueta("CLIENTE")+f'<div style="display: flex; gap: 12px; align-items: center">{avatar("martin",46)}<span style="display: flex; flex-direction: column"><strong style="font-size: 15px">Martín Sosa</strong><span style="font-size: 12px; color: {SUAVE}">Ve los días, las fotos y el chat del grupo</span></span></div>')}
     <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: {SUAVE}"><span>· Solo se suma quien vos invitás, y tiene que estar verificado por Handyx.</span><span>· Cada uno ve los días, el chat y su parte. Tus gastos los ves solo vos.</span></div>''') + '\n' + accion_fija(svg(IC['usuario2'],'#FFFFFF',20)+'Invitar a un profesional','F-Invitar.dc.html')
@@ -167,8 +167,8 @@ def parte(k, rubro, monto, pct, est):
     return f'<div style="display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid {BORDE}">{avatar(k,44)}<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px"><strong style="font-size: 15px">{nombre(k)}</strong><span style="font-size: 12px; color: {SUAVE}">{rubro} · {pct}</span>{est}</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 32px; height: 32px; border-radius: 10px; background: {MOSAICO}; display: flex; align-items: center; justify-content: center; font-weight: 900">−</span><strong style="{TIT}; font-size: 17px; min-width: 84px; text-align: center">{monto}</strong><span style="width: 32px; height: 32px; border-radius: 10px; background: {MOSAICO}; display: flex; align-items: center; justify-content: center; font-weight: 900">+</span></span></div>'
 barra_rep=f'<div role="img" aria-label="Reparto: Julián 60 %, Sofía 30 %, Diego 10 %" style="display: flex; height: 16px; border-radius: 8px; overflow: hidden"><span style="width: 60%; background: {AZUL}"></span><span style="width: 30%; background: #8CCBA3"></span><span style="width: 10%; background: {AMARILLO}"></span></div>'
 cuerpo = barra_compacta('Reparto del pago','F-ObraEquipo.dc.html',sub='Baño completo') + contenido(f'''
-    {tabs([("Días","F-Obra.dc.html"),("Repuestos <span aria-label='faltan comprar' style='display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: #D93025'></span>","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Plata")}
-    <div style="padding: 16px; border-radius: 24px; background: {AZUL}; color: #FFFFFF; box-shadow: 0 5px 0 {HONDO}; display: flex; flex-direction: column; gap: 10px"><div style="display: flex; justify-content: space-between; align-items: baseline">{etiqueta("ACORDADO CON MARTÍN","#CFE0FA")}<strong style="{TIT}; font-size: 28px">$ 850.000</strong></div>{barra_rep}</div>
+    {tabs([("Días","F-Obra.dc.html"),("Repuestos <span role='img' aria-label='faltan comprar' style='display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: #D93025'></span>","F-ObraRepuestos.dc.html"),("Equipo · 3","F-ObraEquipo.dc.html"),("Plata","F-Reparto.dc.html")],"Plata")}
+    <div style="padding: 12px 16px; border-radius: 24px; background: {AZUL}; color: #FFFFFF; box-shadow: 0 5px 0 {HONDO}; display: flex; flex-direction: column; gap: 8px"><div style="display: flex; justify-content: space-between; align-items: baseline">{etiqueta("ACORDADO CON MARTÍN","#CFE0FA")}<strong style="{TIT}; font-size: 28px">$ 850.000</strong></div>{barra_rep}</div>
     {tarjeta(parte('yo','Plomería','$ 510.000','60 %',chip("Vos","estrella","tinte"))+parte('sofia','Albañilería','$ 255.000','30 %',chip("Aceptó","check","exito"))+parte('diego','Electricidad','$ 85.000','10 %',chip("Falta que acepte","reloj","amarillo")))}
     <div role="radiogroup" aria-label="Cómo cobra cada uno" style="display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 15px">¿Cómo cobra cada uno?</strong>
       <div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px"><span role="radio" aria-checked="true" style="padding: 10px 12px; border-radius: 16px; border: 2px solid {AZUL}; background: {TINTE}; color: {HONDO}; font-size: 13px; font-weight: 800">Cada uno le cobra su parte a Martín</span><span role="radio" aria-checked="false" style="padding: 10px 12px; border-radius: 16px; border: 2px solid {BORDE}; font-size: 13px; font-weight: 800">Cobrás vos y repartís por fuera</span></div>
@@ -180,7 +180,7 @@ guardar('F-Reparto.dc.html','Equipo · Reparto del pago',cuerpo)
 def msg(k, t, hora, mio=False, con_nombre=True):
     if mio:
         return f'<div style="align-self: flex-end; max-width: 78%; padding: 10px 14px; background: {AZUL}; color: #FFFFFF; border-radius: 20px 20px 6px 20px; font-size: 15px">{t}<span style="display: block; margin-top: 2px; font-size: 11px; opacity: 0.75; text-align: right">{hora}</span></div>'
-    n=f'<span style="font-size: 12px; font-weight: 800; color: {GENTE[k][3] if GENTE[k][2] not in (AMARILLO,"#F6D7A7") else TINTA}">{nombre(k)}</span>' if con_nombre else ''
+    n=f'<span style="font-size: 12px; font-weight: 800; color: {GENTE[k][2] if GENTE[k][3]=="#FFFFFF" else (TINTA if GENTE[k][2] in (AMARILLO,"#F6D7A7") else GENTE[k][3])}">{nombre(k)}</span>' if con_nombre else ''
     return f'<div style="align-self: flex-start; display: flex; gap: 8px; align-items: flex-end; max-width: 86%">{avatar(k,30)}<div style="padding: 8px 14px 10px; background: {MOSAICO}; border-radius: 20px 20px 20px 6px; font-size: 15px; display: flex; flex-direction: column; gap: 2px">{n}<span>{t}</span><span style="font-size: 11px; color: {SUAVE}; text-align: right">{hora}</span></div></div>'
 def sistema(t, ic='usuario2'):
     return f'<span style="align-self: center; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #F6F7F9; border: 1px solid {BORDE}; font-size: 12px; color: {SUAVE}">{svg(IC[ic],SUAVE,14)}{t}</span>'
@@ -221,7 +221,7 @@ def opcion_env(ic, t, sub, href, fondo=TINTE, color=AZUL):
 cuerpo = '  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(14,29,54,0.45)"></div>\n' + hoja(f'''
     <h1 style="margin: 0; {TIT}; font-size: 26px">Mandar en el {marcador("chat")}</h1>
     <div style="display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px">
-      {opcion_env('ticket','Presupuesto','Desde una plantilla o el Taller','H0-Presupuesto.dc.html',AZUL,'#FFFFFF').replace(f'color: {TINTA}','color: #FFFFFF').replace(f'color: {SUAVE}','color: #E3ECFA')}
+      {opcion_env('ticket','Presupuesto','Desde una plantilla o el Taller','H0-Presupuesto.dc.html',AZUL,'#FFFFFF').replace(f'color: {TINTA}','color: #FFFFFF').replace(f'color: {SUAVE}','color: #F0F5FD')}
       {opcion_env('obra','Propuesta de obra','Etapas, jornadas y montos','F-PropuestaObra.dc.html')}
       {opcion_env('caja','Repuestos para aprobar','El cliente los aprueba ahí mismo','F-ObraRepuesto.dc.html')}
       {opcion_env('agenda','Cambio de fecha','Propone otro día u horario','F-Fecha.dc.html')}
@@ -262,7 +262,7 @@ guardar('F-Mensajes.dc.html','Mensajes · Lista',cuerpo)
 
 # ── Cuenta premium, con los azules de la marca ─────────────────────
 def stat(v, t):
-    return f'<div style="padding: 10px 12px; border-radius: 16px; background: rgba(255,255,255,0.14); display: flex; flex-direction: column"><strong style="{TIT}; font-size: 20px">{v}</strong><span style="font-size: 11px; color: #DCE7F8; font-weight: 700">{t}</span></div>'
+    return f'<div style="padding: 10px 12px; border-radius: 16px; background: rgba(255,255,255,0.14); display: flex; flex-direction: column"><strong style="{TIT}; font-size: 20px">{v}</strong><span style="font-size: 11px; color: #F0F5FD; font-weight: 700">{t}</span></div>'
 def tile(ic, t, v, sub, href, fondo, color, base):
     return f'<a href="{href}" style="padding: 14px; border-radius: 22px; background: {fondo}; color: {color}; text-decoration: none; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 4px 0 {base}">{svg(IC[ic],color,24)}<strong style="font-size: 14px; margin-top: 4px">{t}</strong><span style="{TIT}; font-size: 18px">{v}</span><span style="font-size: 11px; opacity: 0.8">{sub}</span></a>'
 cuerpo = f'''  <section style="position: absolute; top: 0; left: 0; right: 0; padding: 22px 20px 20px; background: {AZUL}; border-radius: 0 0 34px 34px; color: #FFFFFF; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 12px 30px -16px rgba(14,29,54,0.55)">

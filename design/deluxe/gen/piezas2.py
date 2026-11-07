@@ -139,7 +139,7 @@ def calendario(seleccionado, hoy=17, ocupados=(), marcados=(), pasado_hasta=16):
         elif d==hoy:
             est=f'background: #FFFFFF; box-shadow: inset 0 0 0 2px {NARANJA}; font-weight: 800'
         elif d<=pasado_hasta:
-            est=f'color: #B5BCC8'
+            est=f'color: #56627A'
         elif d in ocupados:
             est=f'background: {MOSAICO}; color: {SUAVE}'
         else:
@@ -179,7 +179,7 @@ GENTE = {
 def avatar(k, tam=44, borde=False):
     ini,_,f,c = GENTE[k]
     b='box-shadow: 0 0 0 3px #FFFFFF;' if borde else ''
-    return f'<span aria-hidden="true" style="width: {tam}px; height: {tam}px; flex: none; border-radius: 50%; background: {f}; color: {c}; display: inline-flex; align-items: center; justify-content: center; font-family: \'Archivo\', sans-serif; font-weight: 900; font-stretch: 112%; font-size: {int(tam*0.36)}px; {b}">{ini}</span>'
+    return f'<span aria-hidden="true" style="width: {tam}px; height: {tam}px; flex: none; border-radius: 50%; background: {f}; color: {c}; display: inline-flex; align-items: center; justify-content: center; font-family: \'Archivo\', sans-serif; font-weight: 900; font-stretch: 112%; font-size: {max(11,int(tam*0.36))}px; {b}">{ini}</span>'
 def avatares(ks, tam=30):
     return '<span style="display: inline-flex">'+''.join(f'<span style="margin-left: {0 if i==0 else -10}px">{avatar(k,tam,True)}</span>' for i,k in enumerate(ks))+'</span>'
 def nombre(k): return GENTE[k][1]
@@ -188,5 +188,5 @@ def tabs(items, activa):
     for t,href in items:
         on=t.split(' ·')[0]==activa
         s=f'background: #FFFFFF; color: {TINTA}; box-shadow: {ELEV1}' if on else f'color: {SUAVE}'
-        out.append(f'<a href="{href}"{" aria-current=\"page\"" if on else ""} style="flex: 1; min-height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; text-decoration: none; {s}">{t}</a>')
+        out.append(f'<a href="{href}"{" aria-current=\"page\"" if on else ""} style="flex: 1; min-height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; text-decoration: none; {s}">{t}</a>')
     return f'<nav aria-label="Secciones de la obra" style="display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: {MOSAICO}">{"".join(out)}</nav>'

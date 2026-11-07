@@ -93,13 +93,13 @@ casillas=''.join(f'<span style="height: 64px; border-radius: 18px; background: {
 cuerpo = cabecera_ilustrada('sobre','D6-Acceso.dc.html') + contenido(f'''
     <div style="text-align: center; display: flex; flex-direction: column; gap: 4px">{etiqueta("PASO 1 DE 2 · CÓDIGO")}<h1 style="margin: 0; {TIT}; font-size: 32px; line-height: 1">Revisá tu {marcador("email")}</h1><span style="font-size: 14px; color: {TEXTO}">Mandamos 6 números a especialista@example.test</span></div>
     <div role="group" aria-label="Código de 6 dígitos" style="display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 8px">{casillas}</div>
-    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px"><span style="color: {SUAVE}">¿No llegó? Pedí otro en 0:42</span><a href="D6-Acceso.dc.html" style="font-weight: 800; text-decoration: none">Probar con SMS</a></div>
+    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px"><span style="color: {SUAVE}">¿No llegó? Pedí otro en 0:42</span><a href="D6-Acceso.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; font-weight: 800; text-decoration: none">Probar con SMS</a></div>
     <div style="display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 16px; background: {TINTE}">{svg(IC['escudo'],HONDO,20)}<span style="font-size: 13px; color: {HONDO}"><strong>Paso 2:</strong> como activaste la app autenticadora, después te pedimos su código.</span></div>''', top=268) + '\n' + accion_fija('Seguir','D6-TOTP.dc.html')
 guardar('D6-Codigo.dc.html','Acceso · Código',cuerpo)
 
 # Seguridad: activar una segunda verificación (MFA), opcional.
 cuerpo = barra_compacta('Seguridad','F-Cuenta.dc.html') + contenido(f'''
-    <div style="padding: 18px; border-radius: 26px; background: {AZUL}; color: #FFFFFF; box-shadow: 0 5px 0 {HONDO}; display: flex; gap: 14px; align-items: center">{mosaico_ic('escudo',60,fondo='rgba(255,255,255,0.18)',color='#FFFFFF',radio=20,iconsize=30)}<span style="display: flex; flex-direction: column; gap: 4px"><strong style="{TIT}; font-size: 22px; line-height: 1.05">Segunda verificación</strong><span style="font-size: 13px; color: #E3ECFA">Opcional. Además del código, te pedimos otra prueba al entrar desde un teléfono nuevo.</span></span></div>
+    <div style="padding: 18px; border-radius: 26px; background: {AZUL}; color: #FFFFFF; box-shadow: 0 5px 0 {HONDO}; display: flex; gap: 14px; align-items: center">{mosaico_ic('escudo',60,fondo='rgba(255,255,255,0.18)',color='#FFFFFF',radio=20,iconsize=30)}<span style="display: flex; flex-direction: column; gap: 4px"><strong style="{TIT}; font-size: 22px; line-height: 1.05">Segunda verificación</strong><span style="font-size: 13px; color: #F0F5FD">Opcional. Además del código, te pedimos otra prueba al entrar desde un teléfono nuevo.</span></span></div>
     {metodo('llave2','App autenticadora','Google Authenticator, Microsoft o la que uses · sin señal','D6-TOTP.dc.html',True,chip("Recomendada","estrella","amarillo"))}
     {metodo('telefono','SMS al teléfono','Al que termina en 4521','D6-Seguridad.dc.html')}
     {metodo('sobre','Email','A especialista@example.test','D6-Seguridad.dc.html')}
@@ -142,7 +142,7 @@ reg(2,'¿Dónde ','vivís?','Para calcular distancias y verificar tu identidad. 
     'Seguir','RG-3.dc.html')
 def rubro(t, ic, on=False, req=False):
     est=f'background: {AZUL}; color: #FFFFFF; box-shadow: 0 4px 0 {HONDO}' if on else f'background: {MOSAICO}; color: {TINTA}'
-    r=f'<span style="align-self: flex-start; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; background: {AMARILLO}; color: {TINTA}">Pide matrícula</span>' if req else '<span style="height: 16px"></span>'
+    r=f'<span style="align-self: flex-start; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 6px; background: {AMARILLO}; color: {TINTA}">Pide matrícula</span>' if req else '<span style="height: 16px"></span>'
     chk=f'<span style="position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center">{svg(IC["check"],AZUL,14,3)}</span>' if on else ''
     return f'<span style="position: relative; padding: 14px; border-radius: 22px; {est}; display: flex; flex-direction: column; gap: 8px; min-height: 112px; box-sizing: border-box">{chk}{svg(IC[ic],"#FFFFFF" if on else TINTA,28)}<strong style="font-size: 15px">{t}</strong>{r}</span>'
 reg(3,'¿En qué ','trabajás?','Elegí uno o más. Podés sumar otros después.',

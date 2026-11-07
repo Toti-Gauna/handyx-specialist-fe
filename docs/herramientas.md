@@ -89,6 +89,11 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
 
 ### Fase H0 · Base común y Modo trabajo — Opus 5.5 / xhigh
 - ✔ **H0.1 Base del Taller:** grilla por oficio, motor de calculadoras, nivel con el giroscopio.
+- **H0.1b Herramientas para todos los oficios** (pedido de Ignacio del 08/11): **medir con la cámara** (AR, ± 1 cm
+  aproximado; WebXR en Android, en iPhone con tarjeta de referencia), **escanear en 3D** (30 fotos alrededor → modelo
+  con medidas, para el presupuesto o el chat; dónde se procesa queda por decidir: en el teléfono o, con permiso, en el
+  servidor de Handyx, siempre sin ubicación), **nivel, plomada y ángulos** con el giroscopio, linterna, lupa y
+  conversor de unidades. Después, las de cada oficio (Electricidad primero).
 - **H0.2 Presupuestador y lista de precios** (Jobber, Housecall Pro, presupuestadores de corralones): mano de obra,
   materiales y margen; plantillas, versiones y vigencia; lo del Taller pasa con un toque. **Se manda directo por el
   chat** (sin pantalla de vista previa, pedido de Ignacio del 08/11). Cada material se agrega con **precio fijo** (se
@@ -170,16 +175,29 @@ Pedido de Ignacio del 08/11/2026. Diseño en las filas «Obras», «Obras en equ
   herramientas, seguridad, limpieza y adhesivos; subcategorías, variantes (medida, presentación), buscador, lo del
   presupuesto y la obra ya elegido, y un pedido único agrupado por trabajo con las casillas de gasto y cobro. Primero
   con datos simulados; después con las listas reales que se les piden a las ferreterías.
+- **R.0b Retiro:** QR a pantalla completa con brillo al máximo, que el ferretero escanea con su app o con el panel;
+  y **lista para el mostrador** con letra grande, para mostrar o leer en voz alta (en el teléfono).
 - **R.1 Flujo simulado:** pedido desde el presupuesto, el tablero, el Modo trabajo o a mano; mapa de ferreterías
   ficticias (marcadas «Simulación») con horario y distancia; estados enviado → confirmado con precios → listo para
   retirar → retirado (o cancelado); reemplazos sugeridos; código QR de retiro; el gasto queda registrado y, si
   corresponde, como adicional del trabajo. El Panel de prueba hace de ferretería.
-- **R.2 Panel de ferretería y backend:** pantalla en el portal interno (ver pedidos, confirmar precios, marcar
-  «listo»); contrato, esquema y endpoints.
+- **R.2 Handyx Ferreterías (panel web + app del ferretero) y backend:** alta de la ferretería (datos y CUIT, dirección
+  y horarios, cómo entrega, lista de precios, equipo con roles), inicio del día con los pedidos por estado (nuevos,
+  preparando, listos, retirados), pedido con stock, precio y reemplazos para confirmar, escanear el QR del profesional,
+  entrega tildando ítems y cobro en el mostrador, catálogo y precios (categorías, stock, visibilidad, suba en %,
+  precios viejos), **importar la lista** (archivo, columnas, revisión, publicar) y métricas (pedidos, lo más pedido,
+  sugerencias de stock). En el teléfono del ferretero: escanear y preparar. La venta la cobra la ferretería; Handyx no
+  se queda con nada de la venta (condiciones comerciales a definir). Contrato, esquema y endpoints.
 - **R.3 Piloto real** con ferreterías aliadas de Mar del Plata.
 - **3D nativo:** bolsa o caja que se llena con cada ítem confirmado; ticket de retiro que se da vuelta al quedar listo.
 
 ### Fase G · Camino Handyx (gamificación) — Opus 5.5 / xhigh
+- **G.0 Bienvenida:** al quedar verificado, **kit de bienvenida**: remera Handyx (talle) y **manual de uso** impreso y
+  en la app (6 capítulos cortos; leerlo da una insignia).
+- **G.0b Mini caminos:** además del camino de trabajos verificados, caminos chicos por **cobros verificados**
+  ($ 50.000 → tornillos, $ 100.000 → martillo, $ 250.000 → destornilladores…, montos en borrador), por **oficio** y
+  por buenas prácticas; cada uno con su barra y su premio. **Áreas** (taller, obra, ciudad) quedan como concepto
+  para más adelante.
 - **G.1 Reglas:** progreso por trabajos verificados y monto verificado; hitos y premios por oficio; antifraude (tope por
   cliente por mes, monto mínimo, revisión de Operations antes de entregar); lógica pura con pruebas.
 - **G.2 El camino** (estilo Duolingo): sendero por estaciones, los Handys acompañan, barra «te faltan N trabajos

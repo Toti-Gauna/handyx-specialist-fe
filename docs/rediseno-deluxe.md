@@ -228,3 +228,17 @@ Carla Ibáñez (clientes), Sofía Ruiz, Diego Herrera y Pablo Vega (profesionale
   albañilería, herramientas, seguridad, limpieza y adhesivos), variantes y un pedido único.
 - 14 flujos en total, con los nuevos de tu día, cierre del trabajo, equipamiento y ferretería.
 - **Fuente del lienzo en `design/deluxe/`** (pantallas, `canvas.json` y generadores), lista para pasar a Figma.
+
+## 12. Quinta vuelta: ferretería completa, camino, taller y revisión UX/UI (08/11/2026)
+
+- **Ferretería:** QR a pantalla completa (brillo al máximo) y lista grande para el mostrador o en voz alta. **Panel
+  web del ferretero** completo (alta, inicio por estado, pedido con stock y reemplazos, escanear, entrega, catálogo,
+  importar lista, métricas) y app del ferretero en el teléfono (escanear y preparar). Sirve para desarrollar y para el
+  pitch.
+- **Camino Handyx:** inicio del camino con el kit de bienvenida (remera y manual), mini caminos (trabajos, cobros
+  verificados, oficio), manual de uso, mini camino por cobros con hitos y el concepto de áreas para más adelante.
+- **Tu taller:** herramientas para todos (medir con AR, escanear en 3D, nivel, plomada, linterna, conversor) y aparte
+  las del oficio (Electricidad con tablero 3D premium y la vista en la pared).
+- **Flujos:** 17 en total, con «Mapa de la app» primero, panel del ferretero, camino y taller.
+- **Revisión UX/UI** de todo (`docs/revision-ux.md`): 0 errores de accesibilidad, 0 áreas táctiles chicas, 0 textos
+  chicos; el tablero «Revisión UX/UI» está arriba de todo en el lienzo.

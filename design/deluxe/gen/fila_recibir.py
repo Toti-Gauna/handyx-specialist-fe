@@ -31,7 +31,7 @@ cuerpo = isla('Nuevo pedido urgente') + '\n' + mapa(alto=300, zona=(215,170,60),
     <div>{info}</div>
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 18px; background: {TINTE}"><span style="font-size: 13px; font-weight: 700; color: {HONDO}">Handyx sugiere</span><span style="{TIT}; font-size: 24px">$ 45.000</span></div>''', 230) + '\n' + acciones_fijas(
  f'<div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px">{boton2("Otra fecha","F-Fecha.dc.html","agenda")}{boton("Cotizar","F-Precio.dc.html",alto=52)}</div>',
- f'<a href="F-Inicio.dc.html" style="text-align: center; font-size: 14px; font-weight: 800; color: {SUAVE}; text-decoration: none; min-height: 32px; display: flex; align-items: center; justify-content: center">Ahora no · no tiene ninguna consecuencia</a>')
+ f'<a href="F-Inicio.dc.html" style="text-align: center; font-size: 14px; font-weight: 800; color: {SUAVE}; text-decoration: none; min-height: 44px; display: flex; align-items: center; justify-content: center">Ahora no · no tiene ninguna consecuencia</a>')
 guardar('F-Pedido.dc.html','Núcleo · Pedido entrante',cuerpo)
 
 # Tu precio con una cinta métrica: se desliza y marca el sugerido.
@@ -46,7 +46,7 @@ for i in range(0,41):
 cinta=f'''<div style="position: relative; height: 104px">
       <div role="slider" aria-label="Tu precio" aria-valuemin="0" aria-valuenow="47000" aria-valuetext="$ 47.000" tabindex="0" style="position: absolute; left: -16px; right: -16px; top: 20px; height: 64px; background: {AMARILLO}; box-shadow: inset 0 -4px 0 #D8D36A, {ELEV1}; overflow: hidden">
         <div style="position: absolute; top: 0; left: {195-14*25}px; width: 600px; height: 64px">{''.join(marcas)}</div>
-        <span style="position: absolute; left: {195-14*25+14*20-28}px; top: 54px; padding: 1px 6px; border-radius: 6px; background: {AZUL}; color: #FFFFFF; font-size: 10px; font-weight: 800">sugerido</span>
+        <span style="position: absolute; left: {195-14*25+14*20-28}px; top: 54px; padding: 1px 6px; border-radius: 6px; background: {AZUL}; color: #FFFFFF; font-size: 11px; font-weight: 800">sugerido</span>
       </div>
       <span aria-hidden="true" style="position: absolute; left: 50%; top: 4px; margin-left: -9px; width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 14px solid {AZUL}"></span>
       <span aria-hidden="true" style="position: absolute; left: 50%; top: 16px; margin-left: -1.5px; width: 3px; height: 72px; background: {AZUL}"></span>
@@ -57,7 +57,7 @@ def opcion(t, on=False):
     return f'<button style="min-height: 44px; padding: 0 12px; border-radius: 14px; border: 0; {est}; font-weight: 800; font-size: 14px">{t}</button>'
 def interr(t, sub, on):
     pista=AZUL if on else '#C9CFDA'; lado='right: 3px' if on else 'left: 3px'
-    return f'<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid {BORDE}"><span style="display: flex; flex-direction: column"><strong style="font-size: 15px">{t}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span></span><span role="switch" aria-checked="{str(on).lower()}" style="width: 50px; height: 30px; flex: none; border-radius: 15px; background: {pista}; position: relative"><span style="position: absolute; top: 3px; {lado}; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; box-shadow: {ELEV1}"></span></span></div>'
+    return f'<div role="switch" aria-checked="{str(on).lower()}" aria-label="{t}" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 10px 0; border-top: 1px solid {BORDE}"><span style="display: flex; flex-direction: column"><strong style="font-size: 15px">{t}</strong><span style="font-size: 12px; color: {SUAVE}">{sub}</span></span><span aria-hidden="true" style="width: 50px; height: 30px; flex: none; border-radius: 15px; background: {pista}; position: relative"><span style="position: absolute; top: 3px; {lado}; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; box-shadow: {ELEV1}"></span></span></div>'
 cuerpo = barra_compacta('Tu precio','F-Pedido.dc.html',sub='Paso 1 de 2') + contenido(f'''
     {tarjeta(resumen)}
     <div style="display: flex; flex-direction: column; align-items: center; gap: 2px">
@@ -74,7 +74,7 @@ guardar('F-Precio.dc.html','Núcleo · Tu precio',cuerpo)
 # Proponer fecha en el calendario.
 def franja_h(t, est='libre'):
     if est=='elegida': s=f'background: {AZUL}; color: #FFFFFF; box-shadow: 0 3px 0 {HONDO}'
-    elif est=='ocupada': s=f'background: #F6F7F9; color: #9AA3B2; text-decoration: line-through'
+    elif est=='ocupada': s=f'background: #F6F7F9; color: #56627A; text-decoration: line-through'
     else: s=f'background: {MOSAICO}; color: {TEXTO}'
     return f'<button style="min-height: 46px; border-radius: 14px; border: 0; {s}; font-weight: 800; font-size: 14px">{t}</button>'
 cuerpo = barra_compacta('¿Cuándo vas?','F-Precio.dc.html',sub='Paso 2 de 2') + contenido(f'''
@@ -101,7 +101,7 @@ cuerpo = '  <div aria-hidden="true" style="position: absolute; inset: 0; backgro
     {etiqueta("REVISÁ ANTES DE ENVIAR")}
     <h1 style="margin: 0; {TIT}; font-size: 30px; line-height: 1">Tu {marcador("propuesta")}</h1>
     {tarjeta(res)}
-    <p style="margin: 0; font-size: 13px; color: {SUAVE}">El cliente puede aceptarla, pedirte otro precio o elegir otro día. Hasta que acepte, no es un trabajo agendado.</p>''', 300) + '\n' + acciones_fijas(boton('Enviar propuesta de $ 47.000','F-Enviada.dc.html'), f'<a href="F-Precio.dc.html" style="text-align: center; font-size: 14px; font-weight: 800; text-decoration: none; min-height: 32px; display: flex; align-items: center; justify-content: center">Cambiar algo</a>')
+    <p style="margin: 0; font-size: 13px; color: {SUAVE}">El cliente puede aceptarla, pedirte otro precio o elegir otro día. Hasta que acepte, no es un trabajo agendado.</p>''', 300) + '\n' + acciones_fijas(boton('Enviar propuesta de $ 47.000','F-Enviada.dc.html'), f'<a href="F-Precio.dc.html" style="text-align: center; font-size: 14px; font-weight: 800; text-decoration: none; min-height: 44px; display: flex; align-items: center; justify-content: center">Cambiar algo</a>')
 guardar('F-Revisar.dc.html','Núcleo · Revisar y enviar',cuerpo)
 
 # Propuesta enviada.

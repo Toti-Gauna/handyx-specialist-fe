@@ -101,7 +101,8 @@ def op(t, on=False):
     s=f'background: {AZUL}; color: #FFFFFF; box-shadow: 0 3px 0 {HONDO}' if on else f'background: {MOSAICO}; color: {TEXTO}'
     return f'<button style="min-height: 46px; min-width: 52px; padding: 0 12px; border-radius: 14px; border: 0; {s}; font-weight: 800">{t}</button>'
 def color(c, on=False):
-    return f'<span role="radio" aria-checked="{str(on).lower()}" style="width: 46px; height: 46px; border-radius: 14px; background: {c}; box-shadow: {"0 0 0 3px #FFFFFF, 0 0 0 5px "+AZUL if on else "inset 0 0 0 1px "+BORDE}"></span>'
+    nom={AZUL:"Azul",NOCHE:"Azul noche","#FFFFFF":"Blanca"}.get(c,"Color")
+    return f'<span role="radio" aria-checked="{str(on).lower()}" aria-label="{nom}" style="width: 46px; height: 46px; border-radius: 14px; background: {c}; box-shadow: {"0 0 0 3px #FFFFFF, 0 0 0 5px "+AZUL if on else "inset 0 0 0 1px "+BORDE}"></span>'
 cuerpo = barra_compacta('Canjear','G-Vitrina.dc.html',sub='Gorra Handyx') + contenido(f'''
     <div style="height: 150px; border-radius: 26px; background: {MOSAICO}; display: flex; align-items: center; justify-content: center"><img src="{BLOB['llave']}" alt="" aria-hidden="true" style="width: 100px; height: 110px; object-fit: contain"></div>
     <div style="display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 15px">Color</strong><div role="radiogroup" aria-label="Color" style="display: flex; gap: 10px">{color(AZUL,True)}{color(NOCHE)}{color('#FFFFFF')}</div></div>

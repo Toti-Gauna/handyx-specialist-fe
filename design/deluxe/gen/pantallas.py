@@ -13,7 +13,7 @@ inicio=f'''  <div aria-hidden="true" style="position: absolute; inset: 0; backgr
     {mapa}
     <div style="position: absolute; top: 0; bottom: 0; left: 312px; width: 8px; background: #EFE8D8"></div>
     <div style="position: absolute; top: 0; bottom: 0; left: 320px; right: 0; background: #E8EDF5"></div>
-    <div style="position: absolute; top: 250px; left: 362px; transform: rotate(90deg); transform-origin: left top; font-size: 10px; font-weight: 800; letter-spacing: 3px; color: #A9B4C8; white-space: nowrap">MAR ARGENTINO</div>
+    <div style="position: absolute; top: 250px; left: 362px; transform: rotate(90deg); transform-origin: left top; font-size: 11px; font-weight: 800; letter-spacing: 3px; color: #A9B4C8; white-space: nowrap">MAR ARGENTINO</div>
     <div style="position: absolute; top: 352px; left: 40px; font-size: 11px; font-weight: 800; letter-spacing: 3px; color: #A9B0BC">LA PERLA</div>
     <div style="position: absolute; top: 190px; left: 160px; width: 110px; height: 110px; border-radius: 50%; background: rgba(31,87,168,0.10); border: 2px dashed {AZUL}"></div>
     <div style="position: absolute; top: 318px; left: 86px; width: 18px; height: 18px; border-radius: 50%; background: {AZUL}; border: 3px solid #FFFFFF; box-shadow: 0 0 0 10px rgba(31,87,168,0.16)"></div>
@@ -97,11 +97,11 @@ def dia(nombre, num, estado):
     if estado=='hecha':
         est=f'background: {AZUL}; color: #FFFFFF'; pie=svg(IC['check'],'#FFFFFF',14,3)
     elif estado=='hoy':
-        est=f'background: #FFFFFF; color: {TINTA}; box-shadow: inset 0 0 0 3px {NARANJA}'; pie='<span style="font-size: 10px; font-weight: 800">Hoy</span>'
+        est=f'background: #FFFFFF; color: {TINTA}; box-shadow: inset 0 0 0 3px {NARANJA}'; pie='<span style="font-size: 11px; font-weight: 800">Hoy</span>'
     else:
-        est=f'background: {MOSAICO}; color: {TEXTO}'; pie='<span style="font-size: 10px">&nbsp;</span>'
+        est=f'background: {MOSAICO}; color: {TEXTO}'; pie='<span style="font-size: 11px">&nbsp;</span>'
     actual=' aria-current="date"' if estado=='hoy' else ''
-    return f'<li{actual} style="padding: 8px 0; border-radius: 16px; {est}; display: flex; flex-direction: column; align-items: center; gap: 1px"><span style="font-size: 10px; font-weight: 800">{nombre}</span><strong style="{TIT}; font-size: 17px">{num}</strong>{pie}</li>'
+    return f'<li{actual} style="padding: 8px 0; border-radius: 16px; {est}; display: flex; flex-direction: column; align-items: center; gap: 1px"><span style="font-size: 11px; font-weight: 800">{nombre}</span><strong style="{TIT}; font-size: 17px">{num}</strong>{pie}</li>'
 dias=''.join([dia('JUE','12','hecha'),dia('VIE','13','hecha'),dia('MAR','17','hoy'),dia('MIÉ','18','falta'),dia('JUE','19','falta'),dia('VIE','20','falta')])
 def dato(t,v,color=TINTA):
     return f'<li style="padding: 12px 14px; border-radius: 20px; background: {MOSAICO}; display: flex; flex-direction: column"><span style="font-size: 12px; font-weight: 700; color: {SUAVE}">{t}</span><strong style="{TIT}; font-size: 19px; color: {color}">{v}</strong></li>'
@@ -149,7 +149,7 @@ ingresos=f'''{barra_compacta("Tus ingresos","F-Cuenta.dc.html")}
     <div style="padding: 18px; border-radius: 26px; background: {AZUL}; color: #FFFFFF; box-shadow: 0 5px 0 {HONDO}, {ELEV1}; display: flex; flex-direction: column; gap: 6px">
       <div style="display: flex; justify-content: space-between; align-items: center">{etiqueta("NETO · LO QUE TE QUEDA", "#CFE0FA")}<button style="min-height: 36px; padding: 0 12px; border-radius: 12px; border: 0; background: rgba(255,255,255,0.18); color: #FFFFFF; font-weight: 800">Noviembre ▾</button></div>
       <span style="{TIT}; font-size: 52px; line-height: 1; letter-spacing: -1px; font-variant-numeric: tabular-nums">$ 239.500</span>
-      <span style="font-size: 14px; color: #E3ECFA">Bruto $ 320.000 · gastos $ 80.500</span>
+      <span style="font-size: 14px; color: #F0F5FD">Bruto $ 320.000 · gastos $ 80.500</span>
       <div role="img" aria-label="Del bruto: 75 % neto, 21 % materiales, 4 % combustible y viáticos" style="margin-top: 8px; height: 14px; border-radius: 7px; overflow: hidden; display: flex; background: #FFFFFF">
         <span style="width: 74.8%; background: #FFFFFF"></span><span style="width: 21.4%; background: {AMARILLO}"></span><span style="width: 3.8%; background: {NOCHE}"></span>
       </div>
