@@ -140,3 +140,37 @@ Tu precio y el regalo). La fila C queda como descartada.
 - **Se mantienen las ideas de contenido del §6:** Disponible y los pedidos solo en el Inicio con mapa, el apartado
   Obras con seguimiento día por día y Tus ingresos con bruto, gastos y neto.
 - Sin gradientes: el anillo usa cortes netos y el marcador amarillo es una sombra interna.
+
+## 8. Diseño completo de todas las fases (08/11/2026)
+
+Pedido de Ignacio: «armame todo el diseño de todo lo que queremos armar en todas las fases». El lienzo quedó con una
+fila por fase (50 pantallas) y las exploraciones de D.1 abajo, como descartadas. Ajustes de esta vuelta:
+
+- **Inicio:** solo la meta (Tu camino) y cuánto suma el pedido **cuando el trabajo se verifique** (un tramo amarillo en
+  la barra). El neto del mes se fue a **Tus ingresos**. Sin presión: nada baja si no lo toma, «Ahora no» no tiene
+  consecuencias y no hay cuentas regresivas del camino.
+- **Recibir un trabajo:** el aviso (isla) abre el **pedido entrante** como hoja sobre el mapa: zona aproximada y
+  distancia, horario pedido por el cliente, lo que cuenta, el sugerido y tres salidas: «Cotizar», «Otra fecha» y «Ahora
+  no». Nunca acepta solo.
+- **Cambiar el precio:** el monto grande con una **cinta métrica amarilla** que se desliza y marca el sugerido, atajos
+  (Sugerido, + $ 2.000, + $ 5.000, Escribir), «Incluye materiales» y garantía como interruptores, y lo que recibe.
+- **Nueva fecha:** «Voy en ese horario» o «Propongo otro»; **calendario del mes** con hoy en naranja y los días con
+  jornada de obra en gris; franjas del día con las ocupadas tachadas según la agenda. Es una propuesta: el cliente la
+  acepta o elige otra.
+- **Revisar y enviar** en una hoja con el resumen (precio, fecha, zona) y **propuesta enviada** con el Handy.
+
+| Fila                       | Pantallas                                                                                                                                                      |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Núcleo · recibir y cotizar | Inicio con mapa, Pedido entrante, Tu precio, Proponer fecha, Revisar y enviar, Propuesta enviada                                                               |
+| Núcleo · día a día (D.5)   | Trabajo agendado, Agenda, Tus obras, Obra día por día, Tus ingresos, Mensajes, Chat del pedido, Cuenta                                                         |
+| D.6 · resto                | Bienvenida, Acceso con código, Alta guiada, Avisos, Ayuda, Error con un Handy roto                                                                             |
+| H0                         | Presupuestador, Presupuesto en el chat, Lista de precios, Cargar gasto, Modo trabajo, Antes y después, Informe al cliente, Ruta del día, Stock de la camioneta |
+| R                          | Pedir repuestos, Ferreterías (simulación), Estado del pedido, Retiro con QR, Panel de la ferretería                                                            |
+| G                          | Camino, El regalo, Vitrina de premios, Canje, Insignias                                                                                                        |
+| H1                         | Portada del Taller, Cables, Tablero 3D, Informe eléctrico                                                                                                      |
+| H2–H6                      | Aire acondicionado, Plomería, Gas, Albañilería, Cerrajería (después del deploy)                                                                                |
+
+Todo con datos de prueba («Especialista De Prueba», «Cliente De Prueba», `especialista@example.test`, «Calle De Prueba
+123», ferreterías «Simulación»). Las piezas comunes (cabecera azul, barra compacta, barra de pestañas de vidrio,
+tarjeta con franja, mosaicos, pastillas, anillo, tira de jornadas, calendario, cinta de precio, hoja) son la base del
+kit v3 de D.2.

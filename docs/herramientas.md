@@ -71,7 +71,9 @@ profesional confirma. Sin proveedor autorizado, responde 503 y la app lo dice.
   premios (gorra, campera, herramientas por oficio), retocados, livianos y con versión AR.
 - **D.4 Base 3D nativa:** luces, materiales y entorno de la app; visor 3D con gestos; exportación a AR (Quick Look en
   iPhone, WebXR en Android).
-- **D.5 Pantallas núcleo:** Inicio con mapa (el único lugar con «Disponible» y los pedidos), pedidos, Tu precio,
+- **D.5 Pantallas núcleo** (diseño completo en `docs/rediseno-deluxe.md` §8): Inicio con mapa (el único lugar con
+  «Disponible» y los pedidos; solo la meta y cuánto suma el pedido al verificarse), pedido entrante, Tu precio con la
+  cinta, proponer fecha en el calendario,
   trabajo, el **apartado Obras** (pestaña propia: lista en curso, próximas y terminadas, y el seguimiento día por día
   con jornadas, etapa, diario y plata de la obra), **Tus ingresos** (bruto, gastos y neto del mes) y el Taller con el
   kit v3. Pestañas: Inicio · Obras · Agenda · Mensajes · Cuenta.

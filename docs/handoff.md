@@ -22,6 +22,8 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
   fondo sólido de respaldo). C quedó descartada, pero se mantienen sus ideas: Disponible y pedidos solo en el Inicio con
   mapa, apartado Obras y Tus ingresos con bruto y neto. Pendientes: capa propia o landing, y Meshy. **Próximo lote:
   D.2**, con el OK de Ignacio.
+- **Diseño completo (08/11):** 50 pantallas, una fila por fase, en el lienzo privado de D.1 (`docs/rediseno-deluxe.md`
+  §8). Inicio solo con la meta; el neto pasó a Tus ingresos; recibir, cotizar con la cinta y proponer fecha rediseñados.
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 
