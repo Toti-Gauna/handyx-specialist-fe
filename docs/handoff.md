@@ -49,7 +49,9 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
   llegás» en recorridos y flujos.
 - **Última pasada (08/11):** onboarding con ilustración propia, Disponible dentro de la cabecera, login con la
   ciudad, recorrido continuo, «Pedir ayuda» en las herramientas del Modo trabajo y obra nueva desde Obras
-  (`docs/rediseno-deluxe.md` §15). **Siguiente paso: D.2** (kit v3).
+  (`docs/rediseno-deluxe.md` §15).
+- **Plan por olas (08/11):** `docs/plan-olas.md` — 7 olas con lotes en paralelo, modelo y esfuerzo por lote y las
+  150 pantallas del lienzo asignadas. **Esperando el OK de Ignacio** para arrancar la ola 0.
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 

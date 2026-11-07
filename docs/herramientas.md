@@ -341,6 +341,9 @@ Schneider y Hager.
 
 ## 5. Orden
 
+**Propuesta del 08/11/2026: desarrollo por olas** (lotes en paralelo), en `docs/plan-olas.md`; si Ignacio la
+aprueba, reemplaza este orden.
+
 Orden acordado con Ignacio (08/11/2026): **H1** ✔ → **D** → **V** → **H0** → **O** → **R** → **G** → **Q**
 → **fase 6 · Deploy** del producto (`docs/plan.md`). **H2 a H6 quedan para después del deploy**: se desarrollan con el
 tiempo, un oficio por vez. Lo pendiente de la fase 4 (mapa base del 4.3 y revisión del 4.9) se cierra cuando se destrabe.
