@@ -17,6 +17,12 @@ export function CajaHerramientas(props: PropsIlustracion) {
         <Prisma x={-34} y={-12} w={68} d={26} h={22} tonos={TONOS_AZUL} />
       </Pieza>
       <Pieza>
+        {/* Tapa abierta hacia atrás, con la manija. */}
+        <Poli fill={PALETA.ventana} puntos={[[-34, -12, 22], [34, -12, 22], [34, -30, 44], [-34, -30, 44]]} />
+        <Poli fill="#D8D65E" puntos={[[34, -12, 22], [34, -30, 44], [34, -30, 47], [34, -12, 25]]} />
+        <Prisma x={-8} y={-31} w={16} d={3} h={4} z={44} tonos={TONOS_NOCHE} />
+      </Pieza>
+      <Pieza>
         {/* Destornillador: mango amarillo y vástago gris. */}
         <Prisma x={-24} y={-2} w={4} d={4} h={14} z={22} tonos={TONOS_GRIS} />
         <Prisma x={-25} y={-3} w={6} d={6} h={10} z={34} tonos={TONOS_AMARILLO} />
@@ -29,12 +35,6 @@ export function CajaHerramientas(props: PropsIlustracion) {
       <Pieza>
         {/* Cinta métrica. */}
         <Cilindro x={16} y={2} z={22} r={7} h={8} tono={PALETA.ventana} sombra="#D8D65E" tapa="#FBFBC8" />
-      </Pieza>
-      <Pieza>
-        {/* Tapa abierta hacia atrás, con la manija. */}
-        <Poli fill={PALETA.ventana} puntos={[[-34, -12, 22], [34, -12, 22], [34, -30, 44], [-34, -30, 44]]} />
-        <Poli fill="#D8D65E" puntos={[[34, -12, 22], [34, -30, 44], [34, -30, 47], [34, -12, 25]]} />
-        <Prisma x={-8} y={-31} w={16} d={3} h={4} z={44} tonos={TONOS_NOCHE} />
       </Pieza>
     </Lienzo>
   );

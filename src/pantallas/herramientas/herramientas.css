@@ -44,6 +44,10 @@
   flex: 1 1 9rem;
   min-width: 0;
 }
+.th-fila > .ui-boton-icono {
+  flex: none;
+  margin-bottom: 4px;
+}
 .th-tabla {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));

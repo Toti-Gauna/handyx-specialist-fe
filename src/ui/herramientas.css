@@ -529,6 +529,15 @@
   height: 100%;
   object-fit: cover;
 }
+/* La escena de la cámara simulada (vista previa) se ve entera. */
+.ui-camara__simulada {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ui-camara--claro .ui-disparador {
+  box-shadow: 0 0 0 6px var(--ui-tinte);
+}
 .ui-camara__arriba {
   position: relative;
   z-index: 2;
@@ -649,7 +658,7 @@
   padding: 8px;
   border: 2px solid transparent;
   border-radius: 18px;
-  background: rgb(255 255 255 / 0.13);
+  background: rgb(14 29 54 / 0.8);
   color: #fff;
   font: 800 var(--ui-texto-chico) / 1.2 var(--ui-fuente);
   text-align: center;
@@ -661,7 +670,9 @@
 }
 .ui-boton-oscuro--on {
   border-color: var(--ui-amarillo);
-  background: rgb(245 245 154 / 0.18);
+}
+.ui-pantalla-oscura .ui-boton-oscuro {
+  background: rgb(255 255 255 / 0.13);
 }
 .ui-boton-oscuro:disabled {
   opacity: 0.55;
@@ -832,7 +843,7 @@
   min-height: 132px;
   overflow: hidden;
   border-radius: 26px;
-  background: var(--ui-azul);
+  background: var(--ui-tinte);
 }
 .ui-portada-taller .ui-ilu {
   width: min(260px, 80%);
@@ -943,6 +954,7 @@
 }
 .ui-tarjeta-oscura h2 {
   margin: 0;
+  color: #fff;
   font-size: var(--ui-texto-base);
 }
 .ui-tarjeta-oscura .ui-campo__etiqueta,

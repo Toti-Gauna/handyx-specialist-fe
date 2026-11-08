@@ -45,7 +45,7 @@ const CODIGO = svg(`<rect width="390" height="844" fill="#8C7A64"/><rect x="55" 
 const ESCENAS = { medir: FOTO_MEDIR, escanear: ESCANEAR, lupa: LUPA, codigo: CODIGO } as const;
 
 function Escena({ tipo }: { tipo: keyof typeof ESCENAS }) {
-  return <img className="ui-camara__video" src={ESCENAS[tipo]} alt="" aria-hidden="true" />;
+  return <img className="ui-camara__simulada" src={ESCENAS[tipo]} alt="" aria-hidden="true" />;
 }
 
 /** La primera foto del escaneo, grande, para marcar la tarjeta (se dibuja en un lienzo: solo en el navegador). */

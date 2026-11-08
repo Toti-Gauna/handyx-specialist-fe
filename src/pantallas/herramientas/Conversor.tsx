@@ -77,7 +77,7 @@ export function Conversor() {
         valor={r === null || !Number.isFinite(r) ? '—' : mostrarNumero(r)}
         unidad={a?.corto ?? ''}
         lectura={r === null || !Number.isFinite(r) ? 'Sin resultado todavía.' : `${valor} ${de?.texto ?? ''} son ${mostrarNumero(r)} ${a?.texto ?? ''}.`}
-        detalle={n === null ? 'Escribí un valor.' : `${valor} ${de?.corto ?? ''} = ${r === null ? '—' : mostrarNumero(r)} ${a?.corto ?? ''}`}
+        detalle={n === null ? 'Escribí un valor.' : `${valor}${de?.corto === '"' ? '' : ' '}${de?.corto ?? ''} = ${r === null ? '—' : mostrarNumero(r)} ${a?.corto ?? ''}`}
       />
       {magnitud === 'largo' ? (
         <Tarjeta como="section" etiqueta="Medidas de caño en pulgadas">
