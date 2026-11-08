@@ -96,4 +96,12 @@ export const TRAZOS_LIENZO = {
   tornillo: '<path d="M9 3h6l-1 4h-4L9 3Z"/><path d="M12 7v13M9.5 10l5 1.5M9.5 13l5 1.5M9.5 16l5 1.5"/>',
   usuario2: '<circle cx="9" cy="8" r="3.5"/><path d="M2 20c1-3.5 3.5-5 7-5s6 1.5 7 5"/><path d="M16 4a3.5 3.5 0 0 1 0 7M18 15c2 .6 3.4 2.2 4 5"/>',
   wifi: '<path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><path d="M12 19h.01"/><path d="M3 3l18 18"/>',
+  // Sumados en el kit v3 (mismo estilo de línea).
+  menos: '<path d="M5 12h14"/>',
+  borrar: '<path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7 6-7Z"/><path d="M12 9l6 6M18 9l-6 6"/>',
+  centrar: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+  destino: '<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
+  cerrar: '<path d="M6 6l12 12M18 6L6 18"/>',
+  sonrisa: '<circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0M9 9.5h.01M15 9.5h.01"/>',
+  editado: '<path d="M4 20h4L19 9l-4-4L4 16v4Z"/>',
 } as const;

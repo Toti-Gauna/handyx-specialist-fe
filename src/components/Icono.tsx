@@ -1,6 +1,6 @@
 // Íconos de línea de la landing (Handy-landing-page-fe/src/render/iconos.ts), mismos trazos.
 // Son cadenas constantes del repo: no hay contenido de usuario en dangerouslySetInnerHTML.
-const trazos = {
+export const TRAZOS_LANDING = {
   casa: '<path d="M3 11 12 3l9 8"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
   usuario: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>',
   calendario: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M7.5 13h2M11 13h2M14.5 13h2M7.5 16.5h2M11 16.5h2"/>',
@@ -48,7 +48,7 @@ const trazos = {
   candado: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
 } as const;
 
-export type NombreIcono = keyof typeof trazos;
+export type NombreIcono = keyof typeof TRAZOS_LANDING;
 
 export function Icono({ nombre, className = 'icono' }: { nombre: NombreIcono; className?: string }) {
   return (
@@ -62,7 +62,7 @@ export function Icono({ nombre, className = 'icono' }: { nombre: NombreIcono; cl
       strokeLinejoin="round"
       aria-hidden="true"
       focusable="false"
-      dangerouslySetInnerHTML={{ __html: trazos[nombre] }}
+      dangerouslySetInnerHTML={{ __html: TRAZOS_LANDING[nombre] }}
     />
   );
 }
