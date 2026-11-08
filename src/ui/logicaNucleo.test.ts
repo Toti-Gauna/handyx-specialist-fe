@@ -20,7 +20,7 @@ import {
   textoSalida,
 } from './logicaNucleo.ts';
 
-const nb = (t: string) => t.replace(/ /g, ' ');
+const nb = (t: string) => t.replace(/\u00a0/g, ' ');
 
 describe('cinta de precio', () => {
   it('se mueve de a $ 500 y nunca baja de cero', () => {

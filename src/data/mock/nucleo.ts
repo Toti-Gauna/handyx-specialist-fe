@@ -96,7 +96,7 @@ export function destinosPrueba(): DestinoMapa[] {
   return [...barrios, ...localidades];
 }
 
-const centroDe = (zona: string): Punto => CENTROS_LOCALIDAD[zona] ?? barriosPrueba().find((b) => b.id === zona)?.centro ?? barriosPrueba()[0]!.centro;
+const centroDe = (zona: string): Punto => CENTROS_LOCALIDAD[zona] ?? barriosPrueba().find((b) => b.id === zona)?.centro ?? (barriosPrueba()[0]?.centro ?? { lat: -38.0005, lng: -57.547 });
 
 /**
  * Siembra lo del lote en el escenario habilitado: el trabajo de hoy de Lucía Ferreyra (con su chat y su cobro) y dos
