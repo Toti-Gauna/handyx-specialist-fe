@@ -291,9 +291,9 @@ function HojaHerramientas({ abierta, trabajoId, onCerrar, onNota }: { abierta: b
     <Hoja abierta={abierta} titulo="Herramientas" onCerrar={onCerrar}>
       <p className="mt-nota">Sin salir del trabajo: al volver, seguís donde estabas.</p>
       <div className="mt-herramientas">
-        <MosaicoHerramienta icono="nivel" titulo="Nivel" detalle="Con el giroscopio" href={RUTAS.tallerNivel.ruta} />
-        <MosaicoHerramienta icono="linterna" titulo="Linterna" detalle="En el Taller" href={RUTAS.taller.ruta} />
-        <MosaicoHerramienta icono="lupa" titulo="Lupa" detalle="En el Taller" href={RUTAS.taller.ruta} />
+        <MosaicoHerramienta icono="nivel" titulo="Nivel" detalle="Giroscopio" href={RUTAS.tallerNivel.ruta} />
+        <MosaicoHerramienta icono="linterna" titulo="Linterna" detalle="Flash" href={RUTAS.taller.ruta} />
+        <MosaicoHerramienta icono="lupa" titulo="Lupa" detalle="Cámara con zoom" href={RUTAS.taller.ruta} />
         <MosaicoHerramienta icono="regla" titulo="Medir" detalle="Con la cámara" href={RUTAS.taller.ruta} />
         <MosaicoHerramienta icono="rayo" titulo="Calculadoras" detalle="Del Taller" href={RUTAS.tallerConductores.ruta} />
         <MosaicoHerramienta icono="escaner" titulo="Código de barras" detalle="Sumar material" href={conId('trabajoAdicional', trabajoId)} />
