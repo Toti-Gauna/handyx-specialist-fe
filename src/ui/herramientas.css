@@ -874,3 +874,97 @@
   flex-direction: column;
   gap: 10px;
 }
+
+/* ── Plantilla oscura (T-Nivel) ───────────────────────── */
+.ui-pantalla-oscura {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--ui-noche);
+  color: #fff;
+}
+.ui-pantalla-oscura__titulo {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--ui-texto-base);
+  font-weight: 800;
+}
+.ui-pantalla-oscura__contenido {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16px var(--ui-gutter) calc(24px + env(safe-area-inset-bottom, 0px));
+}
+.ui-pantalla-oscura .ui-segmento {
+  background: rgb(255 255 255 / 0.1);
+}
+.ui-pantalla-oscura .ui-segmento__op {
+  color: #d5deee;
+}
+.ui-pantalla-oscura .ui-segmento__op--on {
+  background: #fff;
+  color: var(--ui-tinta);
+}
+.ui-pantalla-oscura .ui-segmento__op:has(input:focus-visible) {
+  outline-color: var(--ui-amarillo);
+}
+.ui-lectura {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  text-align: center;
+}
+.ui-lectura__valor {
+  font-family: var(--ui-titulos);
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.ui-lectura__texto {
+  color: #d5deee;
+  font-size: var(--ui-texto-base);
+}
+.ui-botones-oscuros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr));
+  gap: 8px;
+}
+.ui-tarjeta-oscura {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 24px;
+  background: rgb(255 255 255 / 0.08);
+}
+.ui-tarjeta-oscura h2 {
+  margin: 0;
+  font-size: var(--ui-texto-base);
+}
+.ui-tarjeta-oscura .ui-campo__etiqueta,
+.ui-tarjeta-oscura .ui-campo__ayuda {
+  color: #d5deee;
+}
+.ui-tarjeta-oscura p {
+  margin: 0;
+}
+
+/* ── Anillo de fotos del escaneo ──────────────────────── */
+.ui-anillo-fotos {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(320px, 86vw);
+  height: auto;
+  transform: translate(-50%, -42%);
+}
+.ui-anillo-fotos__hecha {
+  fill: var(--ui-amarillo);
+}
+.ui-anillo-fotos__falta {
+  fill: rgb(255 255 255 / 0.4);
+}

@@ -1,0 +1,212 @@
+/* Pantallas de las herramientas del teléfono (lote 2.4). Solo la disposición propia: las piezas están en el kit
+   (src/ui/herramientas.css). */
+.th-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.th-proximos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.th-proximos__titulo {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+}
+.th-proximos__lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.th-pie {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.th-columna {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.th-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+.th-fila > * {
+  flex: 1 1 9rem;
+  min-width: 0;
+}
+.th-tabla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.th-tabla > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--ui-mosaico);
+}
+.th-tabla dt {
+  font-weight: 900;
+}
+.th-tabla dd {
+  margin: 0;
+  color: var(--ui-texto);
+  white-space: nowrap;
+}
+/* Lupa: la imagen se agranda desde el centro (sin zoom de la cámara); con la linterna simulada, un círculo de luz plano. */
+.th-lupa {
+  --lupa: 1;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.th-lupa > * {
+  transform: scale(var(--lupa));
+  transform-origin: 50% 45%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .th-lupa > * {
+    transition: transform 0.25s ease-out;
+  }
+}
+.th-lupa--luz::after {
+  content: '';
+  position: absolute;
+  inset: 20% 8%;
+  border-radius: 50%;
+  background: rgb(245 245 154 / 0.3);
+  pointer-events: none;
+}
+
+/* ── Medir (T-Medir) ──────────────────────────────────── */
+.tm-portada {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+  border-radius: 26px;
+  background: var(--ui-tinte);
+}
+.tm-guia {
+  margin: 0;
+  color: var(--ui-texto);
+}
+.tm-disparo {
+  display: flex;
+  justify-content: center;
+}
+.tm-acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tm-acciones > .ui-boton {
+  flex: 1;
+}
+.tm-resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+}
+.tm-resumen__cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tm-resumen__cabeza h2 {
+  margin: 0;
+  font-family: var(--ui-titulos);
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+.tm-resumen__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding-left: 1.4em;
+}
+/* Capa encima de la cámara en la AR (dom-overlay): instrucciones arriba y el panel con los botones abajo. */
+.tm-capa--activa {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 14px calc(18px + env(safe-area-inset-bottom, 0px));
+}
+.tm-capa__arriba {
+  display: flex;
+  justify-content: flex-end;
+}
+.tm-capa__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 28px;
+  background: #fff;
+  color: var(--ui-tinta);
+}
+.tm-capa__panel p {
+  margin: 0;
+}
+
+/* ── Escanear (T-Escanear) ────────────────────────────── */
+.te-disparo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+.te-pasos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding-left: 1.4em;
+}
+.te-armando {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 24px;
+  background: var(--ui-tinte);
+}
+.te-armando h2,
+.te-armando p {
+  margin: 0;
+}
+.th-trabajos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.th-trabajos legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-weight: 800;
+}
