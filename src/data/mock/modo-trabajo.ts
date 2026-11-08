@@ -370,10 +370,15 @@ export function sembrarModoTrabajo(s: EstadoMock, T0: number, otros: { enviado: 
 
   const ex = extra(s);
   const foto = (n: number, momento: MomentoFoto, en: number) => ({ id: idFijo(n), url: fotoPrueba(momento), momento, tareaId: null, en: iso(en) });
-  const tareas = tareasIniciales(s, 'plomeria').map((x, i) => ({ ...x, texto: ['Cerrar la llave de paso y vaciar el depósito', 'Sacar el mecanismo viejo', 'Colocar el mecanismo nuevo', 'Probar sin pérdidas 10 minutos'][i] ?? x.texto, material: i === 2 ? 'mecanismo de descarga universal' : null }));
-  tareas[0] = { ...tareas[0]!, estado: 'hecha', hechaEn: iso(ayer17 + 15 * MIN), version: 1 };
-  tareas[1] = { ...tareas[1]!, estado: 'hecha', hechaEn: iso(ayer17 + 70 * MIN), version: 1 };
-  tareas[2] = { ...tareas[2]!, estado: 'en_curso', version: 1 };
+  const textos = ['Cerrar la llave de paso y vaciar el depósito', 'Sacar el mecanismo viejo', 'Colocar el mecanismo nuevo', 'Probar sin pérdidas 10 minutos'];
+  const tareas = tareasIniciales(s, 'plomeria').map((x, i) => ({
+    ...x,
+    texto: textos[i] ?? x.texto,
+    material: i === 2 ? 'mecanismo de descarga universal' : null,
+    estado: i < 2 ? ('hecha' as const) : i === 2 ? ('en_curso' as const) : ('pendiente' as const),
+    hechaEn: i < 2 ? iso(ayer17 + (i === 0 ? 15 : 70) * MIN) : null,
+    version: i < 3 ? 1 : 0,
+  }));
   ex.modos.set(ID_MODO.deposito, {
     estado: 'en_curso',
     tramos: [
@@ -487,7 +492,7 @@ export const modoTrabajo = (s: EstadoMock) => ({
     m.tareas.push(tarea);
     moverActual(m);
     m.version += 1;
-    return structuredClone(m.tareas.find((x) => x.id === tarea.id)!);
+    return structuredClone(tarea);
   },
 
   cambiarTarea(trabajoId: string, tareaId: string, cuerpo: unknown): Tarea {

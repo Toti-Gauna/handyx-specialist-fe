@@ -168,14 +168,15 @@ export function minutosDePasado(fin: string | null, ahoraMs: number): number {
 
 // ── Comparador antes y después ───────────────────────────────────────────────────────────────────
 
-/** Posición de la manija (0 a 100 %), con pasos de 5 por tecla y de 25 con Re Pág/Av Pág. */
-export function moverComparador(actual: number, tecla: string): number | null {
-  const pasos: Record<string, number> = { ArrowLeft: -5, ArrowDown: -5, ArrowRight: 5, ArrowUp: 5, PageDown: -25, PageUp: 25 };
-  if (tecla === 'Home') return 0;
-  if (tecla === 'End') return 100;
-  const p = pasos[tecla];
-  return p === undefined ? null : Math.max(0, Math.min(100, actual + p));
-}
-
 /** Lo que se lee de la manija: "Se ve 50 % del antes y 50 % del después". */
 export const textoComparador = (pos: number): string => `Se ve ${Math.round(pos)} % del antes y ${100 - Math.round(pos)} % del después`;
+
+// ── Textos del trabajo ───────────────────────────────────────────────────────────────────────────
+
+/** Título corto del trabajo para la cabecera: la primera frase de lo acordado, cortada en una palabra (≤ 40 letras). */
+export function tituloTrabajo(alcance: string, maximo = 40): string {
+  const frase = (alcance.split(/[.:;\n]/)[0] ?? alcance).trim();
+  if (frase.length <= maximo) return frase;
+  const corte = frase.slice(0, maximo + 1).lastIndexOf(' ');
+  return `${frase.slice(0, corte > 10 ? corte : maximo).trimEnd()}…`;
+}

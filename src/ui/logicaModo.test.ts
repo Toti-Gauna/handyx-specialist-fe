@@ -5,7 +5,6 @@ import {
   estadoContacto,
   loQueSigue,
   minutosDePasado,
-  moverComparador,
   progresoTareas,
   segmentosAvance,
   sumarDias,
@@ -18,6 +17,7 @@ import {
   textoReloj,
   textoTareas,
   tiempoTramos,
+  tituloTrabajo,
 } from './logicaModo.ts';
 
 const tarea = (id: string, orden: number, estado: Tarea['estado']): Tarea => ({
@@ -126,15 +126,14 @@ describe('contactos y agenda', () => {
 });
 
 describe('comparador', () => {
-  it('se mueve con el teclado entre 0 y 100', () => {
-    assert.equal(moverComparador(50, 'ArrowRight'), 55);
-    assert.equal(moverComparador(2, 'ArrowLeft'), 0);
-    assert.equal(moverComparador(90, 'PageUp'), 100);
-    assert.equal(moverComparador(50, 'Home'), 0);
-    assert.equal(moverComparador(50, 'End'), 100);
-    assert.equal(moverComparador(50, 'a'), null);
-  });
   it('dice cuánto se ve de cada foto', () => {
     assert.equal(textoComparador(30), 'Se ve 30 % del antes y 70 % del después');
+  });
+});
+
+describe('textos del trabajo', () => {
+  it('título corto: la primera frase, cortada en una palabra', () => {
+    assert.equal(tituloTrabajo('Cambio del cartucho. Incluye materiales.'), 'Cambio del cartucho');
+    assert.equal(tituloTrabajo('Cambio del cartucho de la canilla monocomando de la cocina. Incluye materiales.'), 'Cambio del cartucho de la canilla…');
   });
 });

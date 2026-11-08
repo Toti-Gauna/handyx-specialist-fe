@@ -88,7 +88,14 @@ function Formulario({ cobro, titulo, volver, recargar }: { cobro: Cobro; titulo:
         barra={<BarraCompacta titulo="Cobro informado" subtitulo={titulo} hrefVolver={volver} />}
         accion={
           <AccionFija>
-            <BotonEnlace href={RUTAS.inicio.ruta}>Volver al inicio</BotonEnlace>
+            {/* Lote 2.3: después del cobro, el informe del trabajo (H0-Informe). */}
+            {cobro.trabajoId ? (
+              <BotonEnlace icono="escudo" href={`${RUTAS.informeTrabajo.ruta}?id=${cobro.trabajoId}`}>
+                Armar el informe
+              </BotonEnlace>
+            ) : (
+              <BotonEnlace href={RUTAS.inicio.ruta}>Volver al inicio</BotonEnlace>
+            )}
           </AccionFija>
         }
       >
@@ -97,7 +104,7 @@ function Formulario({ cobro, titulo, volver, recargar }: { cobro: Cobro; titulo:
         </Chip>
         <Titulo nivel={2} antes="Informaste " marcado={textoCifra(listo.informado?.centavos ?? listo.monto.centavos)} tam="medio" />
         <p>{`Queda «informado por vos» hasta que ${nombre} lo confirma o se verifica el pago. Recién ahí suma a tu camino.`}</p>
-        <p className="nu-nota">El informe del trabajo (fotos, garantía y conformidad del cliente) llega con el Modo trabajo.</p>
+        <p className="nu-nota">Ahora armás el informe: se completa solo con las fotos y las tareas, y el cliente da su conformidad.</p>
         <BotonEnlace variante="contorno" href={volver}>
           Ver el trabajo
         </BotonEnlace>
