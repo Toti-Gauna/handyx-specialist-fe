@@ -1,0 +1,17 @@
+/* Marco de las pantallas del registro y el onboarding (lote 1.2): fondo blanco y el ancho de un celular. */
+.rg-app {
+  min-height: 100dvh;
+  background: #fff;
+}
+.rg-app__cuerpo {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  min-height: 100dvh;
+  margin: 0 auto;
+}
+.rg-app__cuerpo > .ui-pantalla,
+.rg-app__cuerpo > .rg-form > .ui-pantalla {
+  flex: 1;
+}

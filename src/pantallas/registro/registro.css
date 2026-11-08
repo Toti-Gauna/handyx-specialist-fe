@@ -1,0 +1,140 @@
+/* Registro por pasos y estado del alta (lote 1.2). Prefijo rg-. Solo lo propio de estas pantallas: las piezas son del
+   kit v3 (src/ui). */
+
+.rg-form {
+  display: contents;
+}
+.rg-encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rg-bajada {
+  margin: 0;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-base);
+  line-height: 1.4;
+}
+/* Dos campos lado a lado solo si entran; con texto agrandado pasan a columna solos. */
+.rg-par {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+  gap: 12px;
+}
+.rg-nota {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  line-height: 1.4;
+}
+.rg-enlace {
+  margin: 0;
+  font-size: var(--ui-texto-base);
+  text-align: center;
+}
+.rg-enlace a,
+.rg-faltan a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ui-toque);
+  color: var(--ui-azul);
+  font-weight: 800;
+}
+.rg-faltan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+}
+.rg-acepta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.rg-acepta--error {
+  padding: 4px 12px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 2px var(--ui-error);
+}
+.rg-error {
+  margin: 0 0 8px;
+  color: var(--ui-error);
+  font-size: var(--ui-texto-chico);
+  font-weight: 700;
+}
+.rg-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding-left: 1.2em;
+  font-size: var(--ui-texto-base);
+  line-height: 1.4;
+}
+.rg-mapa {
+  position: relative;
+  display: flex;
+  height: 170px;
+  border-radius: 22px;
+  background: #f3f4f7;
+  overflow: hidden;
+}
+.rg-mapa .ui-ilu {
+  width: 100%;
+  height: 100%;
+}
+.rg-mapa__chip {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+}
+.rg-doc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 8px;
+}
+.rg-doc + .rg-doc {
+  border-top: 1px solid var(--ui-borde);
+}
+.rg-confirma {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+/* D6-Alta */
+.rg-estado {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.rg-estado__ilu {
+  flex: none;
+  width: 84px;
+}
+.rg-estado__ilu .ui-ilu {
+  width: 100%;
+  height: auto;
+}
+.rg-estado__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.rg-avance {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  background: var(--ui-tinte);
+}
+.rg-avance p {
+  margin: 0;
+  font-size: var(--ui-texto-base);
+  line-height: 1.35;
+}
