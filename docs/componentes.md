@@ -305,3 +305,8 @@ Piezas nuevas en archivos propios; CSS en `src/ui/trabajo.css`, lógica pura en 
 | `FotosLado`                      | molécula  | Antes y después lado a lado con rótulo y pie                                                        | `figure` + `figcaption`; texto alternativo con la hora                                                              |
 | `FilaContacto`                   | molécula  | Un contacto profesional: iniciales, oficio, estado y escribir / llamar                              | Botones de 48 px con el nombre de la persona; estado escrito                                                        |
 | `BotonFoto`                      | molécula  | Sacar una foto con la cámara de atrás (o la de prueba en el mock)                                   | Botón con texto; el `input` de archivo queda oculto y fuera del orden de tabulación                                 |
+### Equipamiento y herramientas (lote 2.4)
+
+Piezas de equipamiento, herramientas del teléfono, cámara, nivel y lector de códigos: lista, decisiones y pruebas en
+`docs/equipamiento-herramientas.md`. Su CSS está en `src/ui/herramientas.css`. `Segmento` ahora baja de renglón con texto
+grande y `Pastilla` mide al menos 48 px de ancho.

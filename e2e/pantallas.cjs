@@ -120,6 +120,18 @@ const PANTALLAS = [
   ['informe-en-curso', `/trabajos/informe/?id=${id(0x23001)}`, 'Qué encontraste', 'habilitado'],
   ['informe-por-mandar', `/trabajos/informe/?id=${id(0xc3)}`, 'Mandar informe y pedir conformidad', 'habilitado'],
   ['informe-enviado', `/trabajos/informe/enviado/?id=${id(0xc2)}`, 'Garantía activa', 'habilitado'],
+  // Lote 2.4: tu equipamiento y las herramientas del teléfono
+  ['equipamiento', '/taller/equipamiento/', '3 quedan pocos', 'habilitado'],
+  ['equipamiento-categoria', '/taller/equipamiento/categoria/?c=electricas', '8 herramientas', 'habilitado'],
+  ['equipamiento-agregar', '/taller/equipamiento/agregar/', 'Leer el código de barras', 'habilitado'],
+  ['equipamiento-herramienta', `/taller/equipamiento/herramienta/?id=${id(0x2402)}`, 'Cambiar escobillas', 'habilitado'],
+  ['taller-herramientas', '/taller/herramientas/', 'Otros oficios', 'habilitado'],
+  ['taller-electricidad', '/taller/electricidad/', 'Herramientas del electricista', 'habilitado'],
+  ['taller-medir', '/taller/medir/', 'Medís con una tarjeta de referencia', 'habilitado'],
+  ['taller-escanear', '/taller/escanear/', 'El modelo se arma en tu teléfono', 'habilitado'],
+  ['taller-modelo', '/taller/modelo/', 'No hay un modelo armado', 'habilitado'],
+  ['taller-linterna', '/taller/linterna/', 'Linterna apagada', 'habilitado'],
+  ['taller-conversor', '/taller/conversor/', 'Medidas de caño en pulgadas', 'habilitado'],
 ];
 
 /** Espera a que los mapas de la pantalla terminen de cargar (o queden con su texto de respaldo). */

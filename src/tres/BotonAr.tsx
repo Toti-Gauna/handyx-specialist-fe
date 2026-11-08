@@ -1,11 +1,12 @@
 'use client';
 // Botón de AR común (lote 0.3; generaliza el del Taller, H1.4). En Android con WebXR abre la cámara en la app; en
 // iPhone prepara un USDZ y muestra el enlace de AR Quick Look. Si el teléfono no tiene ninguno de los dos, no aparece:
-// la vista 3D y su descripción ya dicen todo. Mismas props que src/pantallas/taller/BotonAr.tsx, más opciones.
+// la vista 3D y su descripción ya dicen todo. Mismas props que el BotonAr viejo del Taller (H1.4), más opciones. Botones
+// del kit v3 (lote 2.4).
 import { useEffect, useRef, useState } from 'react';
 import type * as THREE from 'three';
-import { Icono } from '../components/Icono.tsx';
 import { useIsla } from '../kit/Efectos.tsx';
+import { Boton } from '../ui/atomos/Boton.tsx';
 import { abrirAr, modoAr, prepararUsdz, type ModoAr, type SesionAr, type Superficie } from './ar.ts';
 
 export const INSTRUCCION_AR: Record<Superficie, string> = {
@@ -93,24 +94,24 @@ export function BotonAr({ crear, escala, superficie, texto, miniatura, instrucci
         <img src={ql.foto} alt={`${texto} con realidad aumentada`} width={96} height={72} />
       </a>
     ) : (
-      <button type="button" className="boton" onClick={() => void prepararQuickLook()}>
-        <Icono nombre="camara" /> Preparar: {texto.toLowerCase()}
-      </button>
+      <Boton icono="camara" onClick={() => void prepararQuickLook()}>
+        Preparar: {texto.toLowerCase()}
+      </Boton>
     );
   }
   return (
     <>
-      <button type="button" className="boton" onClick={() => void abrir()}>
-        <Icono nombre="camara" /> {texto}
-      </button>
+      <Boton icono="camara" onClick={() => void abrir()}>
+        {texto}
+      </Boton>
       {/* Capa encima de la cámara (dom-overlay): instrucciones y salir. */}
       <div ref={capa} className={`tr-ar-capa${activa ? ' tr-ar-capa--activa' : ''}`} hidden={!activa}>
         <p className="tr-ar-capa__texto" aria-live="polite">
           {colocado ? 'Listo. Tocá en otro lugar para moverlo.' : (instruccion ?? INSTRUCCION_AR[superficie])}
         </p>
-        <button type="button" className="boton boton--claro" onClick={() => sesion.current?.terminar()}>
+        <Boton variante="contorno" onClick={() => sesion.current?.terminar()}>
           Salir de AR
-        </button>
+        </Boton>
       </div>
     </>
   );

@@ -1,30 +1,43 @@
 'use client';
-// Armador de tablero (fase H1): agregás protecciones, se encastran en el riel DIN en 3D, y sale el gabinete, la lista de
-// materiales y las etiquetas. Inspirado en los configuradores de ABB, Schneider y Hager. La lista es la representación
-// accesible del tablero; la vista 3D es un apoyo visual.
-import { useRef, useState } from 'react';
+// T-Tablero y T-TableroPared (fase H1, pasados al kit v3 y al visor y la AR comunes de src/tres en el lote 2.4): agregás
+// protecciones, se encastran en el riel DIN en 3D y sale el gabinete, la lista de materiales y las etiquetas. La vista
+// 3D se mueve con gestos **o** con botones; la lista es la representación accesible del tablero. «Ver en la pared»: AR
+// en tamaño real (WebXR en Android, Quick Look en iPhone); sin ninguna de las dos, el botón no aparece.
+// Inspirado en los configuradores de ABB, Schneider y Hager.
+import { useMemo, useRef, useState } from 'react';
 import { RUTAS } from '../../app/rutas.ts';
-import { Icono } from '../../components/Icono.tsx';
-import { Aviso } from '../../components/ui.tsx';
 import { useIsla } from '../../kit/Efectos.tsx';
-import { BarraSuperior } from '../../kit/Navegacion.tsx';
 import { armarTablero, DISPOSITIVO, etiquetas, materialesTablero, tableroInicial, TIPOS_DISPOSITIVO, type Dispositivo, type TipoDispositivo } from '../../taller/tablero.ts';
+import { escenaTablero } from '../../taller/tablero3d.ts';
 import { tomarParaTablero } from '../../taller/traspaso.ts';
-import { BotonAr } from './BotonAr.tsx';
-import { Tablero3D, type ManejoTablero } from './Tablero3D.tsx';
-import './taller.css';
+import { BotonAr } from '../../tres/BotonAr.tsx';
+import { Visor3D, type ManejoVisor } from '../../tres/Visor3D.tsx';
+import { Boton, BotonEnlace, BotonIcono } from '../../ui/atomos/Boton.tsx';
+import { Campo } from '../../ui/atomos/Controles.tsx';
+import { Seleccion } from '../../ui/atomos/Seleccion.tsx';
+import { Chip, Etiqueta } from '../../ui/atomos/Texto.tsx';
+import { AvisoCaja } from '../../ui/moleculas/AvisoCaja.tsx';
+import { AvisoRevisionTecnica } from '../../ui/moleculas/Herramientas.tsx';
+import { Tarjeta } from '../../ui/moleculas/Tarjeta.tsx';
+import { AccionFija } from '../../ui/organismos/Acciones.tsx';
+import { BarraCompacta } from '../../ui/organismos/Cabeceras.tsx';
+import { PantallaSecundaria } from '../../ui/plantillas/Plantillas.tsx';
+import './electricidad.css';
 
 export function Tablero() {
   // Si venís de la foto con IA, arranca con lo que confirmaste; si no, con un tablero de casa típico.
   const [dispositivos, setDispositivos] = useState<Dispositivo[]>(() => tomarParaTablero() ?? tableroInicial());
   const [siguiente, setSiguiente] = useState(10);
   const [nuevoTipo, setNuevoTipo] = useState<TipoDispositivo>('termica_1p');
-  const vista = useRef<ManejoTablero>(null);
+  const [nuevos, setNuevos] = useState<ReadonlySet<string>>(new Set());
+  const vista = useRef<ManejoVisor>(null);
   const isla = useIsla();
   const a = armarTablero(dispositivos);
   const materiales = materialesTablero(dispositivos);
   const textos = etiquetas(dispositivos);
-
+  const montar = useMemo(() => escenaTablero(dispositivos, nuevos), [dispositivos, nuevos]);
+  const circuitos = dispositivos.filter((d) => d.tipo.startsWith('termica')).length;
+  const resumen = a.gabinete ? `Gabinete de ${a.gabinete} módulos · usás ${a.modulosUsados} + ${a.reserva} de reserva` : `${a.modulosUsados} módulos: hace falta un tablero a medida`;
 
   const cambiar = (id: string, parcial: Partial<Dispositivo>) => setDispositivos((ds) => ds.map((d) => (d.id === id ? { ...d, ...parcial } : d)));
   const quitar = (id: string) => setDispositivos((ds) => ds.filter((d) => d.id !== id));
@@ -32,19 +45,20 @@ export function Tablero() {
     setDispositivos((ds) => {
       const i = ds.findIndex((d) => d.id === id);
       const j = i + paso;
-      if (i < 0 || j < 0 || j >= ds.length) return ds;
-      const a = ds[i];
-      const b = ds[j];
-      if (!a || !b) return ds;
+      const x = ds[i];
+      const y = ds[j];
+      if (!x || !y) return ds;
       const copia = [...ds];
-      copia[i] = b;
-      copia[j] = a;
+      copia[i] = y;
+      copia[j] = x;
       return copia;
     });
   }
-  function agregar() {
-    const calibres = DISPOSITIVO[nuevoTipo].calibres;
-    setDispositivos((ds) => [...ds, { id: `d${siguiente}`, tipo: nuevoTipo, calibre: calibres.includes(16) ? 16 : (calibres[0] ?? null), circuito: '' }]);
+  function agregar(tipo: TipoDispositivo = nuevoTipo) {
+    const calibres = DISPOSITIVO[tipo].calibres;
+    const id = `d${siguiente}`;
+    setDispositivos((ds) => [...ds, { id, tipo, calibre: calibres.includes(16) ? 16 : (calibres[0] ?? null), circuito: '' }]);
+    setNuevos(new Set([id]));
     setSiguiente((n) => n + 1);
   }
 
@@ -65,87 +79,99 @@ export function Tablero() {
   }
 
   return (
-    <div className="fl-pantalla tl">
-      <BarraSuperior titulo="Armador de tablero" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
-      <section className="tl-escena" aria-label="Vista del tablero en 3D (girala con el dedo)">
-        <Tablero3D ref={vista} dispositivos={dispositivos} />
-        <p className="tl-escena__pie">
-          {a.gabinete ? `Gabinete de ${a.gabinete} módulos · usás ${a.modulosUsados} + ${a.reserva} de reserva` : `${a.modulosUsados} módulos: hace falta un tablero a medida`}
+    <PantallaSecundaria
+      barra={<BarraCompacta titulo="Tablero 3D" subtitulo={`Vivienda · ${circuitos} ${circuitos === 1 ? 'circuito' : 'circuitos'}`} hrefVolver={RUTAS.tallerElectricidad.ruta} />}
+      accion={
+        <AccionFija>
+          <div className="el-acciones">
+            <Boton variante="contorno" icono="enviar" onClick={() => void compartir()}>
+              Compartir
+            </Boton>
+            {/* AR: en Android, en la app con WebXR; en iPhone, con AR Quick Look. El tablero se dibuja en decímetros. */}
+            <BotonAr key={dispositivos.map((d) => `${d.tipo}${d.calibre ?? ''}`).join()} crear={() => vista.current?.objeto() ?? null} escala={0.1} superficie="pared" texto="Ver en la pared" miniatura={() => vista.current?.imagen() ?? Promise.resolve(null)} instruccion="Mostrale al cliente cómo queda en su pared: apuntá, esperá el círculo amarillo y tocá para ubicarlo en tamaño real." />
+          </div>
+        </AccionFija>
+      }
+    >
+      <section className="el-escena" aria-label="El tablero en 3D">
+        <Visor3D ref={vista} montar={montar} fondo="noche" descripcion={`${resumen}. ${textos.map((t, i) => `${i + 1}. ${t}`).join('. ')}`} descripcionVisible={false} />
+        <p className="el-escena__pie">
+          <Chip tono="amarillo" icono="cubo">
+            3D
+          </Chip>
+          <span>{resumen}</span>
         </p>
       </section>
-      <div className="tl-acciones">
-        <button type="button" className="boton boton--claro" onClick={() => void compartir()}>
-          <Icono nombre="enviar" /> Compartir
-        </button>
-        {/* AR: en Android, en la app con WebXR; en iPhone, con AR Quick Look. El tablero se dibuja en decímetros. */}
-        <BotonAr key={dispositivos.map((d) => `${d.tipo}${d.calibre ?? ''}`).join()} crear={() => vista.current?.objeto() ?? null} escala={0.1} superficie="pared" texto="Ver en la pared" miniatura={() => vista.current?.imagen() ?? Promise.resolve(null)} />
+      <div className="el-atajos">
+        <Boton variante="contorno" chico bloque={false} icono="mas" onClick={() => agregar('termica_1p')}>
+          Térmica
+        </Boton>
+        <Boton variante="contorno" chico bloque={false} icono="escudo" onClick={() => agregar('diferencial_2p')}>
+          Diferencial
+        </Boton>
+        <BotonEnlace variante="contorno" chico bloque={false} icono="camara" href={RUTAS.tallerEtiquetas.ruta}>
+          Leer de una foto
+        </BotonEnlace>
       </div>
       {a.avisos.map((t) => (
-        <Aviso key={t} tono="aviso" icono="alerta">
+        <AvisoCaja key={t} tono="error">
           {t}
-        </Aviso>
+        </AvisoCaja>
       ))}
 
-      <section className="tl-tarjeta" aria-labelledby="tl-disp-t">
-        <h2 id="tl-disp-t" className="tl-tarjeta__titulo">Protecciones, de izquierda a derecha</h2>
-        <ol className="tl-dispositivos">
+      <Tarjeta como="section" etiqueta="Protecciones, de izquierda a derecha">
+        <Etiqueta como="h2">Protecciones, de izquierda a derecha</Etiqueta>
+        <ol className="el-disps">
           {dispositivos.map((d, i) => {
             const t = DISPOSITIVO[d.tipo];
             return (
-              <li key={d.id} className="tl-disp">
-                <div className="tl-disp__cab">
-                  <strong>{i + 1}. {t.corto}</strong>
-                  <span className="tl-disp__mod">{t.modulos} {t.modulos === 1 ? 'módulo' : 'módulos'}</span>
+              <li key={d.id} className="el-disp">
+                <div className="el-disp__cab">
+                  <strong>
+                    {i + 1}. {t.corto}
+                  </strong>
+                  <span>
+                    {t.modulos} {t.modulos === 1 ? 'módulo' : 'módulos'}
+                  </span>
                 </div>
-                <div className="tl-disp__campos">
+                <div className="el-disp__campos">
                   {t.calibres.length ? (
-                    <label className="tl-mini">
-                      <span>Calibre</span>
-                      <select value={d.calibre ?? ''} onChange={(e) => cambiar(d.id, { calibre: Number(e.target.value) })}>
-                        {t.calibres.map((c) => (
-                          <option key={c} value={c}>{c} A</option>
-                        ))}
-                      </select>
-                    </label>
+                    <Seleccion etiqueta="Calibre" value={d.calibre ?? ''} onChange={(e) => cambiar(d.id, { calibre: Number(e.target.value) })}>
+                      {t.calibres.map((c) => (
+                        <option key={c} value={c}>
+                          {c} A
+                        </option>
+                      ))}
+                    </Seleccion>
                   ) : null}
-                  <label className="tl-mini tl-mini--ancho">
-                    <span>Qué protege</span>
-                    <input value={d.circuito} placeholder="Ej.: Tomas cocina" maxLength={40} onChange={(e) => cambiar(d.id, { circuito: e.target.value })} />
-                  </label>
+                  <Campo etiqueta="Qué protege" value={d.circuito} placeholder="Ej.: Tomas cocina" maxLength={40} onChange={(e) => cambiar(d.id, { circuito: e.target.value })} />
                 </div>
-                <div className="tl-disp__botones">
-                  <button type="button" className="hx-circulo" aria-label={`Mover ${t.corto} ${i + 1} a la izquierda`} disabled={i === 0} onClick={() => mover(d.id, -1)}>
-                    <Icono nombre="izquierda" />
-                  </button>
-                  <button type="button" className="hx-circulo" aria-label={`Mover ${t.corto} ${i + 1} a la derecha`} disabled={i === dispositivos.length - 1} onClick={() => mover(d.id, 1)}>
-                    <Icono nombre="derecha" />
-                  </button>
-                  <button type="button" className="hx-circulo" aria-label={`Quitar ${t.corto} ${i + 1}`} onClick={() => quitar(d.id)}>
-                    <Icono nombre="tacho" />
-                  </button>
+                <div className="el-disp__botones">
+                  <BotonIcono icono="izquierda" etiqueta={`Mover ${t.corto} ${i + 1} a la izquierda`} disabled={i === 0} onClick={() => mover(d.id, -1)} />
+                  <BotonIcono icono="derecha" etiqueta={`Mover ${t.corto} ${i + 1} a la derecha`} disabled={i === dispositivos.length - 1} onClick={() => mover(d.id, 1)} />
+                  <BotonIcono icono="tacho" etiqueta={`Quitar ${t.corto} ${i + 1}`} onClick={() => quitar(d.id)} />
                 </div>
               </li>
             );
           })}
         </ol>
-        <div className="tl-agregar">
-          <label htmlFor="tl-nuevo-disp">Agregar al tablero</label>
-          <div className="tl-agregar__fila">
-            <select id="tl-nuevo-disp" value={nuevoTipo} onChange={(e) => setNuevoTipo(e.target.value as TipoDispositivo)}>
-              {TIPOS_DISPOSITIVO.map((t) => (
-                <option key={t} value={t}>{DISPOSITIVO[t].texto}</option>
-              ))}
-            </select>
-            <button type="button" className="boton boton--claro" onClick={agregar}>
-              <Icono nombre="mas" /> Agregar
-            </button>
-          </div>
+        <div className="el-agregar">
+          <Seleccion etiqueta="Agregar al tablero" value={nuevoTipo} onChange={(e) => setNuevoTipo(e.target.value as TipoDispositivo)}>
+            {TIPOS_DISPOSITIVO.map((t) => (
+              <option key={t} value={t}>
+                {DISPOSITIVO[t].texto}
+              </option>
+            ))}
+          </Seleccion>
+          <Boton variante="contorno" icono="mas" onClick={() => agregar()}>
+            Agregar
+          </Boton>
         </div>
-      </section>
+      </Tarjeta>
 
-      <section className="tl-tarjeta" aria-labelledby="tl-mat-t">
-        <h2 id="tl-mat-t" className="tl-tarjeta__titulo">Lista de materiales</h2>
-        <ul className="tl-lista-bocas">
+      <Tarjeta como="section" etiqueta="Lista de materiales">
+        <Etiqueta como="h2">Lista de materiales</Etiqueta>
+        <ul className="el-lista">
           {materiales.map((m) => (
             <li key={m.descripcion}>
               <span>{m.descripcion}</span>
@@ -153,20 +179,23 @@ export function Tablero() {
             </li>
           ))}
         </ul>
-        <p className="tl-nota">Pronto: pasar esta lista al presupuestador con tus precios.</p>
-      </section>
+        <p className="el-nota">Pronto: pasar esta lista al presupuesto con tus precios.</p>
+      </Tarjeta>
 
-      <section className="tl-tarjeta tl-imprimible" aria-labelledby="tl-et-t">
-        <h2 id="tl-et-t" className="tl-tarjeta__titulo">Etiquetas</h2>
-        <ol className="tl-etiquetas">
-          {textos.map((t, i) => (
-            <li key={`${dispositivos[i]?.id}`}>{t}</li>
-          ))}
-        </ol>
-        <button type="button" className="boton boton--claro" onClick={() => window.print()}>
-          <Icono nombre="etiqueta" /> Imprimir etiquetas
-        </button>
-      </section>
-    </div>
+      <Tarjeta como="section" etiqueta="Etiquetas">
+        <div className="el-imprimible">
+          <Etiqueta como="h2">Etiquetas</Etiqueta>
+          <ol className="el-etiquetas">
+            {textos.map((t, i) => (
+              <li key={`${dispositivos[i]?.id}`}>{t}</li>
+            ))}
+          </ol>
+        </div>
+        <Boton variante="contorno" icono="ticket" onClick={() => window.print()}>
+          Imprimir etiquetas
+        </Boton>
+      </Tarjeta>
+      <AvisoRevisionTecnica>El tablero es una ayuda para armar y presupuestar: no reemplaza la norma ni tu criterio.</AvisoRevisionTecnica>
+    </PantallaSecundaria>
   );
 }

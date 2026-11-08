@@ -204,6 +204,7 @@
 /* ── Segmento ─────────────────────────────────────────── */
 .ui-segmento {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   margin: 0;
   padding: 4px;

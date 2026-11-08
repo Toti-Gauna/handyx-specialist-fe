@@ -39,7 +39,7 @@ export function Vivienda() {
 
   return (
     <div className="fl-pantalla tl">
-      <BarraSuperior titulo="Planificador de vivienda" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
+      <BarraSuperior titulo="Planificador de vivienda" atras={RUTAS.tallerElectricidad.ruta} textoAtras="Volver a Electricidad" acciones={null} />
       <section className="tl-tarjeta" aria-labelledby="tl-amb-t">
         <h2 id="tl-amb-t" className="tl-tarjeta__titulo">Ambientes</h2>
         <ul className="tl-ambientes">

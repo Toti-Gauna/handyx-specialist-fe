@@ -44,7 +44,7 @@ export function Canalizacion() {
 
   return (
     <div className="fl-pantalla tl">
-      <BarraSuperior titulo="Recorrido de caños" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
+      <BarraSuperior titulo="Recorrido de caños" atras={RUTAS.tallerElectricidad.ruta} textoAtras="Volver a Electricidad" acciones={null} />
       <section className="tl-escena" aria-label="Vista 3D del ambiente con el recorrido (girala con el dedo)">
         <Canalizacion3D c={c} largo={a.largo} ancho={a.ancho} alto={a.alto} />
         <ul className="tl-leyenda">

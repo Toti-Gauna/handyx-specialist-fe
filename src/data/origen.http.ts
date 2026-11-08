@@ -3,6 +3,7 @@ import { entorno } from '../config/entorno.ts';
 import type { EspecialistaApi } from './api.ts';
 import { crearApiHttp } from './http/adaptador.ts';
 import type { AyudasPrueba, CamaraPrueba } from './ayudas.ts';
+import type { SensoresPrueba } from './sensores.ts';
 import { fuenteNavegador, type FuenteUbicacion } from '../lib/ubicacion.ts';
 import type { ControlesPrueba } from './mock/controles.ts';
 import type { LectorLista } from '../presupuestos/lector.ts';
@@ -17,3 +18,5 @@ export const ubicacion: FuenteUbicacion = fuenteNavegador();
 export const camaraPrueba: CamaraPrueba | null = null;
 /** Lote 2.2: la lista del corralón la lee el teléfono (src/presupuestos/lector.ts). */
 export const lectorListaPrueba: LectorLista | null = null;
+/** Sin sensores simulados: la cámara, el giroscopio y el lector son los del teléfono (lote 2.4). */
+export const sensoresPrueba: SensoresPrueba | null = null;

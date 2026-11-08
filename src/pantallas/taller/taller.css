@@ -563,11 +563,6 @@
 .tl-acciones .boton {
   flex: 1 1 160px;
 }
-.tl-ar img {
-  display: block;
-  border-radius: 14px;
-  box-shadow: 0 0 0 3px var(--hd-azul);
-}
 .tl-disp {
   display: grid;
   gap: var(--esp-2);
@@ -839,23 +834,6 @@
 .tl-informe__obs {
   margin: 0;
   white-space: pre-wrap;
-}
-
-/* ── AR ─────────────────────────────────────────────────────────────── */
-.tl-ar-capa--activa {
-  position: fixed;
-  inset: auto 0 0;
-  z-index: 50;
-  display: grid;
-  gap: var(--esp-3);
-  padding: var(--esp-4) max(16px, env(safe-area-inset-right, 0px)) calc(var(--esp-4) + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
-  background: rgb(14 29 54 / 0.85);
-  color: #fff;
-}
-.tl-ar-capa__texto {
-  margin: 0;
-  font-weight: 700;
-  text-align: center;
 }
 
 /* ── Recorrido de caños ─────────────────────────────────────────────── */

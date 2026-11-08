@@ -774,9 +774,12 @@ async function main() {
     await p.getByRole('link', { name: /Herramientas del teléfono/ }).click();
     await p.waitForURL('**/taller/herramientas/');
     await ver(p, 'De tu oficio');
+    // T-Electricidad (lote 2.4): la puerta a las herramientas del oficio
+    await p.goto(`${base}/taller/electricidad/?escenario=habilitado`);
+    await ver(p, 'Herramientas del electricista');
     await foto('01-taller');
-    // Sección y caída de tensión: un circuito de tomas corto lo decide el mínimo; uno largo, la caída de tensión
-    await p.getByRole('link', { name: /Sección y caída de tensión/ }).click();
+    // T-Cables: un circuito de tomas corto lo decide el mínimo; uno largo, la caída de tensión
+    await p.getByRole('link', { name: /^Cables/ }).click();
     await p.waitForURL('**/taller/conductores/');
     await ver(p, 'La decide la sección mínima del circuito');
     await p.getByLabel('Largo del recorrido').fill('90');
@@ -805,16 +808,11 @@ async function main() {
     // Ohm con dos datos
     await p.goto(`${base}/taller/ohm/?escenario=habilitado`);
     await ver(p, 'Corriente: 10 A');
-    // Nivel: en una computadora no hay giroscopio y se dice
+    // Nivel (T-Nivel, lote 2.4): con datos de prueba el giroscopio es simulado (el recorrido completo está en RC-Taller)
     await p.goto(`${base}/taller/nivel/?escenario=habilitado`);
     await ver(p, 'En 3 m tiene que bajar 60 mm.');
-    // Sin permiso del navegador, se explica cómo habilitarlo; con permiso pero sin sensor (computadora), se dice.
     await p.getByRole('button', { name: 'Usar el giroscopio' }).click();
-    await ver(p, /No diste permiso al sensor|Este dispositivo no tiene giroscopio/);
-    await p.context().grantPermissions(['accelerometer', 'gyroscope', 'magnetometer'], { origin: base });
-    await p.reload();
-    await p.getByRole('button', { name: 'Usar el giroscopio' }).click();
-    await ver(p, 'Este dispositivo no tiene giroscopio');
+    await ver(p, 'Casi a nivel · inclinado hacia la izquierda');
     await foto('05-nivel');
   }, { capturas });
 
