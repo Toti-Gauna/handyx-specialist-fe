@@ -21,7 +21,8 @@ export const TIPOS_CHAT = ['pedido', 'obra', 'equipo', 'soporte'] as const;
 export type TipoChat = (typeof TIPOS_CHAT)[number];
 /** Filtros de la lista (F-Mensajes). */
 export const FILTROS_CHAT = ['todos', 'pedidos', 'obras', 'equipo', 'soporte'] as const;
-export const ROLES_CHAT = ['cliente', 'titular', 'profesional', 'soporte'] as const;
+/** `sistema`: los avisos de Handyx dentro del chat ("Diego se sumó a la obra"). */
+export const ROLES_CHAT = ['cliente', 'titular', 'profesional', 'soporte', 'sistema'] as const;
 export const TIPOS_MENSAJE_CHAT = ['texto', 'media', 'tarjeta', 'sistema'] as const;
 export const TIPOS_MEDIA = ['foto', 'video', 'archivo'] as const;
 export const TIPOS_TARJETA = ['propuesta', 'presupuesto', 'propuesta_obra', 'repuestos', 'cambio_fecha', 'informe', 'reparto', 'demora'] as const;

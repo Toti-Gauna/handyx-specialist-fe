@@ -5477,7 +5477,7 @@ components:
             archivoBorrado: { type: boolean }
         faltantesEnvio:
           type: array
-          items: { type: string, enum: [datos, domicilio, rubros, zonas, selfie, dni, cuit_cuil, matricula, textos] }
+          items: { type: string, enum: [datos, domicilio, rubros, zonas, selfie, dni, cuit_cuil, matricula] }
         faltantesHabilitacion:
           type: array
           items: { type: string, enum: [selfie, dni, cuit_cuil, antecedentes, rubro] }
@@ -7281,7 +7281,7 @@ components:
         miembroId: { oneOf: [{ type: string, format: uuid }, { type: 'null' }] }
         nombre: { type: string, maxLength: 80 }
         iniciales: { type: string, minLength: 1, maxLength: 3 }
-        rol: { type: string, enum: [cliente, titular, profesional, soporte] }
+        rol: { type: string, enum: [cliente, titular, profesional, soporte, sistema] }
         esVos: { type: boolean }
     ChatResumen:
       type: object
@@ -7427,7 +7427,7 @@ components:
         id: { type: string, format: uuid }
         nombre: { type: string, maxLength: 80 }
         iniciales: { type: string, minLength: 1, maxLength: 3 }
-        rol: { type: string, enum: [cliente, titular, profesional, soporte] }
+        rol: { type: string, enum: [cliente, titular, profesional, soporte, sistema] }
         rubro:
           oneOf:
             - { type: string, enum: [electricidad, plomeria, gas, cerrajeria, albanileria, aire_acondicionado] }

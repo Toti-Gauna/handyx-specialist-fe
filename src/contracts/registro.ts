@@ -60,8 +60,11 @@ export type TipoCertificado = (typeof TIPOS_CERTIFICADO)[number];
 
 export const FORMATOS_ARCHIVO = ['foto', 'pdf'] as const;
 
-/** Qué falta para poder mandar el alta (los antecedentes se pueden cargar después: hasta entonces no hay pedidos). */
-export const FALTANTES_REGISTRO = ['datos', 'domicilio', 'rubros', 'zonas', 'selfie', 'dni', 'cuit_cuil', 'matricula', 'textos'] as const;
+/**
+ * Qué falta CARGAR para poder mandar el alta. Los antecedentes se pueden cargar después (hasta entonces no hay pedidos).
+ * `matricula`: elegiste Gas o Aire acondicionado y no cargaste su matrícula.
+ */
+export const FALTANTES_REGISTRO = ['datos', 'domicilio', 'rubros', 'zonas', 'selfie', 'dni', 'cuit_cuil', 'matricula'] as const;
 export type FaltanteRegistro = (typeof FALTANTES_REGISTRO)[number];
 
 /** Qué falta VERIFICAR para habilitar (lo calcula el servidor con `faltantesHabilitacion`). */
