@@ -697,3 +697,40 @@
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   gap: 12px;
 }
+
+/* ── Agenda: título con «Ver el mes», día elegido y grupos ─ */
+.ui-ag-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ui-ag-dia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+.ui-ag-dia__titulo {
+  margin: 0;
+  font-size: var(--ui-texto-base);
+  font-weight: 800;
+}
+.ui-ag-dia__resumen {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-ag-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ui-ag-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}

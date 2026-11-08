@@ -80,7 +80,7 @@ export function Taller() {
 
   return (
     <div className="fl-pantalla tl" ref={lista}>
-      <BarraSuperior titulo="Taller" atras={RUTAS.inicio.ruta} textoAtras="Volver a Inicio" acciones={null} />
+      <BarraSuperior titulo="Herramientas del teléfono" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
       <header className="tl-hero">
         <div>
           <p className="tl-hero__eyebrow">Herramientas para tu oficio</p>

@@ -9,5 +9,5 @@ export const rutasTrabajos = {
   trabajoCambio: { ruta: '/trabajos/cambio/', titulo: 'Cambiar la fecha', lote: '4.6', descripcion: 'Motivo, día y franja: queda como pedido hasta que el cliente acepte.' },
   trabajoCancelar: { ruta: '/trabajos/cancelar/', titulo: 'Cancelar el trabajo', lote: '4.6', descripcion: 'Primero otras opciones; después el motivo y la confirmación.' },
   trabajoTerminado: { ruta: '/trabajos/terminado/', titulo: '¡Terminaste!', lote: '4.7', descripcion: 'Monto, desglose e informar el cobro; en una obra, el cierre etapa por etapa.' },
-  agenda: { ruta: '/agenda/', titulo: 'Agenda', lote: '2.4', descripcion: 'Calendario propio y fechas alternativas (se llega desde Inicio y, en la ola 2, desde la pestaña Taller).' },
+  agenda: { ruta: '/agenda/', titulo: 'Agenda', lote: '2.4', descripcion: 'F-Agenda: pasadas, hoy y futuras con la semana entera; se llega desde Inicio y desde la pestaña Taller.' },
 } as const satisfies Record<string, Ruta>;

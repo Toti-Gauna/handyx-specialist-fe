@@ -3,6 +3,7 @@
 // Partido por dominio (lote 0.2): cada lote de una ola agrega sus rutas en `rutas/<dominio>.ts`; acá solo se componen.
 // Las pestañas de la barra de abajo están en `rutas/navegacion.ts`.
 import { rutasAcceso } from './rutas/acceso.ts';
+import { rutasAgenda } from './rutas/agenda.ts';
 import { rutasAlta } from './rutas/alta.ts';
 import { rutasBase } from './rutas/base.ts';
 import { rutasCaja } from './rutas/caja.ts';
@@ -29,6 +30,7 @@ export const RUTAS = {
   ...rutasCuenta,
   ...rutasSoporte,
   ...rutasTaller,
+  ...rutasAgenda,
 } as const satisfies Record<string, Ruta>;
 
 export type ClaveRuta = keyof typeof RUTAS;
