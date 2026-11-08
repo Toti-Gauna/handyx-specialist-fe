@@ -4,7 +4,7 @@
 // ./dominios.ts.
 import type { EspecialistaApi } from '../api.ts';
 import { FalloApi } from '../errores.ts';
-import { cuentaLista } from './acceso.ts';
+import { cuentaLista, PUBLICOS_ACCESO } from './acceso.ts';
 import { caja } from './caja.ts';
 import { metodosMock } from './dominios.ts';
 import { ahora, fallo, type Escenario, type EstadoMock } from './estado.ts';
@@ -23,6 +23,8 @@ type Sincrono = { [K in keyof Metodos]: Metodos[K] extends (...a: infer A) => Pr
 
 // No exigen sesión: acceso, consulta de sesión y recuperación con el enlace del email.
 const PUBLICOS = new Set<keyof Metodos>(['sesion', 'ingresar', 'registrar', 'recuperar', 'salir', 'ingresarConProveedor', 'estadoRecuperacion', 'restablecer']);
+// Entrar con email o teléfono, con un código y la segunda verificación (lote 1.1).
+for (const m of PUBLICOS_ACCESO) PUBLICOS.add(m);
 // Con sesión pero sin terminar la cuenta (email sin verificar o términos sin aceptar) solo se puede esto.
 const CUENTA_A_MEDIAS = new Set<keyof Metodos>(['estadoVerificacion', 'reenviarCodigo', 'verificarEmail', 'aceptarTerminos']);
 

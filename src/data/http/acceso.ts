@@ -1,4 +1,5 @@
 import { EstadoTokenSchema, ResultadoProveedorSchema, SesionSchema, VerificacionEmailSchema } from '../../contracts/dto.ts';
+import { CodigoEnviadoSchema, ResultadoIngresoSchema, type ResultadoIngreso } from '../../contracts/seguridad.ts';
 import type { ApiAcceso } from '../api/acceso.ts';
 import type { ClienteHttp } from './cliente.ts';
 import { Nada } from './comun.ts';
@@ -46,4 +47,28 @@ export const accesoHttp = (c: ClienteHttp): ApiAcceso => ({
     await c.pedir('POST', '/v1/auth/recuperacion/nueva', Nada, { cuerpo: datos });
     c.recordarCsrf(null);
   },
+
+  // ── Contrato 0.11.0 (lote 1.1) ──
+  async ingresarConClave(datos) {
+    return recordar(c, await c.pedir('POST', '/v1/auth/ingreso/clave', ResultadoIngresoSchema, { cuerpo: datos }));
+  },
+  pedirCodigoIngreso: (datos) => c.pedir('POST', '/v1/auth/ingreso/codigo', CodigoEnviadoSchema, { cuerpo: datos }),
+  async ingresarConCodigo(datos) {
+    return recordar(c, await c.pedir('POST', '/v1/auth/ingreso/codigo/verificacion', ResultadoIngresoSchema, { cuerpo: datos }));
+  },
+  async resolverSegundaVerificacion(datos) {
+    const s = await c.pedir('POST', '/v1/auth/segunda-verificacion', SesionSchema, { cuerpo: datos });
+    c.recordarCsrf(s.csrfToken);
+    return s;
+  },
+  enviarCodigoSegundaVerificacion: (datos) => c.pedir('POST', '/v1/auth/segunda-verificacion/envio', CodigoEnviadoSchema, { cuerpo: datos }),
+  async pedirRecuperacion(datos) {
+    await c.pedir('POST', '/v1/auth/recuperacion', Nada, { cuerpo: datos });
+  },
 });
+
+/** Si el ingreso ya abrió la sesión, el CSRF queda en memoria; si falta el paso 2, todavía no hay sesión. */
+function recordar(c: ClienteHttp, r: ResultadoIngreso): ResultadoIngreso {
+  if (r.estado === 'sesion') c.recordarCsrf(r.sesion.csrfToken);
+  return r;
+}

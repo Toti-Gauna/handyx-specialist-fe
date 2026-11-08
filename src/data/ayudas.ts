@@ -12,6 +12,8 @@ export interface AyudasPrueba {
   tokenRecuperacion: string;
   tokenVencido: string;
   cuentasProveedor: Record<Proveedor, readonly { email: string; idToken: string; nueva: boolean }[]>;
+  /** Lote 1.1: cuenta con la segunda verificación activa (su código de la app es `codigoEmail`) y un código de respaldo. */
+  segundaVerificacion?: { email: string; codigoRespaldo: string; telefono: string };
 }
 
 /**

@@ -1,5 +1,6 @@
 // Origen de datos de desarrollo y vista previa: fixtures sintéticos en memoria (banner visible).
 import type { EspecialistaApi } from './api.ts';
+import { CODIGOS_RESPALDO_PRUEBA, CUENTA_SEGUNDA_VERIFICACION_PRUEBA } from './mock/acceso.ts';
 import { crearApiMockConEstado } from './mock/adaptador.ts';
 import { crearControles, type ControlesPrueba } from './mock/controles.ts';
 import type { AyudasPrueba, CamaraPrueba } from './ayudas.ts';
@@ -32,6 +33,7 @@ export const ayudasPrueba: AyudasPrueba | null = {
   tokenRecuperacion: TOKEN_RECUPERACION_PRUEBA,
   tokenVencido: TOKEN_VENCIDO_PRUEBA,
   cuentasProveedor: CUENTAS_PROVEEDOR_PRUEBA,
+  segundaVerificacion: { email: CUENTA_SEGUNDA_VERIFICACION_PRUEBA, codigoRespaldo: CODIGOS_RESPALDO_PRUEBA[0], telefono: '223 555-4521' },
 };
 
 /** Cámara simulada del alta (lote 4.4). */
