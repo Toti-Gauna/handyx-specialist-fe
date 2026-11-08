@@ -122,6 +122,7 @@ describe('contactos y agenda', () => {
     assert.equal(minutosDePasado(fin, Date.parse(fin) + 20 * 60_000), 20);
     assert.equal(minutosDePasado(fin, Date.parse(fin) - 60_000), 0);
     assert.equal(minutosDePasado(null, 0), 0);
+    assert.equal(minutosDePasado(fin, Date.parse(fin) + 17 * 60 * 60_000), 0);
   });
 });
 

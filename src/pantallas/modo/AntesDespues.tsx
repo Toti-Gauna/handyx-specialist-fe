@@ -68,12 +68,21 @@ function Pantalla({ trabajoId, titulo, ad, modo, enviado, recargar }: { trabajoI
       await api.subirFotoTrabajo(trabajoId, archivo ? await prepararFoto(archivo) : null, momento, foto.clave());
       await recargar();
     });
-    if (r.ok) isla({ titulo: momento === 'antes' ? 'Guardaste la foto del antes' : 'Guardaste la foto del después', icono: 'camara' });
+    if (r.ok)
+      isla({
+        titulo: momento === 'antes' ? 'Guardaste la foto del antes' : 'Guardaste la foto del después',
+        icono: 'camara',
+      });
   }
 
   async function guardarCambios(cambios: Datos['cambios'], aviso: string) {
     const r = await guardar.ejecutar(async () => {
-      await api.guardarAntesDespues(trabajoId, { antesFotoId: ad.antes?.id ?? null, despuesFotoId: ad.despues?.id ?? null, cambios, version: ad.version });
+      await api.guardarAntesDespues(trabajoId, {
+        antesFotoId: ad.antes?.id ?? null,
+        despuesFotoId: ad.despues?.id ?? null,
+        cambios,
+        version: ad.version,
+      });
       await recargar();
     });
     if (r.ok) isla({ titulo: aviso, icono: 'check' });
@@ -83,13 +92,26 @@ function Pantalla({ trabajoId, titulo, ad, modo, enviado, recargar }: { trabajoI
 
   async function sumarAlInforme() {
     // Deja elegidas las dos fotos que se ven (la última de cada momento) y pasa al informe.
-    const r = await guardar.ejecutar(() => api.guardarAntesDespues(trabajoId, { antesFotoId: ad.antes?.id ?? null, despuesFotoId: ad.despues?.id ?? null, cambios: ad.cambios, version: ad.version }));
+    const r = await guardar.ejecutar(() =>
+      api.guardarAntesDespues(trabajoId, {
+        antesFotoId: ad.antes?.id ?? null,
+        despuesFotoId: ad.despues?.id ?? null,
+        cambios: ad.cambios,
+        version: ad.version,
+      }),
+    );
     if (r.ok) router.push(conId('informeTrabajo', trabajoId));
   }
 
   const hoy = hoyBA(api.ahora());
-  const pie = (en: string) => { const d = nombreDia(fechaBA(en), hoy); return `${d.charAt(0).toUpperCase()}${d.slice(1)} · ${hora(en)}`; };
-  const rotulo = (m: 'Antes' | 'Después', en: string) => ({ rotulo: `${m} · ${hora(en)}`, alt: `Foto del ${m.toLowerCase()}, de las ${hora(en)}` });
+  const pie = (en: string) => {
+    const d = nombreDia(fechaBA(en), hoy);
+    return `${d.charAt(0).toUpperCase()}${d.slice(1)} · ${hora(en)}`;
+  };
+  const rotulo = (m: 'Antes' | 'Después', en: string) => ({
+    rotulo: `${m} · ${hora(en)}`,
+    alt: `Foto del ${m.toLowerCase()}, de las ${hora(en)}`,
+  });
   return (
     <PantallaSecundaria
       barra={<BarraCompacta titulo={TITULO} subtitulo={titulo} hrefVolver={conId('modoTrabajo', trabajoId)} />}
@@ -118,9 +140,26 @@ function Pantalla({ trabajoId, titulo, ad, modo, enviado, recargar }: { trabajoI
       />
       {ad.antes && ad.despues ? (
         vista === 'deslizar' ? (
-          <Comparador antes={{ url: ad.antes.url, ...rotulo('Antes', ad.antes.en) }} despues={{ url: ad.despues.url, ...rotulo('Después', ad.despues.en) }} />
+          <Comparador
+            antes={{ url: ad.antes.url, ...rotulo('Antes', ad.antes.en) }}
+            despues={{
+              url: ad.despues.url,
+              ...rotulo('Después', ad.despues.en),
+            }}
+          />
         ) : (
-          <FotosLado antes={{ url: ad.antes.url, ...rotulo('Antes', ad.antes.en), pie: pie(ad.antes.en) }} despues={{ url: ad.despues.url, ...rotulo('Después', ad.despues.en), pie: pie(ad.despues.en) }} />
+          <FotosLado
+            antes={{
+              url: ad.antes.url,
+              ...rotulo('Antes', ad.antes.en),
+              pie: pie(ad.antes.en),
+            }}
+            despues={{
+              url: ad.despues.url,
+              ...rotulo('Después', ad.despues.en),
+              pie: pie(ad.despues.en),
+            }}
+          />
         )
       ) : (
         <Tarjeta tono="gris">
@@ -164,7 +203,18 @@ function Pantalla({ trabajoId, titulo, ad, modo, enviado, recargar }: { trabajoI
                 {x.detalle ? <span>{x.detalle}</span> : null}
               </span>
               {editable ? (
-                <Boton variante="texto" chico bloque={false} disabled={guardar.pendiente} onClick={() => void guardarCambios(ad.cambios.filter((_, j) => j !== i), 'Quitaste el cambio')}>
+                <Boton
+                  variante="texto"
+                  chico
+                  bloque={false}
+                  disabled={guardar.pendiente}
+                  onClick={() =>
+                    void guardarCambios(
+                      ad.cambios.filter((_, j) => j !== i),
+                      'Quitaste el cambio',
+                    )
+                  }
+                >
                   {`Quitar: ${x.titulo}`}
                 </Boton>
               ) : null}
@@ -180,12 +230,30 @@ function Pantalla({ trabajoId, titulo, ad, modo, enviado, recargar }: { trabajoI
         {guardar.fallo && !agregar ? <ErrorCaja fallo={guardar.fallo} /> : null}
       </Tarjeta>
 
-      <HojaCambio abierta={agregar} ocupado={guardar.pendiente} fallo={agregar ? guardar.fallo : null} onCerrar={() => setAgregar(false)} onGuardar={async (cambio) => (await guardarCambios([...ad.cambios, cambio], 'Sumaste el cambio')) && setAgregar(false)} />
+      <HojaCambio
+        abierta={agregar}
+        ocupado={guardar.pendiente}
+        fallo={agregar ? guardar.fallo : null}
+        onCerrar={() => setAgregar(false)}
+        onGuardar={async (cambio) => (await guardarCambios([...ad.cambios, cambio], 'Sumaste el cambio')) && setAgregar(false)}
+      />
     </PantallaSecundaria>
   );
 }
 
-function HojaCambio({ abierta, ocupado, fallo, onCerrar, onGuardar }: { abierta: boolean; ocupado: boolean; fallo: ReturnType<typeof useAccion>['fallo']; onCerrar(): void; onGuardar(c: Datos['cambios'][number]): Promise<unknown> }) {
+function HojaCambio({
+  abierta,
+  ocupado,
+  fallo,
+  onCerrar,
+  onGuardar,
+}: {
+  abierta: boolean;
+  ocupado: boolean;
+  fallo: ReturnType<typeof useAccion>['fallo'];
+  onCerrar(): void;
+  onGuardar(c: Datos['cambios'][number]): Promise<unknown>;
+}) {
   const [titulo, setTitulo] = useState('');
   const [detalle, setDetalle] = useState('');
   const [error, setError] = useState<string | null>(null);

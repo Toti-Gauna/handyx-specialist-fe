@@ -31,10 +31,21 @@ const BUSCAR_PROFESIONAL = RUTAS.trabajos.ruta;
 
 export function PedirAyuda() {
   const id = useIdDeUrl();
-  const c = useCarga(async () => (id ? { detalle: await api.trabajo(id), contactos: await api.contactosProfesionales() } : null), [id]);
+  const c = useCarga(
+    async () =>
+      id
+        ? {
+            detalle: await api.trabajo(id),
+            contactos: await api.contactosProfesionales(),
+          }
+        : null,
+    [id],
+  );
   const antes = estadoCarga(c, id, TITULO);
   if (antes || !c.datos || !id) return antes;
-  return <Ayuda trabajoId={id} titulo={tituloTrabajo(c.datos.detalle.trabajo.acuerdo.alcance)} activo={['en_sitio', 'en_curso'].includes(c.datos.detalle.trabajo.estado)} contactos={c.datos.contactos} />;
+  return (
+    <Ayuda trabajoId={id} titulo={tituloTrabajo(c.datos.detalle.trabajo.acuerdo.alcance)} activo={['en_sitio', 'en_curso'].includes(c.datos.detalle.trabajo.estado)} contactos={c.datos.contactos} />
+  );
 }
 
 function Ayuda({ trabajoId, titulo, activo, contactos }: { trabajoId: string; titulo: string; activo: boolean; contactos: ContactoProfesional[] }) {
@@ -43,7 +54,10 @@ function Ayuda({ trabajoId, titulo, activo, contactos }: { trabajoId: string; ti
   const chat = useAccion();
   const llamada = useAccion();
   const sumar = useAccion();
-  const [llamando, setLlamando] = useState<{ c: ContactoProfesional; puente: LlamadaPuente | null } | null>(null);
+  const [llamando, setLlamando] = useState<{
+    c: ContactoProfesional;
+    puente: LlamadaPuente | null;
+  } | null>(null);
   const [sumando, setSumando] = useState<ContactoProfesional | null>(null);
 
   async function escribir(c: ContactoProfesional) {
@@ -51,7 +65,11 @@ function Ayuda({ trabajoId, titulo, activo, contactos }: { trabajoId: string; ti
     if (!r.ok) return;
     if (r.valor.conversacionId) router.push(`${RUTAS.hilo.ruta}?id=${r.valor.conversacionId}`);
     else {
-      isla({ titulo: `Chat con ${c.profesional.nombre}`, texto: 'Lo encontrás en Mensajes', icono: 'chat' });
+      isla({
+        titulo: `Chat con ${c.profesional.nombre}`,
+        texto: 'Lo encontrás en Mensajes',
+        icono: 'chat',
+      });
       router.push(RUTAS.mensajes.ruta);
     }
   }
@@ -66,7 +84,11 @@ function Ayuda({ trabajoId, titulo, activo, contactos }: { trabajoId: string; ti
     const r = await sumar.ejecutar(() => api.sumarAyuda(trabajoId, { contactoId: c.id, rubro }));
     if (r.ok) {
       setSumando(null);
-      isla({ titulo: `Invitaste a ${c.profesional.nombre}`, texto: 'Se suma cuando acepta. El reparto lo acuerdan aparte.', icono: 'check' });
+      isla({
+        titulo: `Invitaste a ${c.profesional.nombre}`,
+        texto: 'Se suma cuando acepta. El reparto lo acuerdan aparte.',
+        icono: 'check',
+      });
     }
   }
 
@@ -105,7 +127,7 @@ function Ayuda({ trabajoId, titulo, activo, contactos }: { trabajoId: string; ti
         {chat.fallo ? <ErrorCaja fallo={chat.fallo} /> : null}
       </Tarjeta>
       <Tarjeta>
-        <FilaIcono icono="lupa" titulo="Buscar un profesional nuevo" detalle="Lo ven solo verificados de la zona" href={BUSCAR_PROFESIONAL} borde={false} />
+        <FilaIcono icono="lupa" titulo="Buscar un profesional nuevo" detalle="Lo ven solo verificados de la zona" href={BUSCAR_PROFESIONAL} />
         <FilaIcono icono="herramienta" titulo="Consultar al Taller" detalle="Calculadoras y referencias del oficio" href={RUTAS.taller.ruta} />
       </Tarjeta>
 
@@ -147,7 +169,9 @@ function Ayuda({ trabajoId, titulo, activo, contactos }: { trabajoId: string; ti
           ) : null
         }
       >
-        {sumando ? <p>{`Le llega una invitación para este trabajo como ${sumando.profesional.rubros.map((r) => NOMBRE_RUBRO[r]).join(' y ')}. Se suma cuando acepta; el reparto del pago lo acuerdan aparte (Handyx no toca la plata).`}</p> : null}
+        {sumando ? (
+          <p>{`Le llega una invitación para este trabajo como ${sumando.profesional.rubros.map((r) => NOMBRE_RUBRO[r]).join(' y ')}. Se suma cuando acepta; el reparto del pago lo acuerdan aparte (Handyx no toca la plata).`}</p>
+        ) : null}
         {sumar.fallo ? <ErrorCaja fallo={sumar.fallo} /> : null}
       </Hoja>
     </PantallaSecundaria>

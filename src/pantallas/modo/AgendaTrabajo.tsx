@@ -16,7 +16,7 @@ import { useIsla } from '../../kit/Efectos.tsx';
 import { BotonEnlace } from '../../ui/atomos/Boton.tsx';
 import { Icono } from '../../ui/atomos/Icono.tsx';
 import { Chip, Etiqueta } from '../../ui/atomos/Texto.tsx';
-import { hoyBA, loQueSigue, minutosDePasado, tituloTrabajo } from '../../ui/logicaModo.ts';
+import { hoyBA, loQueSigue, minutosDePasado, textoDuracion, tituloTrabajo } from '../../ui/logicaModo.ts';
 import { fechaBA, horaConMinutos, minutosBA, nombreDia } from '../../ui/logicaNucleo.ts';
 import { Tarjeta } from '../../ui/moleculas/Tarjeta.tsx';
 import { AccionFija } from '../../ui/organismos/Acciones.tsx';
@@ -55,7 +55,7 @@ export function AgendaTrabajo() {
       {pasado > 0 ? (
         <p className="mt-aviso">
           <Icono nombre="reloj" />
-          {`Este trabajo va ${pasado} ${pasado === 1 ? 'minuto' : 'minutos'} más de lo previsto.`}
+          {`Este trabajo va ${textoDuracion(pasado * 60_000)} más de lo previsto.`}
         </p>
       ) : null}
       <Tarjeta etiqueta="Lo que sigue">
@@ -95,7 +95,11 @@ function AvisarDemora({ proximo }: { proximo: AgendaItem }) {
     const r = await demora.ejecutar(() => api.avisarDemora(trabajoId, { minutos }, demora.clave()));
     if (r.ok) {
       setAvisado(minutos);
-      isla({ titulo: 'Avisaste la demora', texto: `Le llegó al chat: «Llego ${minutos} minutos tarde».`, icono: 'reloj' });
+      isla({
+        titulo: 'Avisaste la demora',
+        texto: `Le llegó al chat: «Llego ${minutos} minutos tarde».`,
+        icono: 'reloj',
+      });
     }
   }
   return (

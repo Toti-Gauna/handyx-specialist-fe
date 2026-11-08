@@ -27,7 +27,11 @@ const COBRO: Record<Cobro['estado'], { texto: string; tono: 'gris' | 'exito' | '
   fallido: { texto: 'El pago falló', tono: 'error' },
   en_discrepancia: { texto: 'En revisión', tono: 'amarillo' },
 };
-const METODO: Record<string, string> = { efectivo: 'en efectivo', mercado_pago: 'por Mercado Pago', transferencia: 'por transferencia' };
+const METODO: Record<string, string> = {
+  efectivo: 'en efectivo',
+  mercado_pago: 'por Mercado Pago',
+  transferencia: 'por transferencia',
+};
 
 export function InformeEnviado() {
   const id = useIdDeUrl();
@@ -41,7 +45,7 @@ export function InformeEnviado() {
   if (antes || !c.datos || !id) return antes;
   const { detalle: d, informe, cobro } = c.datos;
   const hoy = hoyBA(api.ahora());
-  const nombre = d.contraparte.split(' ')[0] ?? d.contraparte;
+  const nombre = d.contraparte;
 
   if (!informe.enviadoEn) {
     return (
@@ -78,16 +82,25 @@ export function InformeEnviado() {
         <FilaIcono
           icono="firma"
           titulo={`Conformidad de ${nombre}`}
-          detalle={informe.conformidad.estado === 'esperando' ? 'La da desde su app con un toque' : informe.conformidad.estado === 'con_observaciones' ? 'Te escribió una observación: la revisa el equipo de Handyx con vos' : 'Quedó registrada'}
+          detalle={
+            informe.conformidad.estado === 'esperando'
+              ? 'La da desde su app con un toque'
+              : informe.conformidad.estado === 'con_observaciones'
+                ? 'Te escribió una observación: la revisa el equipo de Handyx con vos'
+                : 'Quedó registrada'
+          }
           derecha={
             <Chip tono={conf.tono} icono={conf.icono}>
               {conf.texto}
             </Chip>
           }
-          borde={false}
         />
         {g ? <FilaIcono icono="escudo" titulo={g.estado === 'activa' ? 'Garantía activa' : 'Garantía vencida'} detalle={`${g.dias} días · hasta el ${textoFecha(g.hasta, hoy)}`} /> : null}
-        <FilaIcono icono="agenda" titulo="Recordatorio de mantenimiento" detalle={informe.recordatorioMantenimiento ? `${textoFecha(informe.recordatorioMantenimiento, hoy)} · te avisamos a vos` : 'Sin recordatorio'} />
+        <FilaIcono
+          icono="agenda"
+          titulo="Recordatorio de mantenimiento"
+          detalle={informe.recordatorioMantenimiento ? `${textoFecha(informe.recordatorioMantenimiento, hoy)} · te avisamos a vos` : 'Sin recordatorio'}
+        />
         {cobro ? (
           <FilaIcono
             icono="billete"

@@ -159,11 +159,14 @@ export function loQueSigue(items: readonly AgendaItem[], trabajoId: string, ahor
     .sort((a, b) => Date.parse(a.inicio) - Date.parse(b.inicio));
 }
 
-/** Minutos que este trabajo lleva pasado de su horario (0 si no se pasó o no tiene fin). */
-export function minutosDePasado(fin: string | null, ahoraMs: number): number {
+/**
+ * Minutos que este trabajo lleva pasado de su horario (0 si no se pasó, no tiene fin o se pasó más de `maximo`: un
+ * trabajo que sigue otro día no «va tarde», sigue).
+ */
+export function minutosDePasado(fin: string | null, ahoraMs: number, maximo = 240): number {
   if (!fin) return 0;
   const m = Math.floor((ahoraMs - Date.parse(fin)) / MIN);
-  return m > 0 ? m : 0;
+  return m > 0 && m <= maximo ? m : 0;
 }
 
 // ── Comparador antes y después ───────────────────────────────────────────────────────────────────
@@ -173,8 +176,8 @@ export const textoComparador = (pos: number): string => `Se ve ${Math.round(pos)
 
 // ── Textos del trabajo ───────────────────────────────────────────────────────────────────────────
 
-/** Título corto del trabajo para la cabecera: la primera frase de lo acordado, cortada en una palabra (≤ 40 letras). */
-export function tituloTrabajo(alcance: string, maximo = 40): string {
+/** Título corto del trabajo para la cabecera: la primera frase de lo acordado, cortada en una palabra (≤ 34 letras). */
+export function tituloTrabajo(alcance: string, maximo = 34): string {
   const frase = (alcance.split(/[.:;\n]/)[0] ?? alcance).trim();
   if (frase.length <= maximo) return frase;
   const corte = frase.slice(0, maximo + 1).lastIndexOf(' ');

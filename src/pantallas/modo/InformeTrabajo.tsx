@@ -47,7 +47,6 @@ function Pantalla({ d, informe, ad, recargar }: { d: TrabajoDetalle; informe: In
   const [mandar, setMandar] = useState(false);
   const enviado = informe.enviadoEn !== null;
   const terminado = t.estado === 'finalizado';
-  const primerNombre = d.contraparte.split(' ')[0] ?? d.contraparte;
   const total = SECCIONES_INFORME.length;
 
   let accion;
@@ -84,13 +83,13 @@ function Pantalla({ d, informe, ad, recargar }: { d: TrabajoDetalle; informe: In
         ) : null}
         <span className="mt-portada__texto">
           <Etiqueta claro>{enviado ? 'Mandado' : textoAvanceInforme(informe.completas, total)}</Etiqueta>
-          <strong>{`Lo recibe ${primerNombre} en el chat y en PDF`}</strong>
+          <strong>{`Lo recibe ${d.contraparte} en el chat y en PDF`}</strong>
         </span>
       </div>
 
       <Tarjeta etiqueta="Secciones del informe">
         <h2 className="visualmente-oculto">Secciones del informe</h2>
-        {informe.secciones.map((s, i) => {
+        {informe.secciones.map((s) => {
           const meta = SECCION_INFORME[s.seccion];
           const est = ESTADO_SECCION[s.estado];
           const detalle = (
@@ -102,7 +101,7 @@ function Pantalla({ d, informe, ad, recargar }: { d: TrabajoDetalle; informe: In
             </span>
           );
           const tocar = enviado ? {} : s.seccion === 'antes_despues' ? { href: conId('antesDespues', t.id) } : { onClick: () => setEditando(s.seccion) };
-          return <FilaIcono key={s.seccion} icono={meta.icono} titulo={meta.titulo} detalle={detalle} borde={i > 0} {...tocar} />;
+          return <FilaIcono key={s.seccion} icono={meta.icono} titulo={meta.titulo} detalle={detalle} {...tocar} />;
         })}
       </Tarjeta>
       {!enviado ? <p className="mt-nota">Lo que se completó solo sale de lo que cargaste: las tareas, las fotos y lo acordado. Tocá una sección para corregirla.</p> : null}
@@ -114,10 +113,17 @@ function Pantalla({ d, informe, ad, recargar }: { d: TrabajoDetalle; informe: In
         onCerrar={() => setEditando(null)}
         onGuardar={async (texto) => {
           if (!editando) return false;
-          await api.guardarSeccionInforme(t.id, editando, { texto, version: informe.version });
+          await api.guardarSeccionInforme(t.id, editando, {
+            texto,
+            version: informe.version,
+          });
           await recargar();
           setEditando(null);
-          isla({ titulo: 'Guardaste la sección', texto: SECCION_INFORME[editando].titulo, icono: 'check' });
+          isla({
+            titulo: 'Guardaste la sección',
+            texto: SECCION_INFORME[editando].titulo,
+            icono: 'check',
+          });
           return true;
         }}
       />
@@ -158,7 +164,14 @@ function HojaSeccion({ seccion, texto: inicial, onCerrar, onGuardar }: { seccion
       }
     >
       <form id="mt-form-seccion" className="mt-form" onSubmit={(e) => void enviar(e)} noValidate>
-        <AreaTexto etiqueta={meta?.titulo ?? 'Texto'} valor={texto} onCambio={setTexto} maximo={1000} error={error} ayuda={`${meta?.ejemplo ?? ''}. Para dictar, tocá el micrófono del teclado. Sin datos del cliente.`} />
+        <AreaTexto
+          etiqueta={meta?.titulo ?? 'Texto'}
+          valor={texto}
+          onCambio={setTexto}
+          maximo={1000}
+          error={error}
+          ayuda={`${meta?.ejemplo ?? ''}. Para dictar, tocá el micrófono del teclado. Sin datos del cliente.`}
+        />
       </form>
       {guardar.fallo ? <ErrorCaja fallo={guardar.fallo} /> : null}
     </Hoja>
@@ -173,7 +186,17 @@ function HojaMandar({ abierta, informe, nombre, onCerrar, onMandado }: { abierta
   const fecha = meses ? sumarMeses(hoy, meses) : null;
   const faltan = informe.secciones.filter((s) => s.estado === 'falta').map((s) => SECCION_INFORME[s.seccion].titulo);
   async function mandar() {
-    const r = await envio.ejecutar(() => api.enviarInforme(informe.trabajoId, { garantiaDias: null, recordatorioMantenimiento: fecha, version: informe.version }, envio.clave()));
+    const r = await envio.ejecutar(() =>
+      api.enviarInforme(
+        informe.trabajoId,
+        {
+          garantiaDias: null,
+          recordatorioMantenimiento: fecha,
+          version: informe.version,
+        },
+        envio.clave(),
+      ),
+    );
     if (r.ok) onMandado();
   }
   return (
@@ -197,7 +220,15 @@ function HojaMandar({ abierta, informe, nombre, onCerrar, onMandado }: { abierta
     >
       <p>{`Le llega por el chat y en PDF, con un botón para dar su conformidad. Desde hoy corre la garantía que acordaste. Después de mandarlo no se puede cambiar.`}</p>
       {faltan.length ? <p className="mt-nota">{`Sin completar (no sale en el informe): ${faltan.join(', ')}.`}</p> : null}
-      <Segmento<OpcionRecordatorio> etiqueta="¿Te recordamos volver a revisarlo?" valor={recordar} onCambio={setRecordar} opciones={OPCIONES_RECORDATORIO.map((o) => ({ valor: o.valor, texto: o.texto }))} />
+      <Segmento<OpcionRecordatorio>
+        etiqueta="¿Te recordamos volver a revisarlo?"
+        valor={recordar}
+        onCambio={setRecordar}
+        opciones={OPCIONES_RECORDATORIO.map((o) => ({
+          valor: o.valor,
+          texto: o.texto,
+        }))}
+      />
       <p className="mt-nota">{fecha ? `Te avisamos a vos el ${textoFecha(fecha, hoy)}. Al cliente no le llega nada solo.` : 'Sin recordatorio.'}</p>
       {envio.fallo ? <ErrorCaja fallo={envio.fallo} onReintentar={() => void mandar()} /> : null}
     </Hoja>
