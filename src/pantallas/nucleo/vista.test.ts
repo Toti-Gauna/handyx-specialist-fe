@@ -12,7 +12,7 @@ describe('vista del núcleo', () => {
   });
   it('zona aproximada siempre, con la distancia si se midió', () => {
     assert.equal(textoZona({ zona: 'Centro', distanciaM: null }), 'Centro · zona aproximada');
-    assert.equal(textoZona({ zona: 'Centro', distanciaM: 2100 }).replace(/ /g, ' '), 'Centro · zona aproximada · a 2,1 km');
+    assert.equal(textoZona({ zona: 'Centro', distanciaM: 2100 }).replace(/\u00a0/g, ' '), 'Centro · zona aproximada · a 2,1 km');
   });
   it('hora de Buenos Aires y urgencia', () => {
     assert.equal(horaBA('2026-11-17T21:00:00.000Z'), '18:00');
