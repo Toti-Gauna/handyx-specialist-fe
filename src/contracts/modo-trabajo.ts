@@ -172,3 +172,26 @@ export const AvisoDemoraSchema = z.strictObject({
   minutos: z.union([z.literal(DEMORAS_MINUTOS[0]), z.literal(DEMORAS_MINUTOS[1])]),
 });
 export type AvisoDemora = z.infer<typeof AvisoDemoraSchema>;
+
+// ── Adjuntos del Taller al trabajo (T-Modelo3D «Guardar en el trabajo», T-Informe) ────────────────
+/** Lo que se guarda en el trabajo desde el Taller: el informe eléctrico en PDF, un modelo 3D o un plano. */
+export const TIPOS_ADJUNTO_TRABAJO = ['informe_taller', 'modelo_3d', 'plano'] as const;
+/** Modelos 3D en GLB (Android) o USDZ (Quick Look en iPhone); informes y planos en PDF o imagen. */
+export const LIMITE_MODELO_3D_BYTES = 15 * 1024 * 1024;
+
+export const AdjuntoTrabajoSchema = z.strictObject({
+  id: IdSchema,
+  tipo: z.enum(TIPOS_ADJUNTO_TRABAJO),
+  nombre: z.string().max(120),
+  /** URL firmada corta. Lo ven las partes del trabajo. Sin datos del cliente adentro (lo arma el Taller). */
+  url: z.url(),
+  bytes: z.int().positive(),
+  creadoEn: InstanteSchema,
+});
+export type AdjuntoTrabajo = z.infer<typeof AdjuntoTrabajoSchema>;
+
+/** Campos del multipart (el archivo va en `archivo`). */
+export const CamposAdjuntoTrabajoSchema = z.strictObject({
+  tipo: z.enum(TIPOS_ADJUNTO_TRABAJO),
+  nombre: z.string().trim().min(1).max(120),
+});
