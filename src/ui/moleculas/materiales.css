@@ -339,3 +339,9 @@
   outline: 3px solid var(--hd-azul-vivo);
   outline-offset: 2px;
 }
+.ui-eleccion__precio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+}

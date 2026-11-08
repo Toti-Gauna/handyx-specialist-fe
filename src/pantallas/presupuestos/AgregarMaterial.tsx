@@ -95,7 +95,7 @@ export function AgregarMaterial() {
             key={m.id}
             icono={iconoCategoria(m.categoria)}
             titulo={m.nombre}
-            detalle={elegido?.id === m.id ? `${pesosDesdeCentavos(m.precioCliente.centavos)} · actualizado ${antiguedad(m.actualizadoEn, hoy, false)}` : m.viejo ? `Hace más de un mes · ${antiguedad(m.actualizadoEn, hoy, true)}` : `Actualizado ${antiguedad(m.actualizadoEn, hoy, false)}`}
+            detalle={elegido?.id === m.id ? `${pesosDesdeCentavos(m.precioCliente.centavos)} · actualizado ${antiguedad(m.actualizadoEn, hoy, false)}` : m.viejo ? `Precio de ${antiguedad(m.actualizadoEn, hoy, true).toLowerCase()}` : `Actualizado ${antiguedad(m.actualizadoEn, hoy, false)}`}
             centavos={m.precioCliente.centavos}
             elegida={elegido?.id === m.id}
             cantidad={cantidad}

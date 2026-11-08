@@ -45,14 +45,16 @@ export function FilaEleccion({
         </span>
         <span className="ui-eleccion__texto">
           <strong>{titulo}</strong>
-          <span>{elegida ? `Elegido · ${detalle}` : detalle}</span>
+          {elegida ? (
+            <span>{`Elegido · ${detalle}`}</span>
+          ) : (
+            <span className="ui-eleccion__precio">
+              <Cifra centavos={centavos} tam="chico" />
+              <span>{detalle}</span>
+            </span>
+          )}
         </span>
-        {elegida ? null : (
-          <>
-            <Cifra centavos={centavos} tam="chico" como="strong" />
-            <BotonIcono icono="mas" tono="claro" etiqueta={`Elegir ${titulo}, ${pesosDesdeCentavos(centavos)}`} onClick={onElegir} />
-          </>
-        )}
+        {elegida ? null : <BotonIcono icono="mas" tono="claro" etiqueta={`Elegir ${titulo}, ${pesosDesdeCentavos(centavos)}`} onClick={onElegir} />}
       </div>
       {elegida ? <Stepper valor={cantidad} min={1} max={999} etiqueta={`Cantidad de ${titulo}`} unidad={unidad} onCambio={onCantidad} /> : null}
     </li>
