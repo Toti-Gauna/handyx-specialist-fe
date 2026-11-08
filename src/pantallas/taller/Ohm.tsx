@@ -24,7 +24,7 @@ export function Ohm() {
 
   return (
     <div className="fl-pantalla tl">
-      <BarraSuperior titulo="Ohm y referencias" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
+      <BarraSuperior titulo="Ohm y referencias" atras={RUTAS.tallerElectricidad.ruta} textoAtras="Volver a Electricidad" acciones={null} />
       <section className="tl-tarjeta" aria-labelledby="tl-ohm-t">
         <h2 id="tl-ohm-t" className="tl-tarjeta__titulo">Ley de Ohm y potencia</h2>
         <p className="tl-nota">Completá dos datos y te calculamos los otros dos.</p>

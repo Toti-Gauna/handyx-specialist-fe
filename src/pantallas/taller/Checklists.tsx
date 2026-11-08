@@ -42,7 +42,7 @@ export function Checklists() {
   if (!c) return null;
   return (
     <div className="fl-pantalla tl">
-      <BarraSuperior titulo="Checklists" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
+      <BarraSuperior titulo="Checklists" atras={RUTAS.tallerElectricidad.ruta} textoAtras="Volver a Electricidad" acciones={null} />
       <Opciones
         etiqueta="Tipo de trabajo"
         opciones={CHECKLISTS_ELECTRICIDAD.map((x) => ({ valor: x.id, texto: x.titulo }))}

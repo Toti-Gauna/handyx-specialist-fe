@@ -41,7 +41,7 @@ export function Consumo() {
 
   return (
     <div className="fl-pantalla tl">
-      <BarraSuperior titulo="Consumo y ahorro" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
+      <BarraSuperior titulo="Consumo y ahorro" atras={RUTAS.tallerElectricidad.ruta} textoAtras="Volver a Electricidad" acciones={null} />
       <section className="tl-tarjeta" aria-label="Tarifa">
         <CampoNumero etiqueta="Precio del kWh" unidad="$/kWh" valor={tarifa} onCambio={setTarifa} ayuda="Copialo de la factura de luz del cliente (incluí impuestos si querés el total)." />
       </section>

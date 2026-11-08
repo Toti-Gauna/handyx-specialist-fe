@@ -62,7 +62,7 @@ export function Dictado() {
 
   return (
     <div className="fl-pantalla tl">
-      <BarraSuperior titulo="Presupuesto dictado" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
+      <BarraSuperior titulo="Presupuesto dictado" atras={RUTAS.tallerElectricidad.ruta} textoAtras="Volver a Electricidad" acciones={null} />
       <section className="tl-tarjeta" aria-label="Contá el trabajo">
         <AreaTexto etiqueta="Contá qué hay que hacer" value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={1500} rows={4} ayuda="Tocá el micrófono de tu teclado para dictarlo. No hace falta el nombre ni la dirección del cliente." />
         <div className="tl-opciones__fila" aria-label="Ejemplos">

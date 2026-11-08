@@ -65,7 +65,7 @@ export function EtiquetadoIa() {
 
   return (
     <div className="fl-pantalla tl">
-      <BarraSuperior titulo="Etiquetas con IA" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
+      <BarraSuperior titulo="Etiquetas con IA" atras={RUTAS.tallerElectricidad.ruta} textoAtras="Volver a Electricidad" acciones={null} />
       <Aviso tono="azul" icono="escudo" titulo="Tu foto se cuida">
         Antes de mandarla, el teléfono la achica y le borra la ubicación y los datos del celular. Sacá solo el tablero: sin personas ni papeles.
       </Aviso>

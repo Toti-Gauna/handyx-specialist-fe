@@ -5,7 +5,7 @@ import { RUTAS } from '../../app/rutas.ts';
 import { BarraSuperior } from '../../kit/Navegacion.tsx';
 import { iluminacion, LUX, USOS_LUZ, type UsoLuz } from '../../taller/electricidad.ts';
 import { crearPanel, crearPlafon } from '../../taller/modelos3d.ts';
-import { BotonAr } from './BotonAr.tsx';
+import { BotonAr } from '../../tres/BotonAr.tsx';
 import { AvisoRevision, CampoNumero, mostrar, numero, Opciones, Resultado } from './piezas.tsx';
 import './taller.css';
 
@@ -22,7 +22,7 @@ export function Iluminacion() {
 
   return (
     <div className="fl-pantalla tl">
-      <BarraSuperior titulo="Iluminación" atras={RUTAS.taller.ruta} textoAtras="Volver al Taller" acciones={null} />
+      <BarraSuperior titulo="Iluminación" atras={RUTAS.tallerElectricidad.ruta} textoAtras="Volver a Electricidad" acciones={null} />
       <Opciones etiqueta="Uso del ambiente" opciones={USOS_LUZ.map((u) => ({ valor: u, texto: LUX[u].texto }))} valor={uso} onCambio={setUso} />
       <section className="tl-tarjeta tl-grilla2" aria-label="Datos">
         <CampoNumero etiqueta="Superficie" unidad="m²" valor={m2} onCambio={setM2} error={errM2} />
