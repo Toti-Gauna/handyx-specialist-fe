@@ -29,7 +29,9 @@ export function AgendaMes() {
   const dia = useCarga(() => api.turnosDelDia(elegido), [elegido]);
   const [anio, nMes] = mes.split('-').map(Number) as [number, number];
 
-  const barra = <BarraCompacta titulo="Agenda" subtitulo="Mes completo" hrefVolver={RUTAS.agenda.ruta} accion={<BotonIconoEnlace icono="lista" etiqueta="Ver como lista" href={RUTAS.agenda.ruta} />} />;
+  const barra = (
+    <BarraCompacta titulo="Agenda" subtitulo="Mes completo" hrefVolver={RUTAS.agenda.ruta} accion={<BotonIconoEnlace icono="lista" etiqueta="Ver como lista" href={RUTAS.agenda.ruta} />} />
+  );
   if (c.fallo && !c.datos) return <Fallo fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
 

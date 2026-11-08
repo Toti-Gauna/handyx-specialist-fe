@@ -53,7 +53,15 @@ function sembrado(): Extra {
       g(2, 1_650_000, 'materiales', 'Térmicas y cable', '2026-11-12', ID.t3),
       g(3, 1_200_000, 'combustible_viaticos', 'Nafta de la semana', '2026-11-10', null),
     ],
-    externos: [{ id: idFijo(0x2300 + 1), monto: monto(6_000_000), descripcion: 'Arreglo para un vecino', fecha: '2026-11-09', creadoEn: '2026-11-09T15:00:00.000Z' }],
+    externos: [
+      {
+        id: idFijo(0x2300 + 1),
+        monto: monto(6_000_000),
+        descripcion: 'Arreglo para un vecino',
+        fecha: '2026-11-09',
+        creadoEn: '2026-11-09T15:00:00.000Z',
+      },
+    ],
   };
 }
 
@@ -86,12 +94,27 @@ export function resumenIngresos(s: EstadoMock, mes: unknown): ResumenIngresos {
   for (const x of gastosMes) categorias.set(x.categoria, (categorias.get(x.categoria) ?? 0) + x.monto.centavos);
 
   // Ganancia por trabajo o etapa: los gastos del trabajo se suman a su primer cobro.
-  const grupos = new Map<string, { trabajoId: string; etapaId: string | null; titulo: string; cobrado: number; en: string }>();
+  const grupos = new Map<
+    string,
+    {
+      trabajoId: string;
+      etapaId: string | null;
+      titulo: string;
+      cobrado: number;
+      en: string;
+    }
+  >();
   for (const c of cobros) {
     // Los cobros de pasadas de prueba no son un trabajo del estado: cuentan igual, con su propio id.
     const trabajoId = c.trabajoId ?? c.id;
     const clave = `${trabajoId}:${c.etapaId ?? ''}`;
-    const g = grupos.get(clave) ?? { trabajoId, etapaId: c.etapaId, titulo: c.titulo, cobrado: 0, en: c.en };
+    const g = grupos.get(clave) ?? {
+      trabajoId,
+      etapaId: c.etapaId,
+      titulo: c.titulo,
+      cobrado: 0,
+      en: c.en,
+    };
     g.cobrado += c.centavos;
     if (c.en > g.en) g.en = c.en;
     grupos.set(clave, g);
@@ -117,8 +140,19 @@ export function resumenIngresos(s: EstadoMock, mes: unknown): ResumenIngresos {
   const neto = bruto - totalGastos;
   return ResumenIngresosSchema.parse({
     mes: m,
-    bruto: { total: monto(bruto), enHandyxVerificado: monto(verificado), enHandyxInformado: monto(informado), porFuera: monto(porFuera) },
-    gastos: { total: monto(totalGastos), porCategoria: [...categorias].map(([categoria, c]) => ({ categoria, total: monto(c) })) },
+    bruto: {
+      total: monto(bruto),
+      enHandyxVerificado: monto(verificado),
+      enHandyxInformado: monto(informado),
+      porFuera: monto(porFuera),
+    },
+    gastos: {
+      total: monto(totalGastos),
+      porCategoria: [...categorias].map(([categoria, c]) => ({
+        categoria,
+        total: monto(c),
+      })),
+    },
     neto: neto >= 0 ? monto(neto) : null,
     perdida: neto < 0 ? monto(-neto) : null,
     porTrabajo,
@@ -128,7 +162,10 @@ export function resumenIngresos(s: EstadoMock, mes: unknown): ResumenIngresos {
 function pagina<T>(lista: T[], cursor?: string | null): { items: T[]; siguienteCursor: string | null } {
   const desde = cursor ? Number(cursor) : 0;
   if (!Number.isInteger(desde) || desde < 0) throw fallo('validacion', 400, 'validacion', 'El cursor no es válido.');
-  return { items: lista.slice(desde, desde + PAGINA), siguienteCursor: desde + PAGINA < lista.length ? String(desde + PAGINA) : null };
+  return {
+    items: lista.slice(desde, desde + PAGINA),
+    siguienteCursor: desde + PAGINA < lista.length ? String(desde + PAGINA) : null,
+  };
 }
 
 export const ingresos = (s: EstadoMock) => ({
@@ -241,7 +278,11 @@ export const ingresos = (s: EstadoMock) => ({
     return idempotente(s, `ingreso-externo:${clave}`, () => {
       const ok = NuevoIngresoExternoSchema.safeParse(nuevo);
       if (!ok.success) throw zodAFallo(ok.error);
-      const x: IngresoExterno = { id: idNuevo(s), ...ok.data, creadoEn: iso(ahoraMs(s)) };
+      const x: IngresoExterno = {
+        id: idNuevo(s),
+        ...ok.data,
+        creadoEn: iso(ahoraMs(s)),
+      };
       extra(s).externos.push(x);
       return structuredClone(x);
     });

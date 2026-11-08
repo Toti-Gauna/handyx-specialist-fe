@@ -72,7 +72,17 @@ export function CalendarioObras({
           if (!c.fecha || !c.dia) return <span key={`h${i}`} />;
           const d = porFecha.get(c.fecha);
           const barras: Array<{ clave: string; tipo: string }> = [];
-          for (const o of d?.obras ?? []) barras.push({ clave: o.obraId, tipo: COLORES_OBRA[Math.max(0, obras.findIndex((x) => x.obraId === o.obraId)) % COLORES_OBRA.length] ?? 'azul' });
+          for (const o of d?.obras ?? [])
+            barras.push({
+              clave: o.obraId,
+              tipo:
+                COLORES_OBRA[
+                  Math.max(
+                    0,
+                    obras.findIndex((x) => x.obraId === o.obraId),
+                  ) % COLORES_OBRA.length
+                ] ?? 'azul',
+            });
           if (d && d.trabajos > 0) barras.push({ clave: 'trabajos', tipo: 'amarillo' });
           if (d && d.hechos > 0) barras.push({ clave: 'hechos', tipo: 'gris' });
           const partes = [`${c.dia} de ${NOMBRES_MES[mes - 1]}`];
@@ -82,7 +92,9 @@ export function CalendarioObras({
             if (d.trabajos > 0) partes.push(d.trabajos === 1 ? '1 trabajo' : `${d.trabajos} trabajos`);
             if (d.hechos > 0) partes.push(d.hechos === 1 ? '1 hecho' : `${d.hechos} hechos`);
           } else partes.push('sin nada');
-          const clases = ['ui-agmes__dia', c.fecha === valor ? 'ui-agmes__dia--on' : '', c.fecha === hoy ? 'ui-agmes__dia--hoy' : '', c.fecha < hoy ? 'ui-agmes__dia--pasado' : ''].filter(Boolean).join(' ');
+          const clases = ['ui-agmes__dia', c.fecha === valor ? 'ui-agmes__dia--on' : '', c.fecha === hoy ? 'ui-agmes__dia--hoy' : '', c.fecha < hoy ? 'ui-agmes__dia--pasado' : '']
+            .filter(Boolean)
+            .join(' ');
           return (
             <button key={c.fecha} type="button" className={clases} aria-pressed={c.fecha === valor} aria-label={partes.join(', ')} onClick={() => onElegir(c.fecha as string)}>
               <span className="ui-agmes__num">{c.dia}</span>

@@ -111,7 +111,12 @@ export const NOMBRE_CATEGORIA: Record<CategoriaGasto, string> = {
   herramientas: 'Herramientas',
   otro: 'Otros gastos',
 };
-export const ICONO_CATEGORIA: Record<CategoriaGasto, NombreIconoUi> = { materiales: 'caja', combustible_viaticos: 'camion', herramientas: 'herramienta', otro: 'ticket' };
+export const ICONO_CATEGORIA: Record<CategoriaGasto, NombreIconoUi> = {
+  materiales: 'caja',
+  combustible_viaticos: 'camion',
+  herramientas: 'herramienta',
+  otro: 'ticket',
+};
 
 export interface TramoBarra {
   clave: 'neto' | CategoriaGasto;
@@ -127,7 +132,11 @@ export interface TramoBarra {
  */
 export function tramosNeto(r: Pick<ResumenIngresos, 'bruto' | 'gastos' | 'neto'>): TramoBarra[] {
   const bruto = r.bruto.total.centavos;
-  const gastos = r.gastos.porCategoria.map((c) => ({ clave: c.categoria, texto: NOMBRE_CATEGORIA[c.categoria], centavos: c.total.centavos }));
+  const gastos = r.gastos.porCategoria.map((c) => ({
+    clave: c.categoria,
+    texto: NOMBRE_CATEGORIA[c.categoria],
+    centavos: c.total.centavos,
+  }));
   const totalGastos = gastos.reduce((n, g) => n + g.centavos, 0);
   const base = Math.max(bruto, totalGastos);
   const pct = (c: number): number => (base === 0 ? 0 : Math.round((c / base) * 1000) / 10);

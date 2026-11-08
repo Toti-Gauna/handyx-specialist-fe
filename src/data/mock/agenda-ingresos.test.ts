@@ -10,7 +10,16 @@ import { ID } from './fixtures.ts';
 const nuevo = () => crearApiMockConEstado({ escenario: 'habilitado', latenciaMs: 0 });
 let n = 0;
 const clave = () => `00000000-0000-4000-8000-${(0xdef000 + ++n).toString(16).padStart(12, '0')}`;
-const gasto = (o: Partial<NuevoGasto> = {}): NuevoGasto => ({ monto: monto(1_300_000), categoria: 'materiales', descripcion: 'Cartucho', fecha: '2026-11-17', trabajoId: null, registrarGasto: true, cobrarAlCliente: false, ...o });
+const gasto = (o: Partial<NuevoGasto> = {}): NuevoGasto => ({
+  monto: monto(1_300_000),
+  categoria: 'materiales',
+  descripcion: 'Cartucho',
+  fecha: '2026-11-17',
+  trabajoId: null,
+  registrarGasto: true,
+  cobrarAlCliente: false,
+  ...o,
+});
 
 describe('agenda (mock)', () => {
   it('el resumen cuenta pasadas, hoy y futuras y trae la semana entera', async () => {
@@ -32,7 +41,10 @@ describe('agenda (mock)', () => {
     const p = await api.turnosAgenda('pasadas');
     for (const t of p.items) assert.ok(TurnoAgendaSchema.safeParse(t).success);
     const inicios = p.items.map((t) => Date.parse(t.inicio));
-    assert.deepEqual(inicios, [...inicios].sort((a, b) => b - a));
+    assert.deepEqual(
+      inicios,
+      [...inicios].sort((a, b) => b - a),
+    );
     assert.ok(p.items.some((t) => t.cobro?.estado === 'verificado'));
     assert.ok(p.items.some((t) => t.cobro?.estado === 'reportado'));
   });
@@ -69,7 +81,10 @@ describe('agenda (mock)', () => {
   it('los turnos de un día salen en orden y sin cancelados', async () => {
     const { api } = nuevo();
     const dia = await api.turnosDelDia('2026-11-17');
-    assert.deepEqual(dia.map((t) => t.titulo), ['Revoque', 'Pierde la canilla']);
+    assert.deepEqual(
+      dia.map((t) => t.titulo),
+      ['Revoque', 'Pierde la canilla'],
+    );
     assert.ok(!(await api.turnosDelDia('2026-11-09')).some((t) => t.estado === 'cancelado'));
     await assert.rejects(api.turnosDelDia('17/11'), { tipo: 'validacion' });
   });

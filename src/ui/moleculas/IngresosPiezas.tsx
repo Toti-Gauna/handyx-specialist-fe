@@ -19,7 +19,13 @@ export function SelectorMes({ nombre, onAnterior, onSiguiente, siguienteDeshabil
   );
 }
 
-const COLOR_TRAMO: Record<string, string> = { neto: 'blanco', materiales: 'amarillo', combustible_viaticos: 'noche', herramientas: 'arena', otro: 'gris' };
+const COLOR_TRAMO: Record<string, string> = {
+  neto: 'blanco',
+  materiales: 'amarillo',
+  combustible_viaticos: 'noche',
+  herramientas: 'arena',
+  otro: 'gris',
+};
 
 /** La barra del bruto: lo que queda (neto) y lo que se va en cada gasto, dibujada en SVG. Dicha completa para el lector. */
 export function BarraNeto({ tramos }: { tramos: readonly TramoBarra[] }) {
@@ -38,7 +44,21 @@ export function BarraNeto({ tramos }: { tramos: readonly TramoBarra[] }) {
 }
 
 /** Una línea de la cuenta: texto a la izquierda, importe a la derecha; con un cuadradito de color si es un gasto. */
-export function LineaCuenta({ texto, centavos, resta = false, fuerte = false, suave = false, muestra }: { texto: ReactNode; centavos: number; resta?: boolean; fuerte?: boolean; suave?: boolean; muestra?: string }) {
+export function LineaCuenta({
+  texto,
+  centavos,
+  resta = false,
+  fuerte = false,
+  suave = false,
+  muestra,
+}: {
+  texto: ReactNode;
+  centavos: number;
+  resta?: boolean;
+  fuerte?: boolean;
+  suave?: boolean;
+  muestra?: string;
+}) {
   return (
     <div className={`ui-linea-cuenta${fuerte ? ' ui-linea-cuenta--fuerte' : ''}${suave ? ' ui-linea-cuenta--suave' : ''}`}>
       <span>
@@ -61,7 +81,13 @@ export function FilaGanancia({ titulo, cobrado, gastos, ganancia, perdida }: { t
       <span className="ui-ganancia__texto">
         <strong>{titulo}</strong>
         <span>
-          <Cifra centavos={cobrado} tam="chico" /> cobrados{gastos > 0 ? <> − <Cifra centavos={gastos} tam="chico" /> de gastos</> : null}
+          <Cifra centavos={cobrado} tam="chico" /> cobrados
+          {gastos > 0 ? (
+            <>
+              {' '}
+              − <Cifra centavos={gastos} tam="chico" /> de gastos
+            </>
+          ) : null}
         </span>
       </span>
       <span className="ui-ganancia__valor">
@@ -82,7 +108,21 @@ export function FilaGanancia({ titulo, cobrado, gastos, ganancia, perdida }: { t
 }
 
 /** Un gasto cargado, con un botón para borrarlo (la forma de deshacer). */
-export function FilaGasto({ icono, titulo, detalle, centavos, onBorrar, deshabilitado = false }: { icono: NombreIconoUi; titulo: string; detalle: string; centavos: number; onBorrar(): void; deshabilitado?: boolean }) {
+export function FilaGasto({
+  icono,
+  titulo,
+  detalle,
+  centavos,
+  onBorrar,
+  deshabilitado = false,
+}: {
+  icono: NombreIconoUi;
+  titulo: string;
+  detalle: string;
+  centavos: number;
+  onBorrar(): void;
+  deshabilitado?: boolean;
+}) {
   return (
     <li className="ui-gasto">
       <span className="ui-gasto__ico" aria-hidden="true">

@@ -17,14 +17,24 @@ export const ingresosHttp = (c: ClienteHttp): ApiIngresos => ({
     return c.pedir('GET', `/v1/especialista/gastos${texto ? `?${texto}` : ''}`, paginado(GastoSchema));
   },
   cargarGasto: (nuevo, ticket, clave) => {
-    if (!ticket) return c.pedir('POST', '/v1/especialista/gastos', GastoSchema, { cuerpo: nuevo, idempotencyKey: clave });
+    if (!ticket)
+      return c.pedir('POST', '/v1/especialista/gastos', GastoSchema, {
+        cuerpo: nuevo,
+        idempotencyKey: clave,
+      });
     // Con la foto del ticket: multipart con el JSON en la parte `datos` y la foto en `ticket`.
     const f = new FormData();
     f.set('datos', new Blob([JSON.stringify(nuevo)], { type: 'application/json' }));
     f.set('ticket', ticket, 'ticket.jpg');
-    return c.pedir('POST', '/v1/especialista/gastos', GastoSchema, { formulario: f, idempotencyKey: clave });
+    return c.pedir('POST', '/v1/especialista/gastos', GastoSchema, {
+      formulario: f,
+      idempotencyKey: clave,
+    });
   },
-  corregirGasto: (gid, cambio) => c.pedir('PATCH', `/v1/especialista/gastos/${id(gid)}`, GastoSchema, { cuerpo: cambio }),
+  corregirGasto: (gid, cambio) =>
+    c.pedir('PATCH', `/v1/especialista/gastos/${id(gid)}`, GastoSchema, {
+      cuerpo: cambio,
+    }),
   borrarGasto: (gid) => c.pedir('DELETE', `/v1/especialista/gastos/${id(gid)}`, Nada),
   ingresosExternos: (mes) => c.pedir('GET', `/v1/especialista/ingresos-externos?mes=${id(mes)}`, z.array(IngresoExternoSchema)),
   cargarIngresoExterno: (nuevo, clave) => c.pedir('POST', '/v1/especialista/ingresos-externos', IngresoExternoSchema, { cuerpo: nuevo, idempotencyKey: clave }),

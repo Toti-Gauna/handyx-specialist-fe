@@ -445,7 +445,9 @@
   padding: 18px;
   border-radius: 26px;
   background: var(--ui-azul);
-  box-shadow: 0 5px 0 var(--ui-hondo), var(--ui-elev-1);
+  box-shadow:
+    0 5px 0 var(--ui-hondo),
+    var(--ui-elev-1);
   color: #fff;
 }
 .ui-ing-cabeza__fila {
@@ -733,4 +735,32 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+}
+.ui-ing-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ui-ing-seccion__titulo {
+  margin: 0;
+  font-size: var(--ui-texto-base);
+  font-weight: 800;
+}
+.ui-pie-columna {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ui-gasto-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ui-gasto-form__marcas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }

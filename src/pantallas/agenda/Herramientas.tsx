@@ -18,7 +18,11 @@ import { PantallaRaiz } from '../../ui/plantillas/Plantillas.tsx';
 import { Fallo } from './piezas.tsx';
 
 /** Rutas de los lotes que todavía no están: 2.2 (presupuestos), 2.4 (equipamiento) y la ola 4 (ferretería). */
-export const ACCESOS_TALLER = { presupuestos: '/taller/presupuestos/', equipamiento: '/taller/equipamiento/', ferreteria: '/taller/ferreteria/' } as const;
+export const ACCESOS_TALLER = {
+  presupuestos: '/taller/presupuestos/',
+  equipamiento: '/taller/equipamiento/',
+  ferreteria: '/taller/ferreteria/',
+} as const;
 
 const CORTO = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'] as const;
 
@@ -33,7 +37,13 @@ export function Herramientas() {
   if (!c.datos) return <Cargando />;
   const { agenda, ingresos } = c.datos;
 
-  const semana: DiaSemanaMini[] = agenda.semana.map((d) => ({ fecha: d.fecha, corto: CORTO[new Date(`${d.fecha}T12:00:00.000Z`).getUTCDay()] ?? '', dia: Number(d.fecha.slice(8)), turnos: d.turnos, hoy: d.fecha === agenda.hoy }));
+  const semana: DiaSemanaMini[] = agenda.semana.map((d) => ({
+    fecha: d.fecha,
+    corto: CORTO[new Date(`${d.fecha}T12:00:00.000Z`).getUTCDay()] ?? '',
+    dia: Number(d.fecha.slice(8)),
+    turnos: d.turnos,
+    hoy: d.fecha === agenda.hoy,
+  }));
   const detalleAgenda = `Hoy, ${textoTurnos(agenda.deHoy).toLowerCase()}${agenda.proximo ? ` · próximo ${hora(agenda.proximo.inicio)}` : ''}`;
 
   return (
@@ -44,7 +54,13 @@ export function Herramientas() {
         <TarjetaAgendaTaller href={RUTAS.agenda.ruta} titulo="Agenda" detalle={detalleAgenda} semana={semana} />
         <div className="ui-tx-mosaicos">
           {ingresos.neto ? (
-            <ResumenTarjeta icono="grafico" titulo="Ingresos y gastos" centavos={ingresos.neto.centavos} detalle={`Neto de ${nombreMes(mes).split(' ')[0]?.toLowerCase()}`} href={RUTAS.ingresos.ruta} />
+            <ResumenTarjeta
+              icono="grafico"
+              titulo="Ingresos y gastos"
+              centavos={ingresos.neto.centavos}
+              detalle={`Neto de ${nombreMes(mes).split(' ')[0]?.toLowerCase()}`}
+              href={RUTAS.ingresos.ruta}
+            />
           ) : (
             <ResumenTarjeta icono="grafico" titulo="Ingresos y gastos" texto="Gastos mayores" detalle={`Este mes gastaste más de lo que cobraste`} href={RUTAS.ingresos.ruta} />
           )}

@@ -10,7 +10,13 @@ export function Fallo({ fallo, onReintentar }: { fallo: FalloApi; onReintentar()
   const sinRed = fallo.tipo === 'red' || fallo.tipo === 'timeout';
   return (
     <div className="tg-fallo">
-      <EstadoError tipo={sinRed ? 'sin_conexion' : 'servidor'} mensaje={fallo.detalle?.mensaje} codigo={fallo.detalle?.requestId ?? null} onReintentar={onReintentar} hrefSoporte={RUTAS.soporte.ruta} />
+      <EstadoError
+        tipo={sinRed ? 'sin_conexion' : 'servidor'}
+        mensaje={fallo.detalle?.mensaje}
+        codigo={fallo.detalle?.requestId ?? null}
+        onReintentar={onReintentar}
+        hrefSoporte={RUTAS.soporte.ruta}
+      />
     </div>
   );
 }

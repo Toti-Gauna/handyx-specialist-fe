@@ -50,11 +50,21 @@ describe('fechas de la agenda', () => {
   it('agrupa por día conservando el orden y suma sin contar ofertas', () => {
     const l = [
       turno('2026-11-17T21:00:00.000Z', { monto: monto(4_700_000) }),
-      turno('2026-11-17T23:00:00.000Z', { monto: monto(1_000_000), tipo: 'oferta', estado: 'oferta_pendiente' }),
+      turno('2026-11-17T23:00:00.000Z', {
+        monto: monto(1_000_000),
+        tipo: 'oferta',
+        estado: 'oferta_pendiente',
+      }),
       turno('2026-11-18T13:00:00.000Z'),
     ];
     const g = agruparPorDia(l, diaLocal);
-    assert.deepEqual(g.map((x) => [x.fecha, x.turnos.length]), [['2026-11-17', 2], ['2026-11-18', 1]]);
+    assert.deepEqual(
+      g.map((x) => [x.fecha, x.turnos.length]),
+      [
+        ['2026-11-17', 2],
+        ['2026-11-18', 1],
+      ],
+    );
     assert.equal(totalDelDia(g[0]!.turnos), 4_700_000);
   });
   it('un turno de la noche cae en su día de Buenos Aires, no en el UTC', () => {
@@ -85,19 +95,45 @@ describe('estados con ícono y texto', () => {
 
 describe('la barra del neto', () => {
   const r = (bruto: number, gastos: Array<['materiales' | 'combustible_viaticos', number]>, neto: number | null) => ({
-    bruto: { total: monto(bruto), enHandyxVerificado: monto(0), enHandyxInformado: monto(0), porFuera: monto(0) },
-    gastos: { total: monto(gastos.reduce((n, g) => n + g[1], 0)), porCategoria: gastos.map(([categoria, c]) => ({ categoria, total: monto(c) })) },
+    bruto: {
+      total: monto(bruto),
+      enHandyxVerificado: monto(0),
+      enHandyxInformado: monto(0),
+      porFuera: monto(0),
+    },
+    gastos: {
+      total: monto(gastos.reduce((n, g) => n + g[1], 0)),
+      porCategoria: gastos.map(([categoria, c]) => ({
+        categoria,
+        total: monto(c),
+      })),
+    },
     neto: neto === null ? null : monto(neto),
   });
   it('reparte el bruto entre el neto y cada gasto', () => {
-    const t = tramosNeto(r(32_000_000, [['materiales', 6_850_000], ['combustible_viaticos', 1_200_000]], 23_950_000));
-    assert.deepEqual(t.map((x) => x.clave), ['neto', 'materiales', 'combustible_viaticos']);
+    const t = tramosNeto(
+      r(
+        32_000_000,
+        [
+          ['materiales', 6_850_000],
+          ['combustible_viaticos', 1_200_000],
+        ],
+        23_950_000,
+      ),
+    );
+    assert.deepEqual(
+      t.map((x) => x.clave),
+      ['neto', 'materiales', 'combustible_viaticos'],
+    );
     assert.equal(Math.round(t.reduce((n, x) => n + x.porcentaje, 0)), 100);
     assert.equal(textoBarra(t), '75 % neto, 21 % materiales, 4 % combustible y viáticos');
   });
   it('con pérdida, toda la barra es de gastos', () => {
     const t = tramosNeto(r(1_000_000, [['materiales', 5_000_000]], null));
-    assert.deepEqual(t.map((x) => [x.clave, x.porcentaje]), [['materiales', 100]]);
+    assert.deepEqual(
+      t.map((x) => [x.clave, x.porcentaje]),
+      [['materiales', 100]],
+    );
   });
   it('sin ingresos ni gastos no hay barra y se dice', () => {
     const t = tramosNeto(r(0, [], 0));

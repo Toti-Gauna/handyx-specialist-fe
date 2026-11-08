@@ -2,17 +2,7 @@
 // arma los turnos desde los trabajos, las jornadas de obra y las ofertas pendientes del estado, y suma un historial de
 // pasadas de PRUEBA (nombres ficticios) para que las pasadas tengan qué mostrar. Una oferta no es un turno; el cobro de una
 // pasada sigue la regla reportado ≠ verificado. Todo es sintético.
-import {
-  AgendaMesSchema,
-  FILTROS_MES,
-  ResumenAgendaSchema,
-  TurnoAgendaSchema,
-  VISTAS_AGENDA,
-  type AgendaMes,
-  type ResumenAgenda,
-  type TurnoAgenda,
-  type VistaAgenda,
-} from '../../contracts/agenda.ts';
+import { AgendaMesSchema, FILTROS_MES, ResumenAgendaSchema, TurnoAgendaSchema, VISTAS_AGENDA, type AgendaMes, type ResumenAgenda, type TurnoAgenda, type VistaAgenda } from '../../contracts/agenda.ts';
 import { monto } from '../../contracts/dinero.ts';
 import { MesSchema, FechaSchema } from '../../contracts/comun.ts';
 import type { EstadoPago } from '../../contracts/maquinas.ts';
@@ -28,7 +18,13 @@ const DIA = 24 * HORA;
 const DOS_HORAS = 2 * HORA;
 const PAGINA = 20;
 
-export const diaBA = (ms: number): string => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Argentina/Buenos_Aires', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms));
+export const diaBA = (ms: number): string =>
+  new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(ms));
 export const mesBA = (ms: number): string => diaBA(ms).slice(0, 7);
 
 const iniciales = (n: string): string =>
@@ -110,7 +106,10 @@ export function todosLosTurnos(s: EstadoMock): TurnoAgenda[] {
     if (tr.estado === 'cancelado') continue;
     const pedido = s.pedidos.find((p) => p.pub.id === tr.pedidoId);
     const titulo = tituloTrabajo(t, pedido?.pub);
-    const cliente = { nombre: t.contraparte, iniciales: iniciales(t.contraparte) };
+    const cliente = {
+      nombre: t.contraparte,
+      iniciales: iniciales(t.contraparte),
+    };
     if (tr.tipo === 'obra' && t.jornadas.length > 0) {
       for (const j of t.jornadas) {
         const hecho = j.estado === 'hecha';
@@ -216,11 +215,27 @@ export function cobrosDelEstado(s: EstadoMock): CobroDeTurno[] {
     const pedido = t ? s.pedidos.find((x) => x.pub.id === t.trabajo.pedidoId) : undefined;
     const etapa = t?.etapas.find((e) => e.id === p.etapaId);
     const base = t ? tituloTrabajo(t, pedido?.pub) : p.descripcion;
-    r.push({ id: p.id, trabajoId: p.trabajoId, etapaId: p.etapaId, titulo: etapa ? `${base} · etapa ${etapa.orden}` : base, centavos: p.monto.centavos, estado: p.estado, en: p.actualizadoEn });
+    r.push({
+      id: p.id,
+      trabajoId: p.trabajoId,
+      etapaId: p.etapaId,
+      titulo: etapa ? `${base} · etapa ${etapa.orden}` : base,
+      centavos: p.monto.centavos,
+      estado: p.estado,
+      en: p.actualizadoEn,
+    });
   }
   for (const { turno } of historial()) {
     if (!turno.cobro) continue;
-    r.push({ id: turno.id, trabajoId: null, etapaId: null, titulo: turno.titulo, centavos: turno.cobro.monto.centavos, estado: turno.cobro.estado, en: turno.inicio });
+    r.push({
+      id: turno.id,
+      trabajoId: null,
+      etapaId: null,
+      titulo: turno.titulo,
+      centavos: turno.cobro.monto.centavos,
+      estado: turno.cobro.estado,
+      en: turno.inicio,
+    });
   }
   return r;
 }
@@ -238,11 +253,12 @@ export function resumenAgenda(s: EstadoMock): ResumenAgenda {
   const lunes = lunesDe(hoy);
   const semana = Array.from({ length: 7 }, (_, i) => {
     const fecha = new Date(Date.parse(`${lunes}T12:00:00.000Z`) + i * DIA).toISOString().slice(0, 10);
-    return { fecha, turnos: turnos.filter((t) => t.tipo !== 'oferta' && t.estado !== 'cancelado' && diaBA(Date.parse(t.inicio)) === fecha).length };
+    return {
+      fecha,
+      turnos: turnos.filter((t) => t.tipo !== 'oferta' && t.estado !== 'cancelado' && diaBA(Date.parse(t.inicio)) === fecha).length,
+    };
   });
-  const proximo = turnos
-    .filter((t) => t.tipo !== 'oferta' && (t.estado === 'agendado' || t.estado === 'cambio_pendiente') && Date.parse(t.inicio) > ahora)
-    .sort(porInicio)[0];
+  const proximo = turnos.filter((t) => t.tipo !== 'oferta' && (t.estado === 'agendado' || t.estado === 'cambio_pendiente') && Date.parse(t.inicio) > ahora).sort(porInicio)[0];
   const cobradoMes = cobrosDelEstado(s)
     .filter((c) => c.estado === 'verificado' && mesBA(Date.parse(c.en)) === mesBA(ahora))
     .reduce((n, c) => n + c.centavos, 0);
@@ -270,7 +286,10 @@ export function turnosAgenda(s: EstadoMock, vista: unknown, cursor?: string | nu
   const desde = cursor ? Number(cursor) : 0;
   if (!Number.isInteger(desde) || desde < 0) throw fallo('validacion', 400, 'validacion', 'El cursor no es válido.');
   const items = lista.slice(desde, desde + PAGINA);
-  return { items, siguienteCursor: desde + PAGINA < lista.length ? String(desde + PAGINA) : null };
+  return {
+    items,
+    siguienteCursor: desde + PAGINA < lista.length ? String(desde + PAGINA) : null,
+  };
 }
 
 export function agendaMes(s: EstadoMock, mes: unknown, filtro: unknown = 'todo'): AgendaMes {
@@ -305,7 +324,12 @@ export function agendaMes(s: EstadoMock, mes: unknown, filtro: unknown = 'todo')
     mes: m.data,
     dias: [...dias.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([fecha, d]) => ({ fecha, trabajos: d.trabajos, obras: [...d.obras].map(([obraId, nombre]) => ({ obraId, nombre })), hechos: d.hechos })),
+      .map(([fecha, d]) => ({
+        fecha,
+        trabajos: d.trabajos,
+        obras: [...d.obras].map(([obraId, nombre]) => ({ obraId, nombre })),
+        hechos: d.hechos,
+      })),
     totales: { trabajos, obras: obrasDelMes.size },
   });
 }

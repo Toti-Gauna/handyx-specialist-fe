@@ -126,14 +126,21 @@ function Hoy({ hoy, ocupados }: { hoy: string; ocupados: readonly string[] }) {
 /** Una vista paginada: la primera página y las que se piden después con «Ver más», sin perder lo ya visto. */
 function usePaginas(vista: 'pasadas' | 'futuras') {
   const c = useCarga(() => api.turnosAgenda(vista), [vista]);
-  const [extra, setExtra] = useState<{ items: TurnoAgenda[]; siguiente: string | null } | null>(null);
+  const [extra, setExtra] = useState<{
+    items: TurnoAgenda[];
+    siguiente: string | null;
+  } | null>(null);
   const mas = useAccion();
   const items = c.datos ? [...c.datos.items, ...(extra?.items ?? [])] : [];
   const siguiente = extra ? extra.siguiente : (c.datos?.siguienteCursor ?? null);
   async function verMas() {
     if (!siguiente) return;
     const r = await mas.ejecutar(() => api.turnosAgenda(vista, siguiente));
-    if (r.ok) setExtra((p) => ({ items: [...(p?.items ?? []), ...r.valor.items], siguiente: r.valor.siguienteCursor }));
+    if (r.ok)
+      setExtra((p) => ({
+        items: [...(p?.items ?? []), ...r.valor.items],
+        siguiente: r.valor.siguienteCursor,
+      }));
   }
   return { c, items, siguiente, mas, verMas };
 }

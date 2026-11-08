@@ -47,7 +47,11 @@ export function TurnoTarjeta({ desde, hasta, titulo, detalle, chip, cliente, equ
           <strong className="ui-turno__titulo">{titulo}</strong>
           <ChipDatos d={chip} />
         </span>
-        <span className="ui-turno__detalle">{centavos ? <Cifra centavos={centavos} tam="chico" /> : null}{centavos ? ' · ' : ''}{detalle}</span>
+        <span className="ui-turno__detalle">
+          {centavos ? <Cifra centavos={centavos} tam="chico" /> : null}
+          {centavos ? ' · ' : ''}
+          {detalle}
+        </span>
         {cliente || equipo > 0 ? (
           <span className="ui-turno__gente">
             {cliente ? (
@@ -105,7 +109,17 @@ export function FilaPasada({ titulo, detalle, centavos, chip, href }: { titulo: 
       {href ? <Icono nombre="flecha" className="ui-pasada__flecha" /> : null}
     </>
   );
-  return <li>{href ? <Link className="ui-pasada ui-pasada--tocable" href={href}>{cuerpo}</Link> : <div className="ui-pasada">{cuerpo}</div>}</li>;
+  return (
+    <li>
+      {href ? (
+        <Link className="ui-pasada ui-pasada--tocable" href={href}>
+          {cuerpo}
+        </Link>
+      ) : (
+        <div className="ui-pasada">{cuerpo}</div>
+      )}
+    </li>
+  );
 }
 
 /** Los dos datos de arriba de las pasadas: cuántas hubo este mes y cuánto se cobró (verificado). */
