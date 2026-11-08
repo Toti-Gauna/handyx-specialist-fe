@@ -193,3 +193,24 @@
   font-size: var(--ui-texto-chico);
   text-align: center;
 }
+.ui-nota {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-aviso-ok {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--ui-exito-tinte);
+  color: var(--ui-exito-hondo);
+  font-weight: 700;
+}
+.ui-edicion {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ui-edicion p {
+  margin: 0;
+}
