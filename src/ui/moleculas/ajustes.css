@@ -180,3 +180,16 @@
   font-size: var(--ui-texto-chico);
   opacity: 0.85;
 }
+
+/* ── Cuenta: mosaicos de resumen y pie ────────────────── */
+.ui-resumenes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  gap: 12px;
+}
+.ui-pie-cuenta {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  text-align: center;
+}
