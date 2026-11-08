@@ -116,3 +116,89 @@
   margin-top: 2px;
   color: var(--ui-azul);
 }
+.pr-explica {
+  margin: 6px 0 0;
+  color: #fff;
+  font-size: var(--ui-texto-base);
+  line-height: 1.4;
+}
+.pr-subtitulo {
+  margin: 8px 0 0;
+  font-family: var(--ui-titulos);
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+/* ── Foto de la lista: la pantalla oscura con la hoja leída (H0-PreciosFoto) ── */
+.pr-oscura {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background: var(--ui-noche);
+  color: #fff;
+}
+.pr-oscura .ui-pantalla {
+  background: transparent;
+}
+.pr-oscura .ui-barra-compacta {
+  background: transparent;
+  color: #fff;
+}
+.pr-oscura .ui-barra-compacta h1 {
+  color: #fff;
+}
+.pr-oscura .ui-accion-fija {
+  border-top-color: rgb(255 255 255 / 0.12);
+  background: var(--ui-noche);
+}
+.pr-oscura__titulo {
+  margin: 0;
+  color: #fff;
+  font-family: var(--ui-titulos);
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-align: center;
+}
+.pr-oscura__texto {
+  margin: 0;
+  color: #dce6f5;
+  font-size: var(--ui-texto-base);
+  line-height: 1.4;
+  text-align: center;
+}
+.pr-fila-acciones {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.pr-fila-acciones .ui-boton {
+  flex: 1;
+}
+.pr-fila-acciones .ui-boton-icono {
+  width: 64px;
+  height: 56px;
+  border-radius: 16px;
+}
+.pr-consejos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-base);
+  line-height: 1.4;
+}
+.pr-li {
+  list-style: none;
+}
+.pr-li + .ui-casilla-fila,
+.ui-casilla-fila + .pr-li {
+  border-top: 1px solid var(--ui-borde);
+}
+.pr-corregir {
+  color: var(--ui-azul);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { monto } from '../contracts/dinero.ts';
-import { agruparRenglones, entendidas, interpretarLista, leerPrecio, limpiarNombre, unidadDe } from './lectura.ts';
+import { agruparRenglones, entendidas, interpretarLista, leerPrecio, limpiarNombre, nombrePropio, unidadDe } from './lectura.ts';
 import { antiguedad, cantidadConUnidad, margenBps, origenPrecio, resultadoLectura, resumenOpciones, textoMandar, variacionHistorial } from './vista.ts';
 
 describe('lectura de la lista en el teléfono', () => {
@@ -46,6 +46,8 @@ describe('lectura de la lista en el teléfono', () => {
       ],
     );
     assert.equal(entendidas(l), 2);
+    assert.equal(nombrePropio('CORRALÓN SIMULACIÓN'), 'Corralón Simulación');
+    assert.equal(nombrePropio('Corralón del Puerto'), 'Corralón del Puerto');
     assert.deepEqual(interpretarLista(['sin nada que leer']).filas, []);
   });
 });

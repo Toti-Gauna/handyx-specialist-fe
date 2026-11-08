@@ -110,3 +110,9 @@ export function interpretarLista(renglones: readonly string[]): ListaLeida {
 
 /** Cuántas filas se entendieron (las que se marcan en la foto). */
 export const entendidas = (l: ListaLeida): number => l.filas.filter((f) => f.centavos !== null).length;
+
+/** "CORRALÓN SIMULACIÓN" → "Corralón Simulación" (el encabezado de la lista suele venir en mayúsculas). */
+export function nombrePropio(t: string): string {
+  if (t !== t.toUpperCase()) return t;
+  return t.toLowerCase().replace(/(^|\s)(\p{L})/gu, (_, a: string, b: string) => a + b.toUpperCase());
+}
