@@ -121,3 +121,29 @@ Quien reporta nunca verifica. Ningún estado implica que Handy recibió dinero.
 
 `solicitada → en_proceso → completada | completada_con_retencion`; `solicitada → cancelada` (la persona). El estado
 se muestra tal cual: no hay éxito ficticio.
+
+## Bloque Taller (contrato 0.11.0)
+
+Cada máquina vive en el archivo de su dominio (`src/contracts/<dominio>.ts`) y tiene sus pruebas en
+`src/contracts/bloque.test.ts`. Actor nuevo: `ferreteria` (el equipo de una ferretería adherida).
+
+- **Presupuesto** (`presupuestos.ts`): `borrador → enviado` (especialista) → `visto` (sistema) →
+  `aceptado | rechazado` (solo el **usuario**); `enviado | visto → reemplazado | vencido` (sistema). Una versión enviada
+  no se edita: se arma otra y al mandarla la anterior queda reemplazada.
+- **Conformidad** (`modo-trabajo.ts`): `sin_enviar → esperando` (especialista, al mandar el informe) →
+  `dada | con_observaciones` (solo el **usuario**); `con_observaciones → dada`.
+- **Obra** (`obras.ts`): `borrador ⇄ propuesta_enviada` (especialista) → `aceptada | rechazada` (usuario);
+  `aceptada → en_curso` (sistema, con la primera jornada) → `terminada` (especialista, con todas las etapas
+  terminadas); cancelar antes de empezar (las partes u Operations), después solo Operations.
+- **Repuesto** (`repuestos.ts`): `sin_mandar → esperando_aprobacion` (especialista) → `aprobado | rechazado` (solo el
+  **usuario**) → `comprado` (especialista, o sistema al retirar en la ferretería). Sin cobrárselo al cliente,
+  `sin_mandar → comprado` directo.
+- **Búsqueda y postulación** (`equipo.ts`): `abierta → cubierta` (el titular elige) `| cerrada` (sistema, a las 24 h)
+  `| cancelada`; `postulada → elegida` (solo el titular) `| no_elegida | retirada`. Nadie entra solo a una obra.
+- **Pedido de ferretería** (`ferreterias.ts`): `borrador → enviado` (especialista) → `confirmado → preparando → listo`
+  (ferretería) → `retirado` (**solo la ferretería**, escaneando el QR de un uso); cancelar antes de retirar (las dos
+  partes); `listo → vencido` (sistema).
+- **Hito del camino y canje** (`camino.ts`): `pendiente → alcanzado → en_revision` (sistema, solo con lo verificado) →
+  `disponible` (**solo Operations**) → `canjeado` (especialista) → `entregado` (Operations). Canje:
+  `pedido → preparando → listo | enviado → entregado` (Operations); `pedido → cancelado`. Sin azar: el premio se ve
+  antes.
