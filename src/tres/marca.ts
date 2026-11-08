@@ -8,6 +8,8 @@ import { colores } from '../brand/tokens.ts';
 /** Paleta 3D. «noche» es el azul más oscuro de la marca (tinta, #0E1D36). */
 export const COLOR_3D = {
   azul: colores.azul,
+  /** Azul de las sombras de los edificios en las ilustraciones isométricas de la landing. */
+  azulHondo: '#143E7E',
   amarillo: colores.amarillo,
   noche: colores.tinta,
   superficie: '#F4F5F7',
@@ -20,6 +22,7 @@ export const COLOR_3D = {
 
 export interface Materiales {
   azul: THREE.MeshStandardMaterial;
+  azulHondo: THREE.MeshStandardMaterial;
   amarillo: THREE.MeshStandardMaterial;
   noche: THREE.MeshStandardMaterial;
   superficie: THREE.MeshStandardMaterial;
@@ -40,6 +43,7 @@ export function crearMateriales(): Materiales {
   const std = (color: string, roughness: number, metalness = 0) => new THREE.MeshStandardMaterial({ color, roughness, metalness });
   const m = {
     azul: std(COLOR_3D.azul, 0.45),
+    azulHondo: std(COLOR_3D.azulHondo, 0.55),
     amarillo: std(COLOR_3D.amarillo, 0.5),
     noche: std(COLOR_3D.noche, 0.6),
     superficie: std(COLOR_3D.superficie, 0.7),

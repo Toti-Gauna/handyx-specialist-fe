@@ -6,7 +6,7 @@ import type { Vec3 } from './cotas.ts';
 import { crearSeguimiento, factorRueda } from './gestos.ts';
 import { contarTriangulos, esferaDe, liberar } from './limpieza.ts';
 import { aplicarEntorno, crearMateriales, ponerLuces, type Materiales } from './marca.ts';
-import { aCartesianas, acercar, amortiguar, asentada, giroAutomatico, girar, limitesPara, orbitaInicial, type LimitesOrbita, type Orbita } from './orbita.ts';
+import { aCartesianas, acercar, amortiguar, asentada, distanciaEncuadre, FOV_VISTA, giroAutomatico, girar, limitesPara, orbitaInicial, type LimitesOrbita, type Orbita, type Vista } from './orbita.ts';
 import { dentroDelPresupuesto, densidadPara, tocaCuadro, type Presupuesto } from './presupuesto.ts';
 
 /** Lo que recibe la función que arma la escena. */
@@ -37,6 +37,8 @@ export interface OpcionesMotor {
   /** Giro lento cuando nadie toca (vitrina de un premio). Se apaga solo después de `GIRO_MAX_MS`. */
   giro: boolean;
   limites?: Partial<LimitesOrbita>;
+  /** Vista inicial: tres cuartos (por defecto) o isométrica (escenas de arreglos y del camino). */
+  vista?: Vista;
   alPerderContexto: () => void;
 }
 
@@ -52,13 +54,14 @@ export interface Motor {
   liberar(): void;
 }
 
-const FOV = 35;
 /** El giro automático se detiene a los 20 s sin tocar (batería). */
 export const GIRO_MAX_MS = 20_000;
 const GIRO_ESPERA_MS = 2_500;
 
 export function crearMotor(contenedor: HTMLElement, o: OpcionesMotor): Motor | null {
   const p = o.presupuesto;
+  const vista = o.vista ?? 'tres-cuartos';
+  const fov = FOV_VISTA[vista];
   const lienzo = document.createElement('canvas');
   lienzo.className = 'tr-visor__lienzo';
   lienzo.setAttribute('aria-hidden', 'true');
@@ -72,7 +75,7 @@ export function crearMotor(contenedor: HTMLElement, o: OpcionesMotor): Motor | n
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.setClearColor(0x000000, 0);
   const escena = new THREE.Scene();
-  const camara = new THREE.PerspectiveCamera(FOV, 1, 0.01, 200);
+  const camara = new THREE.PerspectiveCamera(fov, 1, 0.01, 200);
   ponerLuces(escena);
   const quitarEntorno = p.entorno ? aplicarEntorno(renderer, escena) : () => undefined;
   const materiales = crearMateriales();
@@ -81,8 +84,12 @@ export function crearMotor(contenedor: HTMLElement, o: OpcionesMotor): Motor | n
   escena.add(raiz);
 
   let centro: Vec3 = [0, 0, 0];
-  let limites: LimitesOrbita = { ...limitesPara(0.5), ...o.limites };
-  let inicial: Orbita = orbitaInicial(0.5, FOV, 1, limites);
+  // Límites y vista inicial para una esfera de `radio` con el formato actual del lienzo.
+  const calcular = (radio: number, aspecto: number) => {
+    const l: LimitesOrbita = { ...limitesPara(radio, undefined, distanciaEncuadre(radio, fov, aspecto)), ...o.limites };
+    return { limites: l, inicial: orbitaInicial(radio, fov, aspecto, l, vista) };
+  };
+  let { limites, inicial } = calcular(0.5, 1);
   let actual: Orbita = { ...inicial };
   let objetivo: Orbita = { ...inicial };
   let radioVista = 0.5;
@@ -147,8 +154,7 @@ export function crearMotor(contenedor: HTMLElement, o: OpcionesMotor): Motor | n
   function encuadrar(c: Vec3, radio: number) {
     centro = c;
     radioVista = radio;
-    limites = { ...limitesPara(radio), ...o.limites };
-    inicial = orbitaInicial(radio, FOV, camara.aspect, limites);
+    ({ limites, inicial } = calcular(radio, camara.aspect));
     actual = { ...inicial };
     objetivo = { ...inicial };
     pedirCuadro();
@@ -166,7 +172,7 @@ export function crearMotor(contenedor: HTMLElement, o: OpcionesMotor): Motor | n
     camara.updateProjectionMatrix();
     // Con otro formato, la vista inicial vuelve a encuadrar (un celular que gira).
     if (Math.abs(antes - camara.aspect) > 0.01) {
-      inicial = orbitaInicial(radioVista, FOV, camara.aspect, limites);
+      ({ limites, inicial } = calcular(radioVista, camara.aspect));
       if (asentada(actual, objetivo)) {
         objetivo = { ...objetivo, distancia: inicial.distancia };
         actual = { ...objetivo };
@@ -176,11 +182,11 @@ export function crearMotor(contenedor: HTMLElement, o: OpcionesMotor): Motor | n
   };
   const tamano = new ResizeObserver(ajustar);
   tamano.observe(contenedor);
-  const vista = new IntersectionObserver((e) => {
+  const enPantalla = new IntersectionObserver((e) => {
     enVista = e.some((x) => x.isIntersecting);
     if (enVista) pedirCuadro();
   });
-  vista.observe(contenedor);
+  enPantalla.observe(contenedor);
   const alCambiarVisibilidad = () => {
     pausado = document.visibilityState === 'hidden';
     if (pausado && cuadro) {
@@ -311,7 +317,7 @@ export function crearMotor(contenedor: HTMLElement, o: OpcionesMotor): Motor | n
       if (cuadro) cancelAnimationFrame(cuadro);
       clearTimeout(despertar);
       tamano.disconnect();
-      vista.disconnect();
+      enPantalla.disconnect();
       document.removeEventListener('visibilitychange', alCambiarVisibilidad);
       lienzo.removeEventListener('pointerdown', alBajar);
       lienzo.removeEventListener('pointermove', alMover);

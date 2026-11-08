@@ -9,7 +9,7 @@ import { Icono } from '../components/Icono.tsx';
 import { sinMovimiento } from '../kit/movimiento.ts';
 import { detectarWebgl, leerEquipo } from './capacidades.ts';
 import { crearMotor, type MontarEscena, type Motor, type Mover } from './motor.ts';
-import type { LimitesOrbita } from './orbita.ts';
+import type { LimitesOrbita, Vista } from './orbita.ts';
 import { presupuestoPara, type NivelTres } from './presupuesto.ts';
 
 export type { ContextoVisor, MontarEscena } from './motor.ts';
@@ -45,6 +45,8 @@ export interface PropsVisor3D {
   /** Ayuda corta encima del 3D. `null` la oculta. */
   ayuda?: string | null;
   limites?: Partial<LimitesOrbita>;
+  /** Vista inicial (y la de «Centrar»): tres cuartos por defecto, isométrica para las escenas de arreglos. */
+  vista?: Vista;
   /** Forzar un nivel de rendimiento (pruebas en gama baja: 'bajo'). */
   nivel?: NivelTres;
   className?: string;
@@ -66,14 +68,14 @@ const CONTROLES: { mover: Mover; texto: string; icono: ReactNode }[] = [
 ];
 
 export const Visor3D = forwardRef<ManejoVisor, PropsVisor3D>(function Visor3D(
-  { descripcion, montar, descripcionVisible = true, alternativa, fondo = 'claro', giro = false, controles = true, ayuda = 'Girá con un dedo y acercá con dos.', limites, nivel, className },
+  { descripcion, montar, descripcionVisible = true, alternativa, fondo = 'claro', giro = false, controles = true, ayuda = 'Girá con un dedo y acercá con dos.', limites, vista, nivel, className },
   ref,
 ) {
   const escena = useRef<HTMLDivElement>(null);
   const motor = useRef<Motor | null>(null);
   const [estado, setEstado] = useState<'preparando' | 'listo' | 'sin-webgl'>('preparando');
   // Lo que define al renderer se lee una vez, al montar (cambiarlo exige otro contexto de WebGL).
-  const inicio = useRef({ giro, limites, nivel });
+  const inicio = useRef({ giro, limites, vista, nivel });
 
   useEffect(() => {
     const caja = escena.current;
@@ -85,6 +87,7 @@ export const Visor3D = forwardRef<ManejoVisor, PropsVisor3D>(function Visor3D(
           sinMovimiento: sinMovimiento(),
           giro: inicio.current.giro,
           limites: inicio.current.limites,
+          vista: inicio.current.vista,
           alPerderContexto: () => setEstado('sin-webgl'),
         })
       : null;

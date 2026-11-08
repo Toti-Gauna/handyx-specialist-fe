@@ -87,18 +87,34 @@ export function distanciaEncuadre(radio: number, fovVerticalGrados: number, aspe
   return (Math.max(1e-3, radio) * margen) / Math.sin(fov / 2);
 }
 
-/** Vista inicial: tres cuartos de frente, un poco desde arriba, con el objeto entero. */
-export function orbitaInicial(radio: number, fovVerticalGrados: number, aspecto: number, l: LimitesOrbita): Orbita {
-  return limitar({ azimut: Math.PI / 7, polar: Math.PI * 0.4, distancia: distanciaEncuadre(radio, fovVerticalGrados, aspecto) }, l);
+/** Desde dónde se mira al empezar (y al centrar). */
+export type Vista = 'tres-cuartos' | 'isometrica';
+
+/**
+ * Ángulos de cada vista. «Tres cuartos»: de frente y un poco de costado, apenas desde arriba (un equipo, un premio).
+ * «Isométrica»: a 45° y desde arriba con el ángulo clásico (arccos 1/√3 ≈ 54,7°), como las ilustraciones de la ciudad.
+ */
+export const ANGULOS_VISTA: Record<Vista, { azimut: number; polar: number }> = {
+  'tres-cuartos': { azimut: Math.PI / 7, polar: Math.PI * 0.4 },
+  isometrica: { azimut: Math.PI / 4, polar: Math.acos(1 / Math.sqrt(3)) },
+};
+
+/** Campo visual de cada vista: la isométrica usa uno angosto para que casi no haya fuga (parece un dibujo). */
+export const FOV_VISTA: Record<Vista, number> = { 'tres-cuartos': 35, isometrica: 20 };
+
+/** Vista inicial con el objeto entero. */
+export function orbitaInicial(radio: number, fovVerticalGrados: number, aspecto: number, l: LimitesOrbita, vista: Vista = 'tres-cuartos'): Orbita {
+  return limitar({ ...ANGULOS_VISTA[vista], distancia: distanciaEncuadre(radio, fovVerticalGrados, aspecto) }, l);
 }
 
 /**
- * Límites de distancia acordes al objeto: no se puede meter la cámara adentro ni alejarla hasta perderlo.
- * Los demás límites se conservan.
+ * Límites de distancia acordes al objeto: no se puede meter la cámara adentro ni alejarla hasta perderlo. Con
+ * `distanciaEncuadre` (la de la vista inicial), el tope de alejar nunca la deja afuera: en un celular angosto o con un
+ * campo visual chico la vista inicial queda lejos y tiene que entrar. Los demás límites se conservan.
  */
-export function limitesPara(radio: number, base: LimitesOrbita = LIMITES_BASE): LimitesOrbita {
+export function limitesPara(radio: number, base: LimitesOrbita = LIMITES_BASE, distanciaEncuadre = 0): LimitesOrbita {
   const r = Math.max(1e-3, radio);
-  return { ...base, distanciaMin: r * 1.4, distanciaMax: r * 6 };
+  return { ...base, distanciaMin: r * 1.4, distanciaMax: Math.max(r * 6, distanciaEncuadre * 1.6) };
 }
 
 /** Giro automático lento (una vuelta cada `segundosPorVuelta`), para la vitrina de un premio. */
