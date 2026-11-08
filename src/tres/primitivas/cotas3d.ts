@@ -7,7 +7,7 @@ import { crearEtiqueta, type Materiales } from '../marca.ts';
 const v = (p: Vec3) => new THREE.Vector3(p[0], p[1], p[2]);
 
 /** Una cota lista para agregar a la escena. `texto` es lo que se lee («85 cm», «Ø 45 cm»). */
-export function crearCota(trazo: TrazoCota, texto: string, m: Materiales, altoEtiqueta = 0.06): THREE.Group {
+export function crearCota(trazo: TrazoCota, texto: string, m: Materiales, altoEtiqueta = 0.08): THREE.Group {
   const g = new THREE.Group();
   g.name = 'cota';
   const principal = new THREE.BufferGeometry().setFromPoints([v(trazo.linea[0]), v(trazo.linea[1]), ...trazo.marcas.flatMap(([a, b]) => [v(a), v(b)])]);

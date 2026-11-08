@@ -34,7 +34,7 @@ export function escenaRegalo(o: { premio?: () => THREE.Object3D; alCambiarFase?:
     if (premio) caja.hueco.add(premio);
     ctx.raiz.add(caja.grupo);
     // Se encuadra la caja apoyada con lugar para la tapa abierta (no la caída desde arriba).
-    ctx.encuadrar([0, lado * 0.62, 0], lado * 1.05);
+    ctx.encuadrar([0, lado * 0.75, 0], lado * 1.45);
     return reproducirRegalo(caja, ctx, o.alCambiarFase);
   };
 }

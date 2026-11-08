@@ -55,7 +55,9 @@ export function crearSendero(m: Materiales, p: Presupuesto, estaciones: readonly
     // Tramo recorrido: el mismo tubo, un poco más alto, dibujado hasta el avance.
     const hecho = new THREE.TubeGeometry(curva, tramos, 0.2, radial, false);
     const recorridoMalla = new THREE.Mesh(hecho, m.azul);
-    recorridoMalla.scale.y = 0.16;
+    // Más alto que el camino (que queda a 0,03): así no pelean por el mismo plano (z-fighting en gama baja).
+    recorridoMalla.scale.y = 0.3;
+    recorridoMalla.position.y = 0.01;
     // El tubo va por longitud de arco: se busca qué parte de la curva corresponde a cada estación.
     const muestras = curva.getSpacedPoints(400);
     const uDe = (pos: Vec3 | undefined) => {

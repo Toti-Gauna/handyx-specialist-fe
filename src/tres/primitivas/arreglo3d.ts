@@ -73,7 +73,7 @@ const CONSTRUCTORES: Record<Rubro, Constructor> = {
     const frente = PARED + 0.08;
     const termicas: THREE.Object3D[] = [0.0, 0.06, 0.12].flatMap((x) => [caja(0.05, 0.12, 0.04, m.superficie, x, 0.45, frente + 0.02), caja(0.02, 0.035, 0.02, m.amarillo, x, 0.46, frente + 0.05)]);
     return [
-      pieza('Caja', [caja(0.42, 0.5, 0.08, m.superficie, 0, 0.45, z)]),
+      pieza('Caja', [caja(0.42, 0.5, 0.08, m.superficieHonda, 0, 0.45, z)]),
       pieza('Riel', [caja(0.36, 0.025, 0.012, m.metal, 0, 0.45, frente + 0.006)]),
       pieza('Disyuntor', [caja(0.1, 0.12, 0.04, m.azul, -0.11, 0.45, frente + 0.02), caja(0.03, 0.035, 0.02, m.amarillo, -0.11, 0.46, frente + 0.05)]),
       pieza('Llaves térmicas', termicas),
