@@ -9,6 +9,7 @@ import type { ApiAlta } from './api/alta.ts';
 import type { ApiCaja } from './api/caja.ts';
 import type { ApiCuenta } from './api/cuenta.ts';
 import type { ApiMensajes } from './api/mensajes.ts';
+import type { ApiModoTrabajo } from './api/modo-trabajo.ts';
 import type { ApiObras } from './api/obras.ts';
 import type { ApiPedidos } from './api/pedidos.ts';
 import type { ApiPropuestas } from './api/propuestas.ts';
@@ -32,7 +33,8 @@ export interface EspecialistaApi
     ApiCaja,
     ApiSoporte,
     ApiCuenta,
-    ApiTaller {
+    ApiTaller,
+    ApiModoTrabajo {
   readonly origen: 'mock' | 'http';
   /** "Ahora" para mostrar cuentas regresivas. Los vencimientos los decide siempre el servidor. */
   ahora(): Date;

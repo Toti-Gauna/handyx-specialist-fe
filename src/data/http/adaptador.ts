@@ -7,6 +7,7 @@ import { cajaHttp } from './caja.ts';
 import { ClienteHttp, type OpcionesCliente } from './cliente.ts';
 import { cuentaHttp } from './cuenta.ts';
 import { mensajesHttp } from './mensajes.ts';
+import { modoTrabajoHttp } from './modo-trabajo.ts';
 import { obrasHttp } from './obras.ts';
 import { pedidosHttp } from './pedidos.ts';
 import { propuestasHttp } from './propuestas.ts';
@@ -32,5 +33,6 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
     ...soporteHttp(c),
     ...cuentaHttp(c),
     ...tallerHttp(c),
+    ...modoTrabajoHttp(c),
   };
 }

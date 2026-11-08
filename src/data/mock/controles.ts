@@ -9,6 +9,7 @@ import { agregarMensaje, aplicarAceptacion } from './propuestas.ts';
 import { destinoPrueba, zonaPrueba } from './mapa.ts';
 import { recalcular } from './reglas.ts';
 import { accionesOpsRegistro, ejecutarOpsRegistro } from './alta-registro.ts';
+import { accionesModoTrabajo, ejecutarModoTrabajo } from './modo-trabajo.ts';
 
 export interface AccionPrueba {
   id: string;
@@ -81,6 +82,8 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       u('usuario_rechaza_jornada', 'Rechaza el cambio de jornada');
       u('usuario_mensaje', 'Te escribe un mensaje');
       u('pedido_urgente', 'Entra un pedido urgente nuevo');
+      // Lote 2.3: el cliente responde el informe del trabajo.
+      for (const x of accionesModoTrabajo(s)) u(x.id, x.etiqueta);
       const p = (id: string, etiqueta: string) => a.push({ id, etiqueta, grupo: 'Pagos y soporte' });
       p('pago_mp_ok', 'Mercado Pago confirma un pago (webhook)');
       p('pago_mp_falla', 'Mercado Pago informa un pago fallido');
@@ -107,7 +110,7 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       s.mensajes = { [ID.c2]: completo.mensajes[ID.c2] ?? [] };
       s.avisos = [...completo.avisos.filter((x) => ['pedido_urgente', 'pedido_programado', 'propuesta'].includes(x.tipo)), ...s.avisos];
     };
-    if (ejecutarOpsRegistro(s, id, habilitarOperacion)) {
+    if (ejecutarModoTrabajo(s, id) || ejecutarOpsRegistro(s, id, habilitarOperacion)) {
       avisar();
       return;
     }
