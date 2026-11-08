@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import type { AvisoBandeja } from '../contracts/cuenta.ts';
-import { agruparAvisos, textoIngreso, diasDeDistancia, grupoDeAviso, momentoDeAviso } from './avisos.ts';
+import { agruparAvisos, destinoAviso, textoIngreso, diasDeDistancia, grupoDeAviso, momentoDeAviso } from './avisos.ts';
 
 const ahora = new Date('2026-11-17T21:00:00Z'); // martes 18:00 en Buenos Aires
 const aviso = (n: number, creadoEn: string): AvisoBandeja => ({ id: `00000000-0000-4000-8000-${n.toString().padStart(12, '0')}`, tipo: 'mensaje', titulo: 't', cuerpo: 'c', iniciales: null, creadoEn, leido: false, destino: { ruta: 'chat', id: null } });
@@ -30,5 +30,10 @@ describe('bandeja de avisos', () => {
   it('dice cuándo entró', () => {
     assert.equal(textoIngreso('2026-11-17T20:40:00Z', ahora), 'hoy 17:40');
     assert.match(textoIngreso('2026-11-12T15:00:00Z', ahora), /12\/11 · 12:00$/);
+  });
+  it('un aviso lleva a su detalle, con el id en la query', () => {
+    assert.equal(destinoAviso({ ruta: 'pedido', id: '00000000-0000-4000-8000-000000000001' }), '/pedidos/detalle/?id=00000000-0000-4000-8000-000000000001');
+    assert.equal(destinoAviso({ ruta: 'cobros', id: null }), '/caja/');
+    assert.equal(destinoAviso({ ruta: 'premio', id: null }), '/cuenta/');
   });
 });

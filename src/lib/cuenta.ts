@@ -33,8 +33,9 @@ export function ultimosEnmascarados(ultimos: string | null, grupos = ['••', 
 
 /** Lo que se manda a guardar: todo menos `push` (el permiso del teléfono se pide aparte), con el cambio encima. Nunca pierde un campo. */
 export function cuerpoPreferencias(p: PreferenciasCuenta, cambio: Partial<Omit<PreferenciasCuenta, 'push'>> = {}): Omit<PreferenciasCuenta, 'push'> {
-  const { push: _push, ...resto } = p;
-  return { ...resto, ...cambio };
+  const resto: Partial<PreferenciasCuenta> = { ...p };
+  delete resto.push;
+  return { ...(resto as Omit<PreferenciasCuenta, 'push'>), ...cambio };
 }
 
 export const SILENCIO_POR_DEFECTO = { desde: '22:00', hasta: '07:00' } as const;

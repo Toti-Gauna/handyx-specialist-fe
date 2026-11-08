@@ -1,5 +1,6 @@
 // Bandeja de avisos (lote 1.4): agrupa por día ("Hoy", "Esta semana", "Antes") y dice la hora o el día de cada uno.
 // Lógica pura, con su prueba. Las fechas se miran en hora de Buenos Aires.
+import { RUTAS } from '../app/rutas.ts';
 import type { AvisoBandeja } from '../contracts/cuenta.ts';
 import { diaLocal, fechaHora, hora } from './formato.ts';
 
@@ -39,4 +40,38 @@ export function agruparAvisos(items: readonly AvisoBandeja[], ahora: Date): Arra
 /** «hoy 17:40» si es de hoy; si no, «mar 17/11 · 12:00». Para «Entró …» en sesiones y dispositivos. */
 export function textoIngreso(iso: string, ahora: Date): string {
   return grupoDeAviso(iso, ahora) === 'hoy' && diasDeDistancia(iso, ahora) === 0 ? `hoy ${hora(iso)}` : fechaHora(iso);
+}
+
+/**
+ * A dónde lleva un aviso: siempre a su detalle, nunca acepta nada. Los destinos de pantallas que llegan en olas
+ * posteriores (presupuestos, repuestos, camino…) caen en la pantalla madre que ya existe.
+ */
+export function destinoAviso(d: AvisoBandeja['destino']): string {
+  const q = d.id ? `?id=${d.id}` : '';
+  switch (d.ruta) {
+    case 'pedido':
+      return `${RUTAS.pedido.ruta}${q}`;
+    case 'trabajo':
+      return `${RUTAS.trabajo.ruta}${q}`;
+    case 'chat':
+      return `${RUTAS.hilo.ruta}${q}`;
+    case 'soporte':
+      return `${RUTAS.casoSoporte.ruta}${q}`;
+    case 'cobros':
+      return RUTAS.caja.ruta;
+    case 'registro':
+      return RUTAS.alta.ruta;
+    case 'obra':
+    case 'busqueda':
+      return RUTAS.trabajos.ruta;
+    case 'presupuesto':
+    case 'repuestos':
+    case 'reparto':
+    case 'pedido_ferreteria':
+      return RUTAS.taller.ruta;
+    case 'cuenta':
+    case 'camino':
+    case 'premio':
+      return RUTAS.cuenta.ruta;
+  }
 }
