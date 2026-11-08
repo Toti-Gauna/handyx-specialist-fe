@@ -780,3 +780,229 @@
     opacity: 0;
   }
 }
+
+/* ── Contraseña con «Mostrar» y medidor (lote 1.1) ────────────────────────────────────────────────────────────── */
+.ui-clave__ver {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  min-width: var(--ui-toque);
+  min-height: var(--ui-toque);
+  margin-right: -10px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ui-azul);
+  font: 800 var(--ui-texto-chico) / 1 var(--ui-fuente);
+  cursor: pointer;
+}
+.ui-clave__ver[aria-pressed='true'] {
+  background: var(--ui-tinte);
+}
+.ui-clave__ver:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 1px;
+}
+.ui-clave__medidor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-clave__barra {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+.ui-clave__barra > span {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ui-mosaico);
+}
+.ui-clave__medidor--0 strong {
+  color: var(--ui-error);
+}
+.ui-clave__medidor--1 .ui-clave__barra > span:nth-child(-n + 1),
+.ui-clave__medidor--2 .ui-clave__barra > span:nth-child(-n + 2),
+.ui-clave__medidor--3 .ui-clave__barra > span {
+  background: var(--ui-exito);
+}
+.ui-clave__medidor--1 .ui-clave__barra > span:first-child {
+  background: var(--ui-amarillo-hondo);
+}
+
+/* ── Opciones grandes con ícono (lote 1.1) ────────────────────────────────────────────────────────────────────── */
+.ui-opciones-icono {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ui-opcion-icono {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 12px 14px;
+  border: 2px solid var(--ui-borde);
+  border-radius: 20px;
+  background: #fff;
+  color: var(--ui-tinta);
+  cursor: pointer;
+}
+.ui-opcion-icono input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.ui-opcion-icono:has(input:focus-visible) {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 2px;
+}
+.ui-opcion-icono--elegida {
+  border-color: var(--ui-azul);
+  background: var(--ui-tinte);
+}
+.ui-opcion-icono--apagada {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.ui-opcion-icono__mosaico {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--ui-mosaico);
+}
+.ui-opcion-icono--elegida .ui-opcion-icono__mosaico {
+  background: var(--ui-azul);
+  color: #fff;
+}
+.ui-opcion-icono__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-opcion-icono__texto > strong {
+  font-size: var(--ui-texto-base);
+}
+.ui-opcion-icono__texto > span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-opcion-icono__texto > .ui-opcion-icono__pastilla {
+  margin-top: 4px;
+}
+.ui-opcion-icono__marca {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--ui-borde);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ui-azul);
+}
+.ui-opcion-icono--elegida .ui-opcion-icono__marca {
+  border-color: var(--ui-azul);
+}
+.ui-opcion-icono__marca .ui-icono {
+  stroke-width: 3;
+}
+
+/* ── Botón de Google o Apple (lote 1.1) ───────────────────────────────────────────────────────────────────────── */
+.ui-proveedor__logo {
+  display: inline-flex;
+  flex: none;
+}
+.ui-proveedor__logo svg {
+  width: 22px;
+  height: 22px;
+}
+.ui-proveedor--apple .ui-proveedor__logo {
+  color: var(--ui-tinta);
+}
+
+/* ── ¿No llegó el código? (lote 1.1) ──────────────────────────────────────────────────────────────────────────── */
+.ui-reenviar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-size: var(--ui-texto-chico);
+}
+.ui-reenviar__espera {
+  color: var(--ui-texto);
+}
+.ui-reenviar__boton,
+.ui-reenviar__alternativa > button,
+.ui-reenviar__alternativa > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ui-toque);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-azul);
+  font: 800 var(--ui-texto-base) / 1.2 var(--ui-fuente);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* ── Recuadro de aviso (lote 1.1) ─────────────────────────────────────────────────────────────────────────────── */
+.ui-aviso-caja {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--ui-tinte);
+  color: var(--ui-hondo);
+  font-size: var(--ui-texto-base);
+  line-height: 1.35;
+}
+.ui-aviso-caja > .ui-icono {
+  margin-top: 1px;
+}
+.ui-aviso-caja__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+.ui-aviso-caja__texto a {
+  color: inherit;
+  font-weight: 800;
+}
+.ui-aviso-caja--error {
+  background: var(--ui-error-tinte);
+  color: var(--ui-error-hondo);
+}
+.ui-aviso-caja--exito {
+  background: var(--ui-exito-tinte);
+  color: var(--ui-exito-hondo);
+}
+.ui-aviso-caja--prueba {
+  background: #fdfbd3;
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-chico);
+}

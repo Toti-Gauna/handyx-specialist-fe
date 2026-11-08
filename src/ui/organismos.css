@@ -845,3 +845,128 @@
   font-size: var(--ui-texto-chico);
   text-align: center;
 }
+
+/* ── Escena con la ciudad (lote 1.1: bienvenida y pantallas de entrar) ─────────────────────────────────────────
+   Cielo de noche con luna, estrellas y la Mar del Plata isométrica. Decorativa: lo que se lee está afuera. */
+.ui-escena-ciudad {
+  position: relative;
+  flex: none;
+}
+.ui-escena-ciudad--con-icono {
+  margin-bottom: 52px;
+}
+.ui-escena-ciudad__cielo {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  border-radius: 0 0 36px 36px;
+  background: var(--ui-azul);
+}
+.ui-escena-ciudad--alta .ui-escena-ciudad__cielo {
+  height: clamp(300px, 54dvh, 470px);
+  border-radius: 0 0 40px 40px;
+}
+.ui-escena-ciudad__ciudad {
+  position: absolute;
+  right: -14%;
+  bottom: -26%;
+  width: 92%;
+}
+.ui-escena-ciudad--alta .ui-escena-ciudad__ciudad {
+  right: -10%;
+  bottom: -6%;
+  width: 120%;
+}
+.ui-escena-ciudad__luna {
+  position: absolute;
+  top: calc(64px + env(safe-area-inset-top, 0px));
+  right: 34px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--ui-amarillo);
+  box-shadow: 0 0 0 10px rgb(245 245 154 / 0.18);
+}
+.ui-escena-ciudad--baja .ui-escena-ciudad__luna {
+  top: calc(18px + env(safe-area-inset-top, 0px));
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 0 0 8px rgb(245 245 154 / 0.18);
+}
+.ui-escena-ciudad__estrella {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.7;
+}
+.ui-escena-ciudad__estrella:nth-child(1) { top: 22%; left: 10%; }
+.ui-escena-ciudad__estrella:nth-child(2) { top: 13%; left: 31%; opacity: 0.5; }
+.ui-escena-ciudad__estrella:nth-child(3) { top: 28%; left: 52%; }
+.ui-escena-ciudad__estrella:nth-child(4) { top: 9%; left: 64%; opacity: 0.5; }
+.ui-escena-ciudad__estrella:nth-child(5) { top: 34%; left: 88%; }
+.ui-escena-ciudad__estrella:nth-child(6) { top: 40%; left: 22%; opacity: 0.45; }
+.ui-escena-ciudad__estrella:nth-child(7) { top: 18%; left: 46%; opacity: 0.6; }
+.ui-escena-ciudad__estrella:nth-child(8) { top: 46%; left: 6%; opacity: 0.5; }
+.ui-escena-ciudad__estrella:nth-child(9) { top: 6%; left: 18%; opacity: 0.6; }
+@media (prefers-reduced-motion: no-preference) {
+  .ui-escena-ciudad__estrella:nth-child(3n) {
+    animation: ui-titila 3.2s ease-in-out infinite;
+  }
+  .ui-escena-ciudad__estrella:nth-child(3n + 1) {
+    animation: ui-titila 4.6s ease-in-out 1s infinite;
+  }
+}
+.ui-escena-ciudad__arriba {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: var(--ui-gutter);
+  left: var(--ui-gutter);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ui-escena-ciudad--alta .ui-escena-ciudad__arriba {
+  top: calc(28px + env(safe-area-inset-top, 0px));
+}
+.ui-escena-ciudad__marca {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  color: #fff;
+}
+.ui-escena-ciudad__logo {
+  font-family: var(--ui-titulos);
+  font-size: 1.875rem;
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 1;
+}
+.ui-escena-ciudad--alta .ui-escena-ciudad__logo {
+  font-size: 2.25rem;
+}
+.ui-escena-ciudad__lema {
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+}
+.ui-escena-ciudad__icono {
+  position: absolute;
+  bottom: -46px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px;
+  height: 92px;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: var(--ui-elev-2);
+  color: var(--ui-azul);
+  translate: -50% 0;
+}
+.ui-escena-ciudad__icono .ui-icono {
+  width: 42px;
+  height: 42px;
+}
