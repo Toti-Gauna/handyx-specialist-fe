@@ -1,0 +1,699 @@
+/* Kit v3 · pestaña Taller, agenda e ingresos (lote 2.1). Clases ui-turno, ui-pasada(s), ui-agmes, ui-tx-*, ui-selmes,
+   ui-barra-neto, ui-linea-cuenta, ui-ganancia y ui-gasto. Texto base 17 px, nada de lo que se lee baja de 13 px, áreas
+   táctiles ≥ 48 px y el color solo apoya (cada estado tiene ícono y texto). Sin estilos inline. */
+
+/* ── Turno de la agenda ───────────────────────────────── */
+.ui-turno {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-tinta);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+.ui-turno--tocable {
+  cursor: pointer;
+}
+.ui-turno:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+  border-radius: 18px;
+}
+.ui-turno__hora {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  padding: 8px 4px;
+  border-radius: 18px;
+  background: var(--ui-mosaico);
+  text-align: center;
+}
+.ui-turno__hora strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.125rem;
+  font-weight: 900;
+}
+.ui-turno__hora span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-turno__tarjeta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--ui-borde);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+}
+.ui-turno__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px 8px;
+}
+.ui-turno__titulo {
+  min-width: 0;
+  font-size: var(--ui-texto-base);
+  overflow-wrap: anywhere;
+}
+.ui-turno__detalle {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-turno__gente {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-turno__alerta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ui-error);
+  font-size: var(--ui-texto-chico);
+  font-weight: 700;
+}
+.ui-turnos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ── Pasadas ──────────────────────────────────────────── */
+.ui-resumen-pasadas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 8px;
+}
+.ui-resumen-pasadas__dato {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: var(--ui-mosaico);
+  color: var(--ui-tinta);
+}
+.ui-resumen-pasadas__dato--azul {
+  background: var(--ui-azul);
+  box-shadow: 0 4px 0 var(--ui-hondo);
+  color: #fff;
+}
+.ui-resumen-pasadas__dato span {
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+}
+.ui-resumen-pasadas__dato strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+.ui-pasadas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px 6px;
+  border: 1px solid var(--ui-borde);
+  border-radius: var(--ui-radio-tarjeta);
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+}
+.ui-pasadas__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-pasada {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--ui-toque);
+  padding: 12px 0;
+  border-top: 1px solid var(--ui-borde);
+  color: var(--ui-tinta);
+  text-decoration: none;
+}
+.ui-pasada--tocable:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 2px;
+}
+.ui-pasada__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+.ui-pasada__texto strong {
+  font-size: var(--ui-texto-base);
+  overflow-wrap: anywhere;
+}
+.ui-pasada__texto > span:not(.ui-chip) {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-pasada__flecha {
+  color: var(--ui-suave);
+}
+
+/* ── El mes con obras y trabajos ──────────────────────── */
+.ui-agmes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ui-agmes__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ui-agmes__mes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.ui-agmes__mes strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.5rem;
+  font-weight: 900;
+  font-stretch: 110%;
+  text-transform: capitalize;
+}
+.ui-agmes__mes span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-agmes__grilla {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.ui-agmes__semana {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+}
+.ui-agmes__dia {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  min-height: 58px;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 12px;
+  background: #f6f7f9;
+  color: var(--ui-tinta);
+  font: 700 var(--ui-texto-chico) var(--ui-fuente);
+  cursor: pointer;
+}
+.ui-agmes__dia--pasado {
+  color: #56627a;
+}
+.ui-agmes__dia--hoy {
+  background: #fff;
+  box-shadow: inset 0 0 0 2px var(--hd-naranja);
+}
+.ui-agmes__dia--on {
+  background: var(--ui-azul);
+  box-shadow: 0 3px 0 var(--ui-hondo);
+  color: #fff;
+}
+.ui-agmes__dia:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 2px;
+}
+.ui-agmes__num {
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+  text-align: left;
+}
+.ui-agmes__barras {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ui-agmes__barra {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+}
+.ui-agmes__barra--azul {
+  background: var(--ui-azul);
+}
+.ui-agmes__barra--noche {
+  background: var(--ui-noche);
+}
+.ui-agmes__barra--amarillo {
+  background: var(--ui-amarillo);
+  box-shadow: inset 0 0 0 1px var(--ui-amarillo-hondo);
+}
+.ui-agmes__barra--gris {
+  background: #b5bcc8;
+}
+/* Sobre el día elegido (azul) las barras azules se pasan a blanco para que se vean. */
+.ui-agmes__dia--on .ui-agmes__barra--azul {
+  background: #fff;
+}
+.ui-agmes__dia--on .ui-agmes__barra--noche {
+  background: var(--ui-amarillo);
+}
+.ui-agmes__leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  list-style: none;
+}
+.ui-agmes__leyenda li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ui-agmes__muestra {
+  display: inline-block;
+  width: 16px;
+  height: 6px;
+  border-radius: 3px;
+}
+@media (max-width: 359px) {
+  .ui-agmes__grilla {
+    gap: 2px;
+  }
+}
+
+/* ── Pestaña Taller ───────────────────────────────────── */
+.ui-tx-agenda {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 28px;
+  background: var(--ui-azul);
+  box-shadow: 0 5px 0 var(--ui-hondo);
+  color: #fff;
+  text-decoration: none;
+}
+.ui-tx-agenda:focus-visible,
+.ui-tx-ancho:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+}
+.ui-tx-agenda__cabeza {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ui-tx-agenda__ico {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.16);
+  color: var(--ui-amarillo);
+}
+.ui-tx-agenda__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.ui-tx-agenda__texto strong {
+  font-size: 1.125rem;
+}
+.ui-tx-agenda__texto span {
+  color: #e6eefb;
+  font-size: var(--ui-texto-chico);
+}
+.ui-tx-agenda__semana {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.ui-tx-agenda__dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 0;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
+}
+.ui-tx-agenda__dia span:first-child {
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+}
+.ui-tx-agenda__dia--hoy {
+  background: #fff;
+  color: var(--ui-azul);
+}
+.ui-tx-agenda__puntos {
+  display: flex;
+  gap: 3px;
+  height: 6px;
+}
+.ui-tx-agenda__punto {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ui-amarillo);
+}
+.ui-tx-agenda__dia--hoy .ui-tx-agenda__punto {
+  background: var(--ui-azul);
+}
+.ui-tx-ancho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 10px 14px;
+  border-radius: 22px;
+  background: var(--ui-amarillo);
+  box-shadow: 0 4px 0 var(--ui-amarillo-hondo);
+  color: var(--ui-tinta);
+  text-decoration: none;
+}
+.ui-tx-ancho__ico {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #fff;
+}
+.ui-tx-ancho__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.ui-tx-ancho__texto strong {
+  font-size: var(--ui-texto-base);
+}
+.ui-tx-ancho__texto span {
+  font-size: var(--ui-texto-chico);
+}
+/* Los cuatro mosaicos de resumen, de a dos; con letra grande o pantalla angosta pasan a uno por renglón. */
+.ui-tx-mosaicos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  gap: 12px;
+}
+.ui-tx-mosaicos .ui-resumen {
+  min-height: 148px;
+}
+
+/* ── Ingresos y gastos ────────────────────────────────── */
+.ui-ing-cabeza {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: 26px;
+  background: var(--ui-azul);
+  box-shadow: 0 5px 0 var(--ui-hondo), var(--ui-elev-1);
+  color: #fff;
+}
+.ui-ing-cabeza__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ui-ing-cabeza__neto {
+  font-family: var(--ui-titulos);
+  font-size: 2.75rem;
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.ui-ing-cabeza__neto .ui-cifra {
+  font-size: inherit;
+}
+.ui-ing-cabeza__detalle {
+  color: #f0f5fd;
+  font-size: var(--ui-texto-chico);
+}
+.ui-ing-cabeza .ui-etiqueta {
+  color: #cfe0fa;
+}
+.ui-selmes {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.ui-selmes strong {
+  min-width: 7.5rem;
+  font-size: var(--ui-texto-base);
+  text-align: center;
+  text-transform: capitalize;
+}
+.ui-barra-neto {
+  display: block;
+  height: 14px;
+  margin-top: 8px;
+  border-radius: 7px;
+  background: rgb(255 255 255 / 0.25);
+  overflow: hidden;
+}
+.ui-barra-neto__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ui-barra-neto__tramo--blanco {
+  fill: #fff;
+}
+.ui-barra-neto__tramo--amarillo {
+  fill: var(--ui-amarillo);
+}
+.ui-barra-neto__tramo--noche {
+  fill: var(--ui-noche);
+}
+.ui-barra-neto__tramo--arena {
+  fill: #c9a86a;
+}
+.ui-barra-neto__tramo--gris {
+  fill: #8591a8;
+}
+.ui-cuenta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ui-linea-cuenta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--ui-texto-base);
+}
+.ui-linea-cuenta--fuerte {
+  font-weight: 800;
+}
+.ui-linea-cuenta--suave {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-linea-cuenta > span:last-child {
+  flex: none;
+  white-space: nowrap;
+}
+.ui-linea-cuenta__muestra {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  border-radius: 4px;
+  background: var(--ui-mosaico);
+}
+.ui-linea-cuenta__muestra--amarillo {
+  background: var(--ui-amarillo);
+  box-shadow: inset 0 0 0 1px var(--ui-amarillo-hondo);
+}
+.ui-linea-cuenta__muestra--noche {
+  background: var(--ui-noche);
+}
+.ui-linea-cuenta__muestra--arena {
+  background: #c9a86a;
+}
+.ui-linea-cuenta__muestra--gris {
+  background: #8591a8;
+}
+.ui-linea-cuenta__muestra--azul {
+  background: var(--ui-azul);
+}
+.ui-neto-final {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 800;
+}
+.ui-neto-final .ui-cifra {
+  color: var(--ui-exito);
+  font-size: 1.5rem;
+}
+.ui-neto-final--perdida .ui-cifra {
+  color: var(--ui-error);
+}
+.ui-cuenta__nota {
+  margin: 0;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ui-borde);
+  background: var(--ui-gris-franja);
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-ganancias,
+.ui-gastos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-ganancia {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  background: var(--ui-mosaico);
+}
+.ui-ganancia__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.ui-ganancia__texto strong {
+  font-size: var(--ui-texto-base);
+  overflow-wrap: anywhere;
+}
+.ui-ganancia__texto > span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-ganancia__valor {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.ui-ganancia__valor span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+}
+.ui-gasto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--ui-borde);
+  border-radius: 18px;
+  background: #fff;
+}
+.ui-gasto__ico {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--ui-mosaico);
+}
+.ui-gasto__texto {
+  display: flex;
+  flex: 1 1 8rem;
+  flex-direction: column;
+  min-width: 0;
+}
+.ui-gasto__texto span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+
+/* ── Cargar un gasto: el ticket y las dos casillas ────── */
+.ui-ticket {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  border-radius: 22px;
+  background: var(--ui-noche);
+  overflow: hidden;
+}
+.ui-ticket__papel {
+  width: 130px;
+  height: 140px;
+  padding: 12px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: var(--ui-elev-2);
+  transform: rotate(-3deg);
+}
+.ui-ticket__papel svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ui-ticket__chip {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+}
+.ui-ticket__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.ui-ticket__acciones > * {
+  flex: 1 1 10rem;
+}
+.ui-gasto-form__fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 12px;
+}
