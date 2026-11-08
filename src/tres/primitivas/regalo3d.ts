@@ -3,8 +3,11 @@
 // Unidades: el lado de la caja; el origen es el centro de la base.
 import * as THREE from 'three';
 import { crearSombraContacto, type Materiales } from '../marca.ts';
+import type { Animador } from './animador.ts';
 import { segmentosPara, type Presupuesto } from '../presupuesto.ts';
 import { DURACION_REGALO, POSE_ABIERTA, POSE_CERRADA, poseRegalo, type FaseRegalo, type PoseRegalo } from '../regalo.ts';
+
+export type { Animador } from './animador.ts';
 
 export interface CajaRegalo {
   grupo: THREE.Group;
@@ -93,12 +96,6 @@ export function crearCajaRegalo(m: Materiales, p: Presupuesto, lado = 0.6): Caja
   return { grupo, hueco, aplicar };
 }
 
-/** Lo que el visor le da a una animación (ContextoVisor cumple con esto). */
-export interface Animador {
-  animar(paso: (dtMs: number) => boolean): () => void;
-  pedirCuadro(): void;
-  sinMovimiento: boolean;
-}
 
 /**
  * Reproduce la apertura. `alCambiarFase` avisa cada fase (para vibrar en Android al abrir o tirar los papelitos con

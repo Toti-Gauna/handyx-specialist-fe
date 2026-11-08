@@ -32,7 +32,7 @@ export interface OpcionesSendero {
 export function trazarSendero(cantidad: number, o: OpcionesSendero = {}): Vec3[] {
   const sep = o.separacion ?? 1.6;
   const amp = o.amplitud ?? 1.1;
-  return Array.from({ length: Math.max(0, cantidad) }, (_, i) => [amp * Math.sin(i * 1.15), 0, -i * sep] as Vec3);
+  return Array.from({ length: Math.max(0, cantidad) }, (_, i) => [amp * Math.sin(i * 1.15), 0, 0 - i * sep] as Vec3);
 }
 
 /**

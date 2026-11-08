@@ -27,7 +27,8 @@ export interface ContextoVisor {
   encuadrar(centro: Vec3, radio: number): void;
 }
 
-export type MontarEscena = (ctx: ContextoVisor) => void | (() => void);
+/** Arma la escena; puede devolver cómo desarmarla (cortar animaciones, soltar lo propio). */
+export type MontarEscena = (ctx: ContextoVisor) => unknown;
 
 export type Mover = 'izquierda' | 'derecha' | 'acercar' | 'alejar';
 
@@ -276,7 +277,8 @@ export function crearMotor(contenedor: HTMLElement, o: OpcionesMotor): Motor | n
     montar(fn) {
       limpiarEscena();
       encuadreManual = false;
-      desmontar = fn(ctx) ?? null;
+      const fin = fn(ctx);
+      desmontar = typeof fin === 'function' ? (fin as () => void) : null;
       if (!encuadreManual) {
         const { centro: c, radio } = esferaDe(raiz);
         encuadrar(c, radio);

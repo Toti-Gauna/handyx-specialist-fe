@@ -13,7 +13,8 @@ export function posicionesTomas(total = TOMAS_ESCANEO, radio = 1, altura = 0): V
   const n = Math.max(1, Math.floor(total));
   return Array.from({ length: n }, (_, i) => {
     const a = (-2 * Math.PI * i) / n;
-    return [radio * Math.sin(a), altura, radio * Math.cos(a)] as Vec3;
+    // `+ 0` evita el −0 de sin(−0).
+    return [radio * Math.sin(a) + 0, altura, radio * Math.cos(a) + 0] as Vec3;
   });
 }
 
