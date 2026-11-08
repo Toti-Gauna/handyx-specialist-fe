@@ -97,7 +97,9 @@ export function FotoLista() {
             </AccionFija>
           }
         >
-          <HojaDibujada renglones={leida.filas.map((f) => f.centavos !== null)} armar tam="grande" />
+          <div className="pr-centro">
+            <HojaDibujada renglones={leida.filas.map((f) => f.centavos !== null)} armar tam="grande" />
+          </div>
           <h2 className="pr-oscura__titulo">{`${leida.proveedor ?? 'Tu lista'} · ${diaMes(hoy)}`}</h2>
           <p className="pr-oscura__texto">Se lee en tu teléfono: la foto no sale de acá. Las filas marcadas son las que entendimos.</p>
           {n === 0 ? <p className="pr-oscura__texto">Probá con más luz y la hoja derecha, o cargá los precios a mano.</p> : null}
@@ -127,7 +129,9 @@ export function FotoLista() {
         )
       }
     >
-      <HojaDibujada renglones={[true, true, false, true, true, true, false, true]} tam="medio" />
+      <div className="pr-centro">
+        <HojaDibujada renglones={[true, true, false, true, true, true, false, true]} tam="medio" />
+      </div>
       <h2 className="pr-subtitulo">Sacale una foto a la lista del corralón</h2>
       <ul className="pr-consejos">
         <li>Con buena luz y la hoja derecha.</li>

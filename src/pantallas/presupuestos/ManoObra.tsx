@@ -59,9 +59,9 @@ export function ManoObra() {
       }
     >
       <div className="pr-tres">
-        <MosaicoCifra rotulo="Hora" tono="azul" centavos={m.hora?.centavos} texto={m.hora ? undefined : 'Sin cargar'} onClick={() => setEdicion({ tipo: 'base', campo: 'hora' })} etiqueta="Cambiar tu hora" />
-        <MosaicoCifra rotulo="Visita" centavos={m.visita?.centavos} texto={m.visita ? undefined : 'Sin cargar'} onClick={() => setEdicion({ tipo: 'base', campo: 'visita' })} etiqueta="Cambiar la visita" />
-        <MosaicoCifra rotulo="Urgencia" texto={m.urgenciaBps !== null ? `+ ${Math.round(m.urgenciaBps / 100)} %` : 'Sin recargo'} onClick={() => setEdicion({ tipo: 'base', campo: 'urgencia' })} etiqueta="Cambiar el recargo por urgencia" />
+        <MosaicoCifra tam="chico" rotulo="Hora" tono="azul" centavos={m.hora?.centavos} texto={m.hora ? undefined : 'Sin cargar'} onClick={() => setEdicion({ tipo: 'base', campo: 'hora' })} etiqueta="cambiar" />
+        <MosaicoCifra tam="chico" rotulo="Visita" centavos={m.visita?.centavos} texto={m.visita ? undefined : 'Sin cargar'} onClick={() => setEdicion({ tipo: 'base', campo: 'visita' })} etiqueta="cambiar" />
+        <MosaicoCifra tam="chico" rotulo="Urgencia" texto={m.urgenciaBps !== null ? `+ ${Math.round(m.urgenciaBps / 100)} %` : 'Sin recargo'} onClick={() => setEdicion({ tipo: 'base', campo: 'urgencia' })} etiqueta="cambiar" />
       </div>
       {base.fallo ? <ErrorCaja fallo={base.fallo} /> : null}
       {rubros.length === 0 ? <p className="pr-nota">Todavía no cargaste tarifas por tarea.</p> : null}

@@ -99,8 +99,8 @@ function Detalle({ p, recargar }: { p: PrecioDetalle; recargar(): Promise<void> 
         </AvisoCaja>
       ) : null}
       <div className="pr-dos">
-        <MosaicoCifra rotulo="Te cuesta" centavos={costo} detalle={`${p.proveedor ?? 'Cargado a mano'} · ${diaMes(p.actualizadoEn)}`} onClick={() => setEditando('costo')} etiqueta={`Te cuesta ${pesosDesdeCentavos(costo)}. Cambiar`} />
-        <MosaicoCifra rotulo="Al cliente" tono="azul" centavos={cliente} detalle={`Margen ${porcentaje(margen)}${margen < 0 ? ' menos' : ''} · lo decidís vos`} onClick={() => setEditando('cliente')} etiqueta={`Al cliente ${pesosDesdeCentavos(cliente)}. Cambiar`} />
+        <MosaicoCifra rotulo="Te cuesta" centavos={costo} detalle={`${p.proveedor ?? 'Cargado a mano'} · ${diaMes(p.actualizadoEn)}`} onClick={() => setEditando('costo')} etiqueta="cambiar" />
+        <MosaicoCifra rotulo="Al cliente" tono="azul" centavos={cliente} detalle={`Margen ${porcentaje(margen)}${margen < 0 ? ' menos' : ''} · lo decidís vos`} onClick={() => setEditando('cliente')} etiqueta="cambiar" />
       </div>
       {puntos.length > 1 ? (
         <Tarjeta>

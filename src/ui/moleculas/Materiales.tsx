@@ -127,18 +127,19 @@ export function ResumenHechos({ lineas, textoCambiar = 'Cambiar', etiquetaCambia
 }
 
 /** Mosaico con rótulo y cifra («HORA $ 22.000»). Con `onClick` se toca para cambiarla. */
-export function MosaicoCifra({ rotulo, centavos, texto, detalle, tono = 'gris', onClick, etiqueta }: { rotulo: string; centavos?: number; texto?: string; detalle?: string; tono?: 'gris' | 'azul'; onClick?: () => void; etiqueta?: string }) {
+export function MosaicoCifra({ rotulo, centavos, texto, detalle, tono = 'gris', tam = 'medio', onClick, etiqueta }: { rotulo: string; centavos?: number; texto?: string; detalle?: string; tono?: 'gris' | 'azul'; tam?: 'chico' | 'medio'; onClick?: () => void; /** Texto para el lector al final del nombre («, cambiar»): el nombre empieza con lo que se ve. */ etiqueta?: string }) {
   const cuerpo = (
     <>
       <span className="ui-mosaico-cifra__rotulo">{rotulo}</span>
-      <Cifra centavos={centavos} texto={texto} tam="medio" como="strong" />
+      <Cifra centavos={centavos} texto={texto} tam={tam} como="strong" />
       {detalle ? <span className="ui-mosaico-cifra__detalle">{detalle}</span> : null}
+      {onClick && etiqueta ? <span className="visualmente-oculto">{`, ${etiqueta}`}</span> : null}
     </>
   );
   const clase = `ui-mosaico-cifra ui-mosaico-cifra--${tono}`;
   if (onClick)
     return (
-      <button type="button" className={`${clase} ui-mosaico-cifra--tocable`} aria-label={etiqueta} onClick={onClick}>
+      <button type="button" className={`${clase} ui-mosaico-cifra--tocable`} onClick={onClick}>
         {cuerpo}
       </button>
     );

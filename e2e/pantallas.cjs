@@ -93,6 +93,16 @@ const PANTALLAS = [
   ['taller-informe', '/taller/informe/', 'Estado del tablero', 'habilitado'],
   ['taller-canalizacion', '/taller/canalizacion/', 'Materiales', 'habilitado'],
   ['taller-checklists', '/taller/checklists/', 'pasos hechos', 'habilitado'],
+  // Lote 2.2: presupuestos y lista de precios (ids del mock en src/data/mock/presupuestos.ts)
+  ['presupuesto', `/presupuestos/?id=${id(0x220102)}`, 'Total para el cliente', 'habilitado'],
+  ['presupuesto-mandado', `/presupuestos/?id=${id(0x220101)}`, 'Armar una versión nueva', 'habilitado'],
+  ['presupuesto-material', `/presupuestos/material/?id=${id(0x220102)}`, 'De tu lista de precios', 'habilitado'],
+  ['presupuesto-material-nuevo', `/presupuestos/material-nuevo/?id=${id(0x220102)}&nombre=Termofusi%C3%B3n%20codo%2025%20mm`, 'no estaba en tu lista', 'habilitado'],
+  ['presupuesto-varios', `/presupuestos/varios/?id=${id(0x220102)}`, 'Cambio de grifería', 'habilitado'],
+  ['precios', '/precios/', 'Para qué sirve', 'habilitado'],
+  ['precios-foto', '/precios/foto/', 'Sacale una foto', 'habilitado'],
+  ['precio-detalle', `/precios/detalle/?id=${id(0x220001)}`, 'Cómo varió', 'habilitado'],
+  ['mano-de-obra', '/precios/mano-de-obra/', 'Por tarea', 'habilitado'],
 ];
 
 /** Espera a que los mapas de la pantalla terminen de cargar (o queden con su texto de respaldo). */

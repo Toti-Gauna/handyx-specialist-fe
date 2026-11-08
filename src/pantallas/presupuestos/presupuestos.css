@@ -202,3 +202,7 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+.pr-centro {
+  display: flex;
+  justify-content: center;
+}

@@ -625,10 +625,11 @@ export const presupuestos = (s: EstadoMock) => {
     // ── Lista de precios ──
     precios(f: FiltroPrecios = {}): Pagina<PrecioMaterial> {
       if (f.q !== undefined && f.q.length > 80) throw fallo('validacion', 400, 'validacion', 'Buscá con menos letras.');
-      const q = normalizar(f.q ?? '');
+      // Busca palabra por palabra: «cartucho 35» encuentra «Cartucho cerámico 35 mm».
+      const palabras = normalizar(f.q ?? '').split(' ').filter(Boolean);
       const items = e()
         .precios.map((p) => precioPub(s, p))
-        .filter((p) => (!f.categoria || p.categoria === f.categoria) && (!q || normalizar(p.nombre).includes(q)) && (!f.viejos || p.viejo))
+        .filter((p) => (!f.categoria || p.categoria === f.categoria) && palabras.every((w) => normalizar(p.nombre).includes(w)) && (!f.viejos || p.viejo))
         .sort((a, b) => a.categoria.localeCompare(b.categoria) || a.nombre.localeCompare(b.nombre, 'es'));
       return { items, siguienteCursor: null };
     },

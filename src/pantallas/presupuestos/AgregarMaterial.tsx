@@ -50,7 +50,9 @@ export function AgregarMaterial() {
   const cliente = destino.datos?.cliente?.split(' ')[0] ?? null;
   const volver = rutaPresupuesto(presupuesto.id);
   const hoy = hoyLocal();
-  const items = (lista.datos?.items ?? []).slice(0, MAX_RESULTADOS);
+  // Primero los materiales del oficio del trabajo; después el resto.
+  const rubro = destino.datos?.rubro ?? null;
+  const items = [...(lista.datos?.items ?? [])].sort((a, b) => Number(b.categoria === rubro) - Number(a.categoria === rubro)).slice(0, MAX_RESULTADOS);
   const subtotal = elegido ? Math.round(elegido.precioCliente.centavos * cantidad) : 0;
 
   async function sumar() {

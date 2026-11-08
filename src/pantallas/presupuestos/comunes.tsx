@@ -7,6 +7,7 @@ import type { CategoriaPrecio, ModoPrecio } from '../../contracts/presupuestos.t
 import { useCarga } from '../../hooks/useCarga.ts';
 import { diaLocal } from '../../lib/formato.ts';
 import { RUTAS } from '../../app/rutas.ts';
+import type { Rubro } from '../../contracts/rubros.ts';
 import { Chip } from '../../ui/atomos/Texto.tsx';
 import type { NombreIconoUi } from '../../ui/atomos/Icono.tsx';
 import { ICONO_RUBRO } from '../../ui/moleculas/MarcadorPedido.tsx';
@@ -41,6 +42,8 @@ export interface DestinoPresupuesto {
   /** Chat al que llega la tarjeta (si ya existe). */
   chatId: string | null;
   volver: string;
+  /** El oficio del trabajo o del pedido: sus materiales van primero. */
+  rubro: Rubro | null;
 }
 
 /** A quién va el presupuesto: el cliente y el chat del trabajo (o del pedido, que se abre al mandarlo). */
@@ -50,9 +53,12 @@ export function useDestino(p: Pick<Presupuesto, 'trabajoId' | 'obraId' | 'pedido
   return useCarga<DestinoPresupuesto | null>(async () => {
     if (trabajoId) {
       const t = await api.trabajo(trabajoId);
-      return { cliente: t.contraparte, chatId: t.trabajo.conversacionId, volver: `${RUTAS.trabajo.ruta}?id=${trabajoId}` };
+      return { cliente: t.contraparte, chatId: t.trabajo.conversacionId, volver: `${RUTAS.trabajo.ruta}?id=${trabajoId}`, rubro: t.trabajo.rubro };
     }
-    if (pedidoId) return { cliente: null, chatId: null, volver: `${RUTAS.pedido.ruta}?id=${pedidoId}` };
+    if (pedidoId) {
+      const ped = await api.pedido(pedidoId);
+      return { cliente: null, chatId: ped.conversacionId, volver: `${RUTAS.pedido.ruta}?id=${pedidoId}`, rubro: ped.rubro };
+    }
     return null;
   }, [trabajoId, pedidoId]);
 }
