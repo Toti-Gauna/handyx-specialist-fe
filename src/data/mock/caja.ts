@@ -22,7 +22,15 @@ export const caja = (s: EstadoMock) => ({
     const ok = GuardarMediosCobroSchema.safeParse(m);
     if (!ok.success) throw zodAFallo(ok.error);
     if (ok.data.version !== s.mediosCobro.version) throw fallo('conflicto', 409, 'conflicto_version', 'Tus formas de cobro cambiaron. Volvé a abrirlas.');
-    s.mediosCobro = { ...s.mediosCobro, efectivo: ok.data.efectivo, mercadoPago: ok.data.mercadoPago, version: s.mediosCobro.version + 1 };
+    // 0.11.0: la transferencia guarda el alias (acá, solo enmascarado); sin alias nuevo se conserva el anterior.
+    const t = ok.data.transferencia;
+    let transferencia = s.mediosCobro.transferencia;
+    if (t) {
+      const aliasEnmascarado = t.alias ? `${t.alias.slice(0, 3)}•••${t.alias.slice(-2)}` : (transferencia?.aliasEnmascarado ?? null);
+      if (t.activa && !aliasEnmascarado) throw fallo('validacion', 400, 'validacion', 'Escribí el alias o el CBU para activar la transferencia.');
+      transferencia = { activa: t.activa, aliasEnmascarado };
+    }
+    s.mediosCobro = { ...s.mediosCobro, efectivo: ok.data.efectivo, mercadoPago: ok.data.mercadoPago, ...(transferencia ? { transferencia } : {}), version: s.mediosCobro.version + 1 };
     return structuredClone(s.mediosCobro);
   },
   cajaResumen: (): CajaResumen => ({
