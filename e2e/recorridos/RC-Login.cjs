@@ -39,7 +39,7 @@ const RECORRIDOS = [
       // Vacío: el error se dice con texto y el foco va al primer campo
       await p.getByRole('button', { name: 'Entrar', exact: true }).click();
       await ver(p, 'Escribí tu email o tu teléfono.');
-      assert.equal(await p.evaluate(() => document.activeElement?.getAttribute('autocomplete')), 'username');
+      await p.waitForFunction(() => document.activeElement?.getAttribute('autocomplete') === 'username');
       await axe(p, 'login');
       // Fuera de un dispositivo Apple no se ofrece Apple
       assert.equal(await p.getByRole('button', { name: 'Apple' }).count(), 0);
@@ -47,7 +47,7 @@ const RECORRIDOS = [
       await p.getByLabel('Contraseña', { exact: true }).fill(CLAVE);
       await p.getByRole('button', { name: 'Mostrar la contraseña' }).click();
       assert.equal(await p.getByLabel('Contraseña', { exact: true }).getAttribute('type'), 'text');
-      await p.getByText('Recordar este teléfono').click();
+      await p.getByRole('checkbox', { name: 'Recordar este teléfono' }).check();
       await foto('02-login');
       await p.getByRole('button', { name: 'Entrar', exact: true }).click();
       // Paso 2 de 2: el código de la app
@@ -106,10 +106,10 @@ const RECORRIDOS = [
       // El token sale de la barra de direcciones apenas se lee
       assert.equal(new URL(p.url()).search, '', 'el token quedó en la URL');
       await axe(p, 'contraseña nueva');
-      await p.getByLabel('Contraseña nueva').fill('corta');
+      await p.getByRole('textbox', { name: 'Contraseña nueva' }).fill('corta');
       await p.getByRole('button', { name: 'Guardar la contraseña' }).click();
       await ver(p, 'Usá al menos 12 caracteres.');
-      await p.getByLabel('Contraseña nueva').fill('una-frase-nueva-y-larga');
+      await p.getByRole('textbox', { name: 'Contraseña nueva' }).fill('una-frase-nueva-y-larga');
       await ver(p, 'Muy buena');
       await foto('02-contrasena-nueva');
       await p.getByRole('button', { name: 'Guardar la contraseña' }).click();
@@ -148,7 +148,7 @@ const RECORRIDOS = [
       await p.getByRole('button', { name: 'Mandarme el código' }).click();
       await p.waitForURL('**/acceso/codigo/verificar/');
       await ver(p, 'mensajes');
-      await ver(p, 'el teléfono de tu cuenta');
+      await ver(p, 'al teléfono de tu cuenta');
       await axe(p, 'código');
       // Antes de la espera no se puede pedir otro; sí probar por el email
       assert.equal(await p.getByRole('button', { name: 'Pedir otro código' }).count(), 0);

@@ -3,6 +3,7 @@
 // Cada escenario arranca con una carga completa (`?escenario=`); dentro de él se navega SIN recargar,
 // porque el estado de prueba vive solo en memoria de la pestaña.
 const assert = require('node:assert/strict');
+const { readdirSync } = require('node:fs');
 const { join } = require('node:path');
 const { servir } = require('./servidor.cjs');
 const { activarMapas, esperarMapas } = require('./pantallas.cjs');
@@ -76,7 +77,6 @@ async function main() {
     // Carga → bienvenida → crear cuenta en tres pasos → código por email → cuenta creada
     await p.waitForURL('**/bienvenida/');
     await foto('01-bienvenida');
-    await p.getByRole('button', { name: 'Saltear' }).click();
     await ir(p, 'Crear cuenta');
     await p.waitForURL('**/registro/');
     await foto('02-registro-email');
@@ -449,9 +449,9 @@ async function main() {
     await p.waitForURL(/\/acceso\/\?motivo=sesion/);
     await ver(p, 'Por seguridad cerramos tu sesión');
     await foto('04-acceso');
-    await p.getByLabel('Email').fill('especialista@example.test');
-    await p.getByLabel('Contraseña').fill('clave-de-prueba-123');
-    await p.getByRole('button', { name: 'Entrar' }).click();
+    await p.getByLabel('Email o teléfono').fill('especialista@example.test');
+    await p.getByLabel('Contraseña', { exact: true }).fill('clave-de-prueba-123');
+    await p.getByRole('button', { name: 'Entrar', exact: true }).click();
     await p.waitForURL('**/inicio/');
     // Baja: estado honesto, sesión cerrada y cancelación
     await nav(p, 'Cuenta');
@@ -461,9 +461,9 @@ async function main() {
     await foto('05-confirmar-baja');
     await p.getByRole('button', { name: 'Sí, solicitar la baja' }).click();
     await p.waitForURL('**/acceso/');
-    await p.getByLabel('Email').fill('especialista@example.test');
-    await p.getByLabel('Contraseña').fill('clave-de-prueba-123');
-    await p.getByRole('button', { name: 'Entrar' }).click();
+    await p.getByLabel('Email o teléfono').fill('especialista@example.test');
+    await p.getByLabel('Contraseña', { exact: true }).fill('clave-de-prueba-123');
+    await p.getByRole('button', { name: 'Entrar', exact: true }).click();
     await p.waitForURL('**/baja/');
     await ver(p, 'Todavía no se borró nada');
     await foto('06-baja-solicitada');
@@ -640,33 +640,9 @@ async function main() {
 
   const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1';
 
-  await escenario('L1-carga-y-bienvenida', nav_, base, async ({ p, foto }) => {
-    // Con movimiento: la carga se ve, cambia de color y se saltea tocando
-    await p.goto(`${base}/?escenario=nuevo`);
-    const carga = p.locator('[data-carga]');
-    await carga.waitFor();
-    await p.waitForTimeout(400);
-    await foto('01-carga');
-    await carga.click();
-    await carga.waitFor({ state: 'detached' });
-    await p.waitForURL('**/bienvenida/');
-    // Bienvenida: Siguiente, los puntos y la última lámina con las dos salidas
-    await ver(p, 'Vos ponés');
-    await p.getByRole('button', { name: 'Siguiente' }).click();
-    await p.locator('[aria-current="true"][aria-label="Ver la lámina 2"]').waitFor();
-    await p.getByRole('button', { name: 'Ver la lámina 3' }).click();
-    await p.getByRole('link', { name: 'Ya tengo cuenta' }).waitFor();
-    await foto('02-bienvenida-final');
-    await p.getByRole('link', { name: 'Ya tengo cuenta' }).click();
-    await p.waitForURL('**/acceso/');
-    // En Android, Windows o Linux no se ofrece Apple
-    await ver(p, 'Continuar con Google');
-    assert.equal(await p.getByRole('button', { name: 'Continuar con Apple' }).count(), 0, 'Apple fuera de un dispositivo Apple');
-  }, { capturas, movimiento: 'no-preference' });
-
   await escenario('L2-apple-en-iphone-y-cuenta-nueva', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/acceso/?escenario=nuevo`);
-    await p.getByRole('button', { name: 'Continuar con Apple' }).click();
+    await p.getByRole('button', { name: 'Apple', exact: true }).click();
     await ver(p, 'Elegí tu cuenta de Apple');
     await foto('01-apple');
     await p.getByRole('button', { name: /especialista\.apple@example\.test/ }).click();
@@ -683,13 +659,6 @@ async function main() {
     await p.waitForURL('**/alta/');
   }, { capturas, agente: IPHONE });
 
-  await escenario('L3-google-cuenta-existente', nav_, base, async ({ p }) => {
-    await p.goto(`${base}/acceso/?escenario=habilitado`);
-    await p.getByRole('button', { name: 'Continuar con Google' }).click();
-    await p.getByRole('button', { name: /especialista@example\.test/ }).click();
-    await p.waitForURL('**/inicio/');
-  });
-
   await escenario('L4-codigo-incorrecto-y-reenvio', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/verificar/?escenario=sin_verificar`);
     await ver(p, 'cu•••@example.test');
@@ -702,47 +671,6 @@ async function main() {
     assert.equal(await p.evaluate(() => document.activeElement?.getAttribute('autocomplete')), 'one-time-code');
     await p.getByLabel('Código de 6 números').fill('482913');
     await ver(p, 'Tu cuenta está');
-  }, { capturas });
-
-  await escenario('L5-recuperar-y-contrasena-nueva', nav_, base, async ({ p, foto }) => {
-    await p.goto(`${base}/acceso/?escenario=habilitado`);
-    await ir(p, 'Olvidé mi contraseña');
-    await p.waitForURL('**/recuperar/');
-    await p.getByLabel('Email').fill('especialista@example.test');
-    await p.getByRole('button', { name: 'Mandarme el enlace' }).click();
-    await ver(p, 'Por seguridad no te decimos si la cuenta existe');
-    await foto('01-revisa-tu-correo');
-    await p.getByRole('link', { name: 'Abrir el enlace del email' }).click();
-    await ver(p, 'Elegí una contraseña');
-    // El token sale de la barra de direcciones apenas se lee
-    assert.equal(new URL(p.url()).search, '', 'el token quedó en la URL');
-    await p.getByLabel('Contraseña nueva').fill('una-frase-nueva-y-larga');
-    await ver(p, 'Muy buena');
-    await foto('02-contrasena-nueva');
-    await p.getByRole('button', { name: 'Guardar la contraseña' }).click();
-    await ver(p, 'Tu contraseña');
-    await ir(p, 'Entrar');
-    await p.waitForURL('**/acceso/');
-    await p.getByLabel('Email').fill('especialista@example.test');
-    await p.getByLabel('Contraseña').fill('clave-de-prueba-123');
-    await p.getByRole('button', { name: 'Entrar' }).click();
-    await ver(p, 'El email o la contraseña no son correctos.');
-    // Credenciales incorrectas no son una sesión vencida: no aparece "Tu sesión expiró"
-    assert.equal(await p.getByText('Tu sesión expiró').count(), 0, 'una contraseña incorrecta abrió el aviso de sesión vencida');
-    await p.getByLabel('Contraseña').fill('una-frase-nueva-y-larga');
-    await p.getByRole('button', { name: 'Entrar' }).click();
-    await p.waitForURL('**/inicio/');
-  }, { capturas });
-
-  await escenario('L6-enlace-vencido', nav_, base, async ({ p, foto }) => {
-    await p.goto(`${base}/recuperar/?escenario=habilitado`);
-    await p.getByLabel('Email').fill('especialista@example.test');
-    await p.getByRole('button', { name: 'Mandarme el enlace' }).click();
-    await p.getByRole('link', { name: 'Probar un enlace vencido' }).click();
-    await ver(p, 'Los enlaces sirven una sola vez');
-    await foto('01-vencido');
-    await ir(p, 'Pedir otro enlace');
-    await p.waitForURL('**/recuperar/');
   }, { capturas });
 
   // ── Mapa, ubicación en vivo y trayectos (lote 4.3) ──
@@ -1179,6 +1107,11 @@ async function main() {
     await p.context().setOffline(false);
     await p.getByText('Lo que ves puede estar desactualizado').waitFor({ state: 'detached' });
   }, { capturas });
+
+  // Recorridos del lienzo por lote (plan por olas): cada archivo de e2e/recorridos/ exporta RECORRIDOS.
+  for (const archivo of readdirSync(join(__dirname, 'recorridos')).filter((a) => a.endsWith('.cjs')).sort()) {
+    for (const [nombre, pasos, o = {}] of require(join(__dirname, 'recorridos', archivo)).RECORRIDOS) await escenario(nombre, nav_, base, pasos, { capturas, ...o });
+  }
 
   await nav_.close();
   await navSinWebgl.close();

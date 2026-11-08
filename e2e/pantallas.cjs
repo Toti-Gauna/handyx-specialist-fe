@@ -3,13 +3,16 @@ const id = (n) => `00000000-0000-4000-8000-${n.toString(16).padStart(12, '0')}`;
 
 // [nombre, ruta, texto que indica que terminó de cargar, escenario]
 const PANTALLAS = [
-  ['bienvenida', '/bienvenida/', 'tu precio', 'nuevo'],
-  ['acceso', '/acceso/', 'La app para especialistas', 'nuevo'],
+  ['bienvenida', '/bienvenida/', 'tus precios', 'nuevo'],
+  ['acceso', '/acceso/', 'Entrar sin contraseña, con un código', 'nuevo'],
+  ['acceso-codigo', '/acceso/codigo/', 'Código por SMS', 'nuevo'],
+  ['acceso-codigo-sin-pedido', '/acceso/codigo/verificar/', 'Por seguridad, el código que pediste', 'nuevo'],
+  ['acceso-paso-2-vencido', '/acceso/verificacion/', 'Por seguridad, el paso 2', 'nuevo'],
   ['acceso-de-nuevo', '/acceso/?motivo=sesion', 'Por seguridad cerramos tu sesión', 'nuevo'],
   ['registro', '/registro/', 'Te vamos a mandar un código', 'nuevo'],
   ['verificar', '/verificar/', 'Vence en 10 minutos', 'sin_verificar'],
   ['aceptar', '/registro/aceptar/', 'Es tu primera vez en Handyx', 'sin_aceptar'],
-  ['recuperar', '/recuperar/', 'Escribí el email de tu cuenta', 'nuevo'],
+  ['recuperar', '/recuperar/', 'Aunque escribas el teléfono', 'nuevo'],
   ['enlace-vencido', '/recuperar/nueva/?token=tok-prueba-recuperacion-vencido', 'Los enlaces sirven una sola vez', 'nuevo'],
   ['alta-borrador', '/alta/', 'de 6 listos', 'incompleto'],
   ['alta-datos', '/alta/?paso=datos', 'Pregunta 3 de 7', 'incompleto'],
