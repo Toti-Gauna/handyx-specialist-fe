@@ -205,7 +205,7 @@ export function gruposAlta(r: RegistroEspecialista): GrupoAlta[] {
         ? 'Verificados · el archivo ya se borró'
         : r.antecedentes.estado === 'faltante'
           ? 'Sin cargar: hasta que lo cargues no recibís pedidos'
-          : `${r.antecedentes.formato === 'pdf' ? 'PDF' : 'Foto'} cargada · se borra al verificarte`,
+          : `${r.antecedentes.formato === 'pdf' ? 'PDF cargado' : 'Foto cargada'} · se borra al verificarte`,
       estado: estadoDeDocumentos([r.antecedentes.estado]),
       paso: 'antecedentes',
     },

@@ -58,11 +58,7 @@ export function PasoSelfie() {
       marcado="tu cara"
       bajada="Para que el cliente sepa quién llega y para compararla con tu DNI."
       accion={
-        camara ? (
-          <p className="rg-nota">Sacá la foto con el botón de arriba.</p>
-        ) : (
-          <Boton onClick={() => seguir('selfie')}>Seguir</Boton>
-        )
+        camara ? null : <Boton onClick={() => seguir('selfie')}>Seguir</Boton>
       }
     >
       {camara ? (
@@ -122,7 +118,7 @@ export function PasoDni() {
       antes="Tu "
       marcado="DNI"
       bajada="Frente y dorso. Lo revisamos nosotros: cargarlo no es estar verificado."
-      accion={camara ? <p className="rg-nota">Sacá las fotos con el botón de arriba.</p> : <Boton onClick={() => seguir('dni')}>Seguir</Boton>}
+      accion={camara ? null : <Boton onClick={() => seguir('dni')}>Seguir</Boton>}
     >
       {camara ? (
         <>

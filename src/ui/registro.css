@@ -564,10 +564,10 @@
 }
 .ui-papelitos__p--1 { top: 18%; left: 12%; rotate: 20deg; }
 .ui-papelitos__p--2 { top: 14%; right: 14%; rotate: -15deg; background: #fff; }
-.ui-papelitos__p--3 { top: 62%; left: 18%; rotate: 40deg; background: #fff; }
-.ui-papelitos__p--4 { top: 58%; right: 20%; rotate: -30deg; }
+.ui-papelitos__p--3 { top: 30%; left: 8%; rotate: 40deg; background: #fff; }
+.ui-papelitos__p--4 { top: 34%; right: 9%; rotate: -30deg; }
 .ui-papelitos__p--5 { top: 8%; left: 48%; rotate: 10deg; background: #f08c3c; }
-.ui-papelitos__p--6 { top: 72%; right: 34%; rotate: 30deg; background: #1e9e57; }
+.ui-papelitos__p--6 { top: 6%; right: 32%; rotate: 30deg; background: #1e9e57; }
 .ui-papelitos__p--7 { top: 36%; left: 6%; rotate: -20deg; background: #f08c3c; }
 .ui-papelitos__p--8 { top: 40%; right: 6%; rotate: 60deg; background: #fff; }
 @media (prefers-reduced-motion: no-preference) {

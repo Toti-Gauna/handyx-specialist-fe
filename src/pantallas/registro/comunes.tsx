@@ -33,7 +33,7 @@ export function useRegistro(): CtxRegistro {
 
 export const rutaPaso = (p: PasoRegistro): string => `${RUTAS.alta.ruta}?paso=${p}`;
 
-export function MarcoPaso({ paso, antes, marcado, despues, bajada, children, accion, nota, volver }: { paso: PasoRegistro; antes?: ReactNode; marcado?: ReactNode; despues?: ReactNode; bajada: ReactNode; children: ReactNode; accion: ReactNode; nota?: ReactNode; volver?: string | null }) {
+export function MarcoPaso({ paso, antes, marcado, despues, bajada, children, accion, nota, volver }: { paso: PasoRegistro; antes?: ReactNode; marcado?: ReactNode; despues?: ReactNode; bajada: ReactNode; children: ReactNode; accion: ReactNode | null; nota?: ReactNode; volver?: string | null }) {
   const { r } = useRegistro();
   const anterior = pasoAnterior(paso);
   const hrefVolver = volver === undefined ? (anterior ? rutaPaso(anterior) : undefined) : (volver ?? undefined);
@@ -41,7 +41,7 @@ export function MarcoPaso({ paso, antes, marcado, despues, bajada, children, acc
   return (
     <PantallaSecundaria
       barra={<CabeceraPasos paso={numeroPaso(paso)} total={TOTAL_PASOS} nombre={NOMBRE_PASO[paso]} hrefVolver={hrefVolver} />}
-      accion={<AccionFija nota={nota}>{accion}</AccionFija>}
+      accion={accion ? <AccionFija nota={nota}>{accion}</AccionFija> : undefined}
     >
       <section className="rg-encabezado">
         <Titulo antes={antes} marcado={marcado} despues={despues} />
@@ -54,6 +54,16 @@ export function MarcoPaso({ paso, antes, marcado, despues, bajada, children, acc
       ) : null}
       {children}
     </PantallaSecundaria>
+  );
+}
+
+/** Detalle de una fila con su estado debajo (así la flecha de la fila no se va de renglón). */
+export function DetalleEstado({ texto, estado }: { texto: ReactNode; estado: ReactNode }) {
+  return (
+    <span className="rg-detalle">
+      <span>{texto}</span>
+      {estado}
+    </span>
   );
 }
 

@@ -14,7 +14,7 @@ import { Casilla } from '../../ui/atomos/Controles.tsx';
 import { Chip } from '../../ui/atomos/Texto.tsx';
 import { AvisoCaja } from '../../ui/moleculas/Avisos.tsx';
 import { FilaIcono, Tarjeta } from '../../ui/moleculas/Tarjeta.tsx';
-import { FalloPaso, MarcoPaso, rutaPaso, useRegistro } from './comunes.tsx';
+import { DetalleEstado, FalloPaso, MarcoPaso, rutaPaso, useRegistro } from './comunes.tsx';
 import { HojaTextos } from './HojaTextos.tsx';
 
 const PASO_FALTANTE: Record<FaltanteRegistro, PasoRegistro> = {
@@ -78,19 +78,23 @@ export function PasoRevision() {
               key={g.id}
               icono={g.icono}
               titulo={g.titulo}
-              detalle={g.detalle}
               href={rutaPaso(g.paso)}
-              derecha={
-                <Chip icono={e.icono} tono={e.tono}>
-                  {g.estado === 'revision' ? 'Cargado' : e.texto}
-                </Chip>
+              detalle={
+                <DetalleEstado
+                  texto={g.detalle}
+                  estado={
+                    <Chip icono={e.icono} tono={e.tono}>
+                      {g.estado === 'revision' ? 'Cargado' : e.texto}
+                    </Chip>
+                  }
+                />
               }
             />
           );
         })}
       </Tarjeta>
       <div className="rg-acepta">
-        <Casilla checked={acepta} onChange={(e) => setAcepta(e.target.checked)}>
+        <Casilla checked={acepta} onChange={(e) => (setAcepta(e.target.checked), setError(null))}>
           Leí y acepto los términos y el aviso de privacidad para especialistas.
         </Casilla>
         <Boton variante="texto" bloque={false} onClick={() => setTextos(true)}>

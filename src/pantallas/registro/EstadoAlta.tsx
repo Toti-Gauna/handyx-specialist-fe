@@ -17,7 +17,7 @@ import { FilaIcono, Tarjeta } from '../../ui/moleculas/Tarjeta.tsx';
 import { AccionFija } from '../../ui/organismos/Acciones.tsx';
 import { BarraCompacta } from '../../ui/organismos/Cabeceras.tsx';
 import { PantallaSecundaria } from '../../ui/plantillas/Plantillas.tsx';
-import { rutaPaso } from './comunes.tsx';
+import { DetalleEstado, rutaPaso } from './comunes.tsx';
 
 /** Con el alta en evaluación se pueden sumar certificados y cargar los antecedentes que faltaban. */
 const tocable = (r: RegistroEspecialista, g: GrupoAlta): boolean =>
@@ -52,7 +52,7 @@ export function EstadoAlta({ r }: { r: RegistroEspecialista }) {
       <div className="rg-avance">
         <Anillo hechas={listos} total={total} unidad="partes verificadas" />
         <p>
-          {listos === total ? 'Todo lo obligatorio está verificado.' : `Verificamos ${listos} de ${total} partes obligatorias.`}
+          {listos === total ? 'Todo lo obligatorio está listo.' : `Listas ${listos} de ${total} partes obligatorias.`}
           {enEvaluacion ? ' Te avisamos apenas tengamos una respuesta.' : ''}
         </p>
       </div>
@@ -69,13 +69,17 @@ export function EstadoAlta({ r }: { r: RegistroEspecialista }) {
               key={g.id}
               icono={g.icono}
               titulo={g.titulo}
-              detalle={g.detalle}
               borde={i > 0}
               href={tocable(r, g) ? rutaPaso(g.paso) : undefined}
-              derecha={
-                <Chip icono={e.icono} tono={e.tono}>
-                  {e.texto}
-                </Chip>
+              detalle={
+                <DetalleEstado
+                  texto={g.detalle}
+                  estado={
+                    <Chip icono={e.icono} tono={e.tono}>
+                      {e.texto}
+                    </Chip>
+                  }
+                />
               }
             />
           );

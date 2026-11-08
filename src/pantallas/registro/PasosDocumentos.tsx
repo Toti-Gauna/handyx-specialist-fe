@@ -178,7 +178,7 @@ export function PasoAntecedentes() {
           <FilaIcono
             icono="documento"
             titulo="Certificado de antecedentes"
-            detalle={a.archivoBorrado ? 'Verificado · el archivo ya se borró' : `${a.formato === 'pdf' ? 'PDF' : 'Foto'} cargada · se borra al verificarte`}
+            detalle={a.archivoBorrado ? 'Verificado · el archivo ya se borró' : `${a.formato === 'pdf' ? 'PDF cargado' : 'Foto cargada'} · se borra al verificarte`}
             derecha={<ChipEstado estado={a.estado} />}
             borde={false}
           />

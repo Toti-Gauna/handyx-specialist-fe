@@ -86,6 +86,7 @@
   min-width: 0;
 }
 .ob .ui-laminas__escena .ui-ilu {
-  width: min(260px, 70vw);
+  width: min(300px, 80vw);
   height: auto;
+  max-height: 40dvh;
 }

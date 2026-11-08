@@ -113,7 +113,7 @@ export function CrearCuenta() {
         </Casilla>
         <AvisoPrivado>Tus datos se guardan cifrados. Los clientes ven solo tu nombre y tu foto.</AvisoPrivado>
         <div className={`rg-acepta${errores.acepta ? ' rg-acepta--error' : ''}`}>
-          <Casilla checked={acepta} onChange={(e) => setAcepta(e.target.checked)} aria-invalid={errores.acepta ? true : undefined}>
+          <Casilla checked={acepta} onChange={(e) => (setAcepta(e.target.checked), setErrores((x) => ({ ...x, acepta: undefined })))} aria-invalid={errores.acepta ? true : undefined}>
             Leí y acepto los términos de uso y el aviso de privacidad.
           </Casilla>
           <Boton variante="texto" bloque={false} onClick={() => setTextos(true)}>
