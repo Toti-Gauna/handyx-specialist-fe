@@ -1,16 +1,14 @@
 // Panel de prueba del mock: escenarios, fallas simuladas, reloj y simulación de las otras partes
 // (Operations, usuario del hogar, proveedor de pagos). Solo existe con el origen mock: el bundle de
 // producción no lo incluye (scripts/verificar-bundle.mjs).
-import { faltantesParaHabilitar } from '../../contracts/maquinas.ts';
 import { monto } from '../../contracts/dinero.ts';
-import { requiereMatricula } from '../../contracts/rubros.ts';
 import type { Propuesta } from '../../contracts/dto.ts';
 import { ahoraMs, ESCENARIOS, ETIQUETA_ESCENARIO, idNuevo, iso, RELOJ_BASE, SENALES_PRUEBA, type Escenario, type EstadoMock, type SenalPrueba } from './estado.ts';
 import { crearEstado, ID } from './fixtures.ts';
 import { agregarMensaje, aplicarAceptacion } from './propuestas.ts';
 import { destinoPrueba, zonaPrueba } from './mapa.ts';
 import { recalcular } from './reglas.ts';
-import { reservar } from './turnos.ts';
+import { accionesOpsRegistro, ejecutarOpsRegistro } from './alta-registro.ts';
 
 export interface AccionPrueba {
   id: string;
@@ -69,17 +67,8 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
 
   const acciones = (): AccionPrueba[] => {
     const a: AccionPrueba[] = [];
-    const e = s.perfil.estadoAlta;
-    const op = (id: string, etiqueta: string) => a.push({ id, etiqueta, grupo: 'Operations (alta)' });
-    if (e === 'enviada') op('ops_revision', 'Tomar el alta en revisión');
-    if (e === 'en_revision') {
-      op('ops_verificar', 'Verificar documentos y matrículas');
-      if (s.perfil.antecedentes === 'pendiente_cita' || s.perfil.antecedentes === 'no_asistio') op('ops_cita', 'Coordinar cita presencial de antecedentes');
-      if (s.perfil.antecedentes === 'cita_coordinada') op('ops_aprobar', 'Aprobar antecedentes (presencial)');
-      op('ops_correccion', 'Pedir una corrección');
-      op('ops_rechazar', 'Rechazar el alta');
-      op('ops_habilitar', 'Habilitar');
-    }
+    // Operations sobre el alta: registro por pasos del lote 1.2 (antecedentes por foto o PDF, se borran al verificar).
+    for (const x of accionesOpsRegistro(s)) a.push({ ...x, grupo: 'Operations (alta)' });
     const u = (id: string, etiqueta: string) => a.push({ id, etiqueta, grupo: 'Usuario del hogar' });
     if (s.perfil.estadoAlta === 'habilitada') {
       u('usuario_acepta', 'Acepta tu última propuesta');
@@ -118,60 +107,11 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       s.mensajes = { [ID.c2]: completo.mensajes[ID.c2] ?? [] };
       s.avisos = [...completo.avisos.filter((x) => ['pedido_urgente', 'pedido_programado', 'propuesta'].includes(x.tipo)), ...s.avisos];
     };
+    if (ejecutarOpsRegistro(s, id, habilitarOperacion)) {
+      avisar();
+      return;
+    }
     switch (id) {
-      case 'ops_revision':
-        s.perfil.estadoAlta = 'en_revision';
-        for (const k of ['dni', 'cuitCuil', 'fotoCara'] as const) if (s.perfil.documentos[k] === 'cargado') s.perfil.documentos[k] = 'en_revision';
-        for (const r of s.perfil.rubros) if (r.matricula === 'cargado') r.matricula = 'en_revision';
-        s.nota = 'Operations tomó tu alta en revisión.';
-        break;
-      case 'ops_verificar':
-        for (const k of ['dni', 'cuitCuil', 'fotoCara'] as const) if (s.perfil.documentos[k] === 'en_revision') s.perfil.documentos[k] = 'verificado';
-        for (const r of s.perfil.rubros) if (r.matricula === 'en_revision') r.matricula = 'verificado';
-        s.nota = 'Operations verificó los documentos. Falta la verificación presencial de antecedentes.';
-        break;
-      case 'ops_cita':
-        {
-          const libre = s.turnos.find((t) => t.disponible && Date.parse(t.inicio) > ahoraMs(s));
-          if (libre) reservar(s, libre.id);
-          else s.perfil.antecedentes = 'cita_coordinada';
-        }
-        s.nota = 'Operations coordinó una cita presencial.';
-        break;
-      case 'ops_aprobar':
-        s.perfil.antecedentes = 'aprobada';
-        s.nota = 'Operations registró el resultado de la verificación presencial (sin archivos).';
-        break;
-      case 'ops_correccion':
-        s.perfil.estadoAlta = 'requiere_correccion';
-        s.perfil.motivoRevision = 'La foto de tu cara no se ve bien. Volvé a cargarla con buena luz.';
-        s.perfil.documentos.fotoCara = 'rechazado';
-        s.nota = 'Operations pidió una corrección.';
-        break;
-      case 'ops_rechazar':
-        s.perfil.estadoAlta = 'rechazada';
-        s.perfil.motivoRevision = 'No pudimos validar tu alta con la documentación presentada. Si creés que es un error, escribinos desde Ayuda.';
-        s.nota = 'Operations rechazó el alta.';
-        break;
-      case 'ops_habilitar': {
-        const faltan = faltantesParaHabilitar({
-          dni: s.perfil.documentos.dni,
-          cuitCuil: s.perfil.documentos.cuitCuil,
-          fotoCara: s.perfil.documentos.fotoCara,
-          antecedentes: s.perfil.antecedentes,
-          rubrosHabilitados: s.perfil.rubros.filter((r) => !requiereMatricula(r.rubro) || r.matricula === 'verificado').length,
-        });
-        if (faltan.length > 0) {
-          s.nota = `No se puede habilitar: falta ${faltan.join(', ')}. Cargado no es verificado.`;
-          break;
-        }
-        s.perfil.estadoAlta = 'habilitada';
-        s.perfil.motivoRevision = null;
-        s.perfil.rubros = s.perfil.rubros.map((r) => (!requiereMatricula(r.rubro) || r.matricula === 'verificado' ? { ...r, estado: 'habilitado' as const } : { ...r, estado: 'requiere_matricula' as const }));
-        habilitarOperacion();
-        s.nota = 'Alta habilitada. Declará tu disponibilidad y cobertura para empezar a ver pedidos.';
-        break;
-      }
       case 'usuario_acepta': {
         const p = ultima(s, (x) => x.autorRol === 'especialista' && vigente(s)(x));
         if (!p) { s.nota = 'No hay una propuesta tuya vigente.'; break; }

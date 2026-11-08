@@ -89,18 +89,7 @@ describe('alta: del registro a la habilitación', () => {
     controles.ejecutar('ops_habilitar');
     assert.match(controles.vista().nota ?? '', /No se puede habilitar/);
     assert.equal((await api.perfil()).estadoAlta, 'en_revision');
-    controles.ejecutar('ops_verificar');
-    controles.ejecutar('ops_habilitar');
-    assert.match(controles.vista().nota ?? '', /antecedentes/); // falta la verificación presencial
-    controles.ejecutar('ops_cita');
-    controles.ejecutar('ops_aprobar');
-    controles.ejecutar('ops_habilitar');
-    perfil = await api.perfil();
-    assert.equal(perfil.estadoAlta, 'habilitada');
-    assert.deepEqual(perfil.rubros.map((r) => [r.rubro, r.estado]), [['plomeria', 'habilitado'], ['gas', 'habilitado']]);
-    assert.equal((await api.perfilPublico()).verificado, true);
-    // Sin disponibilidad declarada no ve pedidos
-    assert.equal((await api.pedidosElegibles()).items.length, 0);
+    // La habilitación con el registro por pasos (antecedentes por foto o PDF, lote 1.2) está en alta-registro.test.ts.
   });
 
   it('una corrección permite volver a cargar solo lo rechazado y reenviar', async () => {
