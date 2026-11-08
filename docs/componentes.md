@@ -268,3 +268,9 @@ de la ola 1; lógica pura en `src/ui/logicaNucleo.ts` con pruebas.
 | `PedidoFlotante`                                | organismo | El pedido que llega flotando sobre el mapa, con la ilustración que arma el arreglo y «Pedido 1 de 2»                | «Ver pedido» abre el detalle, nunca acepta; anterior/siguiente con botones; región `aria-live`                                                  |
 | `HojaCercanos`                                  | organismo | Pedidos cercanos estilo «Choose a ride»: rubro, zona aproximada, precio sugerido y distancia; el elegido resaltado  | Radios reales; una sola acción («Ver pedido de …»)                                                                                              |
 | `.ui-atajos` / `.ui-atajo`                      | CSS       | Atajos chicos en fila que bajan de renglón (precio, franjas, horarios)                                              | `aria-pressed`; deshabilitado con texto oculto que dice por qué                                                                                 |
+
+### Equipamiento y herramientas (lote 2.4)
+
+Piezas de equipamiento, herramientas del teléfono, cámara, nivel y lector de códigos: lista, decisiones y pruebas en
+`docs/equipamiento-herramientas.md`. Su CSS está en `src/ui/herramientas.css`. `Segmento` ahora baja de renglón con texto
+grande y `Pastilla` mide al menos 48 px de ancho.
