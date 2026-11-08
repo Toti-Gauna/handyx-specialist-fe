@@ -14,6 +14,36 @@ Versión: **0.11.1 (borrador)** · `src/contracts/version.ts` · fecha 08/11/202
   `esp-privacidad-especialista-2026-11-08-prov` (provisorios); el detalle del mapa y la propuesta valen también fuera
   de tus zonas (lo viste yendo hacia otro destino), la bandeja y los avisos no.
 
+**Servidor del bloque Taller, ola 2 (lote 2.5, sin cambio de contrato).** Implementado en `handyx-specialist-be` todo lo
+de agenda y tu día (`/agenda/*`, `/dia`, `/dia/recorrido`, `/dia/orden`, `/trabajos/{id}/demora`), cobros e ingresos
+(`/pagos/{id}/cobro|informe`, `/ingresos*`, `/gastos*`, `/ingresos-externos*`), presupuestos, lista de precios, mano de
+obra, catálogo de nombres y kits, equipamiento y lista de compras, Modo trabajo, antes y después, informe y adjuntos. El
+cliente de servidor de esos dominios está en `src/data/http/servidor/` (un archivo por dominio, cada método = una ruta,
+validado con el contrato): los adaptadores HTTP de los lotes 2.1 a 2.4 delegan ahí y el cierre de la ola los compone.
+Decisiones del servidor que la app tiene que saber:
+- **Gasto solo «cobrárselo al cliente»** (sin «registrarlo como gasto»): crea el adicional y la respuesta lo describe
+  (`id` = `adicionalId`); no queda en tus gastos ni en `GET /gastos`. Cobrárselo exige un trabajo activo (si no, 409).
+- **Presupuesto**: sin `obraId` hasta la 3.5 (404, como lo ajeno); un pedido exige que ya tengas el chat con ese cliente.
+  Solo el borrador se edita (409); `vigenteHasta` pasado lo muestra `vencido` (el cliente ya no lo responde). La versión
+  nueva sale de la última enviada (enviada, vista, rechazada o vencida) y entra con los precios nuevos. El presupuesto
+  llega al chat como tarjeta (`message_cards`) y el cliente lo ve y lo responde en su app (contrato de usuario draft.5).
+- **Precios**: `precioCliente` null = el costo. La lectura de la lista empareja por el id que eligió el teléfono o por el
+  nombre (sin acentos ni mayúsculas); `revisar` = misma palabra con otra unidad (no se toca); lo nuevo entra en `otra` con
+  tu modo por defecto; al subir el costo, el precio al cliente sube en la misma proporción (conserva tu margen).
+- **Tu día**: el orden propio se guarda por día (`version` 0 hasta el primero); los ids tienen que ser turnos de hoy
+  (400 si no). Sin motor de trayectos propio, los tramos van en línea recta a 25 km/h (orientativos). Las obras de varios
+  días (0.8.0) aparecen como `jornada` y en `AgendaMes.dias[].obras` con el id del trabajo hasta que existan las obras.
+- **Cobro**: informar un pendiente lo deja `reportado` (fuente especialista); uno ya reportado por el cliente conserva su
+  estado y suma lo informado; más que lo acordado es 400 (`monto`). La planilla es CSV (UTF-8 con BOM, sin fórmulas).
+- **Modo trabajo**: se abre con el trabajo `en_curso` (antes, 409); sin pausas guardadas el cronómetro corre desde que
+  empezó. Una tarea «con foto» no se marca hecha sin una foto suya (400 `estado`). Asignar a otro miembro llega con la 3.5.
+- **Informe**: «La causa» es obligatoria para mandarlo; se manda una sola vez (después, 409) y escribe el informe que lee
+  la app del usuario, la garantía (`garantiaDias` o la de la propuesta o 30) y el pedido de conformidad. El PDF queda
+  `null` hasta tener el almacenamiento autorizado. `version` suma las de las secciones, el informe y la conformidad.
+- **Equipamiento**: «Reponer en la ferretería» la suma a la lista de compras (`pedidoFerreteriaId` null hasta la 4.3) y
+  `POST /lista-compras/pedido` responde 503. `/catalogo/codigos` sugiere solo nombres publicados (sin categoría todavía).
+- `POST /trabajos/{id}/ayuda` y `/contactos-profesionales*` llegan con la 3.5.
+
 **0.10.0 → 0.11.0 (ola 0, lote 0.1: el contrato completo del bloque Taller, para que las olas 1 a 4 trabajen en
 paralelo sin cambiarlo).** Diseño de referencia: el lienzo (`design/deluxe/`); qué pantalla usa qué endpoint: §6.
 - **Un archivo por dominio** en `src/contracts/`: `comun.ts` (fecha, mes, cantidad, persona visible, profesional,
