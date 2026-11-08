@@ -1,4 +1,7 @@
-// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.10.0, borrador; versión en version.ts).
+// Esquemas Zod de lo que intercambian api-especialista y la PWA (contrato v0.11.0, borrador; versión en version.ts).
+// Desde 0.11.0 lo nuevo del bloque Taller va en un archivo por dominio (seguridad, registro, mapa, presupuestos,
+// ingresos, equipamiento, modo-trabajo, obras, repuestos, equipo, chat, ferreterias, camino, agenda, cuenta); este
+// archivo guarda lo común y lo de las fases 2 a 4.
 // El servidor valida con los mismos esquemas; el cliente valida cada respuesta y trata un desajuste
 // como error de contrato (nunca lo "arregla" con datos de muestra). OpenAPI: docs/api/openapi.yaml.
 import { z } from 'zod';
@@ -27,6 +30,9 @@ export const MontoSchema = z.strictObject({
   centavos: z.int().nonnegative(),
   moneda: z.enum(MONEDAS),
 });
+
+/** 0.11.0: Handyx no le cobra comisión al especialista, nunca. Los campos de tarifa que quedan valen siempre 0. */
+export const MontoSinComisionSchema = MontoSchema.refine((m) => m.centavos === 0, 'Handyx no le cobra comisión al especialista');
 
 // ── Mapa (contrato 0.4.0) ───────────────────────────────────────────────────────────────────────
 // Coordenadas WGS84. Antes del acuerdo, el servidor solo manda una zona aproximada (centro ya desplazado + radio):
@@ -217,6 +223,10 @@ export const PropuestaSchema = z.strictObject({
   estado: z.enum(ESTADOS_PROPUESTA),
   reemplazaA: IdSchema.nullable(),
   version: z.int().nonnegative(),
+  /** 0.11.0 (Tu precio): el cliente ve que el precio incluye los materiales. Opcional hasta 1.0.0. */
+  incluyeMateriales: z.boolean().optional(),
+  /** 0.11.0: días de garantía que se muestran en la propuesta (null = sin garantía). Opcional hasta 1.0.0. */
+  garantiaDias: z.int().min(1).max(365).nullable().optional(),
 });
 export type Propuesta = z.infer<typeof PropuestaSchema>;
 
@@ -225,8 +235,11 @@ export const NuevaPropuestaSchema = z.strictObject({
   pedidoId: IdSchema,
   monto: MontoSchema,
   alcance: z.string().min(1).max(2000),
+  /** Una franja (`fin`) o una hora exacta (`fin: null`). Fuera de horario no hay recargo automático. */
   horario: z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() }),
   reemplazaA: IdSchema.nullable(),
+  incluyeMateriales: z.boolean().optional(),
+  garantiaDias: z.int().min(1).max(365).nullable().optional(),
 });
 
 export const RespuestaPropuestaSchema = z.strictObject({
@@ -309,8 +322,8 @@ export const PagoSchema = z.strictObject({
   /** En una obra, cada etapa se cobra por separado (0.8.0); null en un trabajo de un día. */
   etapaId: IdSchema.nullable(),
   descripcion: z.string(),
-  /** Tarifa de Handy sobre este pago (0 durante la demo) y lo que cobra el especialista. */
-  feeHandy: MontoSchema,
+  /** Siempre 0 desde 0.11.0 (Handyx no le cobra comisión al especialista, nunca): `neto` es igual a `monto`. */
+  feeHandy: MontoSinComisionSchema,
   neto: MontoSchema,
   metodo: z.enum(['mercado_pago', 'efectivo']),
   monto: MontoSchema,
@@ -342,7 +355,8 @@ export const PoliticaFeeSchema = z.strictObject({
   hastaExclusivo: InstanteSchema,
   ultimoDiaLocal: z.iso.date(),
   bpsUsuario: z.int().min(0).max(10_000),
-  bpsEspecialista: z.int().min(0).max(10_000),
+  /** Siempre 0 (0.11.0): una política que le cobre al especialista no es válida. */
+  bpsEspecialista: z.int().min(0).max(0),
   estado: z.enum(['activa', 'borrador']),
 });
 
@@ -409,6 +423,15 @@ export const PreferenciasSchema = z.strictObject({
   avisosPagos: z.boolean(),
   /** Avisos del dispositivo: opt-in contextual, la entrega no está garantizada (sobre todo en iOS web). */
   push: z.enum(['sin_pedir', 'activado', 'rechazado', 'no_disponible']),
+  // 0.11.0 (Cuenta → Avisos). Opcionales hasta 1.0.0.
+  /** Turnos, jornadas y repuestos que faltan. */
+  avisosRecordatorios: z.boolean().optional(),
+  /** Cuando llegás a un premio del camino. */
+  avisosCamino: z.boolean().optional(),
+  /** Novedades de Handyx: una vez por mes, como mucho. */
+  avisosNovedades: z.boolean().optional(),
+  /** Horario de silencio (hora de Buenos Aires); los urgentes llegan igual si estás Disponible. Null = sin silencio. */
+  silencio: z.strictObject({ desde: HoraSchema, hasta: HoraSchema }).nullable().optional(),
 });
 export type Preferencias = z.infer<typeof PreferenciasSchema>;
 
@@ -502,7 +525,9 @@ export const EtapaObraSchema = z.strictObject({
 });
 export type EtapaObra = z.infer<typeof EtapaObraSchema>;
 
-const HorarioSchema = z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() });
+/** Un horario: franja (`inicio` y `fin`) u hora exacta (`fin: null`). Exportado desde 0.11.0. */
+export const HorarioSchema = z.strictObject({ inicio: InstanteSchema, fin: InstanteSchema.nullable() });
+export type Horario = z.infer<typeof HorarioSchema>;
 
 /** Día de trabajo de una obra (0.8.0). Pedir otro día es una solicitud: no cambia hasta que el cliente acepta y no mueve el resto. */
 export const JornadaSchema = z.strictObject({
@@ -725,13 +750,27 @@ export const MediosCobroSchema = z.strictObject({
     /** Un nombre para reconocerla (nunca el número completo ni datos de acceso). */
     etiqueta: z.string().nullable(),
   }),
+  /**
+   * 0.11.0 (Medios de cobro): transferencia al alias o CBU que el especialista le muestra a su cliente después de
+   * contratar. Se guarda cifrado; acá vuelve enmascarado. Opcional hasta 1.0.0.
+   */
+  transferencia: z.strictObject({ activa: z.boolean(), aliasEnmascarado: z.string().nullable() }).optional(),
   version: z.int().nonnegative(),
 });
 export type MediosCobro = z.infer<typeof MediosCobroSchema>;
 
+/** Alias de 6 a 20 caracteres (letras, números, punto y guion) o CBU/CVU de 22 dígitos. */
+export const AliasCobroSchema = z.union([z.string().regex(/^[a-zA-Z0-9.-]{6,20}$/), z.string().regex(/^\d{22}$/)]);
+
 export const GuardarMediosCobroSchema = z
-  .strictObject({ efectivo: z.boolean(), mercadoPago: z.boolean(), version: z.int().nonnegative() })
-  .refine((m) => m.efectivo || m.mercadoPago, 'Elegí al menos una forma de cobro');
+  .strictObject({
+    efectivo: z.boolean(),
+    mercadoPago: z.boolean(),
+    /** 0.11.0: sin `alias`, se conserva el que ya estaba guardado. */
+    transferencia: z.strictObject({ activa: z.boolean(), alias: AliasCobroSchema.optional() }).optional(),
+    version: z.int().nonnegative(),
+  })
+  .refine((m) => m.efectivo || m.mercadoPago || m.transferencia?.activa === true, 'Elegí al menos una forma de cobro');
 export type GuardarMediosCobro = z.infer<typeof GuardarMediosCobroSchema>;
 
 export const EnviarMensajeSchema = z.strictObject({
@@ -746,7 +785,8 @@ export const CajaResumenSchema = z.strictObject({
   pendiente: MontoSchema,
   reportado: MontoSchema,
   verificado: MontoSchema,
-  feeHandyPeriodo: MontoSchema,
+  /** Siempre 0 desde 0.11.0 (sin comisión al especialista). */
+  feeHandyPeriodo: MontoSinComisionSchema,
 });
 export type CajaResumen = z.infer<typeof CajaResumenSchema>;
 

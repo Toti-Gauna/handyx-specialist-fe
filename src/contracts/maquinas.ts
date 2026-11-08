@@ -2,7 +2,8 @@
 // valida cada transición con estas mismas tablas y registra actor y fecha. Los frontends solo las usan
 // para mostrar qué acciones están disponibles. Detalle y diagramas: docs/state-machines.md.
 
-export const ACTORES = ['especialista', 'usuario', 'operations', 'sistema'] as const;
+/** `ferreteria` (0.11.0): el equipo de una ferretería adherida, en los pedidos de repuestos. */
+export const ACTORES = ['especialista', 'usuario', 'operations', 'sistema', 'ferreteria'] as const;
 export type Actor = (typeof ACTORES)[number];
 
 export interface Transicion<E extends string> {
@@ -31,6 +32,9 @@ export function esFinal<E extends string>(m: Maquina<E>, estado: E): boolean {
 }
 
 const t = <E extends string>(desde: E, hacia: E, ...actores: Actor[]): Transicion<E> => ({ desde, hacia, actores });
+
+/** Para declarar máquinas en los archivos de cada dominio (0.11.0). */
+export const transicion = t;
 
 // ── Alta del especialista ────────────────────────────────────────────────────────────────────────
 // Habilitar exige además los requisitos de `faltantesParaHabilitar` (los valida el servidor).
