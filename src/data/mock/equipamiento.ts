@@ -173,7 +173,8 @@ export function alertasDe(item: ItemEquipo, hoyMs: number): ItemEquipo['alertas'
 export function alertaCategoria(items: readonly ItemEquipo[]): string | null {
   const cuenta = (t: ItemEquipo['alertas'][number]['tipo']) => items.filter((i) => i.alertas.some((a) => a.tipo === t));
   const vence = cuenta('vencimiento');
-  if (vence.length === 1) return `${vence[0]!.nombre.split(' ')[0]} vence ${ddmm(vence[0]!.venceEn ?? '')}`;
+  const [unico] = vence;
+  if (vence.length === 1 && unico) return `${unico.nombre.split(' ')[0]} vence ${ddmm(unico.venceEn ?? '')}`;
   if (vence.length > 1) return `${vence.length} vencen pronto`;
   const stock = cuenta('stock_bajo');
   if (stock.length) return stock.length === 1 ? '1 queda poco' : `${stock.length} quedan pocos`;
@@ -268,8 +269,7 @@ export const equipamiento = (s: EstadoMock) => {
       if (!ok.success) throw zodAFallo(ok.error);
       const g = buscar(id);
       conVersion(g, ok.data.version);
-      const { version: _v, ...resto } = ok.data;
-      const limpio = Object.fromEntries(Object.entries(resto).filter(([, v]) => v !== undefined));
+      const limpio = Object.fromEntries(Object.entries(ok.data).filter(([k, v]) => k !== 'version' && v !== undefined));
       g.item = { ...g.item, ...limpio, version: g.item.version + 1 };
       return detalle(g);
     },

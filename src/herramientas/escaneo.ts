@@ -41,7 +41,7 @@ const UMBRAL_MINIMO = 28;
 
 function colorEn(f: Fotograma, x: number, y: number): [number, number, number] {
   const i = (y * f.ancho + x) * 4;
-  return [f.datos[i]!, f.datos[i + 1]!, f.datos[i + 2]!];
+  return [f.datos[i] ?? 0, f.datos[i + 1] ?? 0, f.datos[i + 2] ?? 0];
 }
 
 /** Umbral de Otsu sobre un histograma de 0 a `max`. */
@@ -55,11 +55,12 @@ export function umbralOtsu(hist: readonly number[]): number {
   let mejor = 0;
   let umbral = 0;
   for (let t = 0; t < hist.length; t++) {
-    pesoB += hist[t]!;
+    const h = hist[t] ?? 0;
+    pesoB += h;
     if (pesoB === 0) continue;
     const pesoF = total - pesoB;
     if (pesoF === 0) break;
-    sumaB += t * hist[t]!;
+    sumaB += t * h;
     const mB = sumaB / pesoB;
     const mF = (suma - sumaB) / pesoF;
     const entre = pesoB * pesoF * (mB - mF) ** 2;
@@ -82,37 +83,35 @@ export function silueta(f: Fotograma): Silueta | null {
   const hist = new Array<number>(443).fill(0);
   for (let y = 0; y < H; y++) {
     // Fondo de la fila: el promedio de cada costado (la pared y el piso cambian de arriba a abajo).
-    const izq = [0, 0, 0];
-    const der = [0, 0, 0];
+    let [ir, ig, ib, dr, dg, db] = [0, 0, 0, 0, 0, 0];
     for (let x = 0; x < borde; x++) {
-      const a = colorEn(f, x, y);
-      const b = colorEn(f, W - 1 - x, y);
-      for (let k = 0; k < 3; k++) {
-        izq[k]! += a[k]!;
-        der[k]! += b[k]!;
-      }
+      const [ar, ag, ab] = colorEn(f, x, y);
+      const [br, bg, bb] = colorEn(f, W - 1 - x, y);
+      ir += ar;
+      ig += ag;
+      ib += ab;
+      dr += br;
+      dg += bg;
+      db += bb;
     }
-    for (let k = 0; k < 3; k++) {
-      izq[k]! /= borde;
-      der[k]! /= borde;
-    }
+    [ir, ig, ib, dr, dg, db] = [ir / borde, ig / borde, ib / borde, dr / borde, dg / borde, db / borde];
     for (let x = 0; x < W; x++) {
-      const c = colorEn(f, x, y);
-      const d = Math.min(Math.hypot(c[0] - izq[0]!, c[1] - izq[1]!, c[2] - izq[2]!), Math.hypot(c[0] - der[0]!, c[1] - der[1]!, c[2] - der[2]!));
+      const [r, g, b] = colorEn(f, x, y);
+      const d = Math.min(Math.hypot(r - ir, g - ig, b - ib), Math.hypot(r - dr, g - dg, b - db));
       const v = Math.min(442, Math.round(d));
       dist[y * W + x] = v;
-      hist[v]!++;
+      hist[v] = (hist[v] ?? 0) + 1;
     }
   }
   // Umbral: el de Otsu, pero sin pasar de lo que varía el propio fondo (los costados) con un margen; si el objeto
   // tiene partes de colores distintos (cuerpo, sombra, zócalo), Otsu solo partiría el objeto en dos.
   const bordes: number[] = [];
-  for (let y = 0; y < H; y++) for (let x = 0; x < borde; x++) bordes.push(dist[y * W + x]!, dist[y * W + W - 1 - x]!);
+  for (let y = 0; y < H; y++) for (let x = 0; x < borde; x++) bordes.push(dist[y * W + x] ?? 0, dist[y * W + W - 1 - x] ?? 0);
   bordes.sort((a, b) => a - b);
   const ruidoFondo = bordes[Math.floor(bordes.length * 0.99)] ?? 0;
   const umbral = Math.max(UMBRAL_MINIMO, Math.min(umbralOtsu(hist), ruidoFondo * 2.5));
   const crudo = new Uint8Array(W * H);
-  for (let i = 0; i < W * H; i++) crudo[i] = dist[i]! > umbral ? 1 : 0;
+  for (let i = 0; i < W * H; i++) crudo[i] = (dist[i] ?? 0) > umbral ? 1 : 0;
 
   // La mancha del centro: se busca el píxel de objeto más cercano al centro y se inunda desde ahí.
   const cx = Math.floor(W / 2);
@@ -134,8 +133,7 @@ export function silueta(f: Fotograma): Silueta | null {
   const mancha = new Uint8Array(W * H);
   const pila = [semilla];
   mancha[semilla] = 1;
-  while (pila.length) {
-    const i = pila.pop()!;
+  for (let i = pila.pop(); i !== undefined; i = pila.pop()) {
     const x = i % W;
     const y = (i - x) / W;
     const vecinos = [x > 0 ? i - 1 : -1, x < W - 1 ? i + 1 : -1, y > 0 ? i - W : -1, y < H - 1 ? i + W : -1];
@@ -201,18 +199,17 @@ export function cascoVisual(siluetas: readonly Silueta[], angulos: readonly numb
   if (!primera) throw new Error('sin siluetas');
   const altoPx = primera.y1 - primera.y0 + 1;
   const escalas = siluetas.map((s) => altoPx / (s.y1 - s.y0 + 1));
-  const radio = Math.max(...siluetas.map((s, i) => ((s.x1 - s.x0 + 1) / 2) * escalas[i]!)) * 1.08;
+  const radio = Math.max(...siluetas.map((s, i) => ((s.x1 - s.x0 + 1) / 2) * (escalas[i] ?? 1))) * 1.08;
   const n = o.n ?? 48;
   const m = o.m ?? 64;
   const paso = (2 * radio) / n;
   const pasoY = altoPx / m;
   const lleno = new Uint8Array(n * n * m).fill(1);
   const trig = angulos.map((a) => [Math.cos(a), Math.sin(a)] as const);
-  for (let s = 0; s < siluetas.length; s++) {
-    const sil = siluetas[s]!;
-    const k = escalas[s]!;
+  siluetas.forEach((sil, s) => {
+    const k = escalas[s] ?? 1;
     const centro = (sil.x0 + sil.x1) / 2;
-    const [cos, sin] = trig[s]!;
+    const [cos, sin] = trig[s] ?? [1, 0];
     for (let iy = 0; iy < m; iy++) {
       const y = (iy + 0.5) * pasoY;
       const fila = Math.round(sil.y1 - y / k);
@@ -228,7 +225,7 @@ export function cascoVisual(siluetas: readonly Silueta[], angulos: readonly numb
         }
       }
     }
-  }
+  });
   return { n, m, paso, radio, altoPx, lleno };
 }
 
@@ -252,7 +249,7 @@ export function medirSiluetas(siluetas: readonly Silueta[], angulos: readonly nu
   const primera = siluetas[0];
   if (!primera) throw new ErrorEscaneo('vacio');
   const altoPx = primera.y1 - primera.y0 + 1;
-  const muestras = siluetas.map((s, i) => ({ a: angulos[i]!, w: ((s.x1 - s.x0 + 1) * altoPx) / (s.y1 - s.y0 + 1) }));
+  const muestras = siluetas.map((s, i) => ({ a: angulos[i] ?? 0, w: ((s.x1 - s.x0 + 1) * altoPx) / (s.y1 - s.y0 + 1) }));
   const prom = muestras.reduce((t, x) => t + x.w, 0) / muestras.length;
   const errRedondo = muestras.reduce((t, x) => t + (x.w - prom) ** 2, 0);
   let mejor = { err: Infinity, a: 0, f: 0 };
@@ -303,7 +300,7 @@ export function mallaCasco(c: Casco, metrosPorPx: number, o: { capas?: number; l
   const lados = o.lados ?? 32;
   const { n, m, paso, radio, lleno } = c;
   const r = Array.from({ length: capas }, () => new Float32Array(lados));
-  for (let k = 0; k < capas; k++) {
+  r.forEach((fila, k) => {
     const iy = Math.min(m - 1, Math.floor(((k + 0.5) / capas) * m));
     for (let j = 0; j < lados; j++) {
       const a = (2 * Math.PI * j) / lados;
@@ -316,9 +313,9 @@ export function mallaCasco(c: Casco, metrosPorPx: number, o: { capas?: number; l
         if (ix < 0 || iz < 0 || ix >= n || iz >= n) break;
         if (lleno[(iy * n + iz) * n + ix]) hasta = d + paso / 2;
       }
-      r[k]![j] = hasta;
+      fila[j] = hasta;
     }
-  }
+  });
   // Suavizado 3 × 3 (con vuelta en los lados).
   const suave = r.map((fila, k) =>
     Float32Array.from(fila, (_, j) => {
@@ -328,7 +325,7 @@ export function mallaCasco(c: Casco, metrosPorPx: number, o: { capas?: number; l
         const kk = k + dk;
         if (kk < 0 || kk >= capas) continue;
         for (let dj = -1; dj <= 1; dj++) {
-          s += r[kk]![(j + dj + lados) % lados]!;
+          s += r[kk]?.[(j + dj + lados) % lados] ?? 0;
           c2++;
         }
       }
@@ -340,7 +337,7 @@ export function mallaCasco(c: Casco, metrosPorPx: number, o: { capas?: number; l
     const y = ((k + 0.5) / capas) * c.altoPx * metrosPorPx;
     for (let j = 0; j < lados; j++) {
       const a = (2 * Math.PI * j) / lados;
-      const rr = suave[k]![j]! * metrosPorPx;
+      const rr = (suave[k]?.[j] ?? 0) * metrosPorPx;
       pos.push(rr * Math.cos(a), y, rr * Math.sin(a));
     }
   }
@@ -426,9 +423,9 @@ export async function armarModelo(fotos: readonly Fotograma[], metrosPorPx: numb
   const limite = o.limiteMs ?? 60_000;
   const siluetas: Silueta[] = [];
   const angulos: number[] = [];
-  for (let i = 0; i < fotos.length; i++) {
+  for (const [i, foto] of fotos.entries()) {
     o.alAvanzar?.({ texto: `Separando el objeto del fondo · foto ${i + 1} de ${fotos.length}`, fraccion: (0.7 * i) / fotos.length });
-    const s = silueta(fotos[i]!);
+    const s = silueta(foto);
     if (s) {
       siluetas.push(s);
       angulos.push(anguloToma(i, fotos.length));

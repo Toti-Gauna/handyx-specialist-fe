@@ -90,7 +90,7 @@ export function fotoPrueba(objeto: ObjetoPrueba, i: number, n: number, o: Opcion
       }
       if (o.tarjeta && x + 0.5 >= tx0 && x + 0.5 <= tx1 && y + 0.5 >= ty0 && y + 0.5 <= ty1) c = AZUL;
       const p = (y * W + x) * 4;
-      for (let q = 0; q < 3; q++) datos[p + q] = c[q]! + Math.round((r() * 2 - 1) * ruido);
+      for (let q = 0; q < 3; q++) datos[p + q] = (c[q] ?? 0) + Math.round((r() * 2 - 1) * ruido);
       datos[p + 3] = 255;
     }
   }

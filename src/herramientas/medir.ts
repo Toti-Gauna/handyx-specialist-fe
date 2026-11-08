@@ -30,23 +30,19 @@ export function escalaTarjeta(a: Punto2, b: Punto2): ResultadoEscala {
 
 /** Largos de cada tramo (en metros) de una cadena de puntos sobre la foto. */
 export function tramosEnFoto(puntos: readonly Punto2[], metrosPorPx: number): number[] {
-  const t: number[] = [];
-  for (let i = 1; i < puntos.length; i++) t.push(distancia2(puntos[i - 1]!, puntos[i]!) * metrosPorPx);
-  return t;
+  return puntos.slice(1).map((p, i) => distancia2(puntos[i] ?? p, p) * metrosPorPx);
 }
 
 /** Largos de cada tramo (en metros) de una cadena de puntos de la AR. */
 export function tramosEnAr(puntos: readonly Vec3[]): number[] {
-  const t: number[] = [];
-  for (let i = 1; i < puntos.length; i++) t.push(distancia3(puntos[i - 1]!, puntos[i]!));
-  return t;
+  return puntos.slice(1).map((p, i) => distancia3(puntos[i] ?? p, p));
 }
 
 /** El ángulo (en grados, 0 a 180) entre dos tramos que comparten el punto del medio. */
 export function anguloEntre<T extends readonly number[]>(a: T, b: T, c: T): number {
-  const u = a.map((v, i) => v - b[i]!);
-  const w = c.map((v, i) => v - b[i]!);
-  const punto = u.reduce((s, v, i) => s + v * w[i]!, 0);
+  const u = a.map((v, i) => v - (b[i] ?? 0));
+  const w = c.map((v, i) => v - (b[i] ?? 0));
+  const punto = u.reduce((s, v, i) => s + v * (w[i] ?? 0), 0);
   const nu = Math.hypot(...u);
   const nw = Math.hypot(...w);
   if (nu === 0 || nw === 0) return 0;
@@ -76,11 +72,12 @@ export interface Resumen {
 export function resumirMedidas(tramos: readonly number[], angulo: number | null): Resumen {
   const n = tramos.length;
   const cantidad = n === 1 ? '1 medida' : `${n} medidas`;
-  if (n === 0) return { texto: 'Todavía no mediste nada', superficieM2: null, cantidad: '0 medidas' };
-  if (n === 1) return { texto: textoMedida(tramos[0]!), superficieM2: null, cantidad };
+  const [primero, segundo] = tramos;
+  if (primero === undefined) return { texto: 'Todavía no mediste nada', superficieM2: null, cantidad: '0 medidas' };
+  if (segundo === undefined) return { texto: textoMedida(primero), superficieM2: null, cantidad };
   if (n === 2 && angulo !== null && angulo >= 80 && angulo <= 100) {
-    const s = tramos[0]! * tramos[1]!;
-    return { texto: `${textoMedida(tramos[0]!).replace(' m', '')} × ${textoMedida(tramos[1]!)} · ${textoSuperficie(s)}`, superficieM2: s, cantidad };
+    const s = primero * segundo;
+    return { texto: `${textoMedida(primero).replace(' m', '')} × ${textoMedida(segundo)} · ${textoSuperficie(s)}`, superficieM2: s, cantidad };
   }
   const total = tramos.reduce((a, b) => a + b, 0);
   return { texto: `${textoMedida(total)} en total`, superficieM2: null, cantidad };
