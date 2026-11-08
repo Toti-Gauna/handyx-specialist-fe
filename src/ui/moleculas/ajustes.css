@@ -1,0 +1,182 @@
+/* Kit v3 · moléculas de Cuenta (lote 1.4). */
+
+/* ── Grupo de ajustes ─────────────────────────────────── */
+.ui-grupo {
+  padding: 8px 16px;
+  border: 1px solid var(--ui-borde);
+  border-radius: var(--ui-radio-tarjeta);
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+  color: var(--ui-tinta);
+}
+.ui-grupo__etiqueta {
+  margin: 0;
+  padding: 14px 0 6px;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.ui-grupo > .ui-fila + .ui-fila,
+.ui-grupo > .ui-ajuste + .ui-ajuste,
+.ui-grupo > .ui-fila-dato + .ui-fila-dato,
+.ui-grupo__etiqueta + .ui-fila {
+  border-top: 1px solid var(--ui-borde);
+}
+
+/* ── Fila con interruptor ─────────────────────────────── */
+.ui-ajuste {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  color: var(--ui-tinta);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ui-grupo__etiqueta + .ui-ajuste,
+.ui-ajuste + .ui-ajuste {
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-ajuste:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 2px;
+}
+.ui-ajuste:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.ui-ajuste__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-ajuste__texto strong {
+  font-size: var(--ui-texto-base);
+}
+.ui-ajuste__texto span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-ajuste__control {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 56px;
+}
+.ui-ajuste__pista {
+  display: inline-flex;
+  align-items: center;
+  width: 52px;
+  height: 32px;
+  padding: 3px;
+  border-radius: 999px;
+  background: #c3cad6;
+}
+.ui-ajuste--on .ui-ajuste__pista {
+  background: var(--ui-azul);
+}
+.ui-ajuste__perilla {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(14 29 54 / 0.3);
+}
+.ui-ajuste--on .ui-ajuste__perilla {
+  translate: 20px 0;
+}
+.ui-ajuste__estado {
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ui-ajuste__perilla {
+    transition: translate var(--ui-dur) var(--ui-curva);
+  }
+  .ui-ajuste__pista {
+    transition: background-color var(--ui-dur) var(--ui-curva);
+  }
+}
+
+/* ── Fila de dato con estado ──────────────────────────── */
+.ui-fila-dato {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  min-height: 72px;
+  padding: 12px 0;
+}
+.ui-fila-dato__texto {
+  display: flex;
+  flex: 1 1 10rem;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-fila-dato__texto span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-fila-dato__texto strong {
+  font-size: var(--ui-texto-base);
+  overflow-wrap: anywhere;
+}
+.ui-fila-dato__estado {
+  flex: none;
+}
+
+/* ── Mosaico de resumen ───────────────────────────────── */
+.ui-resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 24px;
+  background: var(--ui-tinte);
+  box-shadow: 0 4px 0 0 #b9ccea;
+  color: var(--ui-hondo);
+  text-decoration: none;
+}
+.ui-resumen--noche {
+  background: var(--ui-noche);
+  box-shadow: 0 4px 0 0 #070f1d;
+  color: #fff;
+}
+.ui-resumen--amarillo {
+  background: var(--ui-amarillo);
+  box-shadow: 0 4px 0 0 var(--ui-amarillo-hondo);
+  color: var(--ui-noche);
+}
+.ui-resumen:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+}
+.ui-resumen__ico {
+  display: inline-flex;
+  margin-bottom: 4px;
+}
+.ui-resumen__titulo {
+  font-size: var(--ui-texto-base);
+}
+.ui-resumen .ui-cifra {
+  margin: 0;
+}
+.ui-resumen__detalle {
+  font-size: var(--ui-texto-chico);
+  opacity: 0.85;
+}
