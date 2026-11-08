@@ -9,7 +9,6 @@ import { Cargando, ErrorCaja, Vacio } from '../components/Estados.tsx';
 import { Handy } from '../components/Handy.tsx';
 import { usePerfil } from '../components/GuardiaApp.tsx';
 import { Icono } from '../components/Icono.tsx';
-import { ModalFee } from '../components/ModalFee.tsx';
 import { PedidoEntrante } from '../components/PedidoEntrante.tsx';
 import { TarjetaPedido } from '../components/TarjetaPedido.tsx';
 import { Aviso, Chip, ChipTipo, Interruptor, Tarjeta } from '../components/ui.tsx';
@@ -75,7 +74,6 @@ function PanelInicio({ nombre }: { nombre: string | null }) {
 
   return (
     <div className="in">
-      <ModalFee />
       <section className={`in-hero${disp.urgentesAhora ? ' in-hero--on' : ''}`} aria-labelledby="in-hola">
         <h1 id="in-hola" className="hx-titulo in-hero__hola">
           Hola{nombre ? `, ${nombre}` : ''}

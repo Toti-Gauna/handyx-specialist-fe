@@ -9,7 +9,6 @@ import { BotonFijo, Tilde } from '../kit/Piezas.tsx';
 import { fuerzaClave } from '../lib/clave.ts';
 import { AVISO_PROVISORIO, PRIVACIDAD, TERMINOS } from '../lib/legales.ts';
 import { PRIVACIDAD_VERSION, TERMINOS_VERSION } from '../lib/etiquetas.ts';
-import { FeeAviso } from './FeeAvisoRegistro.tsx';
 import { Handy, type NombreHandy } from './Handy.tsx';
 import { Hoja } from './Hoja.tsx';
 import { Icono, type NombreIcono } from './Icono.tsx';
@@ -110,7 +109,7 @@ export function CasillasLegales({ terminos, privacidad, onTerminos, onPrivacidad
   );
 }
 
-/** ¡Cuenta creada!: una de las celebraciones permitidas. Avisa el fee 0 % hasta el 10/12 y que falta el alta. */
+/** ¡Cuenta creada!: una de las celebraciones permitidas. Avisa que falta el alta (sin el aviso del fee: lote 0.2). */
 export function CuentaCreada({ children }: { children?: ReactNode }) {
   const router = useRouter();
   const confeti = useConfeti();
@@ -126,7 +125,6 @@ export function CuentaCreada({ children }: { children?: ReactNode }) {
         </h1>
         {children}
       </div>
-      <FeeAviso />
       <Aviso tono="neutro" icono="info">
         Crear la cuenta no te habilita para recibir pedidos: primero completás tu alta y Operations la revisa.
       </Aviso>
