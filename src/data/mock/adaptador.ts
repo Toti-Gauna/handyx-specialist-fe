@@ -1,25 +1,15 @@
 // Adaptador mock: estado en memoria de la pestaña (nada en localStorage, cookies ni IndexedDB).
 // Reglas de servidor emuladas (elegibilidad, transiciones, vencimientos, idempotencia) en los dominios;
-// escenarios y simulaciones para recorrer todos los estados sin backend en ./controles.ts.
+// escenarios y simulaciones para recorrer todos los estados sin backend en ./controles.ts. Los dominios se juntan en
+// ./dominios.ts.
 import type { EspecialistaApi } from '../api.ts';
 import { FalloApi } from '../errores.ts';
-import { acceso, cuentaLista } from './acceso.ts';
-import { alta } from './alta.ts';
+import { cuentaLista } from './acceso.ts';
 import { caja } from './caja.ts';
-import { cuenta } from './cuenta.ts';
-import { ahora, type Escenario, type EstadoMock } from './estado.ts';
+import { metodosMock } from './dominios.ts';
+import { ahora, fallo, type Escenario, type EstadoMock } from './estado.ts';
 import { crearEstado } from './fixtures.ts';
-import { mensajes } from './mensajes.ts';
-import { pedidos } from './pedidos.ts';
-import { propuestas } from './propuestas.ts';
-import { soporte } from './soporte.ts';
-import { trabajos } from './trabajos.ts';
 import { cargarGrafo } from './mapa.ts';
-import { viajes } from './viajes.ts';
-import { obras } from './obras.ts';
-import { turnos } from './turnos.ts';
-import { taller } from './taller.ts';
-import { fallo } from './estado.ts';
 
 export interface OpcionesMock {
   escenario?: Escenario;
@@ -45,21 +35,7 @@ export function crearApiMockConEstado(o: OpcionesMock = {}): ApiMock {
   const s = crearEstado(o.escenario ?? 'habilitado');
   const latencia = o.latenciaMs ?? 250;
 
-  const todos = {
-    ...acceso(s),
-    ...alta(s),
-    ...pedidos(s),
-    ...propuestas(s),
-    ...trabajos(s),
-    ...viajes(s),
-    ...obras(s),
-    ...turnos(s),
-    ...mensajes(s),
-    ...caja(s),
-    ...soporte(s),
-    ...cuenta(s),
-    ...taller(),
-  } as unknown as Sincrono;
+  const todos = metodosMock(s) as unknown as Sincrono;
 
   const api = { origen: 'mock' as const, ahora: () => ahora(s) } as Record<string, unknown>;
   for (const nombre of Object.keys(todos) as Array<keyof Metodos>) {
