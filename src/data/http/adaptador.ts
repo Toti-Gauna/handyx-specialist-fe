@@ -9,6 +9,7 @@ import { cuentaHttp } from './cuenta.ts';
 import { mensajesHttp } from './mensajes.ts';
 import { obrasHttp } from './obras.ts';
 import { pedidosHttp } from './pedidos.ts';
+import { presupuestosHttp } from './presupuestos.ts';
 import { propuestasHttp } from './propuestas.ts';
 import { soporteHttp } from './soporte.ts';
 import { tallerHttp } from './taller.ts';
@@ -32,5 +33,6 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
     ...soporteHttp(c),
     ...cuentaHttp(c),
     ...tallerHttp(c),
+    ...presupuestosHttp(c),
   };
 }
