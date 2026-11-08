@@ -38,3 +38,6 @@ export const ayudasPrueba: AyudasPrueba | null = {
 
 /** Cámara simulada del alta (lote 4.4). */
 export const camaraPrueba: CamaraPrueba | null = camara;
+
+/** Lector simulado de la lista del corralón (lote 2.2): en producción lee el teléfono. */
+export { lectorListaPrueba } from './mock/lector-lista.ts';
