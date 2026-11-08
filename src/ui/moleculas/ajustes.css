@@ -235,3 +235,31 @@
   padding: 8px 0 12px;
   border-top: 1px solid var(--ui-borde);
 }
+
+/* ── Banda de aviso corta ─────────────────────────────── */
+.ui-banda {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+.ui-banda--exito {
+  background: var(--ui-exito-tinte);
+  color: var(--ui-exito-hondo);
+}
+
+/* ── Contenido extra de un grupo (botón o texto dentro de la tarjeta) ── */
+.ui-ajuste__extra {
+  padding: 0 0 14px;
+}
+.ui-ajuste__extra--pila {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 8px;
+}
+.ui-ajuste__extra p {
+  margin: 0;
+}

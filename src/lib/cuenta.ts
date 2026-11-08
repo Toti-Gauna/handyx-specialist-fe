@@ -1,4 +1,5 @@
 // Textos de Cuenta que salen de fechas del servidor (lote 1.4). Lógica pura, con su prueba.
+import type { PreferenciasCuenta } from '../data/api/cuenta.ts';
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'] as const;
 
 /** "2026-11" → "nov 2026". */
@@ -25,4 +26,20 @@ export function diaMes(fechaIso: string, zona = 'America/Argentina/Buenos_Aires'
 export function ultimosEnmascarados(ultimos: string | null, grupos = ['••', '•••']): string {
   if (!ultimos) return 'Sin cargar';
   return `${grupos.join(' ')} ${ultimos}`;
+}
+
+// ── Preferencias ───────────────────────────────────────────────────────────────────────────────────
+
+/** Lo que se manda a guardar: todo menos `push` (el permiso del teléfono se pide aparte), con el cambio encima. Nunca pierde un campo. */
+export function cuerpoPreferencias(p: PreferenciasCuenta, cambio: Partial<Omit<PreferenciasCuenta, 'push'>> = {}): Omit<PreferenciasCuenta, 'push'> {
+  const { push: _push, ...resto } = p;
+  return { ...resto, ...cambio };
+}
+
+export const SILENCIO_POR_DEFECTO = { desde: '22:00', hasta: '07:00' } as const;
+
+/** "22 a 7": las horas redondas sin ceros; con minutos, "22:30 a 7". */
+export function textoSilencio(s: { desde: string; hasta: string }): string {
+  const h = (v: string) => (v.endsWith(':00') ? String(Number(v.slice(0, 2))) : v.replace(/^0/, ''));
+  return `${h(s.desde)} a ${h(s.hasta)}`;
 }

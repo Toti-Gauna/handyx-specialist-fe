@@ -11,6 +11,7 @@ import { usePerfil } from '../components/GuardiaApp.tsx';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
 import { useCarga } from '../hooks/useCarga.ts';
+import { cuerpoPreferencias } from '../lib/cuenta.ts';
 import { ALTA } from '../lib/etiquetas.ts';
 import { FilaIcono } from '../ui/moleculas/Tarjeta.tsx';
 import { FilaAjuste, GrupoAjustes, ResumenTarjeta } from '../ui/moleculas/Ajustes.tsx';
@@ -39,17 +40,7 @@ export function Cuenta() {
 
   async function cambiarLetra(v: boolean) {
     const r = await letra.ejecutar(async () => {
-      await api.guardarPreferencias({
-        avisosUrgentes: preferencias.avisosUrgentes,
-        avisosProgramados: preferencias.avisosProgramados,
-        avisosMensajes: preferencias.avisosMensajes,
-        avisosPagos: preferencias.avisosPagos,
-        avisosRecordatorios: preferencias.avisosRecordatorios,
-        avisosCamino: preferencias.avisosCamino,
-        avisosNovedades: preferencias.avisosNovedades,
-        silencio: preferencias.silencio,
-        letraGrande: v,
-      });
+      await api.guardarPreferencias(cuerpoPreferencias(preferencias, { letraGrande: v }));
       await c.recargar();
     });
     if (r.ok) {
