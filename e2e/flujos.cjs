@@ -5,7 +5,7 @@
 const assert = require('node:assert/strict');
 const { join } = require('node:path');
 const { servir } = require('./servidor.cjs');
-const { activarMapas, esperarMapas } = require('./pantallas.cjs');
+const { activarMapas } = require('./pantallas.cjs');
 const { chromium } = require('playwright');
 
 const resultados = [];
