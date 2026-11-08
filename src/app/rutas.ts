@@ -7,6 +7,8 @@ import { rutasAlta } from './rutas/alta.ts';
 import { rutasBase } from './rutas/base.ts';
 import { rutasCaja } from './rutas/caja.ts';
 import { rutasCuenta } from './rutas/cuenta.ts';
+import { rutasEquipamiento } from './rutas/equipamiento.ts';
+import { rutasHerramientas } from './rutas/herramientas.ts';
 import { rutasMensajes } from './rutas/mensajes.ts';
 import { rutasObras } from './rutas/obras.ts';
 import { rutasPedidos } from './rutas/pedidos.ts';
@@ -29,6 +31,8 @@ export const RUTAS = {
   ...rutasCuenta,
   ...rutasSoporte,
   ...rutasTaller,
+  ...rutasHerramientas,
+  ...rutasEquipamiento,
 } as const satisfies Record<string, Ruta>;
 
 export type ClaveRuta = keyof typeof RUTAS;
