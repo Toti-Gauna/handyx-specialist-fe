@@ -1,0 +1,15 @@
+{
+  "_nota": ["Desbordes de pantallas que todavía no pasaron al kit v3 (lote 0.2). El lote que rehace cada pantalla saca sus líneas; no se agregan líneas nuevas."],
+  "alta-borrador": ["PALABRA PARTIDA: «Completá» en Completá tu alta"],
+  "alta-rubros": ["CONTROL PARTIDO: «Electricidad» en Electricidad", "CONTROL PARTIDO: «acondicionado» en Aire acondicionado"],
+  "caja": ["PALABRA PARTIDA: «Reportado,» en Reportado, sin verificar"],
+  "taller": ["PALABRA PARTIDA: «presupuestá» en presupuestá"],
+  "catalogo-v2": [
+    "NO ENTRA: Mensajes2 sin leer",
+    "CONTROL PARTIDO: «Electricidad» en Electricidad · Centro",
+    "CONTROL PARTIDO: «Electricidad» en Electricidad",
+    "CONTROL PARTIDO: «Cerrajería» en Cerrajería",
+    "CONTROL PARTIDO: «Albañilería» en Albañilería",
+    "CONTROL PARTIDO: «acondi­cionado» en Aire acondi­cionado"
+  ]
+}

@@ -22,7 +22,7 @@ Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila d
 | Componente | Cuándo | Qué muestra | Captura |
 |---|---|---|---|
 | `Cargando` | Primera carga | Esqueleto gris que late (quieto con "reducir movimiento"). Aparece recién si la espera pasa de 0,5 s: las cargas cortas (y el paso de la pantalla de carga a la app) no muestran bloques | El aviso "Cargando…" para lectores de pantalla está desde el principio |
-| `ErrorCaja` | Una consulta falló | Handy roto según la falla (lamparita: red; llave: no encontrado o permiso; engranaje: el resto), mensaje seguro, referencia y "Reintentar". Conserva lo ya cargado. **Nunca cae a datos de prueba** | `error-red`, `error-servidor` |
+| `ErrorCaja` | Una consulta falló | Con `pantalla` y falla de red o del servidor, el `EstadoError` del kit v3 (D6-Error «Se nos desenchufó algo» / D6-Fallo «Estamos en obra», lote 0.2). En el resto, Handy roto según la falla (lamparita: red; llave: no encontrado o permiso; engranaje: el resto), mensaje seguro, referencia y "Reintentar". Conserva lo ya cargado. **Nunca cae a datos de prueba** | `error-red`, `error-servidor` |
 | `Vacio` | No hay nada que mostrar | Ícono de línea + título + ayuda | `inicio-sin-habilitar` |
 | `AvisoSinConexion` | El teléfono no tiene red | Franja oscura con la lamparita rota bajo la cabecera | recorrido J (`npm run e2e`) |
 | `/sin-conexion/` | Sin red y la pantalla no está guardada | Caño roto, "Probar de nuevo"; HTML estático sin datos | `sin-conexion` |
@@ -32,7 +32,8 @@ Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila d
 
 | Componente | Qué hace |
 |---|---|
-| `MarcoApp` | Cabecera con logo y avisos, franja sin conexión, contenido y navegación (barra inferior; riel lateral desde 1100 px) |
+| `MarcoApp` | Cabecera con logo y avisos, franja sin conexión, contenido y la `BarraPestanas` del kit v3 (Inicio · Obras · Taller · Mensajes · Cuenta; lote 0.2). Sin riel lateral: la app es solo para el celular |
+| `SoloCelular` (`src/ui/plantillas/`) | En el layout raíz: con ≥ 900 px y mouse muestra `PantallaEscritorio` (X-Escritorio) en vez de la app. `/catalogo/` queda afuera |
 | `GuardiaApp` / `Puerta` | Llevan a acceso o al alta según la sesión y el estado del alta (los decide el servidor) |
 | `BannerPrueba` | Banner amarillo "Datos de prueba" + Panel de prueba. **Solo en el mock**: no entra en `build:hostinger` |
 | `Volver` | Enlace de regreso con área táctil de 44 px |
@@ -123,3 +124,97 @@ Handys disponibles (`Handy.tsx`):
 - Rotos: lamparita, llave, engranaje y caño.
 
 Las poses nuevas se generan con `docs/handys-prompt.md`.
+
+## Kit v3 (`src/ui/`, lote 0.2)
+
+Diseño atómico con CSS normal: un archivo por nivel (`src/ui/atomos.css`, `moleculas.css`, `organismos.css`,
+`plantillas.css`, importados una vez en `src/app/layout.tsx`), clases `ui-*` y tokens `--ui-*` (sobre los `--hd-*`).
+Fuente visual: el lienzo `design/deluxe/` (`gen/piezas.py`, `gen/piezas2.py`). Lógica pura en `src/ui/logica.ts` con
+pruebas en `logica.test.ts`. Todo se ve en **`/catalogo/`** (solo mock; el kit v2 sigue en `/catalogo/v2/`).
+
+Pedido de Ignacio (08/11/2026): **que la use una persona de 90 años**. Texto base 17 px (nunca < 13 px en lo que se
+lee), botón principal 56 px, áreas táctiles ≥ 48 px, contraste AA, una acción principal con verbo, estados con texto
+(nunca solo color), todo gesto con botón, sin tiempos cortos, foco visible, nombres accesibles iguales al texto visible
+y movimiento solo con `prefers-reduced-motion: no-preference`. Sin estilos inline: lo calculado (arrastre de la hoja,
+posición de un marcador en el mapa estilizado) se fija desde código en una variable CSS.
+
+### Átomos (`src/ui/atomos/`)
+
+| Pieza | Para qué | Variantes | Accesibilidad |
+|---|---|---|---|
+| `Icono` | Íconos de línea | Los de la landing + los del lienzo (`iconos.ts`, gana el del lienzo); `chico`/`medio`/`grande` | Siempre `aria-hidden` |
+| `Boton` / `BotonEnlace` | Acción con la base que se hunde | `primaria`, `contorno`, `peligro`, `amarilla`, `exito`, `texto`; `bloque`, `chico` (48 px); `ocupado` + `textoOcupado` | 56 px de alto; `aria-busy` al enviar |
+| `BotonIcono` / `BotonIconoEnlace` | Un solo ícono | `claro`, `azul`, `vidrio` (cabecera); `punto` amarillo | `etiqueta` obligatoria; ≥ 48 px |
+| `Chip` | Estado o dato corto | `tinte`, `amarillo`, `noche`, `gris`, `exito`, `error`, `blanco`, `azul` | Ícono + texto |
+| `Etiqueta`, `Marcador`, `Titulo` | Rótulo en mayúsculas, resaltador amarillo, título Archivo 900 | `Titulo` con parte marcada, `grande`/`medio`, h1 o h2 | Un solo h1 por pantalla |
+| `Cifra` | Montos y números | `centavos` (en pesos) o `texto`; `chico`/`medio`/`grande` | Espacios no separables: `$ 45.000` nunca se corta; ancho normal para entrar en mosaicos chicos |
+| `Separador` | Línea, con texto opcional («o») | — | `role="separator"` |
+| `Avatar`, `AvatarGrupo` | Iniciales; mosaico de 2 × 2 con «+N» | Tonos por nombre | Decorativos: el nombre va escrito al lado |
+| `Interruptor` | Encender o apagar | `claro` (etiqueta + estado) y `noche` (Disponible de la cabecera) | `role="switch"`, nombre «etiqueta: estado» |
+| `Casilla`, `Radio` | Elegir | Con `ayuda` | Toda la fila es tocable; foco visible en la caja |
+| `Campo` | Texto | `icono`, `prefijo` («$»), `ayuda`, `error` | Etiqueta arriba, 18 px, `aria-invalid` y `aria-describedby` |
+| `BarraProgreso`, `Anillo` | Avance | Barra con tramo amarillo «lo que suma esto»; anillo «N/M» | `role="progressbar"` / `role="img"` con «N de M» |
+
+### Ilustraciones (`src/ui/ilustraciones/`)
+
+SVG isométrico propio (piezas en `iso.tsx`: prismas de tres caras, ventanas, cilindros, árboles) con la paleta de la
+landing. **Siempre `aria-hidden`**: el texto de al lado dice lo importante. Tamaños `chico`/`medio`/`grande`/`lleno`.
+
+| Pieza | Qué es |
+|---|---|
+| `Ciudad` | Mar del Plata: edificios de la costa con ventanas amarillas (titilan sin «reducir movimiento»), torreón, faro, puerto con barquito, casas y árboles |
+| `Casa` | Casa con techo a dos aguas |
+| `ArregloRubro` + `Tablero`, `Canilla`, `Garrafa` (gas), `Cerradura`, `Pared`, `Aire`, `Cano` | **«Construir el arreglo»**: con `armar`, cada `Pieza` cae a su lugar en orden (GSAP, `Lienzo.tsx`); `vuelta` lo repite. Con «reducir movimiento», armado |
+| `EscudoVerificado`, `Remera`, `Manual`, `CajaRegalo` | Verificado (solo con el estado del servidor), kit de bienvenida, regalo del camino |
+| `Desenchufado`, `EnObra` | Sin conexión (D6-Error) y error del servidor (D6-Fallo), copiados del lienzo |
+
+### Moléculas (`src/ui/moleculas/`)
+
+| Pieza | Para qué | Notas |
+|---|---|---|
+| `Tarjeta` | Tarjeta blanca (o `gris`, `azul`, `noche`) con **franja** gris abajo («Ver más información») | La franja es enlace o botón |
+| `FilaIcono` | Fila de lista con mosaico, título, detalle y algo a la derecha | Enlace, botón o fija; lo de la derecha baja de renglón antes que partir el título |
+| `DatoMini` | Rótulo + cifra en un mosaico | — |
+| `Mosaico`, `MosaicoHerramienta` | Cuadro gris con ícono; mosaico tocable de herramienta con insignia | ≥ 48 px |
+| `Segmento` | Una de pocas opciones | Radios reales en un `fieldset` |
+| `Stepper` | − cantidad + | Botones de 56 px «Restar 1: …» / «Sumar 1: …»; valor en `output` |
+| `Buscador` | Buscar | `role="search"`, botón «Borrar lo escrito» |
+| `Burbuja` | Mensaje de chat | Avatar pegado (solo el último seguido), nombre y hora adentro, reacciones en el borde, «editado» escrito |
+| `LineaTiempo` | Etapas u estados | Línea continua; cada paso dice «Hecho», «Ahora» o «Falta»; `aria-current="step"` |
+| `TiraDias` | Elegir un día de la semana | Hoy con borde naranja; punto si hay trabajo (dicho en texto oculto) |
+| `RuedaHora` | Elegir la hora | Lista que se desliza + botones «más temprano / más tarde» y flechas del teclado |
+| `TecladoPrecio` | Escribir el precio | Teclas de 60 px (1-9, 000, 0, borrar); monto en `output`; centavos al salir |
+| `ResumenOpciones` | Elegir entre pocas opciones con resumen y cifra | Radios en tarjetas |
+| `CampoCodigo` | Código de N números | Un solo campo real (`one-time-code`), casillas de dibujo |
+| `MarcadorPedido` | Pin-ilustración del mapa con rubro, «Urgente» y precio sugerido | Botón ≥ 56 px; nombre: rubro, zona, urgente, precio, distancia. **Abre el detalle, nunca acepta** |
+
+### Organismos (`src/ui/organismos/`)
+
+| Pieza | Para qué | Notas |
+|---|---|---|
+| `CabeceraAzul` | Solo en Inicio | Marca, Avisos (punto si hay nuevos), Mis zonas y el **único** Disponible |
+| `BarraCompacta` | El resto de las pantallas | Volver (enlace o botón), título y subtítulo, acción a la derecha |
+| `BarraPestanas` | Inicio · Obras · Taller · Mensajes · Cuenta (`src/app/rutas/navegacion.ts`) | Vidrio azul (excepción de Ignacio) con fondo sólido sin `backdrop-filter` o con «reducir transparencia»; `aria-current`; la actual en blanco y negrita |
+| `Hoja` | Detalle o confirmación sobre la pantalla | `<dialog>` modal con velo; manija para arrastrar **y** botón Cerrar; `pie` con la acción |
+| `ModalFlotante` | Confirmación corta en el centro | Igual que la hoja, sin arrastre |
+| `AccionFija` / `AccionesFijas` | La acción principal abajo | Dos acciones en fila solo si son cortas (`disposicionAcciones`); si no entran, pasan a columna solas |
+| `ListaChat` + `EntradaChat` | Chat con los mensajes pegados abajo | `role="log"` recorrible con teclado; Enter manda, Mayús+Enter renglón |
+| `Calendario` | Mes de lunes a domingo | Hoy, elegido, con trabajo y pasados, todo dicho en el nombre de cada día |
+| `EstadoError` | D6-Error (`sin_conexion`) y D6-Fallo (`servidor`) | Ilustración, chip, título marcado, texto, código para soporte, Reintentar y Hablar con soporte |
+| `EstadoVacio` | No hay nada | Ilustración, título, texto y una acción |
+| `MapaArreglos` | **El mapa como Uber pero de arreglos** | Capa de MapLibre (`src/mapa`) a pantalla completa con los pedidos como `MarcadorPedido` (anclas del motor), zonas aproximadas, Centrar, «Me voy hasta…» (zonas de `DESTINOS`; filtra con `pedidosHacia`), vista **Lista** equivalente, pedido entrante flotante que se arma; sin WebGL, mapa estilizado con los mismos marcadores. Nunca la dirección exacta |
+| `PantallaEscritorio` + `Qr` | X-Escritorio | QR local con `uqr` (solo la dirección de la app, sin query) y vista de muestra del celular |
+
+### Plantillas (`src/ui/plantillas/`)
+
+`PantallaRaiz` (cabecera + contenido; las pestañas las pone el layout), `PantallaSecundaria` (barra compacta +
+contenido + acción fija), `PantallaHoja` (la pantalla de atrás sigue a la vista), `PantallaMapa` (mapa a pantalla
+completa con controles arriba y hoja o acción abajo) y `SoloCelular`.
+
+### Desbordes (`npm run desbordes`)
+
+`e2e/desbordes.cjs` recorre `e2e/pantallas.cjs` en 320 × 568 y 390 × 844 con las fuentes reales del build y falla si un
+texto pasa el borde de su caja o de la pantalla, si una palabra o un control quedan partidos o recortados, o si el
+contenido queda bajo la acción fija o las pestañas; también mide la pantalla de escritorio en 1280 px. Los desbordes
+de pantallas que todavía usan el kit v2 están en `e2e/desbordes-conocidos.json`: el lote que rehace la pantalla saca
+sus líneas. Corre en el CI (job `desbordes`).

@@ -27,7 +27,8 @@ const control = async (metodo, ruta) => {
   return r.json();
 };
 const ver = (p, t, o) => p.getByText(t, o).first().waitFor();
-const nav = (p, n) => p.locator('nav.app-nav').getByText(n, { exact: true }).click();
+// Barra de pestañas del kit v3 (lote 0.2): Inicio · Obras · Taller · Mensajes · Cuenta.
+const nav = (p, n) => p.getByRole('navigation', { name: 'Secciones' }).getByText(n, { exact: true }).click();
 
 /** Nada en el navegador: ni storage, ni IndexedDB, ni cookies legibles (la de sesión es HttpOnly). */
 async function sinNadaEnElNavegador(p) {

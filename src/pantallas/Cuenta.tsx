@@ -1,12 +1,11 @@
 'use client';
-// Cuenta (lote 4.8): el perfil con las iniciales y la insignia de verificado (solo si lo dice el servidor), el contador
-// del fee y las filas a datos personales, rubros y zonas, cómo te paga el cliente, caja, notificaciones, centro de
-// ayuda y privacidad y baja.
+// Cuenta (lote 4.8): el perfil con las iniciales y la insignia de verificado (solo si lo dice el servidor) y las filas a datos personales, rubros y zonas, cómo te paga el cliente, caja, notificaciones, centro de
+// ayuda y privacidad y baja. El contador del «0 % durante la demo» se quitó en el lote 0.2: Handyx no le cobra comisión
+// al especialista, nunca.
 import { api } from '@handyx/origen-datos';
 import { useRouter } from 'next/navigation';
 import { RUTAS } from '../app/rutas.ts';
 import { Cargando, ErrorCaja } from '../components/Estados.tsx';
-import { ContadorFee } from '../components/FeeAviso.tsx';
 import { usePerfil } from '../components/GuardiaApp.tsx';
 import { Icono } from '../components/Icono.tsx';
 import { Chip, ChipTexto } from '../components/ui.tsx';
@@ -20,16 +19,15 @@ import './cuenta/cuenta.css';
 export function Cuenta() {
   const router = useRouter();
   const { perfil } = usePerfil();
-  const fee = useCarga(() => api.feeVigente(), []);
   const publico = useCarga(() => api.perfilPublico(), []);
   const salida = useAccion();
   const nombre = [perfil.nombre, perfil.apellido].filter(Boolean).join(' ') || 'Tu cuenta';
   // El sello lo decide el servidor: mientras no responde, no se muestra.
   const verificado = publico.datos?.verificado === true;
 
-  // El sello, los rubros y el contador del fee llegan juntos: la pantalla se muestra entera de una vez, sin empujar
-  // las filas hacia abajo mientras carga (CLS).
-  if ((!fee.datos && !fee.fallo) || (!publico.datos && !publico.fallo)) return <Cargando />;
+  // El sello y los rubros llegan juntos: la pantalla se muestra entera de una vez, sin empujar las filas hacia abajo
+  // mientras carga (CLS).
+  if (!publico.datos && !publico.fallo) return <Cargando />;
 
   async function salir() {
     await salida.ejecutar(() => api.salir());
@@ -61,8 +59,6 @@ export function Cuenta() {
         )}
       </section>
 
-      {fee.fallo && !fee.datos ? <ErrorCaja fallo={fee.fallo} onReintentar={() => void fee.recargar()} /> : null}
-      {fee.datos?.politica ? <ContadorFee politica={fee.datos.politica} /> : null}
 
       <section aria-labelledby="ct-tu-cuenta">
         <h2 id="ct-tu-cuenta" className="ct-etiqueta">

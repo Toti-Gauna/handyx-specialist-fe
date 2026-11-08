@@ -5,7 +5,9 @@
 // Lote 4.9: salvo los mapas `inmediato` (el viaje, el pedido entrante), el motor arranca con la primera interacción
 // (tocar, deslizar, una tecla) o con "Ver el mapa": así la pantalla responde antes en celulares modestos.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Icono } from '../components/Icono.tsx';
+import type { Punto } from '../contracts/dto.ts';
 import type { CapasMapa, Motor } from './motor.ts';
 import './mapa.css';
 
@@ -26,6 +28,8 @@ export interface PropsMapa extends CapasMapa {
   tapadoAbajo?: number;
   /** El mapa es lo principal de la pantalla: el motor arranca al aparecer, sin esperar una interacción. */
   inmediato?: boolean;
+  /** Contenido propio sobre el mapa en un punto (kit v3: marcadores-ilustración tocables). Lo importante va también en texto fuera del mapa. */
+  marcadores?: readonly { id: string; punto: Punto; contenido: ReactNode }[];
 }
 
 /** Lo que cuenta como "la persona ya está usando la pantalla". */
@@ -34,7 +38,9 @@ const INTERACCIONES = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'
 type Estado = 'en_espera' | 'cargando' | 'listo' | 'sin_mapa';
 type Base = 'ok' | 'sin_datos' | 'sin_conexion' | null;
 
-export function Mapa({ etiqueta, alto = 'medio', interactivo = false, encuadre, alternativa, conCentrar = false, tapadoAbajo = 0, inmediato = false, ...capas }: PropsMapa) {
+export function Mapa({ etiqueta, alto = 'medio', interactivo = false, encuadre, alternativa, conCentrar = false, tapadoAbajo = 0, inmediato = false, marcadores, ...resto }: PropsMapa) {
+  const capas: CapasMapa = marcadores ? { ...resto, anclas: marcadores.map(({ id, punto }) => ({ id, punto })) } : resto;
+  const [, setDibujado] = useState(0);
   const lienzo = useRef<HTMLDivElement>(null);
   const motor = useRef<Motor | null>(null);
   const [estado, setEstado] = useState<Estado>(inmediato ? 'cargando' : 'en_espera');
@@ -98,6 +104,8 @@ export function Mapa({ etiqueta, alto = 'medio', interactivo = false, encuadre, 
     const reencuadrar = encuadre !== encuadrePrevio.current;
     encuadrePrevio.current = encuadre;
     motor.current.actualizar(ultimas.current, reencuadrar);
+    // Las anclas nuevas recién existen ahora: se vuelve a dibujar para montar su contenido.
+    if (ultimas.current.anclas?.length) setDibujado((n) => n + 1);
   }, [clave, encuadre, estado]);
 
   return (
@@ -120,6 +128,12 @@ export function Mapa({ etiqueta, alto = 'medio', interactivo = false, encuadre, 
           Sin conexión: el mapa puede verse incompleto.
         </p>
       ) : null}
+      {estado === 'listo' && marcadores
+        ? marcadores.map((m) => {
+            const el = motor.current?.ancla(m.id);
+            return el ? createPortal(m.contenido, el, m.id) : null;
+          })
+        : null}
       {estado === 'listo' && conCentrar ? (
         <button type="button" className="hx-mapa__centrar" onClick={() => motor.current?.centrar(ultimas.current)}>
           <Icono nombre="pin" /> Centrar

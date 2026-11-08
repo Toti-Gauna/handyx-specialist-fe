@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useState, type ReactNode } from 'react';
+import { RUTAS } from '../app/rutas.ts';
 import type { FalloApi } from '../data/errores.ts';
+import { EstadoError } from '../ui/organismos/EstadosPantalla.tsx';
 import { Handy, type NombreHandy } from './Handy.tsx';
 import { Icono, type NombreIcono } from './Icono.tsx';
 
@@ -53,6 +55,10 @@ const HANDY_ROTO: Record<string, NombreHandy> = {
 /** `pantalla`: el error ocupa toda la pantalla (no cargó nada); su mensaje pasa a ser el título h1 para los lectores. */
 export function ErrorCaja({ fallo, onReintentar, pantalla = false }: { fallo: FalloApi; onReintentar?: () => void; pantalla?: boolean }) {
   const mensaje = fallo.detalle?.mensaje ?? TEXTOS[fallo.tipo] ?? TEXTOS.servidor;
+  // Pantalla entera sin nada cargado: los estados D6-Error (sin conexión) y D6-Fallo (servidor) del kit v3.
+  if (pantalla && (fallo.tipo === 'red' || fallo.tipo === 'timeout')) return <EstadoError tipo="sin_conexion" mensaje={mensaje} codigo={fallo.requestId} onReintentar={onReintentar} />;
+  if (pantalla && (fallo.tipo === 'servidor' || fallo.tipo === 'contrato'))
+    return <EstadoError tipo="servidor" mensaje={mensaje} codigo={fallo.requestId ?? (fallo.status ? `HX-${fallo.status}` : null)} onReintentar={onReintentar} hrefSoporte={RUTAS.soporte.ruta} />;
   return (
     <div className="caja-error" role="alert">
       <Handy nombre={HANDY_ROTO[fallo.tipo] ?? 'engranaje-roto'} alto={88} className="handy--tambalea" />

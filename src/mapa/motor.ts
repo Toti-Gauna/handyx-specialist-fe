@@ -17,6 +17,8 @@ export interface CapasMapa {
   trayecto?: readonly Punto[] | null;
   cobertura?: readonly Barrio[] | null;
   radar?: Punto | null;
+  /** Lugares donde la pantalla pone su propio contenido (los marcadores-ilustración del mapa de arreglos, kit v3). */
+  anclas?: readonly { id: string; punto: Punto }[] | null;
 }
 
 export interface OpcionesMotor {
@@ -35,6 +37,8 @@ export interface Motor {
   /** Lo que tapa una hoja abajo, para que el encuadre no quede debajo. */
   margenAbajo(px: number): void;
   centrar(capas: CapasMapa): void;
+  /** El elemento de un ancla (para dibujar adentro con un portal de React); null si no existe. */
+  ancla(id: string): HTMLElement | null;
   destruir(): void;
 }
 
@@ -179,6 +183,7 @@ export async function crearMotor(o: OpcionesMotor): Promise<Motor | null> {
     for (const z of [...(c.zona ? [c.zona] : []), ...(c.zonas ?? [])]) pts.push(...circulo(z.centro, z.radioM, 8));
     if (c.cobertura) for (const b of c.cobertura) pts.push(b.centro);
     if (c.radar) pts.push(c.radar);
+    if (c.anclas) for (const a of c.anclas) pts.push(a.punto);
     if (pts.length === 0) return null;
     const b = new LngLatBounds();
     for (const p of pts) b.extend([p.lng, p.lat]);
@@ -243,8 +248,26 @@ export async function crearMotor(o: OpcionesMotor): Promise<Motor | null> {
         }
         barriosDibujados = clave;
       }
+      // Anclas: un elemento vacío por id, tocable (no aria-hidden: adentro va un botón de la pantalla).
+      const ids = new Set((c.anclas ?? []).map((a) => `ancla:${a.id}`));
+      for (const [k, m] of marcadores) {
+        if (k.startsWith('ancla:') && !ids.has(k)) {
+          m.remove();
+          marcadores.delete(k);
+        }
+      }
+      for (const a of c.anclas ?? []) {
+        marcador(`ancla:${a.id}`, a.punto, () => {
+          const e = document.createElement('div');
+          e.className = 'hx-mapa-ancla';
+          return e;
+        }, 'bottom');
+      }
       if (encuadrar) centrar(c);
       else ultimas = c;
+    },
+    ancla(id) {
+      return marcadores.get(`ancla:${id}`)?.getElement() ?? null;
     },
     centrar,
     margenAbajo(px) {

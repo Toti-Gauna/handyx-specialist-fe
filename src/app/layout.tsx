@@ -2,11 +2,16 @@ import '@fontsource-variable/archivo/wdth.css';
 import '@fontsource-variable/dm-sans/index.css';
 import './globals.css';
 import '../kit/kit.css';
+import '../ui/atomos.css';
+import '../ui/moleculas.css';
+import '../ui/organismos.css';
+import '../ui/plantillas.css';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { colores, variablesCss } from '../brand/tokens.ts';
 import { RegistrarSw } from '../components/RegistrarSw.tsx';
 import { ProveedorIsla } from '../kit/Efectos.tsx';
+import { SoloCelular } from '../ui/plantillas/SoloCelular.tsx';
 import { Proveedor } from './contexto.tsx';
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
@@ -42,9 +47,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <a className="saltar" href="#contenido">
           Ir al contenido
         </a>
-        <ProveedorIsla>
-          <Proveedor>{children}</Proveedor>
-        </ProveedorIsla>
+        <SoloCelular>
+          <ProveedorIsla>
+            <Proveedor>{children}</Proveedor>
+          </ProveedorIsla>
+        </SoloCelular>
         <RegistrarSw />
       </body>
     </html>
