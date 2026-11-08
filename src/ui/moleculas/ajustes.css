@@ -214,3 +214,24 @@
 .ui-edicion p {
   margin: 0;
 }
+
+/* ── Horarios por día ─────────────────────────────────── */
+.ui-horario {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 12px;
+  min-height: 64px;
+  padding: 8px 0;
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-grupo__etiqueta + .ui-horario {
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-horario strong {
+  font-size: var(--ui-texto-base);
+}
+.ui-horario__nota {
+  padding: 8px 0 12px;
+  border-top: 1px solid var(--ui-borde);
+}
