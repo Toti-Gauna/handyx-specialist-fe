@@ -413,7 +413,7 @@ export const presupuestos = (s: EstadoMock) => {
     return p;
   };
   return {
-    presupuestos(estado: 'abiertos' | 'todos' = 'abiertos', _cursor?: string): Pagina<Presupuesto> {
+    presupuestos(estado: 'abiertos' | 'todos' = 'abiertos'): Pagina<Presupuesto> {
       const x = e();
       recalcularTodos(x);
       const items = x.presupuestos.filter((p) => estado === 'todos' || ABIERTOS.has(p.estado)).sort((a, b) => b.numeroVersion - a.numeroVersion);
@@ -730,8 +730,12 @@ export const presupuestos = (s: EstadoMock) => {
       const t = x.mano.tareas.find((v) => v.id === id);
       if (!t) throw fallo('no_encontrado', 404, 'no_encontrado', 'No encontramos esa tarea.');
       if (ok.data.version !== t.version) throw fallo('conflicto', 409, 'conflicto_version', 'Esa tarifa cambió desde otra pantalla.');
-      const { version: _v, ...resto } = ok.data;
-      Object.assign(t, Object.fromEntries(Object.entries(resto).filter(([, v]) => v !== undefined)), { version: t.version + 1 });
+      const c = ok.data;
+      if (c.rubro !== undefined) t.rubro = c.rubro;
+      if (c.nombre !== undefined) t.nombre = c.nombre;
+      if (c.detalle !== undefined) t.detalle = c.detalle;
+      if (c.monto !== undefined) t.monto = c.monto;
+      t.version += 1;
       x.mano.version += 1;
       return t;
     },
