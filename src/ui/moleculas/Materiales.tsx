@@ -162,3 +162,29 @@ export function CifraCambio({ antes, ahora, textoAhora }: { antes: number | null
     </span>
   );
 }
+
+/** Rótulo de una sección de tarjeta («MANO DE OBRA») con una acción corta a la derecha («Tus tarifas»). */
+export function CabeceraSeccion({ titulo, accion, nivel = 2 }: { titulo: string; accion?: ReactNode; nivel?: 2 | 3 }) {
+  const H = nivel === 2 ? 'h2' : 'h3';
+  return (
+    <div className="ui-cabecera-seccion">
+      <H className="ui-cabecera-seccion__titulo">{titulo}</H>
+      {accion ? <span className="ui-cabecera-seccion__accion">{accion}</span> : null}
+    </div>
+  );
+}
+
+/** Enlace o botón de texto corto para la cabecera de una sección (48 px de alto). */
+export function AccionTexto({ children, href, onClick, etiqueta }: { children: ReactNode; href?: string; onClick?: () => void; etiqueta?: string }) {
+  if (href)
+    return (
+      <Link href={href} className="ui-accion-texto" aria-label={etiqueta}>
+        {children}
+      </Link>
+    );
+  return (
+    <button type="button" className="ui-accion-texto" aria-label={etiqueta} onClick={onClick}>
+      {children}
+    </button>
+  );
+}

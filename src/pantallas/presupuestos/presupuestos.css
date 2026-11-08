@@ -1,0 +1,118 @@
+/* Pantallas de presupuestos y lista de precios (lote 2.2). Solo composición y ubicación: las piezas tienen sus estilos
+   en src/ui. Sin estilos inline. */
+.pr-nota {
+  margin: 0;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  line-height: 1.4;
+}
+.pr-seccion {
+  display: flex;
+  flex-direction: column;
+}
+.pr-seccion + .pr-seccion {
+  margin-top: 12px;
+}
+.pr-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pr-detalle__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pr-estado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.pr-total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+.pr-total__rotulo {
+  font-weight: 800;
+}
+.pr-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+  text-align: center;
+}
+.pr-vacio__titulo {
+  margin: 0;
+  font-family: var(--ui-titulos);
+  font-size: 1.375rem;
+  font-weight: 900;
+}
+.pr-pie {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pr-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+.pr-lista--plana {
+  gap: 0;
+}
+.pr-rotulo {
+  margin: 0;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+}
+.pr-dos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: 10px;
+}
+.pr-tres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr));
+  gap: 10px;
+}
+.pr-pronto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  font-weight: 700;
+}
+.pr-sugerencias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pr-pronto--izq {
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--ui-gris-franja);
+  text-align: left;
+}
+.pr-pronto--izq .ui-icono {
+  flex: none;
+  margin-top: 2px;
+  color: var(--ui-azul);
+}
