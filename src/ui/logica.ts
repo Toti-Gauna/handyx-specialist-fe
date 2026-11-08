@@ -1,6 +1,7 @@
 // Lógica pura del kit v3 (sin React ni DOM): se prueba en logica.test.ts. Reusa la del kit v2 donde ya existe.
 import type { Punto } from '../contracts/dto.ts';
 import { distanciaM, rumbo } from '../lib/geo.ts';
+import { claveFecha, type DiaGrilla } from '../kit/logica.ts';
 import { pesosDesdeCentavos } from '../lib/formato.ts';
 
 export { iniciales, tonoAvatar, TONOS_AVATAR, tiraDias, grillaMes, moverMes, claveFecha, alturaAlSoltar, siguienteAltura, ALTURAS_HOJA } from '../kit/logica.ts';
@@ -81,6 +82,19 @@ export function indiceCercano(opciones: readonly number[], valor: number): numbe
   return mejor;
 }
 
+// ── Calendario ─────────────────────────────────────────────────────────
+
+export const NOMBRES_MES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'] as const;
+
+/** Grilla de un mes con la semana de lunes a domingo (como el calendario del lienzo). `mes` va de 1 a 12. */
+export function grillaLunes(anio: number, mes: number): DiaGrilla[] {
+  const huecos = (new Date(Date.UTC(anio, mes - 1, 1)).getUTCDay() + 6) % 7;
+  const dias = new Date(Date.UTC(anio, mes, 0)).getUTCDate();
+  const celdas: DiaGrilla[] = Array.from({ length: huecos }, () => ({ fecha: null, dia: null }));
+  for (let d = 1; d <= dias; d++) celdas.push({ fecha: claveFecha(anio, mes, d), dia: d });
+  return celdas;
+}
+
 // ── Código ─────────────────────────────────────────────────────────────
 
 export const normalizarCodigo = (t: string, largo = 6): string => t.replace(/\D/g, '').slice(0, largo);
@@ -116,6 +130,17 @@ export const esEscritorio = (ancho: number, punteroFino: boolean): boolean => an
 
 export const CONSULTA_ESCRITORIO = `(min-width: ${ANCHO_ESCRITORIO}px) and (pointer: fine)`;
 
+/** Camino SVG de un código QR (una celda de 1 × 1 por módulo negro) con `margen` celdas de borde blanco. */
+export function caminoQr(modulos: readonly (readonly boolean[])[], margen = 2): string {
+  const partes: string[] = [];
+  modulos.forEach((fila, y) =>
+    fila.forEach((negro, x) => {
+      if (negro) partes.push(`M${x + margen} ${y + margen}h1v1h-1z`);
+    }),
+  );
+  return partes.join('');
+}
+
 // ── Mapa de arreglos ───────────────────────────────────────────────────
 
 /** Zonas de Mar del Plata y alrededores para "Me voy hasta…": centros aproximados (nunca direcciones). */
@@ -149,7 +174,8 @@ const plano = (t: string): string =>
 
 export interface PedidoEnMapa {
   id: string;
-  zona: Punto;
+  /** Centro de la zona aproximada del pedido (nunca la dirección). */
+  punto: Punto;
 }
 
 /**
@@ -161,13 +187,13 @@ export function pedidosHacia<T extends PedidoEnMapa>(desde: Punto, destino: Punt
   const largo = distanciaM(desde, destino);
   return pedidos
     .filter((p) => {
-      if (distanciaM(p.zona, destino) <= cercaDestinoM) return true;
-      const d = distanciaM(desde, p.zona);
+      if (distanciaM(p.punto, destino) <= cercaDestinoM) return true;
+      const d = distanciaM(desde, p.punto);
       if (d > largo + cercaDestinoM) return false;
-      const dif = Math.abs(((rumbo(desde, p.zona) - haciaDestino + 540) % 360) - 180);
+      const dif = Math.abs(((rumbo(desde, p.punto) - haciaDestino + 540) % 360) - 180);
       return dif <= toleranciaGrados;
     })
-    .sort((a, b) => distanciaM(desde, a.zona) - distanciaM(desde, b.zona));
+    .sort((a, b) => distanciaM(desde, a.punto) - distanciaM(desde, b.punto));
 }
 
 /** Distancia legible y sin corte: "800 m" o "3,4 km". */

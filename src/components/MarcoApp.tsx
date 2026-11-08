@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { NAV, RUTAS } from '../app/rutas.ts';
+import { RUTAS } from '../app/rutas.ts';
+import { BarraPestanas } from '../ui/organismos/BarraPestanas.tsx';
 import { BannerPrueba } from './BannerPrueba.tsx';
 import { Icono } from './Icono.tsx';
 import { AvisoSinConexion } from './SinConexion.tsx';
@@ -11,7 +11,6 @@ import { AvisoSinConexion } from './SinConexion.tsx';
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 export function MarcoApp({ children }: { children: ReactNode }) {
-  const actual = usePathname();
   return (
     <div className="app">
       <BannerPrueba />
@@ -28,23 +27,7 @@ export function MarcoApp({ children }: { children: ReactNode }) {
       <main id="contenido" className="app-cuerpo">
         {children}
       </main>
-      <nav className="app-nav" aria-label="Secciones">
-        {NAV.map((clave) => {
-          const r = RUTAS[clave];
-          const activo = actual?.startsWith(r.ruta) ?? false;
-          return (
-            <Link
-              key={clave}
-              href={r.ruta}
-              className={`app-nav__item${activo ? ' app-nav__item--activo' : ''}`}
-              aria-current={activo ? 'page' : undefined}
-            >
-              <Icono nombre={r.nav.icono} />
-              {r.nav.texto}
-            </Link>
-          );
-        })}
-      </nav>
+      <BarraPestanas />
     </div>
   );
 }

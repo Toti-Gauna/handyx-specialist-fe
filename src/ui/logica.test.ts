@@ -4,10 +4,12 @@ import {
   agruparMensajes,
   aplicarTecla,
   buscarDestinos,
+  caminoQr,
   DESTINOS,
   disposicionAcciones,
   enCaja,
   esEscritorio,
+  grillaLunes,
   indiceCercano,
   normalizarCodigo,
   opcionesHora,
@@ -31,7 +33,7 @@ describe('cifras', () => {
   it('un monto en centavos sale en pesos y sin espacios que se corten', () => {
     const t = textoCifra(4_500_000);
     assert.equal(t.includes(' '), false);
-    assert.match(t, /^\$ 45\.000$/);
+    assert.match(t, /^\$\u00a045\.000$/);
   });
   it('un texto se muestra tal cual, con espacios no separables', () => {
     assert.equal(textoCifra(undefined, '12 km'), '12 km');
@@ -120,6 +122,18 @@ describe('escritorio', () => {
   });
 });
 
+describe('QR del escritorio', () => {
+  it('un cuadrado por módulo negro, corrido por el margen', () => {
+    assert.equal(
+      caminoQr([
+        [true, false],
+        [false, true],
+      ]),
+      'M2 2h1v1h-1zM3 3h1v1h-1z',
+    );
+  });
+});
+
 describe('mapa de arreglos', () => {
   it('busca destinos sin tildes ni mayúsculas', () => {
     assert.deepEqual(
@@ -131,10 +145,10 @@ describe('mapa de arreglos', () => {
   it('"me voy hasta Batán" muestra los pedidos de ese lado, no los de la costa sur', () => {
     const centro = destino('centro');
     const pedidos = [
-      { id: 'camino', zona: { lat: -38.0, lng: -57.63 } }, // entre el centro y Batán
-      { id: 'batan', zona: destino('batan') },
-      { id: 'mogotes', zona: destino('punta-mogotes') }, // al sur, otra dirección
-      { id: 'camet', zona: destino('camet') }, // al norte
+      { id: 'camino', punto: { lat: -38.0, lng: -57.63 } }, // entre el centro y Batán
+      { id: 'batan', punto: destino('batan') },
+      { id: 'mogotes', punto: destino('punta-mogotes') }, // al sur, otra dirección
+      { id: 'camet', punto: destino('camet') }, // al norte
     ];
     const r = pedidosHacia(centro, destino('batan'), pedidos);
     assert.deepEqual(
@@ -151,5 +165,13 @@ describe('mapa de arreglos', () => {
     const { x, y } = enCaja(destino('centro'));
     assert.ok(x > 0 && x <= 100 && y > 0 && y < 100);
     assert.deepEqual(enCaja({ lat: 0, lng: 0 }), { x: 100, y: 0 });
+  });
+});
+
+describe('calendario', () => {
+  it('noviembre de 2026 empieza un domingo: seis huecos antes del 1 con la semana de lunes', () => {
+    const g = grillaLunes(2026, 11);
+    assert.equal(g.filter((c) => c.fecha === null).length, 6);
+    assert.equal(g.at(-1)?.fecha, '2026-11-30');
   });
 });
