@@ -205,6 +205,7 @@ function InicioMapa() {
 
   return (
     <div className="nu-inicio">
+      <h1 className="visualmente-oculto">Inicio: pedidos cerca y tu día</h1>
       <CabeceraAzul
         hrefAvisos={RUTAS.notificaciones.ruta}
         hrefZonas={RUTAS.disponibilidad.ruta}

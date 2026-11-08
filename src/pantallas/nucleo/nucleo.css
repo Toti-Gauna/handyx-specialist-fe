@@ -109,7 +109,7 @@
   border-radius: var(--ui-radio-tarjeta);
 }
 .nu-inicio .hx-mapa__centrar {
-  top: 150px;
+  top: 118px;
   bottom: auto;
 }
 .nu-inicio:has(.ui-mapa-arreglos--lista) .ui-cercanos {

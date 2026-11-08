@@ -145,7 +145,7 @@ function Trabajo({ d, recargar, falloCarga }: { d: Detalle; recargar(): Promise<
           <Chip tono={estado.tono} icono={estado.icono}>
             {estado.texto}
           </Chip>
-          <Titulo antes={NOMBRE_RUBRO[t.rubro]} tam="medio" />
+          <Titulo nivel={2} antes={NOMBRE_RUBRO[t.rubro]} tam="medio" />
           <p>{`${obra ? 'Obra' : 'Trabajo'} · ${d.contraparte}`}</p>
         </div>
       </div>

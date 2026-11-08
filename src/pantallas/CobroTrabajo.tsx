@@ -95,7 +95,7 @@ function Formulario({ cobro, titulo, volver, recargar }: { cobro: Cobro; titulo:
         <Chip tono={listo.estado === 'verificado' ? 'exito' : 'azul'} icono={listo.estado === 'verificado' ? 'check' : 'reloj'}>
           {ESTADO[listo.estado]}
         </Chip>
-        <Titulo antes="Informaste " marcado={textoCifra(listo.informado?.centavos ?? listo.monto.centavos)} tam="medio" />
+        <Titulo nivel={2} antes="Informaste " marcado={textoCifra(listo.informado?.centavos ?? listo.monto.centavos)} tam="medio" />
         <p>{`Queda «informado por vos» hasta que ${nombre} lo confirma o se verifica el pago. Recién ahí suma a tu camino.`}</p>
         <p className="nu-nota">El informe del trabajo (fotos, garantía y conformidad del cliente) llega con el Modo trabajo.</p>
         <BotonEnlace variante="contorno" href={volver}>
