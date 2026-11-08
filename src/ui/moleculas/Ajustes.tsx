@@ -91,3 +91,32 @@ export function FilaAlerta({ titulo, detalle, onClick }: { titulo: string; detal
     </button>
   );
 }
+
+/** Un método de segunda verificación: tarjeta propia, con el recomendado resaltado y el estado escrito en un chip. */
+export function FilaMetodo({ icono, titulo, detalle, destacado = false, chip, href, onClick, deshabilitado = false }: { icono: NombreIconoUi; titulo: string; detalle: string; destacado?: boolean; chip?: ReactNode; href?: string; onClick?: () => void; deshabilitado?: boolean }) {
+  const cuerpo = (
+    <>
+      <span className="ui-metodo__ico" aria-hidden="true">
+        <Icono nombre={icono} />
+      </span>
+      <span className="ui-metodo__texto">
+        <strong>{titulo}</strong>
+        <span>{detalle}</span>
+        {chip ? <span className="ui-metodo__chip">{chip}</span> : null}
+      </span>
+      {!deshabilitado ? <Icono nombre="flecha" className="ui-fila__flecha" /> : null}
+    </>
+  );
+  const clase = `ui-metodo${destacado ? ' ui-metodo--destacado' : ''}`;
+  if (href && !deshabilitado)
+    return (
+      <Link href={href} className={clase}>
+        {cuerpo}
+      </Link>
+    );
+  return (
+    <button type="button" className={clase} onClick={onClick} disabled={deshabilitado}>
+      {cuerpo}
+    </button>
+  );
+}

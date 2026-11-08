@@ -442,3 +442,99 @@
     transition: rotate var(--ui-dur) var(--ui-curva);
   }
 }
+
+/* ── Seguridad: cabecera, métodos y dispositivos ──────── */
+.ui-seg-cab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 16px;
+  border-radius: var(--ui-radio-tarjeta);
+  background: var(--ui-azul);
+  box-shadow: 0 4px 0 0 var(--ui-hondo);
+  color: #fff;
+}
+.ui-seg-cab > div {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+.ui-seg-cab h2 {
+  margin: 0 0 4px;
+  font: 900 1.5rem / 1.1 var(--ui-titulos);
+  font-stretch: 112%;
+}
+.ui-seg-cab p {
+  margin: 0;
+  line-height: 1.4;
+}
+.ui-metodos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ui-dispositivos {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-dispositivos li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  min-height: 64px;
+  padding: 10px 0;
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-dispositivos li > span {
+  display: flex;
+  flex: 1 1 10rem;
+  flex-direction: column;
+  min-width: 0;
+}
+.ui-dispositivos li > span > span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+
+/* ── App autenticadora ────────────────────────────────── */
+.ui-totp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--ui-borde);
+  border-radius: var(--ui-radio-tarjeta);
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+}
+.ui-totp .ui-qr {
+  flex: none;
+  width: 9.5rem;
+  height: 9.5rem;
+}
+.ui-totp > div {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+.ui-totp h2 {
+  margin: 0 0 4px;
+  font-size: 1.125rem;
+}
+.ui-totp p {
+  margin: 0 0 8px;
+}
+.ui-totp__clave {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--ui-mosaico);
+  font: 700 1.0625rem / 1.3 ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  letter-spacing: 0.05em;
+  overflow-wrap: anywhere;
+}
