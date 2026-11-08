@@ -218,3 +218,17 @@ texto pasa el borde de su caja o de la pantalla, si una palabra o un control que
 contenido queda bajo la acción fija o las pestañas; también mide la pantalla de escritorio en 1280 px. Los desbordes
 de pantallas que todavía usan el kit v2 están en `e2e/desbordes-conocidos.json`: el lote que rehace la pantalla saca
 sus líneas. Corre en el CI (job `desbordes`).
+
+### Núcleo (lote 1.3)
+
+Piezas nuevas para el pedido y el mapa de arreglos (`docs/nucleo.md`). Su CSS está en `src/ui/nucleo.css` hasta el cierre
+de la ola 1; lógica pura en `src/ui/logicaNucleo.ts` con pruebas.
+
+| Pieza | Nivel | Para qué | Accesibilidad |
+|---|---|---|---|
+| `CintaPrecio` | molécula | Tu precio en una cinta métrica amarilla con la aguja y el cartel «sugerido»; marcas de $ 500 | `role="slider"` con `aria-valuetext` en pesos; flechas ± $ 500, Re Pág/Av Pág ± $ 5.000, Inicio = sugerido; siempre con atajos y teclado aparte |
+| `TiraParadas`, `ListaParadas`, `RutaDecorativa` | molécula | Paradas del día: tira horizontal (hecha, próxima, después), lista con hora, tramo y desvío, y el recorrido dibujado | Estado en texto; reordenar con «Subir/Bajar: …» (nunca solo arrastrando); el dibujo es `aria-hidden` |
+| `PedidoFlotante` | organismo | El pedido que llega flotando sobre el mapa, con la ilustración que arma el arreglo y «Pedido 1 de 2» | «Ver pedido» abre el detalle, nunca acepta; anterior/siguiente con botones; región `aria-live` |
+| `HojaCercanos` | organismo | Pedidos cercanos estilo «Choose a ride»: rubro, zona aproximada, precio sugerido y distancia; el elegido resaltado | Radios reales; una sola acción («Ver pedido de …») |
+| `FocoEnDialogos` | organismo | Mantiene el foco del teclado dentro de la hoja o el modal abierto | Se monta una vez por layout (pendiente: llevarlo a `Hoja`) |
+| `.ui-atajos` / `.ui-atajo` | CSS | Atajos chicos en fila que bajan de renglón (precio, franjas, horarios) | `aria-pressed`; deshabilitado con texto oculto que dice por qué |
