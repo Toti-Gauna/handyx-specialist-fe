@@ -992,6 +992,7 @@
   align-items: flex-start;
   gap: 4px;
   min-width: 0;
+  overflow-wrap: anywhere; /* emails y claves largas no empujan la pantalla con el texto agrandado */
 }
 .ui-aviso-caja__texto a {
   color: inherit;

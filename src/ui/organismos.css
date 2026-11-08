@@ -934,18 +934,21 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
   margin: 0;
   color: #fff;
+  overflow-wrap: anywhere;
 }
+/* La marca es un logo: con el texto agrandado crece hasta donde entra (lo que se lee está más abajo). */
 .ui-escena-ciudad__logo {
   font-family: var(--ui-titulos);
-  font-size: 1.875rem;
+  font-size: min(1.875rem, 9vw);
   font-weight: 900;
   font-stretch: 125%;
   line-height: 1;
 }
 .ui-escena-ciudad--alta .ui-escena-ciudad__logo {
-  font-size: 2.25rem;
+  font-size: min(2.25rem, 11vw);
 }
 .ui-escena-ciudad__lema {
   font-size: var(--ui-texto-min);
