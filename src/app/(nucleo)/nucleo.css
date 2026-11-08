@@ -13,3 +13,12 @@
   max-width: 560px;
   margin: 0 auto;
 }
+
+/* Con texto al 200 % los chips y las opciones de un segmento bajan de renglón en vez de salirse de la pantalla. */
+.nu-app .ui-chip {
+  max-width: 100%;
+  white-space: normal;
+}
+.nu-app .ui-segmento {
+  flex-wrap: wrap;
+}

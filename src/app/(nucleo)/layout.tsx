@@ -3,6 +3,7 @@ import { BannerPrueba } from '../../components/BannerPrueba.tsx';
 import { GuardiaApp } from '../../components/GuardiaApp.tsx';
 import { AvisoSinConexion } from '../../components/SinConexion.tsx';
 import { VigiaAvisos } from '../../components/VigiaAvisos.tsx';
+import { FocoEnDialogos } from '../../ui/organismos/FocoEnDialogos.tsx';
 import './nucleo.css';
 
 // Núcleo del especialista (lote 1.3): Inicio con el mapa de arreglos, el pedido, tu precio, el trabajo, el viaje y el
@@ -12,6 +13,7 @@ export default function LayoutNucleo({ children }: { children: ReactNode }) {
   return (
     <div className="nu-app">
       <BannerPrueba />
+      <FocoEnDialogos />
       <AvisoSinConexion />
       <main id="contenido" className="nu-app__cuerpo">
         <GuardiaApp>
