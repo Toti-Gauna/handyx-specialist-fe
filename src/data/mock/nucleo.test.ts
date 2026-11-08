@@ -108,7 +108,7 @@ describe('tu día (mock)', () => {
     assert.equal(m.tarjeta?.tipo, 'demora');
     const otra = await api.avisarDemora(ID_NUCLEO.canilla, { minutos: 15 }, k);
     assert.equal(otra.id, m.id);
-    await assert.rejects(api.avisarDemora(ID_NUCLEO.canilla, { minutos: 20 }, clave()), { tipo: 'validacion' });
+    await assert.rejects(api.avisarDemora(ID_NUCLEO.canilla, { minutos: 20 } as unknown as { minutos: 15 }, clave()), { tipo: 'validacion' });
   });
 });
 

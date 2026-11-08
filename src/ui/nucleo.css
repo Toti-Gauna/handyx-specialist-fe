@@ -1,0 +1,479 @@
+/* Kit v3 · piezas del núcleo (lote 1.3): cinta de precio, paradas del día, pedido flotante y hoja de pedidos cercanos.
+   Archivo propio del lote para no pisar los CSS por nivel durante la ola; el cierre puede pasarlas a moleculas.css y
+   organismos.css. Texto ≥ 13 px, áreas táctiles ≥ 48 px y movimiento solo con «no-preference». */
+
+/* ── Cinta de precio ─────────────────────────────────── */
+.ui-cinta {
+  position: relative;
+  height: 112px;
+  margin: 0 calc(-1 * var(--ui-gutter));
+}
+.ui-cinta__regla {
+  position: absolute;
+  top: 22px;
+  right: 0;
+  left: 0;
+  height: 70px;
+  overflow: hidden;
+  background: var(--ui-amarillo);
+  box-shadow:
+    inset 0 -4px 0 var(--ui-amarillo-hondo),
+    var(--ui-elev-1);
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+.ui-cinta__regla:active {
+  cursor: grabbing;
+}
+.ui-cinta__regla:focus-visible {
+  outline: 3px solid var(--ui-azul);
+  outline-offset: 3px;
+}
+.ui-cinta__marca {
+  position: absolute;
+  top: 0;
+  left: calc(50% + var(--x, 0px));
+  width: 2px;
+  height: 20px;
+  margin-left: -1px;
+  background: var(--ui-tinta);
+}
+.ui-cinta__marca--larga {
+  height: 34px;
+}
+.ui-cinta__numero {
+  position: absolute;
+  top: 38px;
+  left: 50%;
+  translate: -50% 0;
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+}
+.ui-cinta__aguja {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  z-index: 2;
+  width: 3px;
+  height: 92px;
+  margin-left: -1.5px;
+  background: var(--ui-azul);
+  pointer-events: none;
+}
+.ui-cinta__aguja::before {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  border-top: 14px solid var(--ui-azul);
+  border-right: 9px solid transparent;
+  border-left: 9px solid transparent;
+  translate: -50% 0;
+  content: '';
+}
+.ui-cinta__sugerido {
+  position: absolute;
+  top: 0;
+  left: calc(50% + var(--x, 0px));
+  z-index: 1;
+  padding: 1px 8px;
+  border-radius: 8px;
+  background: var(--ui-hondo);
+  color: #fff;
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+  white-space: nowrap;
+  translate: -50% 0;
+}
+
+/* ── Atajos (botones chicos en fila que bajan de renglón) ── */
+.ui-atajos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ui-atajos > .ui-boton {
+  flex: 1 1 auto;
+}
+.ui-atajo {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ui-toque);
+  padding: 4px 14px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--ui-mosaico);
+  color: var(--ui-tinta);
+  font: 800 var(--ui-texto-chico) / 1.2 var(--ui-fuente);
+  cursor: pointer;
+}
+.ui-atajo[aria-pressed='true'] {
+  background: var(--ui-azul);
+  box-shadow: 0 3px 0 var(--ui-hondo);
+  color: #fff;
+}
+.ui-atajo:disabled {
+  background: #f6f7f9;
+  color: var(--ui-suave);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+.ui-atajo:focus-visible {
+  outline: 3px solid var(--ui-azul);
+  outline-offset: 2px;
+}
+
+/* ── Tira de paradas (F-InicioDia) ───────────────────── */
+.ui-tira-paradas {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-tira-paradas__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+.ui-tira-paradas__item + .ui-tira-paradas__item::before {
+  position: absolute;
+  top: 20px;
+  right: 50%;
+  left: -50%;
+  z-index: 0;
+  height: 4px;
+  background: var(--ui-borde);
+  content: '';
+}
+.ui-tira-paradas__item--hecha + .ui-tira-paradas__item::before,
+.ui-tira-paradas__item--proxima::before {
+  background: var(--ui-exito-boton);
+}
+.ui-tira-paradas__punto {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 3px solid var(--ui-borde);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ui-tinta);
+  font-size: 1.125rem;
+  font-weight: 900;
+}
+.ui-tira-paradas__item--hecha .ui-tira-paradas__punto {
+  border-color: var(--ui-exito-boton);
+  background: var(--ui-exito-boton);
+  color: #fff;
+}
+.ui-tira-paradas__item--proxima .ui-tira-paradas__punto {
+  border-color: var(--ui-azul);
+  background: var(--ui-azul);
+  box-shadow: 0 0 0 6px var(--ui-tinte);
+  color: #fff;
+}
+.ui-tira-paradas__hora {
+  font-size: 0.9375rem;
+}
+.ui-tira-paradas__titulo {
+  max-width: 100%;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  overflow-wrap: anywhere;
+}
+
+/* ── Lista de paradas (F-InicioRuta) ─────────────────── */
+.ui-lista-paradas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-lista-paradas__tramo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 4px 74px;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  font-weight: 700;
+}
+.ui-lista-paradas__fila {
+  display: grid;
+  grid-template-columns: 50px 26px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+.ui-lista-paradas__hora {
+  padding-top: 14px;
+  font-size: 1rem;
+}
+.ui-lista-paradas__punto {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-top: 12px;
+  border: 3px solid var(--ui-borde);
+  border-radius: 50%;
+  background: #fff;
+}
+.ui-lista-paradas__item--hecha .ui-lista-paradas__punto {
+  border-color: var(--ui-exito-boton);
+  background: var(--ui-exito-boton);
+  color: #fff;
+}
+.ui-lista-paradas__item--proxima .ui-lista-paradas__punto {
+  border-color: var(--ui-azul);
+  background: var(--ui-azul);
+  box-shadow: 0 0 0 5px var(--ui-tinte);
+}
+.ui-lista-paradas__caja {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: #f6f7f9;
+}
+.ui-lista-paradas__item--proxima .ui-lista-paradas__caja {
+  background: var(--ui-tinte);
+}
+.ui-lista-paradas__titulo {
+  font-size: var(--ui-texto-base);
+  overflow-wrap: anywhere;
+}
+.ui-lista-paradas__detalle {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-lista-paradas__nota {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ui-lista-paradas__mover {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Ruta dibujada ───────────────────────────────────── */
+.ui-ruta-deco {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Pedido flotante (F-Inicio) ──────────────────────── */
+.ui-flotante {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--ui-radio-tarjeta);
+  background: #fff;
+  box-shadow: var(--ui-elev-2);
+  color: var(--ui-tinta);
+}
+.ui-flotante__arriba {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+}
+.ui-flotante__arriba .ui-etiqueta {
+  color: var(--ui-hondo);
+}
+.ui-flotante__arriba .ui-boton-icono {
+  margin: -8px -8px -8px 0;
+}
+.ui-flotante__puntos {
+  display: inline-flex;
+  gap: 4px;
+}
+.ui-flotante__punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--ui-borde);
+}
+.ui-flotante__punto--on {
+  width: 20px;
+  background: var(--ui-azul);
+}
+.ui-flotante__cuerpo {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.ui-flotante__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+.ui-flotante__texto .ui-chip {
+  white-space: normal;
+}
+.ui-flotante__titulo {
+  margin: 0;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-base);
+}
+.ui-flotante__ilu {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--ui-radio-mosaico);
+  background: var(--ui-mosaico);
+}
+.ui-flotante__ilu .ui-ilu {
+  width: 64px;
+  height: 64px;
+}
+.ui-flotante__abajo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ui-flotante__precio {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ui-flotante__precio > span:first-child {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  font-weight: 700;
+}
+.ui-flotante__pasar {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: -6px -8px -8px;
+}
+
+/* ── Hoja de pedidos cercanos (estilo «Choose a ride») ── */
+.ui-cercanos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: min(46dvh, 420px);
+  padding: 8px var(--ui-gutter) 14px;
+  overflow-y: auto;
+  border-radius: var(--ui-radio-hoja) var(--ui-radio-hoja) 0 0;
+  background: #fff;
+  box-shadow: var(--ui-elev-hoja);
+  color: var(--ui-tinta);
+}
+.ui-cercanos__manija {
+  align-self: center;
+  width: 40px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--ui-borde);
+}
+.ui-cercanos__titulo {
+  margin: 0;
+  font-family: var(--ui-titulos);
+  font-size: 1.25rem;
+  font-weight: 900;
+  font-stretch: 112%;
+}
+.ui-cercanos__vacio {
+  margin: 0;
+  color: var(--ui-texto);
+}
+.ui-cercanos__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ui-cercanos__op {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 64px;
+  padding: 8px 12px;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  cursor: pointer;
+}
+.ui-cercanos__op input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.ui-cercanos__op--on {
+  border-color: var(--ui-tinta);
+  background: #f6f7f9;
+}
+.ui-cercanos__op:has(input:focus-visible) {
+  outline: 3px solid var(--ui-azul);
+  outline-offset: 2px;
+}
+.ui-cercanos__ico {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--ui-mosaico);
+  color: var(--ui-hondo);
+}
+.ui-cercanos__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.ui-cercanos__texto > span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  overflow-wrap: anywhere;
+}
+.ui-cercanos__texto > .ui-cercanos__zona {
+  color: var(--ui-suave);
+}
+.ui-cercanos__urgente {
+  color: var(--ui-tinta);
+  font-weight: 800;
+}
+.ui-cercanos__precio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-min);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ui-cercanos__op {
+    transition: background var(--ui-dur) var(--ui-curva);
+  }
+}
