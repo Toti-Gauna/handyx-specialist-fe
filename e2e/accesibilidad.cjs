@@ -158,14 +158,14 @@ async function main() {
     ['verificar', '/verificar/', null, 'sin_verificar'],
     ['alta-datos', '/alta/?paso=datos', 'Siguiente', 'incompleto'],
     ['alta-identidad', '/alta/?paso=identidad', 'Guardar y seguir', 'incompleto'],
-    ['caso', '/soporte/', 'Abrir un caso', 'habilitado'],
+    ['caso', '/soporte/casos/', 'Abrir un caso', 'habilitado'],
   ]) {
     const p = await ctx.newPage();
     await p.goto(`${base}${ruta}${ruta.includes('?') ? '&' : '?'}escenario=${escenario}`);
     if (boton) await p.getByRole('button', { name: boton }).first().click();
     // Verificar: un código incorrecto deja el error y el foco en el campo del código
     if (nombre === 'verificar') await p.getByLabel('Código de 6 números').fill('000000');
-    if (nombre === 'caso') await p.getByRole('button', { name: 'Enviar', exact: true }).click();
+    if (nombre === 'caso') await p.getByRole('button', { name: 'Enviar el caso' }).click();
     await p.waitForTimeout(300);
     const ok = await p.evaluate(() => document.activeElement?.getAttribute('aria-invalid') === 'true');
     if (!ok) teclado.push(`${nombre}: tras el error el foco no quedó en el primer campo marcado`);
