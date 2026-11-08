@@ -275,3 +275,19 @@ Piezas nuevas con su CSS en `src/ui/taller-dia.css` (detalle y rutas en `docs/ta
 `ChipDatos`, `GrupoPasadas`, `FilaPasada`, `ResumenPasadas` (`moleculas/AgendaPiezas.tsx`); `SelectorMes`, `BarraNeto`,
 `LineaCuenta`, `FilaGanancia`, `FilaGasto` (`moleculas/IngresosPiezas.tsx`); `CalendarioObras` (`organismos/AgendaMes.tsx`);
 `TarjetaAgendaTaller`, `AccesoAncho` (`organismos/TallerPiezas.tsx`). Lógica pura y pruebas en `src/lib/agendaTaller.ts`.
+### Presupuestos y lista de precios (lote 2.2)
+
+Piezas nuevas en archivos propios (`moleculas/Materiales.tsx` + `moleculas/materiales.css`, `organismos/Historial.tsx` +
+`organismos/historial.css`, `ilustraciones/ListaPrecios.tsx`). Uso en `docs/presupuestos.md`.
+
+| Pieza                             | Nivel        | Para qué                                                                                          | Accesibilidad                                                                    |
+| --------------------------------- | ------------ | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `FilaEleccion`                    | molécula     | Material de tu lista que se toca para elegirlo; elegido, se resalta y aparece el `Stepper` abajo  | «+» con nombre «Elegir …, $ …»; «Elegido» escrito                                |
+| `FilaCasilla`                     | molécula     | Casilla + nombre + detalle (chip) + cifra a la derecha (kits, revisar lo leído)                   | Casilla nativa con la fila entera tocable; detalle por `aria-describedby`        |
+| `FilaAgregar`                     | molécula     | Tarjeta punteada con «+» amarillo («¿No está? Agregalo a tu lista»)                               | Enlace o botón de 72 px                                                          |
+| `ResumenHechos`                   | molécula     | Lo que va a pasar, con tildes, y «Cambiar»                                                        | `etiquetaCambiar` le da nombre completo al botón                                 |
+| `MosaicoCifra`                    | molécula     | Rótulo + cifra en un mosaico gris o azul, tocable para cambiarla                                  | El nombre empieza con lo visible y suma «, cambiar» oculto                       |
+| `CifraCambio`                     | molécula     | Precio de antes tachado y el nuevo                                                                | El lector escucha «antes … ahora …»                                              |
+| `CabeceraSeccion`, `AccionTexto`  | molécula     | Rótulo en mayúsculas de una sección con una acción corta a la derecha («Tus tarifas»)             | h2/h3; acción de 48 px                                                           |
+| `BarrasHistorial`                 | organismo    | Cómo varió un precio: barras con valor y mes, la última resaltada                                 | Barras `aria-hidden` + la misma información en una lista oculta                  |
+| `ListaPrecios`                    | ilustración  | La hoja del corralón con los renglones entendidos en amarillo (se marcan con `armar`)             | Decorativa                                                                       |

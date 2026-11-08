@@ -9,6 +9,7 @@ import { agregarMensaje, aplicarAceptacion } from './propuestas.ts';
 import { destinoPrueba, zonaPrueba } from './mapa.ts';
 import { recalcular } from './reglas.ts';
 import { accionesOpsRegistro, ejecutarOpsRegistro } from './alta-registro.ts';
+import { accionesPresupuestos, ejecutarPresupuestos } from './presupuestos.ts';
 
 export interface AccionPrueba {
   id: string;
@@ -69,6 +70,8 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
     const a: AccionPrueba[] = [];
     // Operations sobre el alta: registro por pasos del lote 1.2 (antecedentes por foto o PDF, se borran al verificar).
     for (const x of accionesOpsRegistro(s)) a.push({ ...x, grupo: 'Operations (alta)' });
+    // Lote 2.2: el cliente responde el presupuesto y la lista de precios cambia.
+    a.push(...accionesPresupuestos(s));
     const u = (id: string, etiqueta: string) => a.push({ id, etiqueta, grupo: 'Usuario del hogar' });
     if (s.perfil.estadoAlta === 'habilitada') {
       u('usuario_acepta', 'Acepta tu última propuesta');
@@ -108,6 +111,10 @@ export function crearControles(s: EstadoMock, alReiniciar: () => void): Controle
       s.avisos = [...completo.avisos.filter((x) => ['pedido_urgente', 'pedido_programado', 'propuesta'].includes(x.tipo)), ...s.avisos];
     };
     if (ejecutarOpsRegistro(s, id, habilitarOperacion)) {
+      avisar();
+      return;
+    }
+    if (ejecutarPresupuestos(s, id)) {
       avisar();
       return;
     }
