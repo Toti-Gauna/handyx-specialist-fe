@@ -60,11 +60,12 @@ function IconoMenos() {
   );
 }
 
-const CONTROLES: { mover: Mover; texto: string; icono: ReactNode }[] = [
-  { mover: 'izquierda', texto: 'Girar a la izquierda', icono: <Icono nombre="izquierda" /> },
-  { mover: 'derecha', texto: 'Girar a la derecha', icono: <Icono nombre="derecha" /> },
-  { mover: 'acercar', texto: 'Acercar', icono: <Icono nombre="mas" /> },
-  { mover: 'alejar', texto: 'Alejar', icono: <IconoMenos /> },
+/** Cada gesto tiene su botón, con ícono **y** palabra (el nombre completo lo lee el lector de pantalla). */
+const CONTROLES: { mover: Mover; texto: string; corto: string; icono: ReactNode }[] = [
+  { mover: 'izquierda', texto: 'Girar a la izquierda', corto: 'Izquierda', icono: <Icono nombre="izquierda" /> },
+  { mover: 'derecha', texto: 'Girar a la derecha', corto: 'Derecha', icono: <Icono nombre="derecha" /> },
+  { mover: 'acercar', texto: 'Acercar', corto: 'Acercar', icono: <Icono nombre="mas" /> },
+  { mover: 'alejar', texto: 'Alejar', corto: 'Alejar', icono: <IconoMenos /> },
 ];
 
 export const Visor3D = forwardRef<ManejoVisor, PropsVisor3D>(function Visor3D(
@@ -88,7 +89,12 @@ export const Visor3D = forwardRef<ManejoVisor, PropsVisor3D>(function Visor3D(
           giro: inicio.current.giro,
           limites: inicio.current.limites,
           vista: inicio.current.vista,
-          alPerderContexto: () => setEstado('sin-webgl'),
+          // Si el sistema se queda con la GPU (otra app, poca memoria), se suelta todo y queda la alternativa en texto.
+          alPerderContexto: () => {
+            motor.current?.liberar();
+            motor.current = null;
+            setEstado('sin-webgl');
+          },
         })
       : null;
     motor.current = m;
@@ -136,11 +142,11 @@ export const Visor3D = forwardRef<ManejoVisor, PropsVisor3D>(function Visor3D(
       {estado === 'listo' && controles && (
         <div className="tr-visor__controles" role="group" aria-label="Mover la vista 3D">
           {CONTROLES.map((c) => (
-            <button key={c.mover} type="button" className="tr-visor__control" aria-label={c.texto} title={c.texto} onClick={() => motor.current?.mover(c.mover)}>
-              {c.icono}
+            <button key={c.mover} type="button" className="tr-visor__control" aria-label={c.texto} onClick={() => motor.current?.mover(c.mover)}>
+              {c.icono} {c.corto}
             </button>
           ))}
-          <button type="button" className="tr-visor__control tr-visor__control--texto" onClick={() => motor.current?.centrar()}>
+          <button type="button" className="tr-visor__control" onClick={() => motor.current?.centrar()}>
             <Icono nombre="reintentar" /> Centrar
           </button>
         </div>
