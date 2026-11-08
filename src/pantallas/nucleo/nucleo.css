@@ -108,6 +108,10 @@
   max-height: min(38dvh, 380px);
   border-radius: var(--ui-radio-tarjeta);
 }
+.nu-inicio .hx-mapa__centrar {
+  top: 150px;
+  bottom: auto;
+}
 .nu-inicio:has(.ui-mapa-arreglos--lista) .ui-cercanos {
   display: none;
 }
@@ -401,10 +405,7 @@
 .nu-interruptores {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--ui-borde);
-}
-.nu-interruptores > .ui-interruptor {
-  border-bottom: 1px solid var(--ui-borde);
+  gap: 8px;
 }
 .nu-recibis {
   display: flex;

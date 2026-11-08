@@ -8,7 +8,7 @@
 import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { RUTAS } from '../app/rutas.ts';
 import { ErrorCaja } from '../components/Estados.tsx';
 import { monto } from '../contracts/dinero.ts';
@@ -109,6 +109,14 @@ function Flujo({ pedido }: { pedido: PedidoDetalle }) {
   const [mes, setMes] = useState(() => ({ anio: Number(fecha.slice(0, 4)), mes: Number(fecha.slice(5, 7)) }));
   const [medida, setMedida] = useState<{ modo: 'franja' | 'exacta'; desde: number; hasta: number } | null>(null);
   const [revisar, setRevisar] = useState(false);
+  // Las ruedas se montan de nuevo cuando la hoja ya está abierta, para que dejen la hora elegida a la vista.
+  const [vueltaRuedas, setVueltaRuedas] = useState(0);
+  const medidaAbierta = medida !== null;
+  useEffect(() => {
+    if (!medidaAbierta) return;
+    const r = requestAnimationFrame(() => setVueltaRuedas((n) => n + 1));
+    return () => cancelAnimationFrame(r);
+  }, [medidaAbierta]);
   const [enviada, setEnviada] = useState<{ precio: number; horario: string } | null>(null);
   const chat = useAccion();
 
@@ -215,14 +223,15 @@ function Flujo({ pedido }: { pedido: PedidoDetalle }) {
               {a.texto}
             </button>
           ))}
-          <button type="button" className="ui-atajo" onClick={() => setTeclado(precio)}>
+          <button type="button" className="ui-atajo" onClick={() => setTeclado(0)}>
             Escribir
           </button>
         </div>
         {diferencia ? <p className="nu-nota">{diferencia}</p> : null}
         <div className="nu-interruptores">
-          <Interruptor etiqueta="Incluye materiales" textoEncendido="Sí: el cliente ve que el precio los incluye" textoApagado="No: los materiales van aparte" encendido={materiales} onCambio={setMateriales} />
-          <Interruptor etiqueta={`Garantía de ${GARANTIA_DIAS_DEFECTO} días`} textoEncendido="Sí: se muestra en tu propuesta" textoApagado="No: sin garantía" encendido={garantia} onCambio={setGarantia} />
+          <Interruptor etiqueta="Incluye materiales" textoEncendido="Sí, los incluye" textoApagado="No, van aparte" encendido={materiales} onCambio={setMateriales} />
+          <Interruptor etiqueta={`Garantía de ${GARANTIA_DIAS_DEFECTO} días`} textoEncendido="Sí, la ofrecés" textoApagado="No" encendido={garantia} onCambio={setGarantia} />
+          <p className="nu-nota">El cliente ve en tu propuesta si incluye los materiales y la garantía.</p>
         </div>
         <Tarjeta tono="gris">
           <p className="nu-recibis">
@@ -251,7 +260,7 @@ function Flujo({ pedido }: { pedido: PedidoDetalle }) {
           }
         >
           <TecladoPrecio centavos={teclado ?? 0} onCambio={setTeclado} />
-          <p className="nu-nota">{[textoDiferencia(teclado ?? 0, sugerido), 'recibís el 100 %'].filter(Boolean).join(' · ')}</p>
+          <p className="nu-nota" aria-live="polite">{teclado ? [textoDiferencia(teclado, sugerido), 'recibís el 100 %'].filter(Boolean).join(' · ') : 'Escribí el monto con los números de abajo.'}</p>
           <div className="ui-atajos" role="group" aria-label="Ajustar el precio">
             <button type="button" className="ui-atajo" onClick={() => setTeclado((t) => moverCinta(t ?? 0, -2))}>
               − $ 1.000
@@ -271,7 +280,7 @@ function Flujo({ pedido }: { pedido: PedidoDetalle }) {
   // Paso 2: cuándo vas.
   const fechaTexto = nombreDia(fecha, hoy);
   const diaSemana = new Intl.DateTimeFormat('es-AR', { weekday: 'long', timeZone: 'UTC' }).format(new Date(`${fecha}T12:00:00Z`));
-  const encabezadoDia = `${fechaTexto === 'hoy' ? 'Hoy, ' : fechaTexto === 'mañana' ? 'Mañana, ' : ''}${diaSemana} ${Number(fecha.slice(8))}`;
+  const encabezadoDia = ((t: string) => t.charAt(0).toUpperCase() + t.slice(1))(`${fechaTexto === 'hoy' ? 'hoy, ' : fechaTexto === 'mañana' ? 'mañana, ' : ''}${diaSemana} ${Number(fecha.slice(8))}`);
   const ocupadoTexto = ocupado.length ? `Ese día ya tenés trabajo ${ocupado.map((o) => textoFranja(o.desde, o.hasta)).join(' y ')}. ` : '';
   return (
     <PantallaSecundaria
@@ -384,12 +393,12 @@ function Flujo({ pedido }: { pedido: PedidoDetalle }) {
             <div className={`nu-ruedas${medida.modo === 'exacta' ? ' nu-ruedas--una' : ''}`}>
               <div>
                 <Etiqueta>{medida.modo === 'franja' ? 'Desde' : 'A las'}</Etiqueta>
-                <RuedaHora etiqueta={medida.modo === 'franja' ? 'Desde' : 'Hora'} opciones={opcionesRueda()} valor={medida.desde} onCambio={(m) => setMedida({ ...medida, desde: m, hasta: Math.max(medida.hasta, m + 60) })} />
+                <RuedaHora key={`d${vueltaRuedas}${medida.modo}`} etiqueta={medida.modo === 'franja' ? 'Desde' : 'Hora'} opciones={opcionesRueda()} valor={medida.desde} onCambio={(m) => setMedida({ ...medida, desde: m, hasta: Math.max(medida.hasta, m + 60) })} />
               </div>
               {medida.modo === 'franja' ? (
                 <div>
                   <Etiqueta>Hasta</Etiqueta>
-                  <RuedaHora etiqueta="Hasta" opciones={opcionesRueda()} valor={medida.hasta} onCambio={(m) => setMedida({ ...medida, hasta: m })} />
+                  <RuedaHora key={`h${vueltaRuedas}`} etiqueta="Hasta" opciones={opcionesRueda()} valor={medida.hasta} onCambio={(m) => setMedida({ ...medida, hasta: m })} />
                 </div>
               ) : null}
             </div>

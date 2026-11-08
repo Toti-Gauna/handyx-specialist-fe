@@ -5,12 +5,12 @@
 /* ── Cinta de precio ─────────────────────────────────── */
 .ui-cinta {
   position: relative;
-  height: 112px;
+  height: 118px;
   margin: 0 calc(-1 * var(--ui-gutter));
 }
 .ui-cinta__regla {
   position: absolute;
-  top: 22px;
+  top: 36px;
   right: 0;
   left: 0;
   height: 70px;
@@ -53,11 +53,11 @@
 }
 .ui-cinta__aguja {
   position: absolute;
-  top: 6px;
+  top: 26px;
   left: 50%;
   z-index: 2;
   width: 3px;
-  height: 92px;
+  height: 88px;
   margin-left: -1.5px;
   background: var(--ui-azul);
   pointer-events: none;
