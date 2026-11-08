@@ -20,7 +20,8 @@
     "capturas": "node e2e/capturas.cjs",
     "capturas:docs": "bash scripts/capturas-docs.sh",
     "mapa:descargar": "NODE_USE_ENV_PROXY=1 node scripts/mapa/descargar.ts",
-    "mapa:generar": "node scripts/mapa/generar.ts"
+    "mapa:generar": "node scripts/mapa/generar.ts",
+    "desbordes": "node e2e/desbordes.cjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "5.3.0",

@@ -70,7 +70,7 @@
   justify-content: center;
   gap: 10px;
   min-height: var(--ui-boton-alto);
-  padding: 10px 22px;
+  padding: 10px 18px;
   border: 2px solid var(--b-borde);
   border-radius: var(--ui-radio-boton);
   background: var(--b-fondo);

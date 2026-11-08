@@ -80,12 +80,12 @@
 }
 .cat3-datos {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
   gap: 8px;
 }
 .cat3-mosaicos {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
   gap: 10px;
 }
 .cat3-arreglo {
@@ -153,6 +153,8 @@
   gap: 14px;
 }
 .cat3-qr p {
+  flex: 1;
+  min-width: 0;
   margin: 0;
 }
 /* Marco de celular: las piezas fijas a la pantalla quedan dentro del marco. */

@@ -53,8 +53,15 @@ const panel = async (p, ...acciones) => {
   await p.keyboard.press('Escape');
 };
 const ir = async (p, texto) => { await p.getByRole('link', { name: texto }).first().click(); };
-const nav = (p, n) => p.locator('nav.app-nav').getByText(n, { exact: true }).click();
+// Barra de pestañas del kit v3 (lote 0.2): Inicio · Obras · Taller · Mensajes · Cuenta.
+const nav = (p, n) => p.getByRole('navigation', { name: 'Secciones' }).getByText(n, { exact: true }).click();
 const ver = (p, t, o) => p.getByText(t, o).first().waitFor();
+// La Agenda ya no es pestaña: se llega desde Inicio (y, en la ola 2, desde Taller).
+const agenda = async (p) => {
+  await nav(p, 'Inicio');
+  await p.getByRole('main').getByRole('link', { name: 'Agenda', exact: true }).click();
+  await p.waitForURL('**/agenda/');
+};
 
 async function main() {
   const srv = await servir();
@@ -89,8 +96,8 @@ async function main() {
     await foto('03b-verificar');
     await p.getByLabel('Código de 6 números').fill('482913');
     await ver(p, 'Tu cuenta está');
-    await ver(p, 'hasta el 10/12/2026');
-    await foto('04-cuenta-creada-fee');
+    assert.equal(await p.getByText('Handyx no te cobra tarifa durante la demo').count(), 0, 'sin el aviso del 0 % (lote 0.2)');
+    await foto('04-cuenta-creada');
     await p.getByRole('button', { name: 'Completar mi alta' }).click();
     await p.waitForURL('**/alta/');
     // Alta guiada (lote 4.4): lista con anillo de progreso y un paso por pantalla
@@ -189,12 +196,9 @@ async function main() {
     await panel(p, 'Verificar documentos y matrículas', 'Aprobar antecedentes (presencial)', 'Habilitar');
     await ver(p, 'Tu alta está');
     await foto('13-alta-habilitada');
-    // Empezar → Inicio con el modal del fee 0 %
+    // Empezar → Inicio, sin el modal del fee 0 % (Handyx no le cobra comisión al especialista, nunca: lote 0.2)
     await ir(p, 'Empezar');
-    await ver(p, 'Handyx no te cobra tarifa durante la demo');
-    await foto('14-modal-fee');
-    await p.getByRole('button', { name: 'Entendido' }).click();
-    await p.getByRole('heading', { name: 'Handyx no te cobra tarifa durante la demo' }).waitFor({ state: 'detached' });
+    await p.waitForURL('**/inicio/');
     // Zonas y horarios ya vienen del alta; recibir pedidos se activa recién ahora
     await ver(p, 'No hay pedidos abiertos ahora');
     await foto('15-inicio-sin-disponibilidad');
@@ -364,7 +368,7 @@ async function main() {
   await escenario('D-cambio-de-fecha-y-doble-aceptacion', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/`);
     await p.waitForURL('**/inicio/');
-    await nav(p, 'Trabajos');
+    await nav(p, 'Obras');
     await p.getByText('Plomería · Cliente de prueba 5').click();
     await p.getByRole('link', { name: /Cambiar la fecha/ }).waitFor();
     await foto('01-trabajo-agendado');
@@ -424,7 +428,7 @@ async function main() {
   await escenario('F-red-caida-sesion-expirada-y-baja', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/`);
     await p.waitForURL('**/inicio/');
-    await nav(p, 'Trabajos');
+    await nav(p, 'Obras');
     await ver(p, 'Plomería · Cliente de prueba 5');
     await foto('01-trabajos');
     await panel(p, 'Sin conexión (red caída)');
@@ -438,7 +442,7 @@ async function main() {
     await ver(p, 'Plomería · Cliente de prueba 6');
     // Sesión expirada: aviso con salida a Entrar
     await panel(p, 'Expirar la sesión ahora');
-    await nav(p, 'Agenda');
+    await nav(p, 'Inicio');
     await ver(p, 'Tu sesión expiró');
     await foto('03-sesion-expirada');
     await p.getByRole('button', { name: 'Volver a entrar' }).click();
@@ -467,22 +471,14 @@ async function main() {
     await p.waitForURL('**/inicio/');
   }, { capturas });
 
-  await escenario('G-contador-fee-en-cuenta', nav_, base, async ({ p, foto }) => {
+  await escenario('G-sin-contador-fee-en-cuenta', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/`);
     await p.waitForURL('**/inicio/');
     await nav(p, 'Cuenta');
-    await ver(p, 'Tarifa de Handyx durante la demo');
-    await ver(p, 'Quedan 23 días');
-    await ver(p, 'no es un descuento sobre tu precio');
-    await foto('01-contador-fee');
-    // Último día y fin de la demo
-    await panel(p, '10/12 22:00 · último día de fee 0 %');
-    await ver(p, 'Hoy es el último día sin tarifa de Handyx');
-    await foto('02-ultimo-dia');
-    await panel(p, '11/12 12:00 · la demo terminó');
-    await ver(p, 'La demo terminó el 10/12/2026. No hay ninguna tarifa definida.');
-    await ver(p, 'Handyx no aplica ninguna tarifa sin una política aprobada');
-    await foto('03-demo-terminada');
+    await ver(p, 'Tu cuenta');
+    // Lote 0.2: Handyx no le cobra comisión al especialista, nunca; ni el contador ni el modal del «0 % durante la demo».
+    assert.equal(await p.getByText('Tarifa de Handyx durante la demo').count(), 0, 'quedó el contador del fee');
+    await foto('01-cuenta-sin-contador');
   }, { capturas });
 
   await escenario('I-agenda-avisos-obra-soporte-caja', nav_, base, async ({ p, foto }) => {
@@ -495,12 +491,12 @@ async function main() {
     await ver(p, 'Programado');
     await foto('01-avisos');
     // Agenda: un día con trabajo y la oferta que se superpone
-    await nav(p, 'Agenda');
+    await agenda(p);
     await p.getByRole('button', { name: /18 de noviembre/ }).click();
     await ver(p, 'Confirmado');
     await foto('02-agenda');
     // Obra: etapas, cada una con su estado y su importe
-    await nav(p, 'Trabajos');
+    await nav(p, 'Obras');
     await p.getByText('Albañilería · Cliente de prueba 8').click();
     // Obra en curso (lote 4.7): resumen con el avance, la jornada de hoy y lo cobrado
     await ver(p, 'Etapa 2: Pintura');
@@ -582,7 +578,7 @@ async function main() {
   }
 
   await escenario('K-kit-catalogo', nav_, base, async ({ p, foto }) => {
-    await p.goto(`${base}/catalogo/`);
+    await p.goto(`${base}/catalogo/v2/`);
     await ver(p, 'Catálogo del kit');
     await foto('01-catalogo');
     // Mosaico: elegir y sacar un rubro

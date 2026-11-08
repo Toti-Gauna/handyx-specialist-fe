@@ -346,10 +346,11 @@
   gap: 10px;
 }
 .ui-accion-fija--fila .ui-accion-fija__botones {
-  flex-direction: row-reverse;
+  flex-flow: row-reverse wrap;
 }
+/* Si no entran lado a lado (pantalla angosta o texto agrandado), pasan a columna solos. */
 .ui-accion-fija--fila .ui-accion-fija__botones > * {
-  flex: 1 1 0;
+  flex: 1 1 9rem;
   min-width: 0;
 }
 

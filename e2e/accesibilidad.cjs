@@ -89,7 +89,7 @@ async function main() {
       titulo: document.title,
     }));
     // El catálogo del kit (solo en el mock) muestra varias pantallas de ejemplo con su título: no cuenta.
-    if (est.h1 !== 1 && nombre !== 'catalogo') teclado.push(`${nombre}: tiene ${est.h1} títulos h1 (tiene que haber uno)`);
+    if (est.h1 !== 1 && !nombre.startsWith('catalogo')) teclado.push(`${nombre}: tiene ${est.h1} títulos h1 (tiene que haber uno)`);
     if (est.main !== 1) teclado.push(`${nombre}: tiene ${est.main} regiones principales (main)`);
     if (!est.titulo || est.titulo === 'Handyx · Especialistas') teclado.push(`${nombre}: sin título propio en la pestaña`);
     // Texto al 200 % (WCAG 1.4.4 / 1.4.10): nada desborda hacia los costados
@@ -203,7 +203,7 @@ async function main() {
     if (preferencia === 'reduce' && animaciones > 0) movimiento.push(`con "reducir movimiento" hay ${animaciones} animaciones`);
     if (preferencia === 'no-preference' && animaciones === 0) movimiento.push('sin preferencia no anima nada (¿se rompió el CSS?)');
     // Confeti del kit: solo sin "reducir movimiento" (las celebraciones se prueban en el catálogo del mock).
-    await p.goto(`${base}/catalogo/`);
+    await p.goto(`${base}/catalogo/v2/`);
     await p.getByRole('button', { name: 'Probar la celebración' }).click();
     const confeti = await p.locator('.hx-confeti').count();
     if (preferencia === 'reduce' && confeti > 0) movimiento.push('hay confeti con "reducir movimiento"');

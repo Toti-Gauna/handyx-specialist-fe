@@ -217,9 +217,12 @@ export function CatalogoV3() {
 
         <Bloque id="ilustraciones" titulo="Ilustraciones isométricas" nota="Siempre decorativas (aria-hidden): el texto de al lado dice lo importante. Con «reducir movimiento» se ven armadas.">
           <Ciudad tam="lleno" />
-          <div className="cat3-fila">
-            <Segmento<Rubro> etiqueta="Rubro del arreglo" valor={rubroArmado} onCambio={setRubroArmado} opciones={RUBROS.slice(0, 3).map((r) => ({ valor: r, texto: NOMBRE_RUBRO[r] }))} />
-            <Segmento<Rubro> etiqueta="Otros rubros" valor={rubroArmado} onCambio={setRubroArmado} opciones={RUBROS.slice(3).map((r) => ({ valor: r, texto: NOMBRE_RUBRO[r] }))} />
+          <div className="cat3-fila" role="group" aria-label="Rubro del arreglo">
+            {RUBROS.map((r) => (
+              <Boton key={r} variante={r === rubroArmado ? 'primaria' : 'contorno'} chico bloque={false} aria-pressed={r === rubroArmado} onClick={() => setRubroArmado(r)}>
+                {NOMBRE_RUBRO[r]}
+              </Boton>
+            ))}
           </div>
           <div className="cat3-arreglo">
             <ArregloRubro rubro={rubroArmado} armar vuelta={vuelta} tam="grande" />
@@ -420,7 +423,7 @@ export function CatalogoV3() {
           </ModalFlotante>
           <div className="cat3-qr">
             <Qr texto="https://handyc.com/" etiqueta="Código QR de muestra" />
-            <p>PantallaEscritorio (X-Escritorio): se ve en pantallas de 900 px o más con mouse, con este QR local para abrir la app en el celular.</p>
+            <p>La pantalla de escritorio (X-Escritorio) se ve en pantallas de 900 px o más con mouse, con este QR local para abrir la app en el celular.</p>
           </div>
         </Bloque>
 

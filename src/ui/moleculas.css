@@ -52,6 +52,7 @@
 /* ── Fila con ícono ───────────────────────────────────── */
 .ui-fila {
   display: flex;
+  flex-wrap: wrap; /* lo de la derecha baja de renglón antes que partir el título */
   align-items: center;
   gap: 12px;
   width: 100%;
@@ -82,7 +83,7 @@
 }
 .ui-fila__texto {
   display: flex;
-  flex: 1;
+  flex: 1 1 8rem;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
@@ -96,6 +97,7 @@
 }
 .ui-fila__derecha {
   flex: none;
+  margin-left: auto;
 }
 .ui-fila__flecha {
   color: var(--ui-suave);
@@ -212,10 +214,7 @@
 .ui-segmento__op {
   position: relative;
   display: flex;
-  flex: 1 1 0;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  hyphens: auto;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: center;
   min-height: 48px;
