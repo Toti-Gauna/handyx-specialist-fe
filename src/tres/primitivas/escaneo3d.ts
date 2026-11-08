@@ -47,6 +47,8 @@ export function crearTermotanque(m: Materiales, p: Presupuesto, medidas: Medidas
   for (const x of [-r * 0.4, r * 0.4]) {
     const cano = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.09, 8), m.metal);
     cano.position.set(x, medidas.altoM - domo * 0.35 + 0.045, 0);
+    // Las conexiones asoman sobre la tapa: no cuentan en el alto del equipo (la cota mide el cuerpo).
+    cano.name = 'conexion';
     g.add(cano);
   }
   g.add(crearSombraContacto(r * 1.6));
