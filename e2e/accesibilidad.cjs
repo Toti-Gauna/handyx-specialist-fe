@@ -103,14 +103,17 @@ async function main() {
   // Diálogos de decisión y formularios en hojas
   const dialogos = [
     ['hoja-aceptar', `/pedidos/detalle/?id=${id(0xb2)}`, 'Aceptar propuesta', '¿Aceptar esta propuesta?'],
-    ['hoja-borrar-avisos', '/notificaciones/', 'Borrar todos', '¿Borrar todos los avisos?'],
+    ['hoja-borrar-avisos', '/notificaciones/', 'Borrar todos los avisos', '¿Borrar todos los avisos?'],
     ['hoja-pedido-entrante', '/inicio/', 'No disponible', 'Pedido urgente para vos'],
     ['hoja-otro-dia', `/trabajos/obra/jornadas/?id=${id(0xc6)}`, 'Pedir otro día', 'Otro día para la jornada'],
     ['hoja-etapa', `/trabajos/obra/plan/?id=${id(0xc4)}`, 'Terminé esta etapa', '¿Terminaste la etapa 2?'],
     ['hoja-llamada', `/trabajos/detalle/?id=${id(0xc1)}`, 'Llamar por la app', 'Ninguno de los dos ve el teléfono del otro'],
-    ['hoja-baja', '/cuenta/privacidad/', 'Eliminar mi cuenta y mis datos', '¿Eliminar tu cuenta?'],
+    ['hoja-baja', '/cuenta/privacidad/', 'Darme de baja', '¿Darte de baja?'],
+    ['hoja-descargar-datos', '/cuenta/privacidad/', 'Descargar mis datos', 'Confirmá que sos vos'],
+    ['hoja-horario', '/disponibilidad/', 'Editar el horario del lunes', 'Horario del lunes'],
+    ['hoja-perfil', '/cuenta/perfil/', 'Editar foto y presentación', 'Elegir otra foto'],
     ['hoja-turno', '/agenda/', 'Obra · Cliente de prueba 8', 'Detalle del turno'],
-    ['hoja-caso', '/soporte/', 'Abrir un caso', '¿Sobre qué es?'],
+    ['hoja-caso', '/soporte/casos/', 'Abrir un caso', '¿Sobre qué es?'],
   ];
   for (const [nombre, ruta, boton, espera] of dialogos) {
     const p = await ctx.newPage();

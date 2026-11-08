@@ -155,7 +155,7 @@ async function main() {
       await ver(p, 'Paso 3 de 3');
       assert.equal(await p.getByRole('list', { name: 'Tus códigos de respaldo' }).getByRole('listitem').count(), 10);
       await foto('10-codigos');
-      assert.equal(await p.evaluate(() => JSON.stringify([localStorage, sessionStorage])), '[{},{}]', 'nada en el almacenamiento del navegador');
+      assert.equal(await p.evaluate(() => window.localStorage.length + window.sessionStorage.length), 0, 'nada en el almacenamiento del navegador');
       assert.equal(await p.evaluate(() => document.cookie), '', 'ni cookies');
       await p.getByRole('button', { name: 'Ya los guardé' }).click();
       await p.waitForURL('**/cuenta/seguridad/');
