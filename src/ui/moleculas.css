@@ -212,7 +212,10 @@
 .ui-segmento__op {
   position: relative;
   display: flex;
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  hyphens: auto;
   align-items: center;
   justify-content: center;
   min-height: 48px;
@@ -702,6 +705,7 @@
 /* ── Marcador de pedido (mapa) ────────────────────────── */
 .ui-marcador-pedido {
   display: inline-flex;
+  font-family: var(--ui-fuente);
   flex-direction: column;
   align-items: center;
   gap: 4px;

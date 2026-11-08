@@ -31,7 +31,8 @@
 }
 .ui-cabecera-azul__logo {
   font-family: var(--ui-titulos);
-  font-size: 2.5rem;
+  font-size: clamp(1.75rem, 9.5vw, 2.5rem);
+  white-space: nowrap;
   font-weight: 900;
   font-stretch: 125%;
   line-height: 1;
@@ -146,8 +147,20 @@
 }
 .ui-pestanas__texto {
   max-width: 100%;
-  overflow-wrap: anywhere;
+  letter-spacing: -0.01em;
   text-align: center;
+  white-space: nowrap;
+}
+@media (max-width: 360px) {
+  :root {
+    --ui-pestanas-margen: 8px;
+  }
+  .ui-pestanas {
+    padding: 4px;
+  }
+  .ui-pestanas__texto {
+    letter-spacing: -0.03em;
+  }
 }
 .ui-pestanas__item--on {
   background: #fff;
@@ -641,6 +654,13 @@
 }
 .hx-mapa-ancla {
   z-index: 2;
+}
+/* Los controles del motor no van debajo de la barra de arriba ni el "Centrar" debajo del pedido que llegó. */
+.ui-mapa-arreglos .maplibregl-ctrl-top-right {
+  top: 150px;
+}
+.ui-mapa-arreglos:has(.ui-mapa-arreglos__entrante) .hx-mapa__centrar {
+  bottom: 118px;
 }
 .ui-mapa-estilizado {
   position: absolute;
