@@ -67,7 +67,7 @@ function Formulario({ cobro, titulo, volver, recargar }: { cobro: Cobro; titulo:
   const [parte, setParte] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [listo, setListo] = useState<Cobro | null>(cobro.estado === 'pendiente' ? null : cobro);
-  const nombre = titulo.split(' ')[0] ?? titulo;
+  const nombre = titulo;
 
   async function informar() {
     const centavos = todo === 'todo' ? cobro.monto.centavos : centavosDesdeTexto(parte);

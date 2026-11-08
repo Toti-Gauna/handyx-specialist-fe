@@ -784,5 +784,9 @@
   height: 100%;
 }
 .nu-fondo-mapa .hx-mapa__respaldo {
-  padding-top: 70px;
+  align-content: start;
+  padding-top: 76px;
+}
+.nu-pantalla-pedido + .nu-hoja-fija {
+  margin-top: 210px;
 }

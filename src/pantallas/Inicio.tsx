@@ -32,8 +32,8 @@ import { aPedidoCercano, aPedidoMapa, vistaDesdeMapa } from './nucleo/vista.ts';
 import './nucleo/nucleo.css';
 
 const TEXTO_ALTA: Record<string, { titulo: string; texto: string; boton: string }> = {
-  borrador: { titulo: 'Terminá tu alta', texto: 'Cuando el equipo de verificación revise tu alta, vas a ver los pedidos de tus zonas en el mapa.', boton: 'Seguir con mi alta' },
-  requiere_correccion: { titulo: 'Tu alta necesita un cambio', texto: 'Corregí lo que te pedimos y la volvemos a revisar.', boton: 'Ver qué corregir' },
+  borrador: { titulo: 'Terminá tu alta', texto: 'Todavía no recibís pedidos. Cuando el equipo de verificación revise tu alta, vas a ver los pedidos de tus zonas en el mapa.', boton: 'Seguir con mi alta' },
+  requiere_correccion: { titulo: 'Tu alta necesita un cambio', texto: 'Todavía no recibís pedidos. Corregí lo que te pedimos y la volvemos a revisar.', boton: 'Ver qué corregir' },
 };
 
 export function Inicio() {

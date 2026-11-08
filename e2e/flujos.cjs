@@ -844,7 +844,7 @@ async function main() {
     await p.waitForURL('**/trabajos/cobro/**');
     await ver(p, '¿Cómo te pagó?');
     await foto('04-como-te-pago');
-    await p.getByText('Una parte', { exact: true }).click();
+    await p.getByRole('radio', { name: 'Una parte' }).check();
     await p.getByLabel('¿Cuánto te pagó?').fill('20.000');
     await p.getByRole('button', { name: 'Informar el cobro' }).click();
     await ver(p, 'Informado por vos · sin verificar');

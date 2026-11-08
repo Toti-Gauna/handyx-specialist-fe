@@ -83,7 +83,7 @@ export function PedidoDetalle() {
 
   return (
     <PantallaHoja fondo={<Fondo zona={pedido.zonaMapa} nombre={pedido.zonaAproximada} />}>
-      <div className="nu-arriba">
+      <div className="nu-arriba nu-pantalla-pedido">
         <BotonIconoEnlace icono="atras" etiqueta="Volver al inicio" href={RUTAS.inicio.ruta} />
         <Chip tono="noche" icono="campana">
           {v.tipo === 'urgente' ? 'Pedido urgente' : v.tipo === 'obra' ? 'Pedido de obra' : 'Pedido programado'}
