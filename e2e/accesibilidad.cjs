@@ -103,16 +103,19 @@ async function main() {
   // Diálogos de decisión y formularios en hojas
   const dialogos = [
     ['hoja-aceptar', `/pedidos/detalle/?id=${id(0xb2)}`, 'Aceptar propuesta', '¿Aceptar esta propuesta?'],
-    ['hoja-borrar-avisos', '/notificaciones/', 'Borrar todos', '¿Borrar todos los avisos?'],
+    ['hoja-borrar-avisos', '/notificaciones/', 'Borrar todos los avisos', '¿Borrar todos los avisos?'],
     ['hoja-demora', '/inicio/', 'Avisar una demora', 'No cambia el horario acordado'],
     ['hoja-teclado-precio', `/pedidos/propuesta/?id=${id(0xb2)}`, 'Escribir', 'Escribí el monto con los números'],
     ['hoja-revisar-propuesta', `/pedidos/propuesta/?id=${id(0xb2)}&paso=fecha`, 'Revisar la propuesta', 'Hasta que acepte, no es un trabajo agendado'],
     ['hoja-otro-dia', `/trabajos/obra/jornadas/?id=${id(0xc6)}`, 'Pedir otro día', 'Otro día para la jornada'],
     ['hoja-etapa', `/trabajos/obra/plan/?id=${id(0xc4)}`, 'Terminé esta etapa', '¿Terminaste la etapa 2?'],
     ['hoja-llamada', `/trabajos/detalle/?id=${id(0xc1)}`, 'Llamar por la app', 'Ninguno de los dos ve el teléfono del otro'],
-    ['hoja-baja', '/cuenta/privacidad/', 'Eliminar mi cuenta y mis datos', '¿Eliminar tu cuenta?'],
+    ['hoja-baja', '/cuenta/privacidad/', 'Darme de baja', '¿Darte de baja?'],
+    ['hoja-descargar-datos', '/cuenta/privacidad/', 'Descargar mis datos', 'Confirmá que sos vos'],
+    ['hoja-horario', '/disponibilidad/', 'Editar el horario del lunes', 'Horario del lunes'],
+    ['hoja-perfil', '/cuenta/perfil/', 'Editar foto y presentación', 'Elegir otra foto'],
     ['hoja-turno', '/agenda/', 'Obra · Cliente de prueba 8', 'Detalle del turno'],
-    ['hoja-caso', '/soporte/', 'Abrir un caso', '¿Sobre qué es?'],
+    ['hoja-caso', '/soporte/casos/', 'Abrir un caso', '¿Sobre qué es?'],
   ];
   for (const [nombre, ruta, boton, espera] of dialogos) {
     const p = await ctx.newPage();
@@ -157,14 +160,15 @@ async function main() {
     ['registro', '/registro/', 'Crear mi cuenta', 'nuevo'],
     ['verificar', '/verificar/', null, 'sin_verificar'],
     ['alta-domicilio', '/alta/?paso=domicilio', 'Seguir', 'incompleto'],
-    ['caso', '/soporte/', 'Abrir un caso', 'habilitado'],
+
+    ['caso', '/soporte/casos/', 'Abrir un caso', 'habilitado'],
   ]) {
     const p = await ctx.newPage();
     await p.goto(`${base}${ruta}${ruta.includes('?') ? '&' : '?'}escenario=${escenario}`);
     if (boton) await p.getByRole('button', { name: boton }).first().click();
     // Verificar: un código incorrecto deja el error y el foco en el campo del código
     if (nombre === 'verificar') await p.getByLabel('Código de 6 números').fill('000000');
-    if (nombre === 'caso') await p.getByRole('button', { name: 'Enviar', exact: true }).click();
+    if (nombre === 'caso') await p.getByRole('button', { name: 'Enviar el caso' }).click();
     await p.waitForTimeout(300);
     const ok = await p.evaluate(() => document.activeElement?.getAttribute('aria-invalid') === 'true');
     if (!ok) teclado.push(`${nombre}: tras el error el foco no quedó en el primer campo marcado`);

@@ -1,0 +1,5 @@
+/* «Letra más grande» (lote 1.4): agranda todo el kit, que mide el texto en rem. Se enciende con data-letra="grande"
+   en <html>, según la preferencia que guarda el servidor. */
+html[data-letra='grande'] {
+  font-size: 125%;
+}

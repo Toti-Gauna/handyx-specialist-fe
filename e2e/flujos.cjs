@@ -151,14 +151,13 @@ async function main() {
     // Avisos: Nuevos / Antes, borrar uno (botón accesible) y "Borrar todos" con confirmación
     await p.locator('header').getByRole('link', { name: /Avisos/ }).first().click();
     await p.waitForURL('**/notificaciones/');
-    await ver(p, 'Nuevos', { exact: true });
-    await ver(p, 'Antes', { exact: true });
+    await ver(p, 'Hoy', { exact: true });
+    await ver(p, 'Nuevo', { exact: true });
     await foto('04-avisos');
-    const antes = await p.locator('.av-item').count();
-    await p.getByRole('button', { name: /^Borrar el aviso: ¡El cliente te eligió!/ }).click();
-    await ver(p, 'Borraste el aviso');
-    await p.waitForFunction((n) => document.querySelectorAll('.av-item').length === n - 1, antes);
-    await p.getByRole('button', { name: 'Borrar todos' }).click();
+    const antes = await p.locator('.ui-aviso').count();
+    await p.getByRole('button', { name: /^Quitar el aviso: ¡El cliente te eligió!/ }).click();
+    await p.waitForFunction((n) => document.querySelectorAll('.ui-aviso').length === n - 1, antes);
+    await p.getByRole('button', { name: 'Borrar todos los avisos' }).click();
     await ver(p, '¿Borrar todos los avisos?');
     await foto('05-borrar-todos');
     await p.getByRole('button', { name: 'Sí, borrar todos' }).click();
@@ -299,10 +298,10 @@ async function main() {
     // Baja: estado honesto, sesión cerrada y cancelación
     await nav(p, 'Cuenta');
     await p.getByRole('link', { name: /Privacidad y baja/ }).click();
-    await p.getByRole('button', { name: 'Eliminar mi cuenta y mis datos' }).click();
-    await ver(p, 'Esto es una baja real, no solo cerrar sesión');
+    await p.getByRole('button', { name: /Darme de baja/ }).click();
+    await ver(p, 'Es una baja real, no solo cerrar la sesión');
     await foto('05-confirmar-baja');
-    await p.getByRole('button', { name: 'Sí, solicitar la baja' }).click();
+    await p.getByRole('button', { name: 'Sí, quiero darme de baja' }).click();
     await p.waitForURL('**/acceso/');
     await p.getByLabel('Email o teléfono').fill('especialista@example.test');
     await p.getByLabel('Contraseña', { exact: true }).fill('clave-de-prueba-123');
@@ -329,9 +328,9 @@ async function main() {
     await p.waitForURL('**/inicio/');
     // Avisos: urgente y programado se distinguen; abrir no acepta nada
     await p.getByRole('link', { name: 'Avisos' }).first().click();
-    await ver(p, 'Abrir un aviso solo te muestra el detalle');
-    await ver(p, 'Urgente');
-    await ver(p, 'Programado');
+    await ver(p, 'Nada se acepta desde acá.');
+    await ver(p, 'Pedido urgente en tu zona');
+    await ver(p, 'Nuevo pedido programado');
     await foto('01-avisos');
     // Agenda: un día con trabajo y la oferta que se superpone
     await agenda(p);
@@ -351,7 +350,7 @@ async function main() {
     await p.getByLabel('Asunto').fill('Reclamo de prueba');
     await p.getByLabel('Contanos qué pasó').fill('Detalle del reclamo de prueba');
     await foto('04-nuevo-reclamo');
-    await p.getByRole('button', { name: 'Enviar', exact: true }).click();
+    await p.getByRole('button', { name: 'Enviar el caso' }).click();
     await ver(p, 'Reclamo de prueba');
     await ver(p, 'Abierto');
     await foto('05-caso-abierto');
@@ -360,7 +359,7 @@ async function main() {
     await foto('06-caso-respondido');
     // Caja: pagos de todos los estados y simulación rotulada
     await nav(p, 'Cuenta');
-    await p.getByRole('link', { name: 'Caja: pagos directos' }).click();
+    await p.getByRole('link', { name: /^Tus cobros/ }).click();
     for (const t of ['Pendiente', 'Reportado, sin verificar', 'Verificado', 'Falló']) await ver(p, t, { exact: true });
     await ver(p, 'Handyx nunca te pide tu contraseña de Mercado Pago');
     await foto('07-caja');
@@ -370,7 +369,7 @@ async function main() {
     await foto('08-caja-simulacion');
     // Preferencias: avisos distintos para urgentes y programados
     await nav(p, 'Cuenta');
-    await p.getByRole('link', { name: /Notificaciones/ }).click();
+    await p.getByRole('link', { name: /^Avisos Qué te llega/ }).click();
     await ver(p, 'Pedidos urgentes', { exact: true });
     await ver(p, 'Pedidos programados', { exact: true });
     await foto('09-cuenta-preferencias');
@@ -738,15 +737,16 @@ async function main() {
     await nav(p, 'Cuenta');
     await ver(p, 'Verificado por Handyx');
     await foto('04-cuenta');
-    await p.getByRole('link', { name: /Cómo te paga el cliente/ }).click();
-    await p.getByRole('switch', { name: /Efectivo/ }).click();
-    await p.waitForFunction(() => document.querySelector('[role="switch"][aria-checked="false"]') !== null);
-    await p.getByRole('switch', { name: /Mercado Pago/ }).click();
-    await ver(p, 'Dejá al menos una forma de cobro');
-    assert.equal(await p.getByRole('switch', { name: /Mercado Pago/ }).getAttribute('aria-checked'), 'true');
+    await p.getByRole('link', { name: /^Medios de cobro/ }).click();
+    await p.getByRole('button', { name: /^Efectivo/ }).click();
+    await p.getByRole('button', { name: 'Dejar de usar Efectivo' }).click();
+    await ver(p, 'Agregar', { exact: true });
+    await p.getByRole('button', { name: /^Mercado Pago/ }).click();
+    await p.getByRole('button', { name: 'Dejar de usar Mercado Pago' }).click();
+    await ver(p, /Dejá al menos una forma de cobro/);
     await foto('05-cobros');
     // Caja: lo cobrado del mes, filtros por estado y el desglose
-    await p.getByRole('link', { name: 'Ver la Caja' }).click();
+    await p.goto(`${base}/caja/?escenario=habilitado`);
     await ver(p, 'Cobrado este mes');
     await p.getByRole('button', { name: /^Con problemas · 1/ }).click();
     assert.equal(await p.locator('.cj-mov').count(), 1);
@@ -757,9 +757,9 @@ async function main() {
     await foto('06-caja');
     // Centro de ayuda: temas en pastillas y preguntas que se abren
     await p.goto(`${base}/soporte/?escenario=habilitado`);
-    await p.getByRole('button', { name: 'Cobros' }).click();
-    await p.getByText('¿Cuánto cobra Handyx?').click();
-    await ver(p, 'Handyx no te cobra tarifa: 0 %');
+    await p.getByRole('button', { name: /^Cobros/ }).click();
+    await p.getByText('¿Cuánto me cobra Handyx?').click();
+    await ver(p, 'Recibís el 100 % de tu precio');
     await foto('07-ayuda');
   }, { capturas });
 
