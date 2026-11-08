@@ -268,3 +268,10 @@ de la ola 1; lógica pura en `src/ui/logicaNucleo.ts` con pruebas.
 | `PedidoFlotante`                                | organismo | El pedido que llega flotando sobre el mapa, con la ilustración que arma el arreglo y «Pedido 1 de 2»                | «Ver pedido» abre el detalle, nunca acepta; anterior/siguiente con botones; región `aria-live`                                                  |
 | `HojaCercanos`                                  | organismo | Pedidos cercanos estilo «Choose a ride»: rubro, zona aproximada, precio sugerido y distancia; el elegido resaltado  | Radios reales; una sola acción («Ver pedido de …»)                                                                                              |
 | `.ui-atajos` / `.ui-atajo`                      | CSS       | Atajos chicos en fila que bajan de renglón (precio, franjas, horarios)                                              | `aria-pressed`; deshabilitado con texto oculto que dice por qué                                                                                 |
+
+### Pestaña Taller, agenda e ingresos (lote 2.1)
+
+Piezas nuevas con su CSS en `src/ui/taller-dia.css` (detalle y rutas en `docs/taller-agenda.md`): `TurnoTarjeta`,
+`ChipDatos`, `GrupoPasadas`, `FilaPasada`, `ResumenPasadas` (`moleculas/AgendaPiezas.tsx`); `SelectorMes`, `BarraNeto`,
+`LineaCuenta`, `FilaGanancia`, `FilaGasto` (`moleculas/IngresosPiezas.tsx`); `CalendarioObras` (`organismos/AgendaMes.tsx`);
+`TarjetaAgendaTaller`, `AccesoAncho` (`organismos/TallerPiezas.tsx`). Lógica pura y pruebas en `src/lib/agendaTaller.ts`.
