@@ -37,7 +37,7 @@ export function AgendaMes() {
 
   const obras = [...new Map(c.datos.dias.flatMap((d) => d.obras).map((o) => [o.obraId, o])).values()];
   const resumen = `${plural(c.datos.totales.trabajos, 'trabajo', 'trabajos')} · ${plural(c.datos.totales.obras, 'obra', 'obras')}`;
-  const turnos = dia.datos ?? [];
+  const turnos = (dia.datos ?? []).filter((t) => filtro === 'todo' || (filtro === 'obras' ? t.tipo === 'jornada' : t.tipo !== 'jornada'));
 
   return (
     <PantallaSecundaria barra={barra}>

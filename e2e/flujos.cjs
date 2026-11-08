@@ -696,12 +696,11 @@ async function main() {
   await escenario('Q-agenda-chat-contactos-cuenta-caja-ayuda', nav_, base, async ({ p, foto }) => {
     // Agenda: mes con marcas, lista del día y detalle del turno (una obra, jornada por jornada)
     await p.goto(`${base}/agenda/?escenario=habilitado`);
-    await p.getByRole('button', { name: /18 de noviembre, 2 eventos/ }).click();
-    await ver(p, 'jornada 1 de 5');
-    await p.locator('.ag-turno').first().click();
-    await ver(p, 'Detalle del turno');
+    await p.goto(`${base}/agenda/mes/?escenario=habilitado`);
+    await p.getByRole('button', { name: /^18 de noviembre/ }).click();
+    await ver(p, 'Obra · jornada 1 de 5');
     await foto('01-detalle-turno');
-    await p.getByRole('link', { name: 'Ver el trabajo' }).click();
+    await p.getByRole('link', { name: /jornada 1 de 5|Pintura/ }).first().click();
     await p.waitForURL('**/trabajos/detalle/**');
     await p.getByRole('link', { name: 'Volver' }).click();
     // Mensajes y chat: agregar a contactos, respuestas rápidas que completan (no mandan) y programar turno
@@ -764,6 +763,8 @@ async function main() {
     await p.goto(`${base}/inicio/?escenario=habilitado`);
     await nav(p, 'Taller');
     await p.waitForURL('**/taller/');
+    await p.getByRole('link', { name: /Herramientas del teléfono/ }).click();
+    await p.waitForURL('**/taller/herramientas/');
     await ver(p, 'De tu oficio');
     await foto('01-taller');
     // Sección y caída de tensión: un circuito de tomas corto lo decide el mínimo; uno largo, la caída de tensión

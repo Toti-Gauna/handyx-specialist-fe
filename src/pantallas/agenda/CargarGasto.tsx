@@ -146,7 +146,7 @@ export function CargarGasto() {
         </Boton>
         {foto ? (
           <Boton variante="texto" onClick={() => setFoto(null)}>
-            Sacar la foto de acá
+            Quitar la foto
           </Boton>
         ) : null}
       </div>
@@ -196,7 +196,7 @@ export function CargarGasto() {
                 setCobrar(false);
               }}
             >
-              <option value="">Ninguno (gasto general)</option>
+              <option value="">Sin trabajo</option>
               {lista.map((t) => (
                 <option key={t.id} value={t.id}>{`${NOMBRE_RUBRO[t.rubro]} · ${tituloCorto(t.acuerdo.alcance)}`}</option>
               ))}

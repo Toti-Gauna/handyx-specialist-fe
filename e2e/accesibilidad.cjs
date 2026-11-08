@@ -114,7 +114,7 @@ async function main() {
     ['hoja-descargar-datos', '/cuenta/privacidad/', 'Descargar mis datos', 'Confirmá que sos vos'],
     ['hoja-horario', '/disponibilidad/', 'Editar el horario del lunes', 'Horario del lunes'],
     ['hoja-perfil', '/cuenta/perfil/', 'Editar foto y presentación', 'Elegir otra foto'],
-    ['hoja-turno', '/agenda/', 'Obra · Cliente de prueba 8', 'Detalle del turno'],
+    ['hoja-borrar-gasto', '/taller/ingresos/', 'Borrar el gasto: Revoque y fijador', '¿Borrar este gasto?'],
     ['hoja-caso', '/soporte/casos/', 'Abrir un caso', '¿Sobre qué es?'],
   ];
   for (const [nombre, ruta, boton, espera] of dialogos) {

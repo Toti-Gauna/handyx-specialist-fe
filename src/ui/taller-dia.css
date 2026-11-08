@@ -764,3 +764,19 @@
   padding: 0;
   border: 0;
 }
+.ui-ing-cabeza .ui-cifra {
+  color: inherit;
+}
+/* La semana entera a la vista: los siete días caben o bajan de renglón (nunca se esconden detrás de un deslizamiento). */
+.tg-app .ui-tira {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fit, minmax(2.6rem, 1fr));
+  gap: 4px;
+  overflow-x: visible;
+}
+.ui-ag-titulo > .ui-encabezado {
+  flex: 1 1 11rem;
+}
+.ui-ag-titulo > .ui-boton {
+  flex: none;
+}

@@ -60,7 +60,7 @@ const PANTALLAS = [
   ['trabajo-cobro', `/trabajos/cobro/?id=${id(0xc2)}`, 'Cobro informado', 'habilitado'],
   ['trabajo-cobro-form', `/trabajos/cobro/?id=${id(0xc7)}`, '¿Cobraste todo?', 'habilitado'],
   ['trabajo-terminaste', `/trabajos/terminado/?id=${id(0xc2)}`, '¡Terminaste el trabajo!', 'habilitado'],
-  ['agenda', '/agenda/', 'Noviembre 2026', 'habilitado'],
+  ['agenda', '/agenda/', 'Pierde la canilla', 'habilitado'],
   ['caja', '/caja/', 'El pago va directo a vos', 'habilitado'],
   ['soporte', '/soporte/', '¿En qué te', 'habilitado'],
   ['soporte-casos', '/soporte/casos/', 'Abrir un caso', 'habilitado'],
@@ -80,7 +80,8 @@ const PANTALLAS = [
   ['no-encontrada', '/no-existe/', 'No encontramos esta pantalla', 'habilitado'],
   ['catalogo', '/catalogo/', 'Mapa de arreglos', 'habilitado'],
   ['catalogo-v2', '/catalogo/v2/', 'Todavía no hay pedidos para vos', 'habilitado'],
-  ['taller', '/taller/', 'De tu oficio', 'habilitado'],
+  ['taller', '/taller/', 'Herramientas del teléfono', 'habilitado'],
+  ['taller-herramientas', '/taller/herramientas/', 'De tu oficio', 'habilitado'],
   ['taller-conductores', '/taller/conductores/', 'La decide', 'habilitado'],
   ['taller-vivienda', '/taller/vivienda/', 'Bocas mínimas por ambiente', 'habilitado'],
   ['taller-tablero', '/taller/tablero/', 'Lista de materiales', 'habilitado'],
@@ -93,6 +94,12 @@ const PANTALLAS = [
   ['taller-informe', '/taller/informe/', 'Estado del tablero', 'habilitado'],
   ['taller-canalizacion', '/taller/canalizacion/', 'Materiales', 'habilitado'],
   ['taller-checklists', '/taller/checklists/', 'pasos hechos', 'habilitado'],
+  // Lote 2.1: agenda, ingresos y gastos.
+  ['agenda-pasadas', '/agenda/?vista=pasadas', 'Cobrado y verificado este mes', 'habilitado'],
+  ['agenda-futuras', '/agenda/?vista=futuras', 'Oferta sin confirmar', 'habilitado'],
+  ['agenda-mes', '/agenda/mes/', 'Mes completo', 'habilitado'],
+  ['ingresos', '/taller/ingresos/', 'Ganancia por trabajo', 'habilitado'],
+  ['ingresos-gasto', '/taller/ingresos/gasto/', 'Registrarlo como gasto', 'habilitado'],
 ];
 
 /** Espera a que los mapas de la pantalla terminen de cargar (o queden con su texto de respaldo). */

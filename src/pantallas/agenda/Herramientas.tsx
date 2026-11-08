@@ -65,7 +65,7 @@ export function Herramientas() {
             <ResumenTarjeta icono="grafico" titulo="Ingresos y gastos" texto="Gastos mayores" detalle={`Este mes gastaste más de lo que cobraste`} href={RUTAS.ingresos.ruta} />
           )}
           <ResumenTarjeta icono="ticket" titulo="Presupuestos y precios" texto="Armalos acá" detalle="Y mandalos por el chat" href={ACCESOS_TALLER.presupuestos} />
-          <ResumenTarjeta icono="caja" titulo="Tu equipamiento" texto="Tus herramientas" detalle="Qué tenés y dónde está" href={ACCESOS_TALLER.equipamiento} />
+          <ResumenTarjeta icono="caja" titulo="Tu equipamiento" texto="Qué tenés" detalle="Tus herramientas y dónde están" href={ACCESOS_TALLER.equipamiento} />
           <ResumenTarjeta icono="regla" titulo="Herramientas del teléfono" texto="Medir y 3D" detalle="Nivel, linterna y tu oficio" href={RUTAS.tallerHerramientas.ruta} tono="noche" />
         </div>
         <AccesoAncho href={ACCESOS_TALLER.ferreteria} icono="carrito" titulo="Ferretería" detalle="Catálogo y pedidos" />
