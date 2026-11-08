@@ -135,7 +135,7 @@ describe('primitivas 3D', () => {
     assert.equal(anillo.grupo.children.filter((c) => (c as THREE.Mesh).material === m.amarillo).length, 12);
     anillo.marcar(30);
     assert.ok(anillo.grupo.children.every((c) => (c as THREE.Mesh).material === m.amarillo));
-    for (const g of [s.grupo, obj.grupo, anillo.grupo]) assert.ok(contarTriangulos(g) < bajo.triangulosMax / 2);
+    for (const g of [s.grupo, obj.grupo, anillo.grupo]) assert.ok(contarTriangulos(g) < bajo.triangulosMax / 4);
   });
 
   it('liberar suelta geometrías y materiales propios, y conserva los comunes', () => {
