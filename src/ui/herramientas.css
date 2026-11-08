@@ -784,12 +784,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  padding: 0;
-  border: 0;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: transparent;
   cursor: grab;
   touch-action: none;
 }
@@ -813,8 +810,49 @@
 .ui-puntos__punto--elegido span {
   box-shadow: 0 0 0 4px var(--ui-amarillo), 0 0 0 7px var(--ui-tinta);
 }
-.ui-puntos__punto:focus-visible {
-  outline: 3px solid var(--ui-amarillo);
+.ui-puntos__elegir {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ui-puntos__elegir legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+}
+.ui-puntos__op {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--ui-borde);
+  border-radius: 50%;
+  background: #fff;
+  font-weight: 900;
+  cursor: pointer;
+}
+.ui-puntos__op input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ui-puntos__op--on {
+  border-color: var(--ui-azul);
+  background: var(--ui-azul);
+  color: #fff;
+}
+.ui-puntos__op:has(input:focus-visible) {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 2px;
 }
 .ui-puntos__medida {
   padding: 3px 10px;

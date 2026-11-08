@@ -55,6 +55,8 @@ describe('conversor', () => {
     assert.equal(leerNumero('1/0'), null);
     assert.equal(mostrarNumero(19.05), '19,05');
     assert.equal(mostrarNumero(1250), '1.250');
+    assert.equal(mostrarNumero(11904.898), '11.905');
+    assert.equal(mostrarNumero(145.2378), '145,2');
   });
 });
 

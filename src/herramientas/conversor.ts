@@ -40,11 +40,11 @@ export function leerNumero(texto: string): number | null {
   return Number(normal);
 }
 
-/** Con coma decimal y hasta `decimales` (sin ceros de más): 19,05 · 1.250 · 0,0042. */
+/** Con coma decimal y hasta `decimales` (sin ceros de más; menos decimales cuanto más grande): 19,05 · 145,2 · 11.905 · 0,0042. */
 export function mostrarNumero(n: number, decimales = 3): string {
   if (!Number.isFinite(n)) return '—';
   const abs = Math.abs(n);
-  const d = abs !== 0 && abs < 0.01 ? 5 : abs < 1 ? 4 : decimales;
+  const d = abs !== 0 && abs < 0.01 ? 5 : abs < 1 ? 4 : abs >= 1000 ? 0 : abs >= 100 ? Math.min(1, decimales) : decimales;
   return new Intl.NumberFormat('es-AR', { maximumFractionDigits: d }).format(n);
 }
 
