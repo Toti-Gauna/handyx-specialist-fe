@@ -211,6 +211,23 @@ landing. **Siempre `aria-hidden`**: el texto de al lado dice lo importante. Tama
 contenido + acción fija), `PantallaHoja` (la pantalla de atrás sigue a la vista), `PantallaMapa` (mapa a pantalla
 completa con controles arriba y hoja o acción abajo) y `SoloCelular`.
 
+### Piezas del acceso (lote 1.1)
+
+| Pieza | Nivel | Para qué |
+|---|---|---|
+| `Bajada`, `EnlaceTexto` | átomo (`Bajada.tsx`) | Texto bajo un título (17 px) y enlace de texto subrayado de 48 px (enlace o botón) |
+| `Encabezado` | molécula | Rótulo + título marcado + bajada con un solo h1 (`nivel={2}` debajo de una barra compacta); `centrado` |
+| `Formulario`, `FilaEntre` | molécula | Columna del formulario sin validación del navegador (`id` para enviarlo desde la acción fija con `form`) |
+| `CampoClave` | molécula | Contraseña con «Mostrar» (texto + ojo, `aria-pressed`) y, si es nueva, medidor con el nivel escrito y un consejo |
+| `OpcionesIcono` | molécula | Pocas opciones grandes con mosaico, detalle y pastilla: radios reales en un fieldset, la elegida con tilde |
+| `BotonProveedor` | molécula | Google o Apple: contorno de 56 px, el nombre como nombre accesible |
+| `ReenviarCodigo` | molécula | «¿No llegó? Pedí otro en 0:42» y después «Pedir otro código»; el lector no escucha cada segundo; alternativa al lado |
+| `AvisoCaja` | molécula | Recuadro con ícono y texto: `error` (`role=alert`), `info`, `exito`, `prueba` (ayuda de la vista previa) |
+| `EscenaCiudad` | organismo | Cielo de noche con luna, estrellas y la `Ciudad` que se arma con GSAP; `alta` (bienvenida) o `baja`; Volver, marca y mosaico blanco opcional |
+| `PantallaAcceso` | plantilla | Escena + contenido + acción fija, sin cabecera de la app ni pestañas |
+
+Lógica pura en `src/ui/logicaAcceso.ts` (espera del reenvío, código de respaldo, «al teléfono…») con sus pruebas.
+
 ### Desbordes (`npm run desbordes`)
 
 `e2e/desbordes.cjs` recorre `e2e/pantallas.cjs` en 320 × 568 y 390 × 844 con las fuentes reales del build y falla si un
