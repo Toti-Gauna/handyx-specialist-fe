@@ -187,6 +187,10 @@ async function main() {
     await ver(p, 'Avisaste con «Ya llegué» (sin compartir la ubicación)');
     await foto('05-en-el-lugar');
     await p.getByRole('button', { name: 'Empezar el trabajo' }).click();
+    // Empezar abre el Modo trabajo (lote 2.3); se vuelve al trabajo con «Salir del Modo trabajo».
+    await p.waitForURL('**/trabajos/modo/**');
+    await p.getByRole('link', { name: 'Salir del Modo trabajo' }).click();
+    await p.waitForURL('**/trabajos/detalle/**');
     await ver(p, 'Trabajando hace');
     await foto('06-en-curso');
     await p.getByRole('button', { name: 'Terminé', exact: true }).click();
@@ -560,6 +564,10 @@ async function main() {
     assert.match(await p.getByRole('link', { name: 'Llamar' }).getAttribute('href'), /^tel:\+0+$/);
     await p.keyboard.press('Escape');
     await p.getByRole('button', { name: 'Empezar el trabajo' }).click();
+    // Empezar abre el Modo trabajo (lote 2.3); se vuelve al trabajo con «Salir del Modo trabajo».
+    await p.waitForURL('**/trabajos/modo/**');
+    await p.getByRole('link', { name: 'Salir del Modo trabajo' }).click();
+    await p.waitForURL('**/trabajos/detalle/**');
     await ver(p, 'Trabajando hace');
     // Adicional: "Opción personalizada" primero; rige el precio vigente hasta que el cliente acepta
     await p.getByRole('link', { name: /Agregar repuestos o mano de obra/ }).click();

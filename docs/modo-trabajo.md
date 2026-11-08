@@ -74,7 +74,7 @@ En archivos propios, con su CSS en `src/ui/trabajo.css` y la lógica pura en `sr
 
 - Linterna, lupa y medir de la hoja de herramientas llevan al Taller (`/taller/`): apuntarlas a las del lote 2.4.
 - «Repuestos» y «Código de barras» llevan a «Agregar al trabajo» (`/trabajos/adicional/`): apuntarlos a
-  H0-AgregarMaterial (lote 2.2).
+  H0-AgregarMaterial del lote 2.2 (`/presupuestos/material/`).
 - «Ver toda la agenda» lleva a `/agenda/`: apuntarlo a F-AgendaMes (lote 2.1) si cambia de ruta.
 - «Escribirle» abre el chat de equipo y, sin conversación 0.2.0, lleva a Mensajes: la ola 3.3 lo lleva al chat nuevo.
 - El título de la cabecera sale de lo acordado (no hay título del pedido en `Trabajo`); si el contrato suma uno, usarlo.
