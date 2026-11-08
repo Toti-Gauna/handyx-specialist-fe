@@ -268,3 +268,20 @@ de la ola 1; lógica pura en `src/ui/logicaNucleo.ts` con pruebas.
 | `PedidoFlotante`                                | organismo | El pedido que llega flotando sobre el mapa, con la ilustración que arma el arreglo y «Pedido 1 de 2»                | «Ver pedido» abre el detalle, nunca acepta; anterior/siguiente con botones; región `aria-live`                                                  |
 | `HojaCercanos`                                  | organismo | Pedidos cercanos estilo «Choose a ride»: rubro, zona aproximada, precio sugerido y distancia; el elegido resaltado  | Radios reales; una sola acción («Ver pedido de …»)                                                                                              |
 | `.ui-atajos` / `.ui-atajo`                      | CSS       | Atajos chicos en fila que bajan de renglón (precio, franjas, horarios)                                              | `aria-pressed`; deshabilitado con texto oculto que dice por qué                                                                                 |
+
+### Presupuestos y lista de precios (lote 2.2)
+
+Piezas nuevas en archivos propios (`moleculas/Materiales.tsx` + `moleculas/materiales.css`, `organismos/Historial.tsx` +
+`organismos/historial.css`, `ilustraciones/ListaPrecios.tsx`). Uso en `docs/presupuestos.md`.
+
+| Pieza                             | Nivel        | Para qué                                                                                          | Accesibilidad                                                                    |
+| --------------------------------- | ------------ | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `FilaEleccion`                    | molécula     | Material de tu lista que se toca para elegirlo; elegido, se resalta y aparece el `Stepper` abajo  | «+» con nombre «Elegir …, $ …»; «Elegido» escrito                                |
+| `FilaCasilla`                     | molécula     | Casilla + nombre + detalle (chip) + cifra a la derecha (kits, revisar lo leído)                   | Casilla nativa con la fila entera tocable; detalle por `aria-describedby`        |
+| `FilaAgregar`                     | molécula     | Tarjeta punteada con «+» amarillo («¿No está? Agregalo a tu lista»)                               | Enlace o botón de 72 px                                                          |
+| `ResumenHechos`                   | molécula     | Lo que va a pasar, con tildes, y «Cambiar»                                                        | `etiquetaCambiar` le da nombre completo al botón                                 |
+| `MosaicoCifra`                    | molécula     | Rótulo + cifra en un mosaico gris o azul, tocable para cambiarla                                  | El nombre empieza con lo visible y suma «, cambiar» oculto                       |
+| `CifraCambio`                     | molécula     | Precio de antes tachado y el nuevo                                                                | El lector escucha «antes … ahora …»                                              |
+| `CabeceraSeccion`, `AccionTexto`  | molécula     | Rótulo en mayúsculas de una sección con una acción corta a la derecha («Tus tarifas»)             | h2/h3; acción de 48 px                                                           |
+| `BarrasHistorial`                 | organismo    | Cómo varió un precio: barras con valor y mes, la última resaltada                                 | Barras `aria-hidden` + la misma información en una lista oculta                  |
+| `ListaPrecios`                    | ilustración  | La hoja del corralón con los renglones entendidos en amarillo (se marcan con `armar`)             | Decorativa                                                                       |

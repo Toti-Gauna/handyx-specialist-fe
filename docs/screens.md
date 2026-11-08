@@ -137,3 +137,10 @@ Decisiones tomadas al construirlas (todas reversibles):
 - **Reportar un cobro** lo deja "reportado, sin verificar": solo un webhook validado u Operations lo verifica.
 - **Baja**: cierra las sesiones y se ve el estado real al volver a entrar (`/baja/`); se cancela mientras esté "solicitada".
 - **Cancelar un trabajo** avisa al usuario y no aplica penalización automática (PROD-21 §4, LEG-22).
+
+## Presupuestos y lista de precios (lote 2.2, H0.2)
+
+`/presupuestos/` (H0-Presupuesto), `/presupuestos/material/` (H0-AgregarMaterial y H0-MaterialOpciones),
+`/presupuestos/material-nuevo/` (H0-MaterialNuevo), `/presupuestos/varios/` (H0-AgregarLista), `/precios/` (H0-Precios),
+`/precios/foto/` (H0-PreciosFoto y H0-PreciosRevisar), `/precios/detalle/` (H0-PrecioItem) y `/precios/mano-de-obra/`
+(H0-ManoObra). Reglas y entradas en `docs/presupuestos.md`.
