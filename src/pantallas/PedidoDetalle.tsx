@@ -5,6 +5,8 @@
 // aviso, y la dirección exacta llega recién cuando el cliente acepta.
 import { api } from '@handyx/origen-datos';
 import { useRouter } from 'next/navigation';
+import type { ZonaMapa } from '../contracts/dto.ts';
+import { Mapa } from '../mapa/Mapa.tsx';
 import { RUTAS } from '../app/rutas.ts';
 import { EstadoMiPropuesta } from '../components/EstadoMiPropuesta.tsx';
 import { ErrorCaja } from '../components/Estados.tsx';
@@ -23,7 +25,14 @@ import { PantallaFallo } from './nucleo/Fallo.tsx';
 import { vistaDesdeDetalle } from './nucleo/vista.ts';
 import './nucleo/nucleo.css';
 
-function Fondo() {
+/** Detrás de la hoja, el mapa con la zona aproximada (sin pin de destino); sin pedido, las manzanas dibujadas. */
+function Fondo({ zona, nombre }: { zona?: ZonaMapa | null; nombre?: string }) {
+  if (zona && nombre)
+    return (
+      <div className="nu-fondo-mapa">
+        <Mapa etiqueta={`Zona aproximada del pedido en ${nombre}`} alto="completo" zona={zona} tapadoAbajo={0.55} alternativa={<p>{`Zona aproximada: ${nombre}`}</p>} />
+      </div>
+    );
   return (
     <div className="ui-mapa-estilizado" aria-hidden="true">
       <div className="ui-mapa-estilizado__manzanas" />
@@ -73,7 +82,7 @@ export function PedidoDetalle() {
   }
 
   return (
-    <PantallaHoja fondo={<Fondo />}>
+    <PantallaHoja fondo={<Fondo zona={pedido.zonaMapa} nombre={pedido.zonaAproximada} />}>
       <div className="nu-arriba">
         <BotonIconoEnlace icono="atras" etiqueta="Volver al inicio" href={RUTAS.inicio.ruta} />
         <Chip tono="noche" icono="campana">
@@ -87,6 +96,7 @@ export function PedidoDetalle() {
         <h1 id="nu-pedido-h1" className="visualmente-oculto">{`Pedido de ${v.titulo}`}</h1>
         {c.fallo ? <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} /> : null}
         <ContenidoPedido v={v} ahora={ahora} hoy={hoy} />
+        <p className="nu-nota">El círculo es aproximado: todavía no ves el nombre ni la dirección exacta. Se muestran cuando el cliente te elige, y solo para ese trabajo.</p>
         {pedido.tipo === 'obra' ? <p className="nu-nota">Una obra empieza con una visita para presupuestar; después se presupuesta por etapas.</p> : null}
         {!v.abierto && !pedido.trabajoId ? <p className="nu-nota">La búsqueda de este pedido terminó: ya no se pueden enviar propuestas.</p> : null}
         <EstadoMiPropuesta pedido={pedido} alCambiar={() => void c.recargar()} />

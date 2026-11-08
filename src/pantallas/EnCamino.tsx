@@ -168,11 +168,10 @@ export function EnCamino() {
                 <strong>{enCamino ? 'Vas en camino' : 'Viaje'}</strong>
               )}
             </div>
-            {gps.activa ? (
-              <Chip icono="pin">{`${quien.split(' ')[0]} ve que vas en camino`}</Chip>
-            ) : enCamino ? (
+            {gps.activa ? <Chip icono="pin">{`${quien.split(' ')[0]} ve que vas en camino`}</Chip> : null}
+            {enCamino && (gps.activa || sinPermiso) ? (
               <Chip tono={senal.tono} icono={senal.icono}>
-                {senal.texto}
+                {`${senal.texto}${gps.senal === 'imprecisa' && gps.lectura ? ` (± ${textoDistancia(gps.lectura.precisionM)})` : ''}`}
               </Chip>
             ) : null}
           </div>
@@ -202,6 +201,11 @@ export function EnCamino() {
               {gps.senal === 'sin_permiso' ? 'No tenemos permiso para ver tu ubicación: podés activarlo en el navegador (Ubicación → Permitir). ' : 'Tu teléfono no da la ubicación. '}
               Igual podés ir con Google Maps o Waze y avisar con «Ya llegué» cuando estés.
             </p>
+          ) : null}
+          {enCamino && sinPermiso ? (
+            <Boton variante="texto" onClick={gps.empezar}>
+              Volver a intentar
+            </Boton>
           ) : null}
           {gps.sinEnviar ? <p className="nu-nota" role="status">Sin conexión: tu ubicación se manda cuando vuelva la señal.</p> : null}
           {gps.activa && v.estado === 'compartiendo' && !v.trayecto ? <p className="nu-nota">No pudimos calcular el trayecto: usá Google Maps o Waze. Tu ubicación igual se comparte.</p> : null}

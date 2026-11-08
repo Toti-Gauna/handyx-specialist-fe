@@ -190,6 +190,9 @@ function Flujo({ pedido }: { pedido: PedidoDetalle }) {
         </div>
         <AccionFija>
           <BotonEnlace href={RUTAS.inicio.ruta}>Volver al inicio</BotonEnlace>
+          <BotonEnlace variante="texto" href={`${RUTAS.pedido.ruta}?id=${pedido.id}`}>
+            Ver el pedido
+          </BotonEnlace>
         </AccionFija>
       </div>
     );

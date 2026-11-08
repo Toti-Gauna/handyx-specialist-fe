@@ -756,3 +756,33 @@
   margin: 0;
   font-weight: 800;
 }
+
+.nu-cronometro {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: var(--ui-tinte);
+  color: var(--ui-hondo);
+  font-weight: 700;
+}
+.nu-cronometro strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.nu-fondo-mapa {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 340px;
+}
+.nu-fondo-mapa > .hx-mapa {
+  height: 100%;
+}
+.nu-fondo-mapa .hx-mapa__respaldo {
+  padding-top: 70px;
+}

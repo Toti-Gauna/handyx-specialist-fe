@@ -96,6 +96,9 @@ export function Recorrido() {
           <ListaParadas paradas={paradas} onMover={(i, s) => void mover(i, s)} ocupado={orden.pendiente} />
         )}
         <p className="nu-nota">Mover una parada cambia solo tu recorrido: no le cambia el horario a ningún cliente. Los tiempos son aproximados.</p>
+        <BotonEnlace variante="texto" href={RUTAS.agenda.ruta}>
+          Ver la agenda completa
+        </BotonEnlace>
         {orden.fallo ? <ErrorCaja fallo={orden.fallo} onReintentar={() => void c.recargar()} /> : null}
         {salir.fallo ? <ErrorCaja fallo={salir.fallo} /> : null}
         {t && t.estado === 'agendado' ? (

@@ -19,7 +19,7 @@ import { useIdDeUrl } from '../hooks/useIdDeUrl.ts';
 import { useIsla } from '../kit/Efectos.tsx';
 import { diaLocal, hora } from '../lib/formato.ts';
 import { enlacesNavegacion } from '../lib/geo.ts';
-import { TIPO_ADICIONAL } from '../lib/trabajo.ts';
+import { cronometro, inicioEnCurso, textoLlegada, TIPO_ADICIONAL } from '../lib/trabajo.ts';
 import { Boton, BotonEnlace } from '../ui/atomos/Boton.tsx';
 import { Chip, Cifra, Titulo } from '../ui/atomos/Texto.tsx';
 import { ArregloRubro } from '../ui/ilustraciones/Arreglos.tsx';
@@ -33,6 +33,7 @@ import { BarraCompacta } from '../ui/organismos/Cabeceras.tsx';
 import { Hoja } from '../ui/organismos/Hoja.tsx';
 import { PantallaSecundaria } from '../ui/plantillas/Plantillas.tsx';
 import { PantallaFallo } from './nucleo/Fallo.tsx';
+import { ResumenObra } from './obra/ResumenObra.tsx';
 import { ESTADO_TRABAJO, pasosTrabajo } from './nucleo/vista.ts';
 import './nucleo/nucleo.css';
 
@@ -156,7 +157,7 @@ function Trabajo({ d, recargar, falloCarga }: { d: Detalle; recargar(): Promise<
             pasos={[
               { titulo: 'Acordado', detalle: `${textoCifra(t.acuerdo.monto.centavos)} · ${cuando.toLowerCase()}`, estado: pasos[0] },
               { titulo: 'Salir para allá', detalle: 'Compartís tu ubicación solo durante el viaje', estado: pasos[1] },
-              { titulo: 'Llegué', detalle: t.llegada ? `A las ${hora(t.llegada.en)}${t.llegada.modo === 'automatica' ? ', se marcó sola' : ', lo marcaste vos'}` : 'Se marca solo al llegar, o a mano', estado: pasos[2] },
+              { titulo: 'Llegué', detalle: t.llegada ? `Llegaste a las ${hora(t.llegada.en)}. ${textoLlegada(t.llegada)}; le avisamos al cliente.` : 'Se marca solo al llegar, o a mano', estado: pasos[2] },
               { titulo: 'Terminé', detalle: obra ? 'Cada etapa se termina y se cobra desde el plan de obra' : 'Informás el cobro: directo a vos', estado: pasos[3] },
             ]}
           />
@@ -164,10 +165,11 @@ function Trabajo({ d, recargar, falloCarga }: { d: Detalle; recargar(): Promise<
       ) : (
         <p className="nu-nota">Este trabajo fue cancelado.</p>
       )}
+      {t.estado === 'en_curso' && !obra ? <EnCurso eventos={d.eventos} /> : null}
 
       <Tarjeta franja={t.estado === 'en_sitio' || t.estado === 'en_curso' ? { texto: 'Agregar repuestos o mano de obra', href: `${RUTAS.trabajoAdicional.ruta}${q}` } : undefined}>
         {t.direccion ? <FilaIcono icono="pin" titulo={t.direccion} detalle="Te la mostramos porque el cliente aceptó" /> : null}
-        <FilaIcono icono="billete" titulo={`${textoCifra(d.totalVigente.centavos)}${conAdicionales ? ' · con adicionales' : ''}`} detalle="Efectivo o Mercado Pago, directo a vos" borde={false} />
+        <FilaIcono icono="billete" titulo={textoCifra(d.totalVigente.centavos)} detalle={conAdicionales ? 'Incluye los adicionales que aceptó el cliente. Directo a vos' : 'Efectivo o Mercado Pago, directo a vos'} borde={false} />
       </Tarjeta>
 
       {activo && t.destino ? (
@@ -223,13 +225,7 @@ function Trabajo({ d, recargar, falloCarga }: { d: Detalle; recargar(): Promise<
         </div>
       ) : null}
 
-      {obra && t.estado !== 'cancelado' ? (
-        <Tarjeta etiqueta="La obra">
-          <FilaIcono icono="lista" titulo="Plan de obra" detalle="Etapas, importes y el cobro de cada una" href={`${RUTAS.obraPlan.ruta}${q}`} />
-          <FilaIcono icono="agenda" titulo="Jornadas" detalle="Los días de trabajo en el calendario" href={`${RUTAS.obraJornadas.ruta}${q}`} />
-          <FilaIcono icono="camara" titulo="Diario de obra" detalle="El avance del día con fotos" href={`${RUTAS.obraDiario.ruta}${q}`} borde={false} />
-        </Tarjeta>
-      ) : null}
+      {obra && t.estado !== 'cancelado' ? <ResumenObra detalle={d} /> : null}
 
       <Tarjeta etiqueta="Más opciones">
         {activo ? <Llamar trabajoId={t.id} contraparte={d.contraparte} /> : null}
@@ -281,6 +277,21 @@ function Trabajo({ d, recargar, falloCarga }: { d: Detalle; recargar(): Promise<
         {avance.fallo ? <ErrorCaja fallo={avance.fallo} onReintentar={() => void avanzar('finalizado')} /> : null}
       </Hoja>
     </PantallaSecundaria>
+  );
+}
+
+/** Cronómetro del trabajo en curso (solo para vos: no es una medida de puntualidad ni se le muestra a nadie). */
+function EnCurso({ eventos }: { eventos: Detalle['eventos'] }) {
+  const ahora = useAhora(1000);
+  const desde = inicioEnCurso(eventos);
+  if (!desde) return null;
+  return (
+    <p className="nu-cronometro">
+      <span>Trabajando hace</span>
+      <strong role="timer" aria-live="off">
+        {cronometro(desde, ahora)}
+      </strong>
+    </p>
   );
 }
 
