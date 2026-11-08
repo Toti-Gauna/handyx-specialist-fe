@@ -18,8 +18,3 @@ export function Formulario({ id, onEnviar, children, etiqueta }: { id?: string; 
     </form>
   );
 }
-
-/** Fila con dos cosas en los extremos que baja de renglón si no entra (casilla a la izquierda, enlace a la derecha). */
-export function FilaEntre({ children }: { children: ReactNode }) {
-  return <div className="ui-fila-entre">{children}</div>;
-}
