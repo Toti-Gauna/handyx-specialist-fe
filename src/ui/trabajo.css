@@ -1,0 +1,386 @@
+/* Kit v3 · piezas del Modo trabajo y del cierre (lote 2.3): CabeceraTrabajo, ListaTareas, AccesoRapido, Comparador,
+   FotosLado y FilaContacto. Fuente: design/deluxe/gen/fila_h0b.py y fila_h0c.py. Botones y casillas grandes para
+   usar con guantes (≥ 56 px); el movimiento, solo con prefers-reduced-motion: no-preference. */
+
+/* ── Cabecera azul del Modo trabajo ───────────────────── */
+.ui-cabecera-trabajo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 18px;
+  border-radius: 0 0 30px 30px;
+  background: var(--ui-azul);
+  box-shadow: 0 12px 30px -16px rgb(14 29 54 / 0.55);
+  color: #fff;
+}
+.ui-cabecera-trabajo__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ui-cabecera-trabajo .ui-boton-icono--vidrio {
+  width: 48px;
+  height: 48px;
+  color: #fff;
+}
+.ui-cabecera-trabajo__datos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 14px;
+}
+.ui-cabecera-trabajo__nombre {
+  display: flex;
+  flex: 1 1 10rem;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-cabecera-trabajo__nombre h1 {
+  margin: 0;
+  font-family: var(--ui-titulos);
+  font-size: 1.25rem;
+  font-weight: 900;
+  font-stretch: 112%;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+.ui-cabecera-trabajo__nombre span {
+  color: #f0f5fd;
+  font-size: var(--ui-texto-chico);
+}
+.ui-cabecera-trabajo__reloj {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.ui-cabecera-trabajo__reloj strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.875rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.ui-cabecera-trabajo__reloj span {
+  color: #f0f5fd;
+  font-size: var(--ui-texto-min);
+  font-weight: 700;
+}
+.ui-cabecera-trabajo__avance {
+  display: flex;
+  gap: 6px;
+}
+.ui-cabecera-trabajo__tramo {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 0.3);
+}
+.ui-cabecera-trabajo__tramo--lleno {
+  background: var(--ui-amarillo);
+}
+
+/* ── Lista de tareas grande ───────────────────────────── */
+.ui-tareas {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-tareas__fila {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 10px;
+  border-radius: 16px;
+  cursor: pointer;
+}
+.ui-tareas__item--actual .ui-tareas__fila {
+  background: var(--ui-tinte);
+}
+/* La casilla real cubre toda la fila: el área táctil es la fila entera (≥ 60 px). */
+.ui-tareas__control {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ui-tareas__caja {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #8a93a3;
+  border-radius: 11px;
+  background: #fff;
+  color: #fff;
+}
+.ui-tareas__item--actual .ui-tareas__caja {
+  border: 3px solid var(--ui-azul);
+}
+.ui-tareas__item--hecha .ui-tareas__caja {
+  border-color: var(--ui-azul);
+  background: var(--ui-azul);
+}
+.ui-tareas__control:focus-visible + .ui-tareas__caja {
+  outline: 3px solid var(--ui-amarillo-hondo);
+  outline-offset: 3px;
+}
+.ui-tareas__control:disabled ~ * {
+  opacity: 0.7;
+}
+.ui-tareas__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-tareas__titulo {
+  font-size: var(--ui-texto-base);
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.ui-tareas__item--actual .ui-tareas__titulo {
+  font-weight: 800;
+}
+.ui-tareas__item--hecha .ui-tareas__titulo {
+  color: var(--ui-texto);
+  text-decoration: line-through;
+}
+.ui-tareas__detalle {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-tareas__seguridad {
+  color: var(--ui-azul);
+}
+
+/* ── Accesos de un toque ──────────────────────────────── */
+.ui-accesos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 4.6rem), 1fr));
+  gap: 8px;
+}
+.ui-acceso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 76px;
+  padding: 8px 4px;
+  border: 1px solid var(--ui-borde);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+  color: var(--ui-tinta);
+  font: 800 var(--ui-texto-chico) / 1.15 var(--ui-fuente);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ui-acceso .ui-icono {
+  color: var(--ui-azul);
+}
+.ui-acceso:focus-visible {
+  outline: 3px solid var(--ui-amarillo-hondo);
+  outline-offset: 2px;
+}
+
+/* ── Comparador antes y después ───────────────────────── */
+.ui-comparador {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ui-comparador__marco {
+  --ui-corte: 50%;
+  position: relative;
+  height: clamp(220px, 62vw, 320px);
+  overflow: hidden;
+  border-radius: 26px;
+  background: var(--ui-mosaico);
+  box-shadow: var(--ui-elev-2);
+}
+.ui-comparador__marco:has(.ui-comparador__control:focus-visible) {
+  outline: 3px solid var(--ui-amarillo-hondo);
+  outline-offset: 3px;
+}
+.ui-comparador__foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ui-comparador__despues {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 0 0 var(--ui-corte));
+}
+.ui-comparador__rotulo {
+  position: absolute;
+  top: 12px;
+  z-index: 1;
+}
+.ui-comparador__rotulo--antes {
+  left: 12px;
+}
+.ui-comparador__rotulo--despues {
+  right: 12px;
+}
+.ui-comparador__linea {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--ui-corte);
+  width: 4px;
+  margin-left: -2px;
+  background: #fff;
+}
+.ui-comparador__manija {
+  position: absolute;
+  top: 50%;
+  left: var(--ui-corte);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--ui-elev-2);
+  color: var(--ui-tinta);
+}
+.ui-comparador__control {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  touch-action: pan-y;
+}
+.ui-comparador__botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ui-comparador__boton {
+  flex: 1 1 7rem;
+  min-height: 48px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--ui-mosaico);
+  color: var(--ui-tinta);
+  font: 800 var(--ui-texto-chico) / 1.2 var(--ui-fuente);
+  cursor: pointer;
+}
+.ui-comparador__boton[aria-pressed='true'] {
+  background: var(--ui-noche);
+  color: #fff;
+}
+.ui-comparador__boton:focus-visible {
+  outline: 3px solid var(--ui-amarillo-hondo);
+  outline-offset: 2px;
+}
+
+/* ── Fotos lado a lado ────────────────────────────────── */
+.ui-fotos-lado {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: 10px;
+}
+.ui-fotos-lado__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+.ui-fotos-lado__marco {
+  position: relative;
+  display: block;
+  height: 230px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--ui-mosaico);
+  box-shadow: var(--ui-elev-1);
+}
+.ui-fotos-lado__marco img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ui-fotos-lado__rotulo {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+.ui-fotos-lado figcaption {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  text-align: center;
+}
+
+/* ── Contacto profesional ─────────────────────────────── */
+.ui-contacto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+}
+.ui-contacto + .ui-contacto {
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-contacto__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+}
+.ui-contacto__texto {
+  display: flex;
+  flex: 1 1 9rem;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.ui-contacto__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ui-contacto__botones {
+  display: flex;
+  gap: 8px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ui-acceso,
+  .ui-tareas__caja {
+    transition:
+      transform var(--ui-dur) var(--ui-curva),
+      background-color var(--ui-dur) var(--ui-curva);
+  }
+  .ui-acceso:active {
+    transform: translateY(2px);
+  }
+}

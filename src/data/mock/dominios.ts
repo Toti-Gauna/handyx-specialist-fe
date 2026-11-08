@@ -8,6 +8,7 @@ import { cuenta } from './cuenta.ts';
 import type { EstadoMock } from './estado.ts';
 import { ingresos } from './ingresos.ts';
 import { mensajes } from './mensajes.ts';
+import { modoTrabajo } from './modo-trabajo.ts';
 import { obras } from './obras.ts';
 import { pedidos } from './pedidos.ts';
 import { presupuestos } from './presupuestos.ts';
@@ -35,4 +36,5 @@ export const metodosMock = (s: EstadoMock) => ({
   ...agenda(s),
   ...ingresos(s),
   ...presupuestos(s),
+  ...modoTrabajo(s),
 });

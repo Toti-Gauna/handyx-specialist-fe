@@ -26,6 +26,7 @@ import {
 import { BASE_PRUEBA, destinoPrueba, zonaPrueba } from './mapa.ts';
 import { FOTO_PRUEBA } from './fotos.ts';
 import { sembrarNucleo } from './nucleo.ts';
+import { sembrarModoTrabajo } from './modo-trabajo.ts';
 import { calcularFaltantes } from './reglas.ts';
 import { turnosDePrueba } from './turnos.ts';
 
@@ -528,6 +529,8 @@ export function crearEstado(escenario: Escenario): EstadoMock {
 
   // Lote 1.3: el trabajo de hoy de Lucía Ferreyra y pedidos fuera de tus zonas para «Me voy hasta…».
   sembrarNucleo(s, T0);
+  // Lote 2.3: un trabajo en curso con el Modo trabajo andando y dos informes (uno mandado y otro por mandar).
+  sembrarModoTrabajo(s, T0, { enviado: ID.t2, porMandar: ID.t3 });
 
   if (escenario === 'baja') {
     s.baja = {

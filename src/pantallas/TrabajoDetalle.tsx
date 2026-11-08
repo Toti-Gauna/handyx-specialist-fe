@@ -87,6 +87,8 @@ function Trabajo({ d, recargar, falloCarga }: { d: Detalle; recargar(): Promise<
     if (r.ok) {
       setTerminar(false);
       if (hacia === 'en_camino') router.push(`${RUTAS.enCamino.ruta}${q}`);
+      // El Modo trabajo (lote 2.3) se abre al empezar.
+      if (hacia === 'en_curso' && !obra) router.push(`${RUTAS.modoTrabajo.ruta}${q}`);
       if (hacia === 'finalizado') router.push(`${RUTAS.trabajoCobro.ruta}${q}`);
     } else if (r.fallo.tipo === 'conflicto') {
       avance.nueva();
@@ -123,9 +125,14 @@ function Trabajo({ d, recargar, falloCarga }: { d: Detalle; recargar(): Promise<
     );
   else if (t.estado === 'en_curso' && !obra)
     accion = (
-      <Boton icono="check" onClick={() => setTerminar(true)}>
-        Terminé
-      </Boton>
+      <>
+        <BotonEnlace icono="herramienta" href={`${RUTAS.modoTrabajo.ruta}${q}`}>
+          Volver al Modo trabajo
+        </BotonEnlace>
+        <Boton variante="texto" onClick={() => setTerminar(true)}>
+          Terminé
+        </Boton>
+      </>
     );
   else if (t.estado === 'finalizado' && d.pagoId && !obra)
     accion = (
@@ -190,8 +197,14 @@ function Trabajo({ d, recargar, falloCarga }: { d: Detalle; recargar(): Promise<
       <div className="nu-mosaicos">
         <MosaicoHerramienta icono="chat" titulo="Mensaje" href={`${RUTAS.hilo.ruta}?id=${t.conversacionId}`} />
         {activo && !d.cambioPendiente && t.estado !== 'en_curso' ? <MosaicoHerramienta icono="agenda" titulo="Cambiar fecha" href={`${RUTAS.trabajoCambio.ruta}${q}`} /> : null}
-        {/* Modo trabajo (H0-Modo) es del lote 2.3: mientras tanto, lleva a las herramientas del Taller. */}
-        <MosaicoHerramienta icono="herramienta" titulo="Modo trabajo" href={RUTAS.taller.ruta} />
+        {/* Modo trabajo (H0-Modo) e informe (H0-Informe) del lote 2.3; antes de empezar, las herramientas del Taller. */}
+        {t.estado === 'en_curso' && !obra ? (
+          <MosaicoHerramienta icono="herramienta" titulo="Modo trabajo" href={`${RUTAS.modoTrabajo.ruta}${q}`} />
+        ) : t.estado === 'finalizado' && !obra ? (
+          <MosaicoHerramienta icono="escudo" titulo="Informe" href={`${RUTAS.informeTrabajo.ruta}${q}`} />
+        ) : (
+          <MosaicoHerramienta icono="herramienta" titulo="Taller" href={RUTAS.taller.ruta} />
+        )}
       </div>
 
       {d.adicionales.length > 0 ? (

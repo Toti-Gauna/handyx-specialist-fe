@@ -1,7 +1,9 @@
-// Recorrido RC-Dia del lienzo, hasta la llegada y el cobro (lote 1.3): F-InicioDia → F-InicioRuta → TR-EnCamino →
-// (Modo trabajo, lote 2.3) → TR-Cobro. Además: avisar una demora con un toque, reordenar paradas con botones (no cambia
-// el horario de ningún cliente), compartir la ubicación solo durante el viaje, «Ya llegué» de respaldo y el cobro
-// informado ≠ verificado. Axe en cada pantalla.
+// Recorrido RC-Dia del lienzo: F-InicioDia → F-InicioRuta → TR-EnCamino (lote 1.3) → H0-Modo → H0-ModoHerramientas →
+// H0-ModoAyuda → H0-AntesDespues → H0-AntesLado → TR-Cobro → H0-Informe → H0-InformeEnviado (lote 2.3, el cierre).
+// Además: avisar una demora con un toque, reordenar paradas con botones (no cambia el horario de ningún cliente),
+// compartir la ubicación solo durante el viaje, «Ya llegué» de respaldo, el cobro informado ≠ verificado, tareas que
+// empiezan por la seguridad, pausa, pedir ayuda sin ver teléfonos, fotos sin ubicación, el informe que se completa solo
+// y la conformidad que da el cliente (el Panel de prueba hace de cliente). Axe en cada pantalla.
 // Lo corre e2e/flujos.cjs (carga todos los e2e/recorridos/*.cjs) o solo: `node e2e/recorridos/RC-Dia.cjs` sobre out/.
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
@@ -82,8 +84,84 @@ const RECORRIDOS = [
       await ver(p, 'En el lugar');
       await ver(p, 'Avisaste con «Ya llegué» (ubicación imprecisa)');
       await p.getByRole('button', { name: 'Empezar el trabajo' }).click();
-      await ver(p, 'Trabajando hace');
-      await p.getByRole('button', { name: 'Terminé', exact: true }).click();
+      // Modo trabajo (lote 2.3): se abre al empezar, con las tareas de seguridad primero
+      await p.waitForURL('**/trabajos/modo/**');
+      await ver(p, 'Tus tareas · 0 de 4');
+      await p.locator('[aria-current="step"]').getByText('Cerrar la llave y descargar presión').waitFor();
+      await foto('08-modo-trabajo');
+      await axe(p, 'H0-Modo');
+      await sinAnimar(p, 'H0-Modo');
+      await p.getByRole('button', { name: 'Tarea lista' }).click();
+      await ver(p, 'Tus tareas · 1 de 4');
+      await p.getByRole('checkbox', { name: /Cerrar la llave/ }).uncheck();
+      await ver(p, 'Tus tareas · 0 de 4');
+      await p.getByRole('checkbox', { name: /Cerrar la llave/ }).check();
+      await ver(p, 'Tus tareas · 1 de 4');
+      await p.getByRole('button', { name: 'Pausar' }).click();
+      await ver(p, 'El cronómetro está en pausa');
+      await p.getByRole('button', { name: 'Seguir trabajando' }).click();
+      await p.getByRole('button', { name: 'Pausar' }).waitFor();
+      // Herramientas a mano, en una hoja
+      await p.getByRole('button', { name: /^Herramientas/ }).click();
+      await p.getByRole('dialog', { name: 'Herramientas' }).getByText('Calculadoras').waitFor();
+      await foto('09-herramientas');
+      await axe(p, 'H0-ModoHerramientas');
+      await p.getByRole('dialog', { name: 'Herramientas' }).getByRole('link', { name: 'Pedir ayuda' }).click();
+      // Pedir ayuda: llamar por un número puente, sumar a un contacto (invitación) o buscar uno nuevo
+      await p.waitForURL('**/trabajos/modo/ayuda/**');
+      await ver(p, 'Diego Herrera');
+      await ver(p, 'Ocupado hasta las 19');
+      await foto('10-pedir-ayuda');
+      await axe(p, 'H0-ModoAyuda');
+      await p.getByRole('button', { name: 'Llamar a Diego Herrera' }).click();
+      await ver(p, 'ninguno de los dos ve el teléfono del otro');
+      await ver(p, 'El número sirve hasta');
+      await p.keyboard.press('Escape');
+      await p.getByRole('button', { name: 'Sumar a Diego a este trabajo' }).click();
+      await p.getByRole('button', { name: 'Invitar a Diego Herrera' }).click();
+      await ver(p, 'Invitaste a Diego Herrera');
+      await p.getByRole('link', { name: 'Buscar un profesional nuevo' }).waitFor();
+      await p.getByRole('link', { name: 'Volver' }).click();
+      // Antes y después: deslizar (con botones y teclado) y lado a lado, y qué cambiaste
+      await p.waitForURL('**/trabajos/modo/?**');
+      await p.getByRole('link', { name: 'Foto' }).click();
+      await p.waitForURL('**/trabajos/antes-despues/**');
+      await ver(p, 'Todavía no hay fotos');
+      await p.getByRole('button', { name: 'Foto del antes' }).click();
+      await ver(p, 'Falta la foto del después');
+      await p.getByRole('button', { name: 'Foto del después' }).click();
+      const manija = p.getByRole('slider', { name: 'Comparar el antes y el después' });
+      await manija.waitFor();
+      await manija.focus();
+      await p.keyboard.press('ArrowRight');
+      assert.equal(await manija.getAttribute('aria-valuetext'), 'Se ve 55 % del antes y 45 % del después');
+      await p.getByRole('button', { name: 'Ver el después' }).click();
+      assert.equal(await manija.getAttribute('aria-valuetext'), 'Se ve 0 % del antes y 100 % del después');
+      await p.getByRole('button', { name: 'Agregar' }).click();
+      await p.getByRole('dialog').getByLabel('Qué cambiaste', { exact: true }).fill('Cartucho nuevo');
+      await p.getByRole('dialog').getByLabel('Detalle (si querés)').fill('Cerámico de 35 mm');
+      await p.getByRole('button', { name: 'Sumar el cambio' }).click();
+      await p.getByRole('button', { name: 'Quitar: Cartucho nuevo' }).waitFor();
+      await foto('11-antes-despues');
+      await axe(p, 'H0-AntesDespues');
+      await p.getByRole('radio', { name: 'Lado a lado' }).check();
+      await p.waitForURL('**vista=lado**');
+      await p.locator('figcaption').first().waitFor();
+      await foto('12-lado-a-lado');
+      await axe(p, 'H0-AntesLado');
+      await p.getByRole('button', { name: 'Sumar al informe' }).click();
+      // El informe, todavía en curso: se completa solo y se manda al terminar
+      await p.waitForURL('**/trabajos/informe/**');
+      await ver(p, '1 par de fotos · 1 cambio escrito');
+      await ver(p, 'Lo mandás cuando terminás el trabajo.');
+      await axe(p, 'H0-Informe en curso');
+      await p.getByRole('link', { name: 'Volver al Modo trabajo' }).click();
+      await p.waitForURL('**/trabajos/modo/**');
+      for (const n of [2, 3, 4]) {
+        await p.getByRole('button', { name: 'Tarea lista' }).click();
+        await ver(p, `Tus tareas · ${n} de 4`);
+      }
+      await p.locator('.ui-accion-fija').getByRole('button', { name: 'Terminé el trabajo' }).click();
       await ver(p, 'Total a cobrar');
       await p.getByRole('button', { name: 'Sí, terminé' }).click();
       // ¿Cómo te pagó?: informado por vos, todavía sin verificar
@@ -97,6 +175,73 @@ const RECORRIDOS = [
       await ver(p, 'Queda «informado por vos» hasta que Lucía Ferreyra lo confirma');
       await foto('07-cobro-informado');
       await axe(p, 'TR-Cobro informado');
+      // Informe del trabajo: secciones que se completan solas; se completa la que falta y se manda
+      await p.getByRole('link', { name: 'Armar el informe' }).click();
+      await p.waitForURL('**/trabajos/informe/**');
+      await ver(p, 'Probar sin pérdidas 10 minutos');
+      await p.getByRole('button', { name: /^Qué encontraste/ }).click();
+      await p.getByRole('dialog').getByLabel('Qué encontraste').fill('El disco del cartucho estaba gastado.');
+      await p.getByRole('button', { name: 'Guardar la sección' }).click();
+      await ver(p, 'Guardaste la sección');
+      await ver(p, 'Casi listo · 4 de 5');
+      await foto('13-informe');
+      await axe(p, 'H0-Informe');
+      await sinAnimar(p, 'H0-Informe');
+      await p.getByRole('button', { name: 'Mandar informe y pedir conformidad' }).click();
+      await ver(p, 'Sin completar (no sale en el informe): Qué conviene hacer después.');
+      await p.getByRole('radio', { name: 'En 1 año' }).check();
+      await ver(p, 'Te avisamos a vos el 17/11/2027');
+      await p.getByRole('button', { name: 'Mandar el informe' }).click();
+      // Informe enviado: conformidad del cliente, garantía activa, recordatorio para vos y el cobro por verificar
+      await p.waitForURL('**/trabajos/informe/enviado/**');
+      await ver(p, 'Le llegó a');
+      await ver(p, 'Esperando');
+      await ver(p, '30 días · hasta el 17/12');
+      await ver(p, '17/11/2027 · te avisamos a vos');
+      await ver(p, 'Por verificar');
+      await foto('14-informe-enviado');
+      await axe(p, 'H0-InformeEnviado');
+      await panel(p, 'Da su conformidad con el último informe');
+      await ver(p, 'Dio su conformidad');
+      await p.getByRole('link', { name: 'Volver a tu día' }).click();
+      await p.waitForURL('**/inicio/**');
+    },
+  ],
+  [
+    'RC-Dia-2-modo-trabajo-agenda-y-notas',
+    async ({ p, base, foto }) => {
+      const deposito = '00000000-0000-4000-8000-000000023001';
+      // Un trabajo que sigue de ayer: notas, una tarea nueva y la agenda desde el trabajo
+      await p.goto(`${base}/trabajos/modo/?id=${deposito}&escenario=habilitado`);
+      await ver(p, 'Tus tareas · 2 de 4');
+      await p.getByRole('timer').waitFor();
+      await p.getByRole('button', { name: /^Nota de voz o escrita/ }).click();
+      await p.getByLabel('Tu nota').fill('El cliente pidió dejar la llave cerrada');
+      await p.getByRole('button', { name: 'Guardar la nota' }).click();
+      await ver(p, '2 en este trabajo · la ves solo vos');
+      await p.getByRole('button', { name: 'Tarea', exact: true }).click();
+      await p.getByLabel('¿Qué hay que hacer?').fill('Limpiar y secar el piso');
+      await p.getByLabel('Es un paso de seguridad').check();
+      await p.getByRole('button', { name: 'Sumar la tarea' }).click();
+      await ver(p, 'Tus tareas · 2 de 5');
+      await foto('01-modo-seguido');
+      await p.getByRole('link', { name: 'Agenda' }).click();
+      await p.waitForURL('**/trabajos/modo/agenda/**');
+      await ver(p, 'Lo que sigue');
+      await ver(p, 'Trabajo · Lucía Ferreyra');
+      await foto('02-agenda-desde-el-trabajo');
+      await axe(p, 'H0-ModoAgenda');
+      await p.getByRole('button', { name: 'Llego 15 min tarde' }).click();
+      await ver(p, 'Avisaste que llegás 15 minutos tarde.');
+      assert.equal(await p.getByRole('button', { name: 'Llego 15 min tarde' }).getAttribute('aria-pressed'), 'true');
+      await p.getByRole('link', { name: 'Proponer otro horario' }).waitFor();
+      // Sin conexión no se guarda nada (sin cola offline): se avisa y se puede reintentar
+      await p.goto(`${base}/trabajos/modo/?id=${deposito}`);
+      await ver(p, 'Tus tareas · 2 de 4');
+      await panel(p, 'Sin conexión (red caída)');
+      await p.getByRole('button', { name: 'Tarea lista' }).click();
+      await p.getByRole('alert').first().waitFor();
+      await ver(p, 'Tus tareas · 2 de 4');
     },
   ],
 ];
