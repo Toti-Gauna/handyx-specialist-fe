@@ -220,8 +220,7 @@ export const ingresos = (s: EstadoMock) => ({
     const g = extra(s).gastos.find((x) => x.id === id);
     if (!g) throw fallo('no_encontrado', 404, 'no_encontrado', 'No encontramos ese gasto.');
     if (ok.data.version !== g.version) throw fallo('conflicto', 409, 'conflicto_version', 'El gasto cambió. Volvé a cargarlo.');
-    const { version: _v, ...campos } = ok.data;
-    Object.assign(g, Object.fromEntries(Object.entries(campos).filter(([, v]) => v !== undefined)));
+    for (const [campo, valor] of Object.entries(ok.data)) if (campo !== 'version' && valor !== undefined) Object.assign(g, { [campo]: valor });
     g.version += 1;
     return structuredClone(g);
   },
