@@ -4,6 +4,8 @@ import { CODIGOS_RESPALDO_PRUEBA, CUENTA_SEGUNDA_VERIFICACION_PRUEBA } from './m
 import { crearApiMockConEstado } from './mock/adaptador.ts';
 import { crearControles, type ControlesPrueba } from './mock/controles.ts';
 import type { AyudasPrueba, CamaraPrueba } from './ayudas.ts';
+import { sensoresPrueba as sensores } from './mock/sensores.tsx';
+import type { SensoresPrueba } from './sensores.ts';
 import { camaraPrueba as camara } from './mock/camara.tsx';
 import type { FuenteUbicacion } from '../lib/ubicacion.ts';
 import { crearGpsSimulado } from './mock/gps.ts';
@@ -38,3 +40,6 @@ export const ayudasPrueba: AyudasPrueba | null = {
 
 /** Cámara simulada del alta (lote 4.4). */
 export const camaraPrueba: CamaraPrueba | null = camara;
+
+/** Cámara, giroscopio y lector de códigos simulados de las herramientas del teléfono (lote 2.4). */
+export const sensoresPrueba: SensoresPrueba | null = sensores;

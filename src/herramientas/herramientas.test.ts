@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { convertir, leerNumero, mostrarNumero } from './conversor.ts';
+import { describirNivel, leerNivel } from './nivel.ts';
 import { anguloEntre, escalaTarjeta, moverPunto, resumirMedidas, textoParaCompartir, tramosEnAr, tramosEnFoto, TARJETA_LARGO_MM } from './medir.ts';
 
 const cerca = (a: number, b: number, t = 1e-6) => assert.ok(Math.abs(a - b) <= t, `${a} ≉ ${b}`);
@@ -54,5 +55,19 @@ describe('conversor', () => {
     assert.equal(leerNumero('1/0'), null);
     assert.equal(mostrarNumero(19.05), '19,05');
     assert.equal(mostrarNumero(1250), '1.250');
+  });
+});
+
+describe('nivel, pared y plomada', () => {
+  it('dice hacia dónde está inclinado', () => {
+    assert.deepEqual(describirNivel({ beta: 0.1, gamma: -0.4 }, 'superficie'), { estado: 'casi', grados: '0,4°', texto: 'Casi a nivel · inclinado hacia la izquierda' });
+    assert.equal(describirNivel({ beta: 0, gamma: 0.1 }, 'superficie').texto, 'A nivel');
+    assert.equal(describirNivel({ beta: 87, gamma: 0 }, 'plomada').texto, 'Fuera de plomo · inclinado hacia atrás');
+    assert.equal(describirNivel({ beta: 5, gamma: 0.6 }, 'pared').texto, 'Casi a nivel · inclinado hacia la derecha');
+  });
+  it('la burbuja se va al lado alto y se calibra', () => {
+    const l = leerNivel({ beta: 0, gamma: 5 }, 'superficie');
+    assert.equal(l.x, -0.5);
+    assert.equal(leerNivel({ beta: 1, gamma: 1 }, 'superficie', { beta: 1, gamma: 1 }).angulo, 0);
   });
 });
