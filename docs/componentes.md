@@ -5,58 +5,58 @@ Componentes de `src/components/`. Reglas de forma: `docs/diseno.md`. Cada fila d
 
 ## Base (`ui.tsx`, `Icono.tsx`, `Handy.tsx`)
 
-| Componente | Para qué | Variantes y estados | Accesibilidad | Captura |
-|---|---|---|---|---|
-| `Chip` / `ChipTexto` | Estado (alta, documento, propuesta, trabajo, pago, caso) | Tonos `exito`, `aviso`, `error`, `azul`, `neutro`; siempre con ícono y texto (`lib/etiquetas.ts`) | El texto dice el estado; el color es apoyo | `trabajos`, `caja` |
-| `ChipTipo` | Tipo de pedido o trabajo | Urgente (oscuro con rayo), programado y obra (neutros) | Nunca se confunde con un estado | `pedidos` |
-| `Aviso` | Mensaje en la pantalla | Tonos de estado, título opcional, `role="alert"` o `status` | Anunciado por lector de pantalla según el rol | `alta-correccion` |
-| `Campo`, `AreaTexto`, `Seleccion`, `Casilla` | Formularios | Ayuda y error por campo | `label` asociado, `aria-invalid`, `aria-describedby`; foco al primer error (`lib/foco.ts`) | `registro`, `alta-borrador` |
-| `Interruptor` | Encender o apagar (Ahora, programados, preferencias) | Activo, inactivo, deshabilitado | `role="switch"` con "Sí"/"No" visible | `disponibilidad` |
-| `Pasos` | Progreso del alta | "Paso N de 6 · X" + barra segmentada | El texto se anuncia; la barra es decorativa | `alta-borrador` |
-| `Seccion`, `Tarjeta`, `Dato`, `Cabecera` | Estructura | Tarjeta blanca, gris, azul, noche o amarilla | Títulos h1/h2 en orden | todas |
-| `Icono` | Íconos de línea de la landing | 44 nombres | Decorativos (`aria-hidden`) | todas |
-| `Handy` | Personajes de marca | `grupo`, `lamparita`, `lamparita-rota`, `engranaje-roto`, `llave-rota`, `cano-roto`; `handy--tambalea` | Siempre decorativo (`alt=""`): el texto de al lado dice lo que pasa | `acceso`, `error-red`, `sin-conexion` |
+| Componente                                   | Para qué                                                 | Variantes y estados                                                                                    | Accesibilidad                                                                              | Captura                               |
+| -------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------- |
+| `Chip` / `ChipTexto`                         | Estado (alta, documento, propuesta, trabajo, pago, caso) | Tonos `exito`, `aviso`, `error`, `azul`, `neutro`; siempre con ícono y texto (`lib/etiquetas.ts`)      | El texto dice el estado; el color es apoyo                                                 | `trabajos`, `caja`                    |
+| `ChipTipo`                                   | Tipo de pedido o trabajo                                 | Urgente (oscuro con rayo), programado y obra (neutros)                                                 | Nunca se confunde con un estado                                                            | `pedidos`                             |
+| `Aviso`                                      | Mensaje en la pantalla                                   | Tonos de estado, título opcional, `role="alert"` o `status`                                            | Anunciado por lector de pantalla según el rol                                              | `alta-correccion`                     |
+| `Campo`, `AreaTexto`, `Seleccion`, `Casilla` | Formularios                                              | Ayuda y error por campo                                                                                | `label` asociado, `aria-invalid`, `aria-describedby`; foco al primer error (`lib/foco.ts`) | `registro`, `alta-borrador`           |
+| `Interruptor`                                | Encender o apagar (Ahora, programados, preferencias)     | Activo, inactivo, deshabilitado                                                                        | `role="switch"` con "Sí"/"No" visible                                                      | `disponibilidad`                      |
+| `Pasos`                                      | Progreso del alta                                        | "Paso N de 6 · X" + barra segmentada                                                                   | El texto se anuncia; la barra es decorativa                                                | `alta-borrador`                       |
+| `Seccion`, `Tarjeta`, `Dato`, `Cabecera`     | Estructura                                               | Tarjeta blanca, gris, azul, noche o amarilla                                                           | Títulos h1/h2 en orden                                                                     | todas                                 |
+| `Icono`                                      | Íconos de línea de la landing                            | 44 nombres                                                                                             | Decorativos (`aria-hidden`)                                                                | todas                                 |
+| `Handy`                                      | Personajes de marca                                      | `grupo`, `lamparita`, `lamparita-rota`, `engranaje-roto`, `llave-rota`, `cano-roto`; `handy--tambalea` | Siempre decorativo (`alt=""`): el texto de al lado dice lo que pasa                        | `acceso`, `error-red`, `sin-conexion` |
 
 ## Estados de pantalla (`Estados.tsx`, `SinConexion.tsx`)
 
-| Componente | Cuándo | Qué muestra | Captura |
-|---|---|---|---|
-| `Cargando` | Primera carga | Esqueleto gris que late (quieto con "reducir movimiento"). Aparece recién si la espera pasa de 0,5 s: las cargas cortas (y el paso de la pantalla de carga a la app) no muestran bloques | El aviso "Cargando…" para lectores de pantalla está desde el principio |
-| `ErrorCaja` | Una consulta falló | Con `pantalla` y falla de red o del servidor, el `EstadoError` del kit v3 (D6-Error «Se nos desenchufó algo» / D6-Fallo «Estamos en obra», lote 0.2). En el resto, Handy roto según la falla (lamparita: red; llave: no encontrado o permiso; engranaje: el resto), mensaje seguro, referencia y "Reintentar". Conserva lo ya cargado. **Nunca cae a datos de prueba** | `error-red`, `error-servidor` |
-| `Vacio` | No hay nada que mostrar | Ícono de línea + título + ayuda | `inicio-sin-habilitar` |
-| `AvisoSinConexion` | El teléfono no tiene red | Franja oscura con la lamparita rota bajo la cabecera | recorrido J (`npm run e2e`) |
-| `/sin-conexion/` | Sin red y la pantalla no está guardada | Caño roto, "Probar de nuevo"; HTML estático sin datos | `sin-conexion` |
-| `not-found` | Ruta inexistente | Llave rota y "Volver al inicio" | `no-encontrada` |
+| Componente         | Cuándo                                 | Qué muestra                                                                                                                                                                                                                                                                                                                                                            | Captura                                                                |
+| ------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `Cargando`         | Primera carga                          | Esqueleto gris que late (quieto con "reducir movimiento"). Aparece recién si la espera pasa de 0,5 s: las cargas cortas (y el paso de la pantalla de carga a la app) no muestran bloques                                                                                                                                                                               | El aviso "Cargando…" para lectores de pantalla está desde el principio |
+| `ErrorCaja`        | Una consulta falló                     | Con `pantalla` y falla de red o del servidor, el `EstadoError` del kit v3 (D6-Error «Se nos desenchufó algo» / D6-Fallo «Estamos en obra», lote 0.2). En el resto, Handy roto según la falla (lamparita: red; llave: no encontrado o permiso; engranaje: el resto), mensaje seguro, referencia y "Reintentar". Conserva lo ya cargado. **Nunca cae a datos de prueba** | `error-red`, `error-servidor`                                          |
+| `Vacio`            | No hay nada que mostrar                | Ícono de línea + título + ayuda                                                                                                                                                                                                                                                                                                                                        | `inicio-sin-habilitar`                                                 |
+| `AvisoSinConexion` | El teléfono no tiene red               | Franja oscura con la lamparita rota bajo la cabecera                                                                                                                                                                                                                                                                                                                   | recorrido J (`npm run e2e`)                                            |
+| `/sin-conexion/`   | Sin red y la pantalla no está guardada | Caño roto, "Probar de nuevo"; HTML estático sin datos                                                                                                                                                                                                                                                                                                                  | `sin-conexion`                                                         |
+| `not-found`        | Ruta inexistente                       | Llave rota y "Volver al inicio"                                                                                                                                                                                                                                                                                                                                        | `no-encontrada`                                                        |
 
 ## Marco y navegación
 
-| Componente | Qué hace |
-|---|---|
-| `MarcoApp` | Cabecera con logo y avisos, franja sin conexión, contenido y la `BarraPestanas` del kit v3 (Inicio · Obras · Taller · Mensajes · Cuenta; lote 0.2). Sin riel lateral: la app es solo para el celular |
-| `SoloCelular` (`src/ui/plantillas/`) | En el layout raíz: con ≥ 900 px y mouse muestra `PantallaEscritorio` (X-Escritorio) en vez de la app. `/catalogo/` queda afuera |
-| `GuardiaApp` / `Puerta` | Llevan a acceso o al alta según la sesión y el estado del alta (los decide el servidor) |
-| `BannerPrueba` | Banner amarillo "Datos de prueba" + Panel de prueba. **Solo en el mock**: no entra en `build:hostinger` |
-| `Volver` | Enlace de regreso con área táctil de 44 px |
-| `RegistrarSw` | Registra el service worker en un build (no en `next dev`) |
+| Componente                           | Qué hace                                                                                                                                                                                             |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MarcoApp`                           | Cabecera con logo y avisos, franja sin conexión, contenido y la `BarraPestanas` del kit v3 (Inicio · Obras · Taller · Mensajes · Cuenta; lote 0.2). Sin riel lateral: la app es solo para el celular |
+| `SoloCelular` (`src/ui/plantillas/`) | En el layout raíz: con ≥ 900 px y mouse muestra `PantallaEscritorio` (X-Escritorio) en vez de la app. `/catalogo/` queda afuera                                                                      |
+| `GuardiaApp` / `Puerta`              | Llevan a acceso o al alta según la sesión y el estado del alta (los decide el servidor)                                                                                                              |
+| `BannerPrueba`                       | Banner amarillo "Datos de prueba" + Panel de prueba. **Solo en el mock**: no entra en `build:hostinger`                                                                                              |
+| `Volver`                             | Enlace de regreso con área táctil de 44 px                                                                                                                                                           |
+| `RegistrarSw`                        | Registra el service worker en un build (no en `next dev`)                                                                                                                                            |
 
 ## Decisiones y negocio
 
-| Componente | Reglas que garantiza | Captura |
-|---|---|---|
-| `Hoja` | Confirmación en `<dialog>` modal: foco atrapado y circular, Escape cierra si es cerrable, entra deslizando | (diálogos en `npm run accesibilidad`) |
-| `TarjetaPedido` | Enlace al detalle; nunca acepta. Tipo → rubro → zona y fecha → descripción → búsqueda | `pedidos`, `inicio` |
-| `TarjetaPropuesta` | Monto, horario, alcance y "Vence en" neutro; aceptar verde y rechazar en contorno rojo, con confirmación | `pedido-programado` |
-| (retirados) | `FormPropuesta` y `FormCambio` ya no existen: las propuestas van por Tu precio (también desde el chat, que vuelve al chat) y los cambios de fecha por Cambiar la fecha | — |
-| `CobroDirecto` (4.6 y 4.7) | El estado de un cobro con texto y "Ya me pagó: informarlo" con confirmación; queda "reportado", nunca verificado. Sirve para el trabajo terminado y para cada etapa de una obra | `trabajo-terminaste`, `obra-plan` |
-| `ResumenObra` (4.7) | Anillo de avance por etapas, jornada de hoy o próxima, acordado, cobrado y falta cobrar, y los accesos al plan, las jornadas, el diario y los adicionales | `trabajo-obra` |
-| `EstadoMiPropuesta` (4.5) | Esperando al cliente (Handy, monto y "Vence en"); ¡El cliente te eligió! (confeti solo si se vio el cambio, abre el trabajo); no te eligieron, venció o retirada en gris, sin culpa | `tu-precio`, recorrido N |
-| `PedidoEntrante` (4.5) | Hoja con el urgente nuevo: rubro, zona aproximada, descripción y vigencia neutra. "Ver y cotizar" abre el detalle; "Ahora no" deja pasar los urgentes de ahora (en memoria) y nunca rechaza | recorrido B |
-| `VigiaAvisos` (4.5) | Consulta los avisos cada 20 s en la app y, ante un "te eligieron" nuevo, muestra la isla con "Ver el trabajo" y confeti | recorrido N |
-| `CuentaRegresiva` | Texto neutro; al llegar a cero pide el estado al servidor | `pedido-programado` |
-| `AccionTrabajo` | Una acción primaria por estado ("Salgo para allá", "Empezar el trabajo", "Terminé el trabajo" con el desglose y el aviso de adicionales sin respuesta). La llegada no está acá: geocerca o "Ya llegué" en En camino (4.6) | `trabajo-agendado` |
-| `ControlDisponibilidad` | "Ahora" y programados revocables al instante | `inicio`, `disponibilidad` |
-| `Documento` | "Cargado, sin revisar" ≠ verificado; los antecedentes no tienen carga de archivo | `alta-borrador` |
-| `FeeAviso`, `ContadorFee`, `ModalFee` | Fee 0 % hasta el 10/12 (modal del primer ingreso, post-registro y contador en Cuenta) | `cuenta` |
+| Componente                            | Reglas que garantiza                                                                                                                                                                                                      | Captura                               |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `Hoja`                                | Confirmación en `<dialog>` modal: foco atrapado y circular, Escape cierra si es cerrable, entra deslizando                                                                                                                | (diálogos en `npm run accesibilidad`) |
+| `TarjetaPedido`                       | Enlace al detalle; nunca acepta. Tipo → rubro → zona y fecha → descripción → búsqueda                                                                                                                                     | `pedidos`, `inicio`                   |
+| `TarjetaPropuesta`                    | Monto, horario, alcance y "Vence en" neutro; aceptar verde y rechazar en contorno rojo, con confirmación                                                                                                                  | `pedido-programado`                   |
+| (retirados)                           | `FormPropuesta` y `FormCambio` ya no existen: las propuestas van por Tu precio (también desde el chat, que vuelve al chat) y los cambios de fecha por Cambiar la fecha                                                    | —                                     |
+| `CobroDirecto` (4.6 y 4.7)            | El estado de un cobro con texto y "Ya me pagó: informarlo" con confirmación; queda "reportado", nunca verificado. Sirve para el trabajo terminado y para cada etapa de una obra                                           | `trabajo-terminaste`, `obra-plan`     |
+| `ResumenObra` (4.7)                   | Anillo de avance por etapas, jornada de hoy o próxima, acordado, cobrado y falta cobrar, y los accesos al plan, las jornadas, el diario y los adicionales                                                                 | `trabajo-obra`                        |
+| `EstadoMiPropuesta` (4.5)             | Esperando al cliente (Handy, monto y "Vence en"); ¡El cliente te eligió! (confeti solo si se vio el cambio, abre el trabajo); no te eligieron, venció o retirada en gris, sin culpa                                       | `tu-precio`, recorrido N              |
+| `PedidoEntrante` (4.5)                | Hoja con el urgente nuevo: rubro, zona aproximada, descripción y vigencia neutra. "Ver y cotizar" abre el detalle; "Ahora no" deja pasar los urgentes de ahora (en memoria) y nunca rechaza                               | recorrido B                           |
+| `VigiaAvisos` (4.5)                   | Consulta los avisos cada 20 s en la app y, ante un "te eligieron" nuevo, muestra la isla con "Ver el trabajo" y confeti                                                                                                   | recorrido N                           |
+| `CuentaRegresiva`                     | Texto neutro; al llegar a cero pide el estado al servidor                                                                                                                                                                 | `pedido-programado`                   |
+| `AccionTrabajo`                       | Una acción primaria por estado ("Salgo para allá", "Empezar el trabajo", "Terminé el trabajo" con el desglose y el aviso de adicionales sin respuesta). La llegada no está acá: geocerca o "Ya llegué" en En camino (4.6) | `trabajo-agendado`                    |
+| `ControlDisponibilidad`               | "Ahora" y programados revocables al instante                                                                                                                                                                              | `inicio`, `disponibilidad`            |
+| `Documento`                           | "Cargado, sin revisar" ≠ verificado; los antecedentes no tienen carga de archivo                                                                                                                                          | `alta-borrador`                       |
+| `FeeAviso`, `ContadorFee`, `ModalFee` | Fee 0 % hasta el 10/12 (modal del primer ingreso, post-registro y contador en Cuenta)                                                                                                                                     | `cuenta`                              |
 
 **Sello "Verificado por Handyx"**: solo con `verificado` del perfil público que manda el servidor (`Cuenta.tsx`). La app no lo
 deduce de documentos cargados ni de ningún estado local.
@@ -66,60 +66,61 @@ deduce de documentos cargados ni de ningún estado local.
 Para las pantallas de la fase 4. Se ven en uso en `/catalogo/` (solo en la vista previa con datos de prueba). Estilos en
 `src/kit/kit.css` (prefijo `hx-`) y lógica pura con pruebas en `src/kit/logica.ts`.
 
-| Componente | Archivo | Para qué | Accesibilidad |
-|---|---|---|---|
-| `BarraSuperior` | `Navegacion.tsx` | Barra compacta con "atrás" y acciones; `grande` agrega el título grande que colapsa al bajar | Un solo h1 (el grande, o el de la barra) |
-| `PestanasFlotantes` | `Navegacion.tsx` | Las 4 pestañas raíz, flotantes, con insignia de no leídos | `nav` con `aria-current`; la insignia se lee "sin leer" |
-| `HojaArrastrable` | `HojaArrastrable.tsx` | Hoja no modal sobre el mapa con 3 alturas (34 %, 66 % y 94 %). `pedida` la mueve desde afuera (En camino la baja al compartir) y `alCambiar` avisa la altura al mapa | La manija es un botón: tocar cambia la altura y las flechas la suben o la bajan; `aria-expanded` |
-| `ProveedorIsla` / `useIsla` | `Efectos.tsx` | Avisos que bajan desde arriba (te eligieron, pedido nuevo, cobro); `accion` agrega un enlace ("Ver el trabajo") | `role="status"`; se cierran y no se van con el foco o el dedo encima |
-| `useConfeti` | `Efectos.tsx` | Confeti de mosaicos para celebrar | `aria-hidden`; nada con "reducir movimiento" |
-| `BotonFijo` | `Piezas.tsx` | La acción principal fija abajo, con una nota opcional | — |
-| `Mosaico` | `Piezas.tsx` | Rubros, zonas, franjas: azul con tilde cuando está elegido. Las palabras largas cortan con guion si no entran (texto al 200 %) | `aria-pressed` |
-| `ChipOpcion` | `Piezas.tsx` | Franjas, filtros y motivos; en fila o en carril con desplazamiento lateral (`hx-chips--carril`) | `aria-pressed`, 44 px de alto |
-| `TiraDias` | `Fechas.tsx` | Días seguidos para elegir con el pulgar; los anteriores al mínimo, deshabilitados | El nombre completo del día ("jueves 19 de noviembre, hoy") |
-| `CalendarioMes` | `Fechas.tsx` | Mes con hoy en amarillo, días con eventos (puntitos) y el elegido en azul | Cada día dice la fecha y la cantidad de eventos |
-| `SelectorHora` | `Fechas.tsx` | Dos ruedas (hora y minutos cada 15) | `listbox` con flechas, Inicio y Fin |
-| `PrecioStepper` | `Precio.tsx` | "Handyx sugiere · Vos decidís": − / + de a $ 500, atajos, escribir otro monto, mínimo y "Recibís" | Botones "Subir $ 500" y "Bajar $ 500"; el precio se anuncia |
-| `MontoGrande` / `useContador` | `Piezas.tsx` | Monto que sube en las celebraciones | El lector lee el valor final de una vez |
-| `Avatar` | `Piezas.tsx` | Iniciales con un tono fijo por nombre; tilde de verificado solo con el dato del servidor | Decorativo: el nombre está al lado |
-| `Fila` | `Piezas.tsx` | Filas de lista con ícono, texto y flecha (enlace o botón) | — |
-| `LineaDeTiempo` | `Piezas.tsx` | Revisión del alta, estado de un trabajo, etapas de una obra | El estado se lee ("hecho", "en curso", "pendiente"); `aria-current="step"` |
-| `EstadoVacio` | `Piezas.tsx` | Un Handy contento con título, texto y acción | El Handy es decorativo |
-| `Tilde` | `Piezas.tsx` | Tilde de éxito que se dibuja | Decorativo |
+| Componente                    | Archivo               | Para qué                                                                                                                                                             | Accesibilidad                                                                                    |
+| ----------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `BarraSuperior`               | `Navegacion.tsx`      | Barra compacta con "atrás" y acciones; `grande` agrega el título grande que colapsa al bajar                                                                         | Un solo h1 (el grande, o el de la barra)                                                         |
+| `PestanasFlotantes`           | `Navegacion.tsx`      | Las 4 pestañas raíz, flotantes, con insignia de no leídos                                                                                                            | `nav` con `aria-current`; la insignia se lee "sin leer"                                          |
+| `HojaArrastrable`             | `HojaArrastrable.tsx` | Hoja no modal sobre el mapa con 3 alturas (34 %, 66 % y 94 %). `pedida` la mueve desde afuera (En camino la baja al compartir) y `alCambiar` avisa la altura al mapa | La manija es un botón: tocar cambia la altura y las flechas la suben o la bajan; `aria-expanded` |
+| `ProveedorIsla` / `useIsla`   | `Efectos.tsx`         | Avisos que bajan desde arriba (te eligieron, pedido nuevo, cobro); `accion` agrega un enlace ("Ver el trabajo")                                                      | `role="status"`; se cierran y no se van con el foco o el dedo encima                             |
+| `useConfeti`                  | `Efectos.tsx`         | Confeti de mosaicos para celebrar                                                                                                                                    | `aria-hidden`; nada con "reducir movimiento"                                                     |
+| `BotonFijo`                   | `Piezas.tsx`          | La acción principal fija abajo, con una nota opcional                                                                                                                | —                                                                                                |
+| `Mosaico`                     | `Piezas.tsx`          | Rubros, zonas, franjas: azul con tilde cuando está elegido. Las palabras largas cortan con guion si no entran (texto al 200 %)                                       | `aria-pressed`                                                                                   |
+| `ChipOpcion`                  | `Piezas.tsx`          | Franjas, filtros y motivos; en fila o en carril con desplazamiento lateral (`hx-chips--carril`)                                                                      | `aria-pressed`, 44 px de alto                                                                    |
+| `TiraDias`                    | `Fechas.tsx`          | Días seguidos para elegir con el pulgar; los anteriores al mínimo, deshabilitados                                                                                    | El nombre completo del día ("jueves 19 de noviembre, hoy")                                       |
+| `CalendarioMes`               | `Fechas.tsx`          | Mes con hoy en amarillo, días con eventos (puntitos) y el elegido en azul                                                                                            | Cada día dice la fecha y la cantidad de eventos                                                  |
+| `SelectorHora`                | `Fechas.tsx`          | Dos ruedas (hora y minutos cada 15)                                                                                                                                  | `listbox` con flechas, Inicio y Fin                                                              |
+| `PrecioStepper`               | `Precio.tsx`          | "Handyx sugiere · Vos decidís": − / + de a $ 500, atajos, escribir otro monto, mínimo y "Recibís"                                                                    | Botones "Subir $ 500" y "Bajar $ 500"; el precio se anuncia                                      |
+| `MontoGrande` / `useContador` | `Piezas.tsx`          | Monto que sube en las celebraciones                                                                                                                                  | El lector lee el valor final de una vez                                                          |
+| `Avatar`                      | `Piezas.tsx`          | Iniciales con un tono fijo por nombre; tilde de verificado solo con el dato del servidor                                                                             | Decorativo: el nombre está al lado                                                               |
+| `Fila`                        | `Piezas.tsx`          | Filas de lista con ícono, texto y flecha (enlace o botón)                                                                                                            | —                                                                                                |
+| `LineaDeTiempo`               | `Piezas.tsx`          | Revisión del alta, estado de un trabajo, etapas de una obra                                                                                                          | El estado se lee ("hecho", "en curso", "pendiente"); `aria-current="step"`                       |
+| `EstadoVacio`                 | `Piezas.tsx`          | Un Handy contento con título, texto y acción                                                                                                                         | El Handy es decorativo                                                                           |
+| `Tilde`                       | `Piezas.tsx`          | Tilde de éxito que se dibuja                                                                                                                                         | Decorativo                                                                                       |
 
 | `CampoCodigo` | `CampoCodigo.tsx` (4.2) | Código de 6 números: un solo campo real (teclado numérico, `one-time-code`, pegar) sobre 6 casillas dibujadas | Una etiqueta y un error asociados; las casillas son `aria-hidden` |
 
 ## Cuenta (lote 4.2)
 
-| Componente | Archivo | Para qué | Notas |
-|---|---|---|---|
-| `PantallaCarga` | `PantallaCarga.tsx` + `carga.css` | Carga al abrir: fondo que cambia de color, los Handys saltan, cae el logo y se dan la mano (2,5 s) | Se saltea tocando o con una tecla; con "reducir movimiento", cuadro quieto de 0,6 s. La `Puerta` redirige cuando terminan la carga y la consulta |
-| `Escena` | `Cuenta.tsx` | Escena de color de arriba con Handys, logo y mosaicos de herramientas | Decorativa |
-| `CampoClave` | `Cuenta.tsx` | Contraseña con "Mostrar" y, en las nuevas, medidor de fuerza en 3 tramos con texto (`lib/clave.ts`) | La fuerza se dice con palabras, no solo con color |
-| `CasillasLegales` | `Cuenta.tsx` | Términos y privacidad sin tildar, con la lectura en una `Hoja` | Error por casilla |
-| `CuentaCreada` | `Cuenta.tsx` | Tilde, confeti, aviso del fee 0 % y "Completar mi alta" | Celebración permitida |
-| `BotonesProveedor` | `BotonesProveedor.tsx` | "Continuar con Google" siempre y "Continuar con Apple" solo en dispositivos Apple (`lib/dispositivo.ts`) | Hoy solo en el mock (cuentas de prueba en una hoja). En producción no aparecen hasta conectar los SDK (lote 5.2) |
+| Componente         | Archivo                           | Para qué                                                                                                 | Notas                                                                                                                                            |
+| ------------------ | --------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `PantallaCarga`    | `PantallaCarga.tsx` + `carga.css` | Carga al abrir: fondo que cambia de color, los Handys saltan, cae el logo y se dan la mano (2,5 s)       | Se saltea tocando o con una tecla; con "reducir movimiento", cuadro quieto de 0,6 s. La `Puerta` redirige cuando terminan la carga y la consulta |
+| `Escena`           | `Cuenta.tsx`                      | Escena de color de arriba con Handys, logo y mosaicos de herramientas                                    | Decorativa                                                                                                                                       |
+| `CampoClave`       | `Cuenta.tsx`                      | Contraseña con "Mostrar" y, en las nuevas, medidor de fuerza en 3 tramos con texto (`lib/clave.ts`)      | La fuerza se dice con palabras, no solo con color                                                                                                |
+| `CasillasLegales`  | `Cuenta.tsx`                      | Términos y privacidad sin tildar, con la lectura en una `Hoja`                                           | Error por casilla                                                                                                                                |
+| `CuentaCreada`     | `Cuenta.tsx`                      | Tilde, confeti, aviso del fee 0 % y "Completar mi alta"                                                  | Celebración permitida                                                                                                                            |
+| `BotonesProveedor` | `BotonesProveedor.tsx`            | "Continuar con Google" siempre y "Continuar con Apple" solo en dispositivos Apple (`lib/dispositivo.ts`) | Hoy solo en el mock (cuentas de prueba en una hoja). En producción no aparecen hasta conectar los SDK (lote 5.2)                                 |
 
 `useAccion({ publica: true })`: en entrar y con Google o Apple, un 401 es "credenciales incorrectas", no "tu sesión expiró".
 
 ## Alta guiada (lote 4.4)
 
-| Componente | Archivo | Para qué | Notas |
-|---|---|---|---|
-| `Camara` | `components/Camara.tsx` + `camara.css` | Foto con marco: rectángulo del DNI o óvalo de la selfie, consejos, vista previa con "Repetir" | Producción: cámara en vivo (`getUserMedia`, la trasera para el DNI y la frontal para la selfie) y, sin cámara o sin permiso, elegir una foto. La foto vive en memoria hasta mandarla y la cámara se apaga al salir. **Vista previa: visor simulado, nunca abre la cámara** |
-| `AnilloProgreso` | `kit/Piezas.tsx` | "N de M listos" con el arco en azul | El número y el texto se leen; el dibujo es decorativo |
-| Pasos del alta | `pantallas/alta/*` | `InicioAlta` (lista), `PasoDatos` (una pregunta por pantalla), `PasoIdentidad`, `PasoSelfie`, `PasoRubros` (mosaicos), `PasoZonas` (mapa y bloques de horario), `PasoAntecedentes` (turnos), `ResumenAlta` y `EstadosAlta` | Estado de cada paso en `lib/alta.ts` (con pruebas). `Alta.tsx` elige qué mostrar según el estado del alta y `?paso=` |
+| Componente       | Archivo                                | Para qué                                                                                                                                                                                                                   | Notas                                                                                                                                                                                                                                                                      |
+| ---------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Camara`         | `components/Camara.tsx` + `camara.css` | Foto con marco: rectángulo del DNI o óvalo de la selfie, consejos, vista previa con "Repetir"                                                                                                                              | Producción: cámara en vivo (`getUserMedia`, la trasera para el DNI y la frontal para la selfie) y, sin cámara o sin permiso, elegir una foto. La foto vive en memoria hasta mandarla y la cámara se apaga al salir. **Vista previa: visor simulado, nunca abre la cámara** |
+| `AnilloProgreso` | `kit/Piezas.tsx`                       | "N de M listos" con el arco en azul                                                                                                                                                                                        | El número y el texto se leen; el dibujo es decorativo                                                                                                                                                                                                                      |
+| Pasos del alta   | `pantallas/alta/*`                     | `InicioAlta` (lista), `PasoDatos` (una pregunta por pantalla), `PasoIdentidad`, `PasoSelfie`, `PasoRubros` (mosaicos), `PasoZonas` (mapa y bloques de horario), `PasoAntecedentes` (turnos), `ResumenAlta` y `EstadosAlta` | Estado de cada paso en `lib/alta.ts` (con pruebas). `Alta.tsx` elige qué mostrar según el estado del alta y `?paso=`                                                                                                                                                       |
 
 ## Mapa (lote 4.3)
 
-| Componente | Archivo | Para qué | Accesibilidad |
-|---|---|---|---|
-| `Mapa` | `src/mapa/Mapa.tsx` | Zona aproximada, destino, tu posición, trayecto, cobertura y radar. Alturas `chico`, `medio`, `grande` y `completo`; `interactivo`, `conCentrar` y `tapadoAbajo` (lo que tapa una hoja) | El lienzo es una región con `etiqueta`. Sin interacción, no entra en el orden de tabulación. Los marcadores son `aria-hidden`: lo importante está en texto al lado. `alternativa` en texto si no carga |
-| `useCompartirUbicacion` | `src/hooks/useCompartirUbicacion.ts` | GPS solo a pedido, envíos limitados y señal (`precisa`, `imprecisa`, `sin señal`, `sin permiso`) | La señal se muestra con ícono **y** texto |
+| Componente              | Archivo                              | Para qué                                                                                                                                                                                | Accesibilidad                                                                                                                                                                                          |
+| ----------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Mapa`                  | `src/mapa/Mapa.tsx`                  | Zona aproximada, destino, tu posición, trayecto, cobertura y radar. Alturas `chico`, `medio`, `grande` y `completo`; `interactivo`, `conCentrar` y `tapadoAbajo` (lo que tapa una hoja) | El lienzo es una región con `etiqueta`. Sin interacción, no entra en el orden de tabulación. Los marcadores son `aria-hidden`: lo importante está en texto al lado. `alternativa` en texto si no carga |
+| `useCompartirUbicacion` | `src/hooks/useCompartirUbicacion.ts` | GPS solo a pedido, envíos limitados y señal (`precisa`, `imprecisa`, `sin señal`, `sin permiso`)                                                                                        | La señal se muestra con ícono **y** texto                                                                                                                                                              |
 
 Detalle, privacidad y datos: `docs/mapa.md`.
 
 Handys disponibles (`Handy.tsx`):
+
 - Contentos: grupo, lamparita, llave, engranaje, caño y gota.
 - Rotos: lamparita, llave, engranaje y caño.
 
@@ -140,70 +141,70 @@ posición de un marcador en el mapa estilizado) se fija desde código en una var
 
 ### Átomos (`src/ui/atomos/`)
 
-| Pieza | Para qué | Variantes | Accesibilidad |
-|---|---|---|---|
-| `Icono` | Íconos de línea | Los de la landing + los del lienzo (`iconos.ts`, gana el del lienzo); `chico`/`medio`/`grande` | Siempre `aria-hidden` |
-| `Boton` / `BotonEnlace` | Acción con la base que se hunde | `primaria`, `contorno`, `peligro`, `amarilla`, `exito`, `texto`; `bloque`, `chico` (48 px); `ocupado` + `textoOcupado` | 56 px de alto; `aria-busy` al enviar |
-| `BotonIcono` / `BotonIconoEnlace` | Un solo ícono | `claro`, `azul`, `vidrio` (cabecera); `punto` amarillo | `etiqueta` obligatoria; ≥ 48 px |
-| `Chip` | Estado o dato corto | `tinte`, `amarillo`, `noche`, `gris`, `exito`, `error`, `blanco`, `azul` | Ícono + texto |
-| `Etiqueta`, `Marcador`, `Titulo` | Rótulo en mayúsculas, resaltador amarillo, título Archivo 900 | `Titulo` con parte marcada, `grande`/`medio`, h1 o h2 | Un solo h1 por pantalla |
-| `Cifra` | Montos y números | `centavos` (en pesos) o `texto`; `chico`/`medio`/`grande` | Espacios no separables: `$ 45.000` nunca se corta; ancho normal para entrar en mosaicos chicos |
-| `Separador` | Línea, con texto opcional («o») | — | `role="separator"` |
-| `Avatar`, `AvatarGrupo` | Iniciales; mosaico de 2 × 2 con «+N» | Tonos por nombre | Decorativos: el nombre va escrito al lado |
-| `Interruptor` | Encender o apagar | `claro` (etiqueta + estado) y `noche` (Disponible de la cabecera) | `role="switch"`, nombre «etiqueta: estado» |
-| `Casilla`, `Radio` | Elegir | Con `ayuda` | Toda la fila es tocable; foco visible en la caja |
-| `Campo` | Texto | `icono`, `prefijo` («$»), `ayuda`, `error` | Etiqueta arriba, 18 px, `aria-invalid` y `aria-describedby` |
-| `BarraProgreso`, `Anillo` | Avance | Barra con tramo amarillo «lo que suma esto»; anillo «N/M» | `role="progressbar"` / `role="img"` con «N de M» |
+| Pieza                             | Para qué                                                      | Variantes                                                                                                              | Accesibilidad                                                                                  |
+| --------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `Icono`                           | Íconos de línea                                               | Los de la landing + los del lienzo (`iconos.ts`, gana el del lienzo); `chico`/`medio`/`grande`                         | Siempre `aria-hidden`                                                                          |
+| `Boton` / `BotonEnlace`           | Acción con la base que se hunde                               | `primaria`, `contorno`, `peligro`, `amarilla`, `exito`, `texto`; `bloque`, `chico` (48 px); `ocupado` + `textoOcupado` | 56 px de alto; `aria-busy` al enviar                                                           |
+| `BotonIcono` / `BotonIconoEnlace` | Un solo ícono                                                 | `claro`, `azul`, `vidrio` (cabecera); `punto` amarillo                                                                 | `etiqueta` obligatoria; ≥ 48 px                                                                |
+| `Chip`                            | Estado o dato corto                                           | `tinte`, `amarillo`, `noche`, `gris`, `exito`, `error`, `blanco`, `azul`                                               | Ícono + texto                                                                                  |
+| `Etiqueta`, `Marcador`, `Titulo`  | Rótulo en mayúsculas, resaltador amarillo, título Archivo 900 | `Titulo` con parte marcada, `grande`/`medio`, h1 o h2                                                                  | Un solo h1 por pantalla                                                                        |
+| `Cifra`                           | Montos y números                                              | `centavos` (en pesos) o `texto`; `chico`/`medio`/`grande`                                                              | Espacios no separables: `$ 45.000` nunca se corta; ancho normal para entrar en mosaicos chicos |
+| `Separador`                       | Línea, con texto opcional («o»)                               | —                                                                                                                      | `role="separator"`                                                                             |
+| `Avatar`, `AvatarGrupo`           | Iniciales; mosaico de 2 × 2 con «+N»                          | Tonos por nombre                                                                                                       | Decorativos: el nombre va escrito al lado                                                      |
+| `Interruptor`                     | Encender o apagar                                             | `claro` (etiqueta + estado) y `noche` (Disponible de la cabecera)                                                      | `role="switch"`, nombre «etiqueta: estado»                                                     |
+| `Casilla`, `Radio`                | Elegir                                                        | Con `ayuda`                                                                                                            | Toda la fila es tocable; foco visible en la caja                                               |
+| `Campo`                           | Texto                                                         | `icono`, `prefijo` («$»), `ayuda`, `error`                                                                             | Etiqueta arriba, 18 px, `aria-invalid` y `aria-describedby`                                    |
+| `BarraProgreso`, `Anillo`         | Avance                                                        | Barra con tramo amarillo «lo que suma esto»; anillo «N/M»                                                              | `role="progressbar"` / `role="img"` con «N de M»                                               |
 
 ### Ilustraciones (`src/ui/ilustraciones/`)
 
 SVG isométrico propio (piezas en `iso.tsx`: prismas de tres caras, ventanas, cilindros, árboles) con la paleta de la
 landing. **Siempre `aria-hidden`**: el texto de al lado dice lo importante. Tamaños `chico`/`medio`/`grande`/`lleno`.
 
-| Pieza | Qué es |
-|---|---|
-| `Ciudad` | Mar del Plata: edificios de la costa con ventanas amarillas (titilan sin «reducir movimiento»), torreón, faro, puerto con barquito, casas y árboles |
-| `Casa` | Casa con techo a dos aguas |
+| Pieza                                                                                        | Qué es                                                                                                                                                   |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Ciudad`                                                                                     | Mar del Plata: edificios de la costa con ventanas amarillas (titilan sin «reducir movimiento»), torreón, faro, puerto con barquito, casas y árboles      |
+| `Casa`                                                                                       | Casa con techo a dos aguas                                                                                                                               |
 | `ArregloRubro` + `Tablero`, `Canilla`, `Garrafa` (gas), `Cerradura`, `Pared`, `Aire`, `Cano` | **«Construir el arreglo»**: con `armar`, cada `Pieza` cae a su lugar en orden (GSAP, `Lienzo.tsx`); `vuelta` lo repite. Con «reducir movimiento», armado |
-| `EscudoVerificado`, `Remera`, `Manual`, `CajaRegalo` | Verificado (solo con el estado del servidor), kit de bienvenida, regalo del camino |
-| `Desenchufado`, `EnObra` | Sin conexión (D6-Error) y error del servidor (D6-Fallo), copiados del lienzo |
+| `EscudoVerificado`, `Remera`, `Manual`, `CajaRegalo`                                         | Verificado (solo con el estado del servidor), kit de bienvenida, regalo del camino                                                                       |
+| `Desenchufado`, `EnObra`                                                                     | Sin conexión (D6-Error) y error del servidor (D6-Fallo), copiados del lienzo                                                                             |
 
 ### Moléculas (`src/ui/moleculas/`)
 
-| Pieza | Para qué | Notas |
-|---|---|---|
-| `Tarjeta` | Tarjeta blanca (o `gris`, `azul`, `noche`) con **franja** gris abajo («Ver más información») | La franja es enlace o botón |
-| `FilaIcono` | Fila de lista con mosaico, título, detalle y algo a la derecha | Enlace, botón o fija; lo de la derecha baja de renglón antes que partir el título |
-| `DatoMini` | Rótulo + cifra en un mosaico | — |
-| `Mosaico`, `MosaicoHerramienta` | Cuadro gris con ícono; mosaico tocable de herramienta con insignia | ≥ 48 px |
-| `Segmento` | Una de pocas opciones | Radios reales en un `fieldset` |
-| `Stepper` | − cantidad + | Botones de 56 px «Restar 1: …» / «Sumar 1: …»; valor en `output` |
-| `Buscador` | Buscar | `role="search"`, botón «Borrar lo escrito» |
-| `Burbuja` | Mensaje de chat | Avatar pegado (solo el último seguido), nombre y hora adentro, reacciones en el borde, «editado» escrito |
-| `LineaTiempo` | Etapas u estados | Línea continua; cada paso dice «Hecho», «Ahora» o «Falta»; `aria-current="step"` |
-| `TiraDias` | Elegir un día de la semana | Hoy con borde naranja; punto si hay trabajo (dicho en texto oculto) |
-| `RuedaHora` | Elegir la hora | Lista que se desliza + botones «más temprano / más tarde» y flechas del teclado |
-| `TecladoPrecio` | Escribir el precio | Teclas de 60 px (1-9, 000, 0, borrar); monto en `output`; centavos al salir |
-| `ResumenOpciones` | Elegir entre pocas opciones con resumen y cifra | Radios en tarjetas |
-| `CampoCodigo` | Código de N números | Un solo campo real (`one-time-code`), casillas de dibujo |
-| `MarcadorPedido` | Pin-ilustración del mapa con rubro, «Urgente» y precio sugerido | Botón ≥ 56 px; nombre: rubro, zona, urgente, precio, distancia. **Abre el detalle, nunca acepta** |
+| Pieza                           | Para qué                                                                                     | Notas                                                                                                    |
+| ------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `Tarjeta`                       | Tarjeta blanca (o `gris`, `azul`, `noche`) con **franja** gris abajo («Ver más información») | La franja es enlace o botón                                                                              |
+| `FilaIcono`                     | Fila de lista con mosaico, título, detalle y algo a la derecha                               | Enlace, botón o fija; lo de la derecha baja de renglón antes que partir el título                        |
+| `DatoMini`                      | Rótulo + cifra en un mosaico                                                                 | —                                                                                                        |
+| `Mosaico`, `MosaicoHerramienta` | Cuadro gris con ícono; mosaico tocable de herramienta con insignia                           | ≥ 48 px                                                                                                  |
+| `Segmento`                      | Una de pocas opciones                                                                        | Radios reales en un `fieldset`                                                                           |
+| `Stepper`                       | − cantidad +                                                                                 | Botones de 56 px «Restar 1: …» / «Sumar 1: …»; valor en `output`                                         |
+| `Buscador`                      | Buscar                                                                                       | `role="search"`, botón «Borrar lo escrito»                                                               |
+| `Burbuja`                       | Mensaje de chat                                                                              | Avatar pegado (solo el último seguido), nombre y hora adentro, reacciones en el borde, «editado» escrito |
+| `LineaTiempo`                   | Etapas u estados                                                                             | Línea continua; cada paso dice «Hecho», «Ahora» o «Falta»; `aria-current="step"`                         |
+| `TiraDias`                      | Elegir un día de la semana                                                                   | Hoy con borde naranja; punto si hay trabajo (dicho en texto oculto)                                      |
+| `RuedaHora`                     | Elegir la hora                                                                               | Lista que se desliza + botones «más temprano / más tarde» y flechas del teclado                          |
+| `TecladoPrecio`                 | Escribir el precio                                                                           | Teclas de 60 px (1-9, 000, 0, borrar); monto en `output`; centavos al salir                              |
+| `ResumenOpciones`               | Elegir entre pocas opciones con resumen y cifra                                              | Radios en tarjetas                                                                                       |
+| `CampoCodigo`                   | Código de N números                                                                          | Un solo campo real (`one-time-code`), casillas de dibujo                                                 |
+| `MarcadorPedido`                | Pin-ilustración del mapa con rubro, «Urgente» y precio sugerido                              | Botón ≥ 56 px; nombre: rubro, zona, urgente, precio, distancia. **Abre el detalle, nunca acepta**        |
 
 ### Organismos (`src/ui/organismos/`)
 
-| Pieza | Para qué | Notas |
-|---|---|---|
-| `CabeceraAzul` | Solo en Inicio | Marca, Avisos (punto si hay nuevos), Mis zonas y el **único** Disponible |
-| `BarraCompacta` | El resto de las pantallas | Volver (enlace o botón), título y subtítulo, acción a la derecha |
-| `BarraPestanas` | Inicio · Obras · Taller · Mensajes · Cuenta (`src/app/rutas/navegacion.ts`) | Vidrio azul (excepción de Ignacio) con fondo sólido sin `backdrop-filter` o con «reducir transparencia»; `aria-current`; la actual en blanco y negrita |
-| `Hoja` | Detalle o confirmación sobre la pantalla | `<dialog>` modal con velo; manija para arrastrar **y** botón Cerrar; `pie` con la acción |
-| `ModalFlotante` | Confirmación corta en el centro | Igual que la hoja, sin arrastre |
-| `AccionFija` / `AccionesFijas` | La acción principal abajo | Dos acciones en fila solo si son cortas (`disposicionAcciones`); si no entran, pasan a columna solas |
-| `ListaChat` + `EntradaChat` | Chat con los mensajes pegados abajo | `role="log"` recorrible con teclado; Enter manda, Mayús+Enter renglón |
-| `Calendario` | Mes de lunes a domingo | Hoy, elegido, con trabajo y pasados, todo dicho en el nombre de cada día |
-| `EstadoError` | D6-Error (`sin_conexion`) y D6-Fallo (`servidor`) | Ilustración, chip, título marcado, texto, código para soporte, Reintentar y Hablar con soporte |
-| `EstadoVacio` | No hay nada | Ilustración, título, texto y una acción |
-| `MapaArreglos` | **El mapa como Uber pero de arreglos** | Capa de MapLibre (`src/mapa`) a pantalla completa con los pedidos como `MarcadorPedido` (anclas del motor), zonas aproximadas, Centrar, «Me voy hasta…» (zonas de `DESTINOS`; filtra con `pedidosHacia`), vista **Lista** equivalente, pedido entrante flotante que se arma; sin WebGL, mapa estilizado con los mismos marcadores. Nunca la dirección exacta |
-| `PantallaEscritorio` + `Qr` | X-Escritorio | QR local con `uqr` (solo la dirección de la app, sin query) y vista de muestra del celular |
+| Pieza                          | Para qué                                                                    | Notas                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `CabeceraAzul`                 | Solo en Inicio                                                              | Marca, Avisos (punto si hay nuevos), Mis zonas y el **único** Disponible                                                                                                                                                                                                                                                                                     |
+| `BarraCompacta`                | El resto de las pantallas                                                   | Volver (enlace o botón), título y subtítulo, acción a la derecha                                                                                                                                                                                                                                                                                             |
+| `BarraPestanas`                | Inicio · Obras · Taller · Mensajes · Cuenta (`src/app/rutas/navegacion.ts`) | Vidrio azul (excepción de Ignacio) con fondo sólido sin `backdrop-filter` o con «reducir transparencia»; `aria-current`; la actual en blanco y negrita                                                                                                                                                                                                       |
+| `Hoja`                         | Detalle o confirmación sobre la pantalla                                    | `<dialog>` modal con velo; manija para arrastrar **y** botón Cerrar; `pie` con la acción                                                                                                                                                                                                                                                                     |
+| `ModalFlotante`                | Confirmación corta en el centro                                             | Igual que la hoja, sin arrastre                                                                                                                                                                                                                                                                                                                              |
+| `AccionFija` / `AccionesFijas` | La acción principal abajo                                                   | Dos acciones en fila solo si son cortas (`disposicionAcciones`); si no entran, pasan a columna solas                                                                                                                                                                                                                                                         |
+| `ListaChat` + `EntradaChat`    | Chat con los mensajes pegados abajo                                         | `role="log"` recorrible con teclado; Enter manda, Mayús+Enter renglón                                                                                                                                                                                                                                                                                        |
+| `Calendario`                   | Mes de lunes a domingo                                                      | Hoy, elegido, con trabajo y pasados, todo dicho en el nombre de cada día                                                                                                                                                                                                                                                                                     |
+| `EstadoError`                  | D6-Error (`sin_conexion`) y D6-Fallo (`servidor`)                           | Ilustración, chip, título marcado, texto, código para soporte, Reintentar y Hablar con soporte                                                                                                                                                                                                                                                               |
+| `EstadoVacio`                  | No hay nada                                                                 | Ilustración, título, texto y una acción                                                                                                                                                                                                                                                                                                                      |
+| `MapaArreglos`                 | **El mapa como Uber pero de arreglos**                                      | Capa de MapLibre (`src/mapa`) a pantalla completa con los pedidos como `MarcadorPedido` (anclas del motor), zonas aproximadas, Centrar, «Me voy hasta…» (zonas de `DESTINOS`; filtra con `pedidosHacia`), vista **Lista** equivalente, pedido entrante flotante que se arma; sin WebGL, mapa estilizado con los mismos marcadores. Nunca la dirección exacta |
+| `PantallaEscritorio` + `Qr`    | X-Escritorio                                                                | QR local con `uqr` (solo la dirección de la app, sin query) y vista de muestra del celular                                                                                                                                                                                                                                                                   |
 
 ### Plantillas (`src/ui/plantillas/`)
 
@@ -213,18 +214,18 @@ completa con controles arriba y hoja o acción abajo) y `SoloCelular`.
 
 ### Piezas del acceso (lote 1.1)
 
-| Pieza | Nivel | Para qué |
-|---|---|---|
-| `Bajada`, `EnlaceTexto` | átomo (`Bajada.tsx`) | Texto bajo un título (17 px) y enlace de texto subrayado de 48 px (enlace o botón) |
-| `Encabezado` | molécula | Rótulo + título marcado + bajada con un solo h1 (`nivel={2}` debajo de una barra compacta); `centrado` |
-| `Formulario` | molécula | Columna del formulario sin validación del navegador (`id` para enviarlo desde la acción fija con `form`) |
-| `CampoClave` | molécula | Contraseña con «Mostrar» (texto + ojo, `aria-pressed`) y, si es nueva, medidor con el nivel escrito y un consejo |
-| `OpcionesIcono` | molécula | Pocas opciones grandes con mosaico, detalle y pastilla: radios reales en un fieldset, la elegida con tilde |
-| `BotonProveedor` | molécula | Google o Apple: contorno de 56 px, el nombre como nombre accesible |
-| `ReenviarCodigo` | molécula | «¿No llegó? Pedí otro en 0:42» y después «Pedir otro código»; el lector no escucha cada segundo; alternativa al lado |
-| `AvisoCaja` | molécula | Recuadro con ícono y texto: `error` (`role=alert`), `info`, `exito`, `prueba` (ayuda de la vista previa) |
-| `EscenaCiudad` | organismo | Cielo de noche con luna, estrellas y la `Ciudad` que se arma con GSAP; `alta` (bienvenida) o `baja`; Volver, marca y mosaico blanco opcional |
-| `PantallaAcceso` | plantilla | Escena + contenido + acción fija, sin cabecera de la app ni pestañas |
+| Pieza                   | Nivel                | Para qué                                                                                                                                     |
+| ----------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Bajada`, `EnlaceTexto` | átomo (`Bajada.tsx`) | Texto bajo un título (17 px) y enlace de texto subrayado de 48 px (enlace o botón)                                                           |
+| `Encabezado`            | molécula             | Rótulo + título marcado + bajada con un solo h1 (`nivel={2}` debajo de una barra compacta); `centrado`                                       |
+| `Formulario`            | molécula             | Columna del formulario sin validación del navegador (`id` para enviarlo desde la acción fija con `form`)                                     |
+| `CampoClave`            | molécula             | Contraseña con «Mostrar» (texto + ojo, `aria-pressed`) y, si es nueva, medidor con el nivel escrito y un consejo                             |
+| `OpcionesIcono`         | molécula             | Pocas opciones grandes con mosaico, detalle y pastilla: radios reales en un fieldset, la elegida con tilde                                   |
+| `BotonProveedor`        | molécula             | Google o Apple: contorno de 56 px, el nombre como nombre accesible                                                                           |
+| `ReenviarCodigo`        | molécula             | «¿No llegó? Pedí otro en 0:42» y después «Pedir otro código»; el lector no escucha cada segundo; alternativa al lado                         |
+| `AvisoCaja`             | molécula             | Recuadro con ícono y texto: `error` (`role=alert`), `info`, `exito`, `prueba` (ayuda de la vista previa)                                     |
+| `EscenaCiudad`          | organismo            | Cielo de noche con luna, estrellas y la `Ciudad` que se arma con GSAP; `alta` (bienvenida) o `baja`; Volver, marca y mosaico blanco opcional |
+| `PantallaAcceso`        | plantilla            | Escena + contenido + acción fija, sin cabecera de la app ni pestañas                                                                         |
 
 Lógica pura en `src/ui/logicaAcceso.ts` (espera del reenvío, código de respaldo, «al teléfono…») con sus pruebas.
 
@@ -232,20 +233,20 @@ Lógica pura en `src/ui/logicaAcceso.ts` (espera del reenvío, código de respal
 
 Piezas nuevas en archivos propios (CSS junto a cada una: `moleculas/ajustes.css`, `organismos/cuenta.css`, `atomos/area.css`).
 
-| Pieza | Para qué | Notas |
-|---|---|---|
-| `GrupoAjustes` | Tarjeta con rótulo en mayúsculas y sus filas (`FilaIcono`, `FilaAjuste`, `FilaDato`) | El rótulo es `h2` (o `h3` con `nivel={3}`) |
-| `FilaAjuste` | Un ajuste que se enciende o apaga | `role="switch"`; el estado se dice con texto («Sí» / «No»), no solo con la perilla |
-| `FilaDato` | Rótulo, valor y el estado de ese dato (`ChipEtiqueta`) | Solo lo que llega ya enmascarado |
-| `FilaMetodo`, `FilaAlerta` | Método de segunda verificación; acción delicada (baja) | `FilaMetodo` deshabilitada dice por qué con un chip |
-| `ResumenTarjeta` | Mosaico de resumen de Cuenta (cobros, taller) | Enlace entero; tonos `tinte`, `noche`, `amarillo` |
-| `ChipEtiqueta` | Una `Etiqueta` de `lib/etiquetas.ts` como `Chip` del kit | Une los dos nombres de tono hasta migrar todo |
-| `AreaTexto`, `Seleccion` | Texto de varias líneas con «N de M letras»; lista desplegable | Misma caja que `Campo` |
-| `CabeceraCuenta`, `TarjetaPerfil` | Cabecera azul de F-Cuenta; tarjeta de CU-Perfil | El sello «Verificado por Handyx» solo con `verificado` |
-| `GrupoAvisos`, `ItemAviso` | D6-Avisos agrupado por día | Cada aviso abre su detalle; su botón «Quitar» reemplaza al deslizar |
-| `CabeceraAyuda`, `TemasAyuda`, `PreguntasAyuda`, `AccesoSoporte` | D6-Ayuda | Preguntas con `details` nativo; contenido en `lib/ayuda.ts` |
-| `HojaReautenticar`, `ListaCodigos` | Pedir contraseña (o código) antes de un cambio sensible; mostrar una vez los códigos de respaldo | Nada se guarda en el navegador |
-| `LetraGrande` + `aplicarLetraGrande` | «Letra más grande»: `html[data-letra="grande"]` sube la base a 125 % y todo el kit (en rem) lo sigue | La preferencia vive en el servidor (`preferencias.letraGrande`); `LetraGrande` la lee al abrir la app |
+| Pieza                                                            | Para qué                                                                                             | Notas                                                                                                 |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `GrupoAjustes`                                                   | Tarjeta con rótulo en mayúsculas y sus filas (`FilaIcono`, `FilaAjuste`, `FilaDato`)                 | El rótulo es `h2` (o `h3` con `nivel={3}`)                                                            |
+| `FilaAjuste`                                                     | Un ajuste que se enciende o apaga                                                                    | `role="switch"`; el estado se dice con texto («Sí» / «No»), no solo con la perilla                    |
+| `FilaDato`                                                       | Rótulo, valor y el estado de ese dato (`ChipEtiqueta`)                                               | Solo lo que llega ya enmascarado                                                                      |
+| `FilaMetodo`, `FilaAlerta`                                       | Método de segunda verificación; acción delicada (baja)                                               | `FilaMetodo` deshabilitada dice por qué con un chip                                                   |
+| `ResumenTarjeta`                                                 | Mosaico de resumen de Cuenta (cobros, taller)                                                        | Enlace entero; tonos `tinte`, `noche`, `amarillo`                                                     |
+| `ChipEtiqueta`                                                   | Una `Etiqueta` de `lib/etiquetas.ts` como `Chip` del kit                                             | Une los dos nombres de tono hasta migrar todo                                                         |
+| `AreaTexto`, `Seleccion`                                         | Texto de varias líneas con «N de M letras»; lista desplegable                                        | Misma caja que `Campo`                                                                                |
+| `CabeceraCuenta`, `TarjetaPerfil`                                | Cabecera azul de F-Cuenta; tarjeta de CU-Perfil                                                      | El sello «Verificado por Handyx» solo con `verificado`                                                |
+| `GrupoAvisos`, `ItemAviso`                                       | D6-Avisos agrupado por día                                                                           | Cada aviso abre su detalle; su botón «Quitar» reemplaza al deslizar                                   |
+| `CabeceraAyuda`, `TemasAyuda`, `PreguntasAyuda`, `AccesoSoporte` | D6-Ayuda                                                                                             | Preguntas con `details` nativo; contenido en `lib/ayuda.ts`                                           |
+| `HojaReautenticar`, `ListaCodigos`                               | Pedir contraseña (o código) antes de un cambio sensible; mostrar una vez los códigos de respaldo     | Nada se guarda en el navegador                                                                        |
+| `LetraGrande` + `aplicarLetraGrande`                             | «Letra más grande»: `html[data-letra="grande"]` sube la base a 125 % y todo el kit (en rem) lo sigue | La preferencia vive en el servidor (`preferencias.letraGrande`); `LetraGrande` la lee al abrir la app |
 
 ### Desbordes (`npm run desbordes`)
 
@@ -260,11 +261,10 @@ sus líneas. Corre en el CI (job `desbordes`).
 Piezas nuevas para el pedido y el mapa de arreglos (`docs/nucleo.md`). Su CSS está en `src/ui/nucleo.css` hasta el cierre
 de la ola 1; lógica pura en `src/ui/logicaNucleo.ts` con pruebas.
 
-| Pieza | Nivel | Para qué | Accesibilidad |
-|---|---|---|---|
-| `CintaPrecio` | molécula | Tu precio en una cinta métrica amarilla con la aguja y el cartel «sugerido»; marcas de $ 500 | `role="slider"` con `aria-valuetext` en pesos; flechas ± $ 500, Re Pág/Av Pág ± $ 5.000, Inicio = sugerido; siempre con atajos y teclado aparte |
-| `TiraParadas`, `ListaParadas`, `RutaDecorativa` | molécula | Paradas del día: tira horizontal (hecha, próxima, después), lista con hora, tramo y desvío, y el recorrido dibujado | Estado en texto; reordenar con «Subir/Bajar: …» (nunca solo arrastrando); el dibujo es `aria-hidden` |
-| `PedidoFlotante` | organismo | El pedido que llega flotando sobre el mapa, con la ilustración que arma el arreglo y «Pedido 1 de 2» | «Ver pedido» abre el detalle, nunca acepta; anterior/siguiente con botones; región `aria-live` |
-| `HojaCercanos` | organismo | Pedidos cercanos estilo «Choose a ride»: rubro, zona aproximada, precio sugerido y distancia; el elegido resaltado | Radios reales; una sola acción («Ver pedido de …») |
-| `FocoEnDialogos` | organismo | Mantiene el foco del teclado dentro de la hoja o el modal abierto | Se monta una vez por layout (pendiente: llevarlo a `Hoja`) |
-| `.ui-atajos` / `.ui-atajo` | CSS | Atajos chicos en fila que bajan de renglón (precio, franjas, horarios) | `aria-pressed`; deshabilitado con texto oculto que dice por qué |
+| Pieza                                           | Nivel     | Para qué                                                                                                            | Accesibilidad                                                                                                                                   |
+| ----------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CintaPrecio`                                   | molécula  | Tu precio en una cinta métrica amarilla con la aguja y el cartel «sugerido»; marcas de $ 500                        | `role="slider"` con `aria-valuetext` en pesos; flechas ± $ 500, Re Pág/Av Pág ± $ 5.000, Inicio = sugerido; siempre con atajos y teclado aparte |
+| `TiraParadas`, `ListaParadas`, `RutaDecorativa` | molécula  | Paradas del día: tira horizontal (hecha, próxima, después), lista con hora, tramo y desvío, y el recorrido dibujado | Estado en texto; reordenar con «Subir/Bajar: …» (nunca solo arrastrando); el dibujo es `aria-hidden`                                            |
+| `PedidoFlotante`                                | organismo | El pedido que llega flotando sobre el mapa, con la ilustración que arma el arreglo y «Pedido 1 de 2»                | «Ver pedido» abre el detalle, nunca acepta; anterior/siguiente con botones; región `aria-live`                                                  |
+| `HojaCercanos`                                  | organismo | Pedidos cercanos estilo «Choose a ride»: rubro, zona aproximada, precio sugerido y distancia; el elegido resaltado  | Radios reales; una sola acción («Ver pedido de …»)                                                                                              |
+| `.ui-atajos` / `.ui-atajo`                      | CSS       | Atajos chicos en fila que bajan de renglón (precio, franjas, horarios)                                              | `aria-pressed`; deshabilitado con texto oculto que dice por qué                                                                                 |

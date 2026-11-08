@@ -6,18 +6,18 @@ TR-Cobro. Recorridos `RC-Pedido` y `RC-Dia` (hasta la llegada y el cobro) en `e2
 
 ## Pantallas y rutas
 
-| Lienzo | Ruta | Archivo |
-|---|---|---|
-| F-Inicio, F-InicioDia | `/inicio/` | `src/pantallas/Inicio.tsx` (+ `nucleo/TarjetaDia.tsx`) |
-| F-InicioRuta | `/inicio/recorrido/` | `src/pantallas/Recorrido.tsx` |
-| F-Pedido | hoja del Inicio y `/pedidos/detalle/?id=` | `nucleo/DetallePedido.tsx`, `src/pantallas/PedidoDetalle.tsx` |
-| F-Precio … F-Enviada | `/pedidos/propuesta/?id=` (`&base=` contraoferta, `&paso=fecha`, `&chat=`) | `src/pantallas/TuPrecio.tsx` |
-| F-Trabajo | `/trabajos/detalle/?id=` | `src/pantallas/TrabajoDetalle.tsx` |
-| TR-EnCamino | `/en-camino/?id=` | `src/pantallas/EnCamino.tsx` |
-| TR-Cobro | `/trabajos/cobro/?id=` | `src/pantallas/CobroTrabajo.tsx` |
+| Lienzo                | Ruta                                                                       | Archivo                                                       |
+| --------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| F-Inicio, F-InicioDia | `/inicio/`                                                                 | `src/pantallas/Inicio.tsx` (+ `nucleo/TarjetaDia.tsx`)        |
+| F-InicioRuta          | `/inicio/recorrido/`                                                       | `src/pantallas/Recorrido.tsx`                                 |
+| F-Pedido              | hoja del Inicio y `/pedidos/detalle/?id=`                                  | `nucleo/DetallePedido.tsx`, `src/pantallas/PedidoDetalle.tsx` |
+| F-Precio … F-Enviada  | `/pedidos/propuesta/?id=` (`&base=` contraoferta, `&paso=fecha`, `&chat=`) | `src/pantallas/TuPrecio.tsx`                                  |
+| F-Trabajo             | `/trabajos/detalle/?id=`                                                   | `src/pantallas/TrabajoDetalle.tsx`                            |
+| TR-EnCamino           | `/en-camino/?id=`                                                          | `src/pantallas/EnCamino.tsx`                                  |
+| TR-Cobro              | `/trabajos/cobro/?id=`                                                     | `src/pantallas/CobroTrabajo.tsx`                              |
 
 Van en el grupo de rutas `src/app/(nucleo)/` (sin la cabecera vieja de la app): cada pantalla trae su cabecera del kit v3
-y solo el Inicio lleva la barra de pestañas. El grupo monta `FocoEnDialogos` (el foco no se escapa de una hoja abierta).
+y solo el Inicio lleva la barra de pestañas.
 La bandeja vieja `/pedidos/` se quitó: la reemplazan los pedidos cercanos y la vista Lista del Inicio.
 
 ## Qué hace cada una (y lo que no)
@@ -49,15 +49,15 @@ La bandeja vieja `/pedidos/` se quitó: la reemplazan los pedidos cercanos y la 
 
 ## Datos (puerto, mock y HTTP)
 
-| Método | Endpoint (contrato 0.11.0) |
-|---|---|
-| `mapaDestinos()` | `GET /v1/especialista/mapa/destinos` |
-| `mapaPedidos(busqueda)` | `POST /v1/especialista/mapa/pedidos` (la posición va en el cuerpo) |
-| `mapaPedido(id)` | `GET /v1/especialista/mapa/pedidos/{id}` |
-| `descartarPedido(id)` | `POST /v1/especialista/pedidos/{id}/descarte` |
-| `dia()` · `recorridoDia(r)` · `ordenarDia(o)` | `GET /dia` · `POST /dia/recorrido` · `PUT /dia/orden` |
-| `avisarDemora(id, a, clave)` | `POST /v1/especialista/trabajos/{id}/demora` |
-| `cobro(pagoId)` · `informarCobro(pagoId, i, clave)` | `GET /pagos/{id}/cobro` · `POST /pagos/{id}/informe` |
+| Método                                              | Endpoint (contrato 0.11.0)                                         |
+| --------------------------------------------------- | ------------------------------------------------------------------ |
+| `mapaDestinos()`                                    | `GET /v1/especialista/mapa/destinos`                               |
+| `mapaPedidos(busqueda)`                             | `POST /v1/especialista/mapa/pedidos` (la posición va en el cuerpo) |
+| `mapaPedido(id)`                                    | `GET /v1/especialista/mapa/pedidos/{id}`                           |
+| `descartarPedido(id)`                               | `POST /v1/especialista/pedidos/{id}/descarte`                      |
+| `dia()` · `recorridoDia(r)` · `ordenarDia(o)`       | `GET /dia` · `POST /dia/recorrido` · `PUT /dia/orden`              |
+| `avisarDemora(id, a, clave)`                        | `POST /v1/especialista/trabajos/{id}/demora`                       |
+| `cobro(pagoId)` · `informarCobro(pagoId, i, clave)` | `GET /pagos/{id}/cobro` · `POST /pagos/{id}/informe`               |
 
 El mock vive en `src/data/mock/nucleo.ts` (estado propio en un `WeakMap` sobre el estado común) y siembra, en el escenario
 habilitado, el trabajo de hoy de Lucía Ferreyra (18 a 20, con chat y cobro) y dos pedidos fuera de tus zonas (Batán y Los
@@ -70,9 +70,7 @@ idempotente y cobro informado ≠ verificado.
 - `MapaArreglos` filtra «Me voy hasta…» del lado del teléfono (`pedidosHacia` sobre los pedidos de tus zonas): para traer
   pedidos **fuera** de tus zonas (el de Batán) hace falta que exponga el destino elegido (`destino`/`onDestino`) y el
   Inicio pida `referencia: { tipo: 'destino' }`. El mock y el contrato ya lo soportan.
-- `Hoja` del kit: el foco se escapa a la barra del navegador con Tab (se resolvió en el layout con `FocoEnDialogos`;
-  conviene moverlo adentro de `Hoja` y `ModalFlotante`), y una `RuedaHora` adentro de una hoja recién abierta no se
-  desplaza a la hora elegida (se vuelve a montar al abrir).
+- `Hoja` del kit atrapa el foco con Tab (cerrado en el cierre de la ola 1).
 - `CabeceraAzul` no tiene la línea de estado bajo Disponible del lienzo («Te llegan pedidos de tus zonas»): va en una
   tira debajo de la cabecera.
 - El recorrido del día se dibuja sobre manzanas (`RutaDecorativa`): `Parada` no trae puntos (privacidad). Si el contrato

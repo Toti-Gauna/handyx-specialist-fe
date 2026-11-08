@@ -5,6 +5,8 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { Icono } from '../atomos/Icono.tsx';
 
+const ENFOCABLES = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 /** Más que esto hacia abajo al soltar, la hoja se cierra. */
 const UMBRAL_CIERRE_PX = 110;
 
@@ -26,6 +28,26 @@ function useDialogo(abierta: boolean) {
     if (!d) return;
     if (abierta && !d.open) d.showModal();
     if (!abierta && d.open) d.close();
+    if (!abierta) return;
+    // Trampa de Tab: del último control vuelve al primero (y al revés con Mayús). El <dialog> deja inerte lo de atrás,
+    // pero el navegador manda el foco a su propia barra antes de volver; así nunca se pierde.
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const lista = [...d.querySelectorAll<HTMLElement>(ENFOCABLES)].filter((x) => x.offsetParent !== null || x === document.activeElement);
+      const primero = lista[0];
+      const ultimo = lista.at(-1);
+      if (!primero || !ultimo) return;
+      const actual = document.activeElement;
+      if (e.shiftKey && (actual === primero || !d.contains(actual))) {
+        e.preventDefault();
+        ultimo.focus();
+      } else if (!e.shiftKey && (actual === ultimo || !d.contains(actual))) {
+        e.preventDefault();
+        primero.focus();
+      }
+    };
+    document.addEventListener('keydown', alTeclear);
+    return () => document.removeEventListener('keydown', alTeclear);
   }, [abierta]);
   return ref;
 }

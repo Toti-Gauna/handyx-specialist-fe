@@ -18,6 +18,7 @@ async function axe(p, nombre) {
     return r.violations.map((x) => `${x.id}: ${x.nodes.map((n) => n.target.join(' ')).join(', ')}`);
   });
   assert.deepEqual(v, [], `axe en ${nombre}`);
+  await p.waitForFunction(() => document.querySelectorAll('h1').length >= 1, null, { timeout: 4000 }).catch(() => {});
   const h1 = await p.evaluate(() => document.querySelectorAll('h1').length);
   assert.equal(h1, 1, `${nombre}: un solo h1`);
 }

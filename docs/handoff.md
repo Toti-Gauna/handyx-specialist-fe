@@ -55,6 +55,9 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
 - **Ola 0 cerrada (08/11):** contrato 0.11.0 (todos los dominios, sin comisión al especialista), kit v3 atómico en
   `src/ui/` (ilustraciones isométricas, mapa de arreglos, barra con Taller, solo celular, accesible para 90 años),
   base 3D en `src/tres/`, PWA partida por dominio y `npm run desbordes` en CI. E2E 30/30, axe 0.
+- **Ola 1 cerrada (08/11):** acceso con 2FA, registro en 10 pasos y onboarding, Inicio con mapa de arreglos estilo Uber y
+  todo el flujo del pedido, cuenta/seguridad/avisos/ayuda con «Letra más grande», backend de acceso, registro y mapa
+  (migraciones, contrato 0.11.1). E2E 37/37, axe 0, teclado 0. Pendiente de la ola 2.5: endpoints de `/dia`, demora, cobro e informe.
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 

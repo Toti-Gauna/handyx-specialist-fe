@@ -3,7 +3,7 @@
 // Cada escenario arranca con una carga completa (`?escenario=`); dentro de él se navega SIN recargar,
 // porque el estado de prueba vive solo en memoria de la pestaña.
 const assert = require('node:assert/strict');
-const { readdirSync } = require('node:fs');
+const { readdirSync, readFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { servir } = require('./servidor.cjs');
 const { activarMapas } = require('./pantallas.cjs');
@@ -53,7 +53,6 @@ const panel = async (p, ...acciones) => {
   for (const a of acciones) await p.getByRole('button', { name: a }).click();
   await p.keyboard.press('Escape');
 };
-const ir = async (p, texto) => { await p.getByRole('link', { name: texto }).first().click(); };
 // Barra de pestañas del kit v3 (lote 0.2): Inicio · Obras · Taller · Mensajes · Cuenta.
 const nav = (p, n) => p.getByRole('navigation', { name: 'Secciones' }).getByText(n, { exact: true }).click();
 const ver = (p, t, o) => p.getByText(t, o).first().waitFor();
@@ -74,8 +73,6 @@ async function main() {
   const navSinWebgl = await chromium.launch({ args: ['--disable-webgl', '--disable-3d-apis'] });
   const capturas = process.env.CAPTURAS ?? null;
 
-  // Registro y onboarding (lote 1.2): RC-Onboarding, retomar y corrección, en e2e/recorridos/RC-Onboarding.cjs.
-  for (const [nombre, pasos] of require('./recorridos/RC-Onboarding.cjs').RECORRIDOS) await escenario(nombre, nav_, base, pasos, { capturas });
 
   await escenario('B-opt-in-urgente-y-propuesta', nav_, base, async ({ p, foto }) => {
     // Lote 1.3 (RC-Pedido): Inicio con el mapa, Disponible, pedido flotante, detalle, tu precio con la cinta y enviar
@@ -909,7 +906,14 @@ async function main() {
 
   // Recorridos del lienzo por lote (plan por olas): cada archivo de e2e/recorridos/ exporta RECORRIDOS.
   for (const archivo of readdirSync(join(__dirname, 'recorridos')).filter((a) => a.endsWith('.cjs')).sort()) {
-    for (const [nombre, pasos, o = {}] of require(join(__dirname, 'recorridos', archivo)).RECORRIDOS) await escenario(nombre, nav_, base, pasos, { capturas, ...o });
+    const ruta = join(__dirname, 'recorridos', archivo);
+    if (!/module\.exports/.test(readFileSync(ruta, 'utf8'))) {
+      // Recorridos que corren solos (sin exportar RECORRIDOS): se lanzan como proceso aparte.
+      const r = require('node:child_process').spawnSync(process.execPath, [ruta], { stdio: 'inherit', env: process.env });
+      resultados.push([archivo, r.status === 0 ? 'OK' : 'FALLÓ']);
+      continue;
+    }
+    for (const [nombre, pasos, o = {}] of require(ruta).RECORRIDOS) await escenario(nombre, nav_, base, pasos, { capturas, ...o });
   }
 
   await nav_.close();

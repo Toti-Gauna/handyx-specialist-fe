@@ -29,7 +29,7 @@ const RECORRIDOS = [
       await foto('01-rg1');
       await seguir(p, 'Crear mi cuenta');
       await ver(p, 'Escribí tu nombre.');
-      assert.equal(await p.evaluate(() => document.activeElement?.getAttribute('aria-invalid')), 'true', 'el foco va al primer campo con error');
+      await p.waitForFunction(() => document.activeElement?.getAttribute('aria-invalid') === 'true', null, { timeout: 4000 }).catch(() => assert.fail('el foco va al primer campo con error'));
       await p.getByLabel('Nombre', { exact: true }).fill('Julián');
       await p.getByLabel('Apellido', { exact: true }).fill('Ortiz');
       await p.getByLabel('Celular', { exact: true }).fill('223 555-4521');
