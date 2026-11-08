@@ -863,7 +863,7 @@
   background: var(--ui-azul);
 }
 .ui-escena-ciudad--alta .ui-escena-ciudad__cielo {
-  height: clamp(300px, 54dvh, 470px);
+  height: clamp(260px, 46dvh, 420px);
   border-radius: 0 0 40px 40px;
 }
 .ui-escena-ciudad__ciudad {

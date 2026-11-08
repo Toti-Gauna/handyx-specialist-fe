@@ -13,7 +13,7 @@ import { enfocarPrimerError } from '../../lib/foco.ts';
 import { Boton, BotonEnlace } from '../../ui/atomos/Boton.tsx';
 import { Campo } from '../../ui/atomos/Controles.tsx';
 import { Mosaico } from '../../ui/moleculas/Mosaico.tsx';
-import { normalizarRespaldo } from '../../ui/logicaAcceso.ts';
+import { aDestino, normalizarRespaldo } from '../../ui/logicaAcceso.ts';
 import { AvisoCaja } from '../../ui/moleculas/AvisoCaja.tsx';
 import { CampoCodigo } from '../../ui/moleculas/CampoCodigo.tsx';
 import { Encabezado } from '../../ui/moleculas/Encabezado.tsx';
@@ -35,7 +35,7 @@ export function SegundaVerificacion() {
   if (!desafio) {
     return (
       <PantallaSecundaria barra={barra} accion={<AccionFija><BotonEnlace href={RUTAS.acceso.ruta}>Volver a entrar</BotonEnlace></AccionFija>}>
-        <Encabezado antes="Volvé a " marcado="entrar" bajada="Por seguridad, el paso 2 dura unos minutos y no se guarda en el teléfono. Escribí de nuevo tu email o teléfono y tu contraseña." />
+        <Encabezado nivel={2} antes="Volvé a " marcado="entrar" bajada="Por seguridad, el paso 2 dura unos minutos y no se guarda en el teléfono. Escribí de nuevo tu email o teléfono y tu contraseña." />
       </PantallaSecundaria>
     );
   }
@@ -44,8 +44,8 @@ export function SegundaVerificacion() {
 
 const TEXTOS: Record<MetodoDesafio, { marcado: string; bajada: (e: CodigoEnviado | null) => string }> = {
   totp: { marcado: 'app', bajada: () => 'Abrí tu app autenticadora y escribí los 6 números de Handyx.' },
-  sms: { marcado: 'SMS', bajada: (e) => `Te mandamos 6 números a ${e?.destinoEnmascarado ?? 'tu teléfono'}.` },
-  email: { marcado: 'email', bajada: (e) => `Te mandamos 6 números a ${e?.destinoEnmascarado ?? 'tu email'}. Si no llega, mirá en «correo no deseado».` },
+  sms: { marcado: 'SMS', bajada: (e) => `Te mandamos 6 números ${e ? aDestino(e.destinoEnmascarado) : 'a tu teléfono'}.` },
+  email: { marcado: 'email', bajada: (e) => `Te mandamos 6 números ${e ? aDestino(e.destinoEnmascarado) : 'a tu email'}. Si no llega, mirá en «correo no deseado».` },
   respaldo: { marcado: 'respaldo', bajada: () => 'Escribí uno de los códigos que guardaste al activar la segunda verificación. Cada uno sirve una sola vez.' },
 };
 
@@ -92,7 +92,7 @@ function Paso2({ desafio }: { desafio: DesafioSegundaVerificacion }) {
     guardarAcceso({ desafio: null });
     return (
       <PantallaSecundaria barra={barra} accion={<AccionFija><BotonEnlace href={RUTAS.acceso.ruta}>Volver a entrar</BotonEnlace></AccionFija>}>
-        <Encabezado antes="Volvé a " marcado="entrar" bajada={(entrar.fallo ?? envio.fallo)?.detalle?.mensaje ?? 'Pasó mucho tiempo. Volvé a entrar.'} />
+        <Encabezado nivel={2} antes="Volvé a " marcado="entrar" bajada={(entrar.fallo ?? envio.fallo)?.detalle?.mensaje ?? 'Pasó mucho tiempo. Volvé a entrar.'} />
       </PantallaSecundaria>
     );
   }
@@ -121,7 +121,7 @@ function Paso2({ desafio }: { desafio: DesafioSegundaVerificacion }) {
       <div className="ui-encabezado ui-encabezado--centrado">
         <Mosaico icono={metodo === 'sms' ? 'telefono' : metodo === 'email' ? 'sobre' : metodo === 'respaldo' ? 'llave2' : 'escudo'} tam="grande" tono="azul" />
       </div>
-      <Encabezado antes={metodo === 'respaldo' ? 'Código de ' : metodo === 'totp' ? 'Código de tu ' : 'Código del '} marcado={t.marcado} bajada={t.bajada(enviado)} centrado tam="medio" />
+      <Encabezado nivel={2} antes={metodo === 'respaldo' ? 'Código de ' : metodo === 'totp' ? 'Código de tu ' : 'Código del '} marcado={t.marcado} bajada={t.bajada(enviado)} centrado tam="medio" />
       <Formulario id={FORM} etiqueta="Código de la segunda verificación" onEnviar={() => void enviar()}>
         {entrar.fallo ? <AvisoCaja tono="error">{mensajeAcceso(entrar.fallo, 'codigo')}</AvisoCaja> : null}
         {metodo === 'respaldo' ? (

@@ -29,3 +29,8 @@ export function normalizarRespaldo(texto: string): string {
 
 /** Lo escrito en "Email o teléfono" parece un email (si no, se trata como teléfono). */
 export const pareceEmail = (texto: string): boolean => texto.includes('@');
+
+/** "a es•••@example.test", "al teléfono que termina en 4521": el destino del código con la preposición bien puesta. */
+export function aDestino(destino: string): string {
+  return /^el /i.test(destino) ? `al ${destino.slice(3)}` : `a ${destino}`;
+}

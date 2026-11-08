@@ -11,6 +11,7 @@ import { useAccion } from '../../hooks/useAccion.ts';
 import { destinoCuenta } from '../../lib/destino.ts';
 import { enfocarPrimerError } from '../../lib/foco.ts';
 import { EnlaceTexto } from '../../ui/atomos/Bajada.tsx';
+import { aDestino } from '../../ui/logicaAcceso.ts';
 import { Boton, BotonEnlace } from '../../ui/atomos/Boton.tsx';
 import { AvisoCaja } from '../../ui/moleculas/AvisoCaja.tsx';
 import { CampoCodigo } from '../../ui/moleculas/CampoCodigo.tsx';
@@ -100,7 +101,7 @@ function EscribirCodigo({ inicial }: { inicial: CodigoEnviado }) {
         etiqueta="Código para entrar"
         antes={porEmail ? 'Revisá tu ' : 'Revisá tus '}
         marcado={porEmail ? 'email' : 'mensajes'}
-        bajada={`Mandamos 6 números a ${enviado.destinoEnmascarado}. Sirven por 10 minutos.`}
+        bajada={`Mandamos 6 números ${aDestino(enviado.destinoEnmascarado)}. Sirven por 10 minutos.`}
         centrado
       />
       <Formulario id={FORM} etiqueta="Escribir el código" onEnviar={() => void enviar()}>

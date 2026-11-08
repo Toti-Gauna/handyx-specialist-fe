@@ -62,7 +62,7 @@ export function RecuperarNueva() {
         <div className="ui-encabezado ui-encabezado--centrado">
           <EscudoVerificado tam="chico" />
         </div>
-        <Encabezado antes="Tu contraseña " marcado="cambió" bajada="Por seguridad cerramos las sesiones abiertas en otros teléfonos. Entrá con tu contraseña nueva." centrado />
+        <Encabezado nivel={2} antes="Tu contraseña " marcado="cambió" bajada="Por seguridad cerramos las sesiones abiertas en otros teléfonos. Entrá con tu contraseña nueva." centrado />
       </PantallaSecundaria>
     );
   }
@@ -95,7 +95,7 @@ export function RecuperarNueva() {
           </AccionesFijas>
         }
       >
-        <Encabezado antes="El enlace " marcado="venció" bajada="Los enlaces sirven una sola vez y duran 30 minutos. Pedí otro y abrilo desde el último email que te llegue." />
+        <Encabezado nivel={2} antes="El enlace " marcado="venció" bajada="Los enlaces sirven una sola vez y duran 30 minutos. Pedí otro y abrilo desde el último email que te llegue." />
       </PantallaSecundaria>
     );
   }
@@ -111,7 +111,7 @@ export function RecuperarNueva() {
         </AccionFija>
       }
     >
-      <Encabezado etiqueta="Te ayudamos" antes="Creá una " marcado="nueva" bajada={`Mínimo ${REGLAS_CLAVE.minimo} caracteres. Una frase que recuerdes es más fácil y más segura.`} />
+      <Encabezado nivel={2} etiqueta="Te ayudamos" antes="Creá una " marcado="nueva" bajada={`Mínimo ${REGLAS_CLAVE.minimo} caracteres. Una frase que recuerdes es más fácil y más segura.`} />
       <Formulario id={FORM} etiqueta="Elegir la contraseña nueva" onEnviar={() => void enviar()}>
         {fallo ? <AvisoCaja tono="error">{mensajeAcceso(fallo, 'recuperar')}</AvisoCaja> : null}
         <CampoClave etiqueta="Contraseña nueva" valor={password} onCambio={setPassword} nueva error={error} />

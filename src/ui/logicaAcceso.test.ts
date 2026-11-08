@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { esperaEnPalabras, normalizarRespaldo, segundosHasta, textoEspera } from './logicaAcceso.ts';
+import { aDestino, esperaEnPalabras, normalizarRespaldo, segundosHasta, textoEspera } from './logicaAcceso.ts';
 
 describe('logicaAcceso', () => {
   it('cuenta los segundos hasta poder pedir otro código', () => {
@@ -20,5 +20,9 @@ describe('logicaAcceso', () => {
     assert.equal(normalizarRespaldo('hx7kp2m9qd'), 'HX7KP-2M9QD');
     assert.equal(normalizarRespaldo('HX7KP-2M9QD'), 'HX7KP-2M9QD');
     assert.equal(normalizarRespaldo('hx7'), 'HX7');
+  });
+  it('pone bien la preposición del destino', () => {
+    assert.equal(aDestino('el teléfono que termina en 4521'), 'al teléfono que termina en 4521');
+    assert.equal(aDestino('es•••@example.test'), 'a es•••@example.test');
   });
 });

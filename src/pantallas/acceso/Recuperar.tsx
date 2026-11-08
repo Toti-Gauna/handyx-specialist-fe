@@ -50,7 +50,7 @@ export function Recuperar() {
           </AccionFija>
         }
       >
-        <Encabezado etiqueta="Te ayudamos" antes="Revisá tu " marcado="email" bajada="Si hay una cuenta con esos datos, le mandamos un enlace para crear una contraseña nueva. Vence en 30 minutos y sirve una sola vez." />
+        <Encabezado nivel={2} etiqueta="Te ayudamos" antes="Revisá tu " marcado="email" bajada="Si hay una cuenta con esos datos, le mandamos un enlace para crear una contraseña nueva. Vence en 30 minutos y sirve una sola vez." />
         <Tarjeta>
           <FilaIcono icono="sobre" titulo="Abrí el enlace del email" detalle="Si no llega, mirá en «correo no deseado»" derecha={<Chip tono="exito" icono="check">Enviado</Chip>} borde={false} />
         </Tarjeta>
@@ -78,7 +78,7 @@ export function Recuperar() {
         </AccionFija>
       }
     >
-      <Encabezado etiqueta="Te ayudamos" antes="Creá una " marcado="nueva" bajada="Te mandamos un enlace al email de tu cuenta para elegir otra contraseña. Vence en 30 minutos y sirve una sola vez." />
+      <Encabezado nivel={2} etiqueta="Te ayudamos" antes="Creá una " marcado="nueva" bajada="Te mandamos un enlace al email de tu cuenta para elegir otra contraseña. Vence en 30 minutos y sirve una sola vez." />
       <Formulario id={FORM} etiqueta="Pedir el enlace" onEnviar={() => void enviar()}>
         {fallo ? <AvisoCaja tono="error">{mensajeAcceso(fallo, 'recuperar')}</AvisoCaja> : null}
         <Campo
