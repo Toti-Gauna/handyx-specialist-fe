@@ -51,7 +51,10 @@ Estado: PWA completa con datos de prueba (mock) **y probada de punta a punta con
   ciudad, recorrido continuo, «Pedir ayuda» en las herramientas del Modo trabajo y obra nueva desde Obras
   (`docs/rediseno-deluxe.md` §15).
 - **Plan por olas (08/11):** `docs/plan-olas.md` — 7 olas con lotes en paralelo, modelo y esfuerzo por lote y las
-  150 pantallas del lienzo asignadas. **Esperando el OK de Ignacio** para arrancar la ola 0.
+  150 pantallas del lienzo asignadas. Ignacio aprobó y pidió desarrollar todo.
+- **Ola 0 cerrada (08/11):** contrato 0.11.0 (todos los dominios, sin comisión al especialista), kit v3 atómico en
+  `src/ui/` (ilustraciones isométricas, mapa de arreglos, barra con Taller, solo celular, accesible para 90 años),
+  base 3D en `src/tres/`, PWA partida por dominio y `npm run desbordes` en CI. E2E 30/30, axe 0.
 
 ## Demo con datos de prueba en specialist.handyx.pro (07/11/2026)
 

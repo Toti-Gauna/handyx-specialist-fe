@@ -64,6 +64,11 @@ catálogo en `docs/componentes.md`. Capturas sanitizadas: `npm run capturas` (ca
 `hx-*` de `kit.css` y lógica pura con pruebas en `logica.ts`. Se ven en `/catalogo/`, que solo existe en el mock (`page.mock.tsx`
 + `pageExtensions`): no lo pongas en `RUTAS` ni en nada que entre a producción.
 
+**Kit v3 (plan por olas, `docs/plan-olas.md`)** en `src/ui/` con diseño atómico (`atomos/`, `moleculas/`, `organismos/`,
+`plantillas/`, `ilustraciones/` isométricas) y CSS normal (`atomos.css`…, clases `ui-*`); toda pantalla nueva se arma
+con él (catálogo en `/catalogo/`, el v2 en `/catalogo/v2/`). 3D común en `src/tres/` (`docs/tres.md`). Debe poder
+usarla una persona de 90 años: texto base 17 px, botones de 56 px, `npm run desbordes` en verde.
+
 **Service worker** (`docs/pwa.md`): `out/sw.js` lo genera `scripts/generar-sw.mjs` con la política de `src/pwa/politica.ts`. Solo
 archivos estáticos públicos; nunca la API, mutaciones ni otros sitios, y sin cola offline. Cambiar la política exige su prueba.
 

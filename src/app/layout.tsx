@@ -6,6 +6,7 @@ import '../ui/atomos.css';
 import '../ui/moleculas.css';
 import '../ui/organismos.css';
 import '../ui/plantillas.css';
+import '../tres/tres.css';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { colores, variablesCss } from '../brand/tokens.ts';
