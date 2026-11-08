@@ -1,0 +1,779 @@
+/* Kit v3 · moléculas (lote 0.2). Tarjetas, filas, mosaicos, controles, chat, línea de tiempo, fechas, precio,
+   código y marcador del mapa. Áreas táctiles ≥ 48 px; textos ≥ 14 px salvo rótulos (13 px). */
+
+/* ── Tarjeta con franja ───────────────────────────────── */
+.ui-tarjeta {
+  overflow: hidden;
+  border: 1px solid var(--ui-borde);
+  border-radius: var(--ui-radio-tarjeta);
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+  color: var(--ui-tinta);
+}
+.ui-tarjeta__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+.ui-tarjeta--gris {
+  border-color: transparent;
+  background: var(--ui-mosaico);
+  box-shadow: none;
+}
+.ui-tarjeta--azul {
+  border-color: transparent;
+  background: var(--ui-azul);
+  color: #fff;
+}
+.ui-tarjeta--noche {
+  border-color: transparent;
+  background: var(--ui-noche);
+  color: #fff;
+}
+.ui-tarjeta__franja {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 0;
+  border-top: 1px solid var(--ui-borde);
+  background: var(--ui-gris-franja);
+  color: var(--ui-azul);
+  font: 800 1rem / 1.2 var(--ui-fuente);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ── Fila con ícono ───────────────────────────────────── */
+.ui-fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  color: var(--ui-tinta);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+.ui-fila--borde + .ui-fila--borde {
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-fila--tocable {
+  cursor: pointer;
+}
+.ui-fila__ico {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--ui-mosaico);
+}
+.ui-fila__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-fila__texto strong {
+  font-size: var(--ui-texto-base);
+}
+.ui-fila__texto span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-fila__derecha {
+  flex: none;
+}
+.ui-fila__flecha {
+  color: var(--ui-suave);
+}
+
+/* ── Dato mini ────────────────────────────────────────── */
+.ui-dato {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--ui-mosaico);
+}
+.ui-dato__rotulo,
+.ui-dato__detalle {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-min);
+  font-weight: 700;
+}
+
+/* ── Mosaicos ─────────────────────────────────────────── */
+.ui-mosaico {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--ui-mosaico);
+  color: var(--ui-tinta);
+}
+.ui-mosaico--chico {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+.ui-mosaico--grande {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+}
+.ui-mosaico--azul {
+  background: var(--ui-azul);
+  color: #fff;
+}
+.ui-mosaico--amarillo {
+  background: var(--ui-amarillo);
+}
+.ui-mosaico--tinte {
+  background: var(--ui-tinte);
+  color: var(--ui-hondo);
+}
+.ui-mosaico-herr {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 132px;
+  padding: 14px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--ui-mosaico);
+  color: var(--ui-tinta);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ui-mosaico-herr__ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: #fff;
+}
+.ui-mosaico-herr__titulo {
+  font-size: var(--ui-texto-base);
+  line-height: 1.2;
+}
+.ui-mosaico-herr__detalle {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-mosaico-herr__insignia {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ui-mosaico-herr {
+    transition: scale var(--ui-dur) var(--ui-curva);
+  }
+  .ui-mosaico-herr:active {
+    scale: 0.97;
+  }
+}
+
+/* ── Segmento ─────────────────────────────────────────── */
+.ui-segmento {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 4px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--ui-mosaico);
+}
+.ui-segmento__op {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 6px 10px;
+  border-radius: 14px;
+  color: var(--ui-texto);
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+}
+.ui-segmento__op input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ui-segmento__op--on {
+  background: #fff;
+  box-shadow: 0 3px 0 rgb(0 0 0 / 0.12);
+  color: var(--ui-azul);
+}
+.ui-segmento__op:has(input:focus-visible) {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 1px;
+}
+
+/* ── Stepper ──────────────────────────────────────────── */
+.ui-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px;
+  border-radius: 20px;
+  background: var(--ui-mosaico);
+}
+.ui-stepper .ui-boton-icono {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  box-shadow: 0 var(--ui-base) 0 var(--ui-hondo);
+}
+.ui-stepper .ui-boton-icono:disabled {
+  opacity: 0.4;
+}
+.ui-stepper__valor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--ui-titulos);
+}
+.ui-stepper__valor strong {
+  font-size: 1.75rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.ui-stepper__valor span {
+  color: var(--ui-suave);
+  font-family: var(--ui-fuente);
+  font-size: var(--ui-texto-chico);
+  font-weight: 700;
+}
+
+/* ── Buscador ─────────────────────────────────────────── */
+.ui-buscador {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 6px 0 16px;
+  border: 2px solid var(--ui-borde);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+  color: var(--ui-suave);
+}
+.ui-buscador:focus-within {
+  border-color: var(--ui-azul);
+}
+.ui-buscador__input {
+  flex: 1;
+  min-width: 0;
+  min-height: 50px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ui-tinta);
+  font: 500 1.0625rem var(--ui-fuente);
+}
+.ui-buscador__input::-webkit-search-cancel-button {
+  display: none;
+}
+.ui-buscador__borrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ui-mosaico);
+  color: var(--ui-tinta);
+  cursor: pointer;
+}
+
+/* ── Burbuja de chat ──────────────────────────────────── */
+.ui-burbuja {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: 88%;
+}
+.ui-burbuja--mia {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+.ui-burbuja__lado {
+  width: 32px;
+  flex: none;
+}
+.ui-burbuja__globo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 96px;
+  padding: 10px 14px 8px;
+  border-radius: 20px 20px 20px 6px;
+  background: var(--ui-mosaico);
+  color: var(--ui-tinta);
+}
+.ui-burbuja:not(.ui-burbuja--ultima) .ui-burbuja__globo {
+  border-radius: 20px;
+}
+.ui-burbuja--mia .ui-burbuja__globo {
+  border-radius: 20px 20px 6px 20px;
+  background: var(--ui-azul);
+  color: #fff;
+}
+.ui-burbuja__nombre {
+  color: var(--ui-hondo);
+  font-size: var(--ui-texto-chico);
+}
+.ui-burbuja__texto {
+  margin: 0;
+  font-size: var(--ui-texto-base);
+  line-height: 1.35;
+}
+.ui-burbuja__pie {
+  display: flex;
+  gap: 4px;
+  align-self: flex-end;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-min);
+}
+.ui-burbuja--mia .ui-burbuja__pie {
+  color: rgb(255 255 255 / 0.88);
+}
+.ui-burbuja__reacciones {
+  position: absolute;
+  right: 10px;
+  bottom: -14px;
+  padding: 2px 8px;
+  border: 1px solid var(--ui-borde);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.9375rem;
+}
+.ui-burbuja:has(.ui-burbuja__reacciones) {
+  margin-bottom: 14px;
+}
+
+/* ── Línea de tiempo ──────────────────────────────────── */
+.ui-linea {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-linea__paso {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  padding: 0 0 18px;
+}
+.ui-linea__paso:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 26px;
+  bottom: -2px;
+  left: 12px;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--ui-mosaico);
+}
+.ui-linea__paso--hecho:not(:last-child)::before {
+  background: var(--ui-azul);
+}
+.ui-linea__punto {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--ui-mosaico);
+  border-radius: 50%;
+  background: #fff;
+  color: #fff;
+}
+.ui-linea__paso--hecho .ui-linea__punto {
+  border-color: var(--ui-azul);
+  background: var(--ui-azul);
+}
+.ui-linea__paso--actual .ui-linea__punto {
+  border-color: var(--ui-azul);
+  box-shadow: 0 0 0 5px var(--ui-tinte);
+}
+.ui-linea__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding-top: 2px;
+}
+.ui-linea__estado {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ui-linea__paso--actual .ui-linea__estado {
+  color: var(--ui-azul);
+}
+.ui-linea__detalle {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+
+/* ── Tira de días y rueda de hora ─────────────────────── */
+.ui-tira {
+  display: grid;
+  grid-auto-columns: minmax(52px, 1fr);
+  grid-auto-flow: column;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  scrollbar-width: none;
+}
+.ui-tira__dia {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 72px;
+  border: 0;
+  border-radius: 18px;
+  background: #f6f7f9;
+  color: var(--ui-tinta);
+  font: 700 var(--ui-texto-chico) var(--ui-fuente);
+  cursor: pointer;
+}
+.ui-tira__dia strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.375rem;
+  font-weight: 900;
+}
+.ui-tira__dia--hoy {
+  box-shadow: inset 0 0 0 2px var(--hd-naranja);
+}
+.ui-tira__dia--on {
+  background: var(--ui-azul);
+  box-shadow: 0 3px 0 var(--ui-hondo);
+  color: #fff;
+}
+.ui-tira__punto {
+  position: absolute;
+  bottom: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.ui-rueda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.ui-rueda__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: 200px;
+  height: 172px;
+  overflow-y: auto;
+  padding: 58px 0;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+}
+.ui-rueda__op {
+  flex: none;
+  min-height: 52px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--ui-suave);
+  font: 800 1.375rem var(--ui-titulos);
+  scroll-snap-align: center;
+  cursor: pointer;
+}
+.ui-rueda__op--on {
+  background: var(--ui-tinte);
+  color: var(--ui-tinta);
+}
+
+/* ── Teclado de precio ────────────────────────────────── */
+.ui-teclado {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ui-teclado__monto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 20px;
+  background: var(--ui-mosaico);
+}
+.ui-teclado__rotulo {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+}
+.ui-teclado__teclas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.ui-teclado__tecla {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  border: 1px solid var(--ui-borde);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 3px 0 #d3d6dc;
+  color: var(--ui-tinta);
+  font: 900 1.5rem var(--ui-titulos);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ui-teclado__tecla:active {
+  translate: 0 3px;
+  box-shadow: none;
+}
+.ui-teclado__tecla--borrar {
+  background: var(--ui-mosaico);
+}
+
+/* ── Resumen de opciones ──────────────────────────────── */
+.ui-opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ui-opciones__leyenda {
+  margin-bottom: 4px;
+  padding: 0;
+  color: var(--ui-tinta);
+  font-weight: 800;
+}
+.ui-opciones__op {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 14px;
+  border: 2px solid var(--ui-borde);
+  border-radius: 18px;
+  background: #fff;
+  cursor: pointer;
+}
+.ui-opciones__op input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ui-opciones__op--on {
+  border-color: var(--ui-azul);
+  background: var(--ui-tinte);
+}
+.ui-opciones__op:has(input:focus-visible) {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 2px;
+}
+.ui-opciones__marca {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--ui-suave);
+  border-radius: 50%;
+  color: transparent;
+}
+.ui-opciones__op--on .ui-opciones__marca {
+  border-color: var(--ui-azul);
+  background: var(--ui-azul);
+  color: #fff;
+}
+.ui-opciones__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-opciones__texto span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+
+/* ── Código ───────────────────────────────────────────── */
+.ui-codigo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ui-codigo__caja {
+  position: relative;
+}
+.ui-codigo__input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font-size: 1.5rem;
+  opacity: 0.01;
+}
+.ui-codigo__casillas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-flow: column;
+  gap: 8px;
+}
+.ui-codigo__casilla {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  border: 2px solid #c3cad6;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ui-tinta);
+  font: 900 1.5rem var(--ui-titulos);
+}
+.ui-codigo__caja:focus-within .ui-codigo__casilla--actual {
+  border-color: var(--ui-azul);
+  box-shadow: 0 0 0 3px rgb(31 87 168 / 0.25);
+}
+.ui-codigo--error .ui-codigo__casilla {
+  border-color: var(--ui-error);
+}
+
+/* ── Marcador de pedido (mapa) ────────────────────────── */
+.ui-marcador-pedido {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 56px;
+  min-height: 56px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ui-marcador-pedido__pin {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border: 3px solid #fff;
+  border-radius: 18px 18px 18px 4px;
+  background: var(--ui-azul);
+  box-shadow: 0 4px 0 var(--ui-hondo), var(--ui-elev-2);
+  color: #fff;
+  rotate: -45deg;
+}
+.ui-marcador-pedido__pin .ui-icono {
+  rotate: 45deg;
+}
+.ui-marcador-pedido__urgente {
+  position: absolute;
+  top: -10px;
+  right: -14px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--ui-noche);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  rotate: 45deg;
+}
+.ui-marcador-pedido__precio {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-chico);
+  font-weight: 900;
+  white-space: nowrap;
+}
+.ui-marcador-pedido--elegido .ui-marcador-pedido__pin {
+  background: var(--ui-amarillo);
+  box-shadow: 0 4px 0 var(--ui-amarillo-hondo), var(--ui-elev-2);
+  color: var(--ui-tinta);
+}
+.ui-marcador-pedido--elegido .ui-marcador-pedido__precio {
+  background: var(--ui-tinta);
+  color: #fff;
+}
+.ui-marcador-pedido:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ui-marcador-pedido--nuevo .ui-marcador-pedido__pin {
+    animation: ui-cae 0.6s var(--hx-resorte, ease-out) both;
+  }
+}
+@keyframes ui-cae {
+  from {
+    translate: 0 -40px;
+    opacity: 0;
+  }
+}
