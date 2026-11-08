@@ -1,7 +1,7 @@
 {
   "_nota": ["Desbordes de pantallas que todavía no pasaron al kit v3 (lote 0.2). El lote que rehace cada pantalla saca sus líneas; no se agregan líneas nuevas."],
   "caja": ["PALABRA PARTIDA: «Reportado,» en Reportado, sin verificar"],
-  "taller": ["PALABRA PARTIDA: «presupuestá» en presupuestá"],
+  "taller-herramientas": ["PALABRA PARTIDA: «presupuestá» en presupuestá"],
   "catalogo-v2": [
     "NO ENTRA: Mensajes2 sin leer",
     "CONTROL PARTIDO: «Electricidad» en Electricidad · Centro",

@@ -331,8 +331,9 @@ async function main() {
     await foto('01-avisos');
     // Agenda: un día con trabajo y la oferta que se superpone
     await agenda(p);
-    await p.getByRole('button', { name: /18 de noviembre/ }).click();
-    await ver(p, 'Confirmado');
+    await p.getByRole('radio', { name: /Futuras/ }).check();
+    await ver(p, 'Oferta sin confirmar');
+    await ver(p, 'Agendado');
     await foto('02-agenda');
     // Obra: etapas, cada una con su estado y su importe
     await nav(p, 'Obras');
@@ -695,7 +696,6 @@ async function main() {
 
   await escenario('Q-agenda-chat-contactos-cuenta-caja-ayuda', nav_, base, async ({ p, foto }) => {
     // Agenda: mes con marcas, lista del día y detalle del turno (una obra, jornada por jornada)
-    await p.goto(`${base}/agenda/?escenario=habilitado`);
     await p.goto(`${base}/agenda/mes/?escenario=habilitado`);
     await p.getByRole('button', { name: /^18 de noviembre/ }).click();
     await ver(p, 'Obra · jornada 1 de 5');
