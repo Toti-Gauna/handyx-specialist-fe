@@ -19,6 +19,7 @@ import { VIGENCIA_PROPUESTA_PROGRAMADO_MS } from '../../contracts/tiempos.ts';
 import { ahoraMs, fallo, idempotente, idNuevo, iso, type EstadoMock, type TrabajoInterno } from './estado.ts';
 import { zodAFallo } from './validacion.ts';
 import { arrancarSiguienteEtapa } from './obras.ts';
+import { avisarDemora, cobro, dia, informarCobro, ordenarDia } from './nucleo.ts';
 import { registrarLlegada, terminarViaje } from './viajes.ts';
 
 const ACTIVOS: readonly EstadoTrabajo[] = ['agendado', 'en_camino', 'en_sitio', 'en_curso'];
@@ -265,4 +266,12 @@ export const trabajos = (s: EstadoMock) => ({
     }
     return items.filter((i) => Date.parse(i.inicio) >= d && Date.parse(i.inicio) < h).sort((a, b) => Date.parse(a.inicio) - Date.parse(b.inicio));
   },
+
+  // Tu día, demora y cobro informado (lote 1.3).
+  dia: () => dia(s),
+  recorridoDia: (r: unknown) => dia(s, r),
+  ordenarDia: (o: unknown) => ordenarDia(s, o),
+  avisarDemora: (trabajoId: string, aviso: unknown, clave: string) => avisarDemora(s, trabajoId, aviso, clave),
+  cobro: (pagoId: string) => cobro(s, pagoId),
+  informarCobro: (pagoId: string, informe: unknown, clave: string) => informarCobro(s, pagoId, informe, clave),
 });

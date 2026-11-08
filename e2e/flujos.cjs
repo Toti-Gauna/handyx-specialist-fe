@@ -58,9 +58,11 @@ const ir = async (p, texto) => { await p.getByRole('link', { name: texto }).firs
 const nav = (p, n) => p.getByRole('navigation', { name: 'Secciones' }).getByText(n, { exact: true }).click();
 const ver = (p, t, o) => p.getByText(t, o).first().waitFor();
 // La Agenda ya no es pestaña: se llega desde Inicio (y, en la ola 2, desde Taller).
+// Lote 1.3: desde el Inicio, «Ver recorrido» y de ahí la agenda completa.
 const agenda = async (p) => {
   await nav(p, 'Inicio');
-  await p.getByRole('main').getByRole('link', { name: 'Agenda', exact: true }).click();
+  await p.getByRole('link', { name: 'Ver recorrido' }).click();
+  await p.getByRole('link', { name: 'Ver la agenda completa' }).click();
   await p.waitForURL('**/agenda/');
 };
 
@@ -76,63 +78,57 @@ async function main() {
   for (const [nombre, pasos] of require('./recorridos/RC-Onboarding.cjs').RECORRIDOS) await escenario(nombre, nav_, base, pasos, { capturas });
 
   await escenario('B-opt-in-urgente-y-propuesta', nav_, base, async ({ p, foto }) => {
+    // Lote 1.3 (RC-Pedido): Inicio con el mapa, Disponible, pedido flotante, detalle, tu precio con la cinta y enviar
     await p.goto(`${base}/`);
     await p.waitForURL('**/inicio/');
-    await ver(p, 'Pedidos para vos');
     await ver(p, 'No disponible');
     await foto('00-inicio');
-    await p.getByRole('link', { name: 'Ver todos' }).click();
-    await p.waitForURL('**/pedidos/');
+    await p.getByRole('button', { name: /pedidos? cerca/ }).click();
     await ver(p, 'Cambiar el flexible del inodoro');
-    assert.equal(await p.getByText('Pérdida debajo de la bacha').count(), 0, 'con "Disponible" apagado no hay urgentes');
-    await ver(p, 'No estás disponible para urgentes');
-    await foto('01-pedidos-sin-urgentes');
-    // Encender "Disponible" en el inicio: aparece el pedido entrante, que nunca acepta solo
-    await nav(p, 'Inicio');
-    await p.getByRole('switch', { name: /urgentes/i }).first().click();
-    await ver(p, 'Pedido urgente para vos');
-    await ver(p, 'Búsqueda abierta · quedan');
+    assert.equal(await p.getByText('Pierde la canilla de la cocina').count(), 0, 'con "Disponible" apagado no hay urgentes');
+    await foto('01-cercanos-sin-urgentes');
+    await p.getByRole('switch', { name: /Recibir pedidos/ }).click();
+    await ver(p, /Pedido urgente · quedan/);
     await foto('02-pedido-entrante');
-    await p.getByRole('link', { name: 'Ver y cotizar' }).click();
-    await p.waitForURL('**/pedidos/detalle/**');
-    await ver(p, 'Todavía no ves el nombre ni la dirección exacta');
-    await ver(p, 'Handyx sugiere $ 45.000');
+    await p.getByRole('button', { name: 'Ver pedido' }).first().click();
+    await ver(p, 'La dirección exacta llega cuando el cliente acepta');
+    await ver(p, 'Handyx sugiere', { exact: true });
     await foto('03-pedido-urgente');
-    // Tu precio: cuándo, el sugerido con atajos, qué incluye y lo que recibís (fee 0 %)
-    await p.getByRole('link', { name: /Poner mi precio/ }).click();
+    await p.getByRole('link', { name: 'Cotizar' }).click();
     await p.waitForURL('**/pedidos/propuesta/**');
-    await ver(p, '¿Cuándo podés ir?');
-    await p.getByRole('button', { name: /^En 1 hora/ }).click();
-    await p.getByRole('button', { name: '+ $ 2.000' }).click();
-    await ver(p, '$ 47.000');
-    await ver(p, 'Handyx no te cobra tarifa');
-    await p.getByRole('button', { name: 'Materiales incluidos' }).click();
+    await ver(p, 'Paso 1 de 2');
+    await p.getByRole('button', { name: /^\+\s\$\s2\.000$/ }).click();
+    await ver(p, 'Handyx no te cobra comisión');
     await foto('04-tu-precio');
-    await p.getByRole('button', { name: 'Enviar propuesta de $ 47.000' }).click();
+    await p.getByRole('button', { name: 'Siguiente: la fecha' }).click();
+    await ver(p, 'Paso 2 de 2');
+    await p.getByRole('button', { name: /^18 de noviembre/ }).click();
+    await p.getByRole('button', { name: /^13 a 17/ }).click();
+    await p.getByRole('button', { name: 'Revisar la propuesta' }).click();
+    await ver(p, 'Hasta que acepte, no es un trabajo agendado');
+    await p.getByRole('button', { name: /^Enviar propuesta de/ }).click();
+    await ver(p, 'Le llegó tu');
+    await foto('05-enviada');
+    await p.getByRole('link', { name: 'Ver el pedido' }).click();
     await p.waitForURL('**/pedidos/detalle/**');
     await ver(p, 'Esperando al cliente');
-    await ver(p, 'Vence en');
-    await foto('05-esperando');
-    // Revocar "Disponible" corta la oferta
-    await nav(p, 'Cuenta');
-    await p.getByRole('link', { name: /Rubros y zonas/ }).click();
-    await p.getByRole('switch', { name: /urgentes/i }).click();
-    await ver(p, 'Apagado: no te ofrecemos pedidos urgentes');
-    await foto('06-ahora-apagado');
-    await nav(p, 'Inicio');
+    await foto('06-esperando');
+    // Apagar «Disponible» desde el Inicio corta los urgentes
+    await p.getByRole('link', { name: 'Volver al inicio' }).click();
+    await p.waitForURL('**/inicio/');
+    await p.getByRole('switch', { name: 'Recibir pedidos: Disponible' }).click();
     await ver(p, 'No disponible');
   }, { capturas });
 
   await escenario('N-te-eligieron-bandeja-y-avisos', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/pedidos/detalle/?id=00000000-0000-4000-8000-0000000000b4&escenario=habilitado`);
-    await p.getByRole('link', { name: /Poner mi precio/ }).click();
+    await p.getByRole('link', { name: 'Cotizar' }).click();
     await p.waitForURL('**/pedidos/propuesta/**');
-    // Sin qué incluye no se manda: el foco va al campo
-    await p.locator('#tp-alcance textarea').fill('');
-    await p.getByRole('button', { name: /^Enviar propuesta/ }).click();
-    await p.waitForFunction(() => document.activeElement?.matches('#tp-alcance textarea'));
-    await p.locator('#tp-alcance textarea').fill('Visita para ver la medianera y presupuestar');
-    await p.getByRole('button', { name: /^Enviar propuesta/ }).click();
+    await p.getByRole('button', { name: 'Siguiente: la fecha' }).click();
+    // El cliente pidió un horario: «Voy en ese horario» viene elegido
+    await p.getByRole('button', { name: 'Revisar la propuesta' }).click();
+    await p.getByRole('button', { name: /^Enviar propuesta de/ }).click();
+    await p.getByRole('link', { name: 'Ver el pedido' }).click();
     await p.waitForURL('**/pedidos/detalle/**');
     await ver(p, 'Esperando al cliente');
     // El cliente elige: isla con enlace, confeti solo en la transición y el trabajo se abre desde acá
@@ -145,16 +141,13 @@ async function main() {
     await p.waitForURL('**/trabajos/detalle/**');
     await ver(p, 'Agendado');
     await foto('02-trabajo');
-    // Bandeja: filtros en chips y orden por cercanía (calculada en el teléfono)
-    await nav(p, 'Inicio');
-    await p.getByRole('link', { name: 'Ver todos' }).click();
-    await p.waitForURL('**/pedidos/');
-    await p.getByRole('button', { name: 'Más cerca' }).click();
-    await ver(p, /A unos .* de vos/);
-    await ver(p, 'Tu ubicación se usa solo en el teléfono');
-    await foto('03-bandeja-cerca');
-    await p.getByRole('button', { name: /^Programados/ }).click();
-    assert.equal(await p.getByText('Revoque y pintura').count(), 0, 'el filtro Programados deja afuera las obras');
+    // La bandeja vieja la reemplazó el Inicio (lote 1.3): pedidos cercanos y distancias medidas solo si lo pedís
+    await p.getByRole('link', { name: 'Volver' }).click();
+    await p.waitForURL('**/inicio/');
+    await p.getByRole('button', { name: /pedidos? cerca/ }).click();
+    await p.getByRole('button', { name: 'Medir distancias desde donde estoy' }).click();
+    await ver(p, /zona aproximada · \d/);
+    await foto('03-cercanos-con-distancia');
     // Avisos: Nuevos / Antes, borrar uno (botón accesible) y "Borrar todos" con confirmación
     await p.locator('header').getByRole('link', { name: /Avisos/ }).first().click();
     await p.waitForURL('**/notificaciones/');
@@ -174,11 +167,7 @@ async function main() {
   }, { capturas });
 
   await escenario('C-aceptar-propuesta-y-trabajo', nav_, base, async ({ p, foto }) => {
-    await p.goto(`${base}/`);
-    await p.waitForURL('**/inicio/');
-    await p.getByRole('link', { name: 'Ver todos' }).click();
-    await p.waitForURL('**/pedidos/');
-    await p.getByText('Cambiar el flexible del inodoro').click();
+    await p.goto(`${base}/pedidos/detalle/?id=00000000-0000-4000-8000-0000000000b2&escenario=habilitado`);
     await ver(p, 'Propuesta del usuario');
     await foto('01-propuesta-usuario');
     // Aceptar pide confirmación y muestra el resumen del acuerdo
@@ -192,7 +181,7 @@ async function main() {
     await ver(p, '$ 38.000');
     await foto('03-trabajo-agendado');
     // Paso a paso. Sin compartir la ubicación no hay llegada automática: aparece el respaldo "Ya llegué" (lote 4.6)
-    await p.getByRole('button', { name: 'Salgo para allá' }).click();
+    await p.getByRole('button', { name: 'Salir para allá' }).click();
     await p.waitForURL('**/en-camino/?id=*');
     await ver(p, 'Como estás sin compartir la ubicación');
     await foto('04-en-camino');
@@ -204,26 +193,18 @@ async function main() {
     await p.getByRole('button', { name: 'Empezar el trabajo' }).click();
     await ver(p, 'Trabajando hace');
     await foto('06-en-curso');
-    await p.getByRole('button', { name: 'Terminé el trabajo' }).click();
+    await p.getByRole('button', { name: 'Terminé', exact: true }).click();
     await ver(p, '¿Terminaste el trabajo?');
     await ver(p, 'Total a cobrar');
     await foto('07-confirmar-terminar');
     await p.getByRole('button', { name: 'Sí, terminé' }).click();
-    await p.waitForURL('**/trabajos/terminado/**');
-    await ver(p, '¡Terminaste el trabajo!');
-    await ver(p, 'directo del cliente a vos');
-    await foto('08-terminado');
-    // Caja: el cobro nuevo está pendiente; informarlo no lo verifica
-    await p.getByRole('link', { name: 'Ver la Caja' }).click();
-    await ver(p, 'El pago va directo a vos');
-    await p.getByRole('button', { name: /Informar cobro|Ya lo cobré/ }).first().click();
-    await ver(p, 'Queda como reportado');
-    await foto('09-informar-cobro');
-    await p.getByRole('button', { name: 'Sí, ya lo cobré' }).click();
-    await p.locator('dialog[open]').waitFor({ state: 'detached' });
-    // La hoja se cierra con la caja ya actualizada: los $ 38.000 se suman a los $ 30.000 reportados
-    assert.equal(await p.getByText('$ 68.000').count() > 0, true, 'la caja no se actualizó al cerrar la hoja');
-    await foto('10-caja-reportado');
+    // TR-Cobro (lote 1.3): informar el cobro no lo verifica
+    await p.waitForURL('**/trabajos/cobro/**');
+    await ver(p, '¿Cómo te pagó?');
+    await foto('08-como-te-pago');
+    await p.getByRole('button', { name: 'Informar el cobro' }).click();
+    await ver(p, 'Informado por vos · sin verificar');
+    await foto('09-cobro-informado');
   }, { capturas });
 
   await escenario('D-cambio-de-fecha-y-doble-aceptacion', nav_, base, async ({ p, foto }) => {
@@ -231,10 +212,10 @@ async function main() {
     await p.waitForURL('**/inicio/');
     await nav(p, 'Obras');
     await p.getByText('Plomería · Cliente de prueba 5').click();
-    await p.getByRole('link', { name: /Cambiar la fecha/ }).waitFor();
+    await p.getByRole('link', { name: /Cambiar (la )?fecha/ }).waitFor();
     await foto('01-trabajo-agendado');
     // Cambiar la fecha (lote 4.6): motivo, día y franja; sin motivo no se manda
-    await p.getByRole('link', { name: /Cambiar la fecha/ }).click();
+    await p.getByRole('link', { name: /Cambiar (la )?fecha/ }).click();
     await p.waitForURL('**/trabajos/cambio/**');
     await p.getByRole('button', { name: 'Pedir el cambio' }).click();
     await ver(p, 'Elegí el motivo: el cliente lo ve.');
@@ -247,10 +228,11 @@ async function main() {
     await p.getByRole('button', { name: 'Pedir el cambio' }).click();
     await p.waitForURL('**/trabajos/detalle/**');
     await ver(p, 'Cambio esperando respuesta');
-    await ver(p, 'Mientras tanto sigue valiendo el acuerdo de arriba');
+    await ver(p, 'Mientras tanto sigue valiendo lo acordado');
     await ver(p, '$ 45.000');
     await foto('03-cambio-esperando');
     // Doble aceptación: otra persona gana la propuesta
+    await p.getByRole('link', { name: 'Volver' }).click();
     await nav(p, 'Mensajes');
     await p.getByText('Cliente de prueba 2').click();
     await ver(p, 'Cotizando');
@@ -495,7 +477,7 @@ async function main() {
     await activarMapas(p);
     await p.waitForFunction((k) => document.querySelectorAll('[data-mapa="listo"]').length >= k, n, { timeout: 20000 });
   };
-  const chip = (p, texto) => p.locator('.vj-compartir .chip').getByText(texto).waitFor();
+  const chip = (p, texto) => p.locator('.nu-viaje .ui-chip').getByText(texto).first().waitFor();
 
   await escenario('M1-zona-aproximada-del-pedido', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/pedidos/detalle/?id=00000000-0000-4000-8000-0000000000b2&escenario=habilitado`);
@@ -513,15 +495,13 @@ async function main() {
 
   await escenario('M2-en-camino-compartir-senal-y-llegue', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/trabajos/detalle/?id=00000000-0000-4000-8000-0000000000c1&escenario=habilitado`);
-    await ver(p, 'Cómo llegar');
-    await mapaListo(p);
-    assert.equal(await p.locator('.hx-mapa-pin').count(), 1);
     const google = await p.getByRole('link', { name: /Google Maps/ }).getAttribute('href');
     assert.match(google, /^https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=-38\.\d+,-57\.\d+&travelmode=driving$/);
     assert.equal(await p.getByRole('link', { name: /Waze/ }).getAttribute('target'), '_blank');
-    await p.getByRole('button', { name: 'Salgo para allá' }).click();
+    await p.getByRole('button', { name: 'Salir para allá' }).click();
     await p.waitForURL('**/en-camino/?id=*');
     await ver(p, 'Compartí tu ubicación durante el viaje');
+    assert.equal(await p.locator('.hx-mapa-pin').count() <= 1, true);
     await mapaListo(p);
     // Antes de compartir no se lee el GPS: no hay punto propio en el mapa
     assert.equal(await p.locator('.hx-mapa-yo').count(), 0);
@@ -529,8 +509,8 @@ async function main() {
     await panel(p, 'GPS simulado rápido (×6)');
     await p.getByRole('button', { name: 'Compartir mi ubicación' }).click();
     await chip(p, 'Ubicación precisa');
-    await ver(p, 've tu ubicación mientras esta pantalla esté abierta');
-    await ver(p, 'Llegás en');
+    await ver(p, 've que vas en camino');
+    await ver(p, /Llegás \d/);
     assert.equal(await p.locator('.hx-mapa-yo').count(), 1);
     await foto('02-compartiendo');
     await panel(p, 'Señal imprecisa');
@@ -567,8 +547,9 @@ async function main() {
   }, { capturas });
 
   await escenario('O-adicionales-terminaste-y-cancelar', nav_, base, async ({ p, foto }) => {
-    await p.goto(`${base}/en-camino/?id=00000000-0000-4000-8000-0000000000c1&escenario=habilitado`);
-    await p.getByRole('button', { name: 'Salgo para allá' }).click();
+    await p.goto(`${base}/trabajos/detalle/?id=00000000-0000-4000-8000-0000000000c1&escenario=habilitado`);
+    await p.getByRole('button', { name: 'Salir para allá' }).click();
+    await p.waitForURL('**/en-camino/?id=*');
     // Con la señal imprecisa la geocerca no sirve: aparece "Ya llegué" con el motivo
     await panel(p, 'Señal imprecisa');
     await p.getByRole('button', { name: 'Compartir mi ubicación' }).click();
@@ -603,17 +584,17 @@ async function main() {
     await ver(p, 'Incluye los adicionales que aceptó el cliente');
     await ver(p, '$ 50.000');
     // Terminar: desglose con el adicional, ¡Terminaste! con el total e informar el cobro (queda reportado)
-    await p.getByRole('button', { name: 'Terminé el trabajo' }).click();
+    await p.getByRole('button', { name: 'Terminé', exact: true }).click();
     await ver(p, 'Total a cobrar');
+    assert.match((await p.locator('.nu-desglose__total dd').textContent()).replace(/\s/g, ' '), /\$ 50\.000/);
     await p.getByRole('button', { name: 'Sí, terminé' }).click();
-    await p.waitForURL('**/trabajos/terminado/**');
-    await ver(p, '¡Terminaste el trabajo!');
-    await ver(p, 'Total que paga el cliente');
-    assert.equal(await p.locator('.tr-desglose__total dd').textContent(), '$ 50.000');
-    await foto('04-terminaste');
-    await p.getByRole('button', { name: /Ya me pagó|Ya lo cobré/ }).click();
-    await p.getByRole('button', { name: 'Sí, ya lo cobré' }).click();
-    await ver(p, 'Reportado, sin verificar');
+    await p.waitForURL('**/trabajos/cobro/**');
+    await ver(p, '¿Cómo te pagó?');
+    await foto('04-como-te-pago');
+    await p.getByRole('radio', { name: 'Una parte' }).check();
+    await p.getByLabel('¿Cuánto te pagó?').fill('20.000');
+    await p.getByRole('button', { name: 'Informar el cobro' }).click();
+    await ver(p, 'Informado por vos · sin verificar');
     await foto('05-cobro-reportado');
     // Cancelar otro trabajo: primero las alternativas, después el motivo y la confirmación
     await p.goto(`${base}/trabajos/cancelar/?id=00000000-0000-4000-8000-0000000000c1&escenario=habilitado`);
@@ -637,7 +618,7 @@ async function main() {
     await p.goto(`${base}/trabajos/detalle/?id=00000000-0000-4000-8000-0000000000c6&escenario=habilitado`);
     await ver(p, 'Todavía no empezó');
     await foto('01-obra-agendada');
-    await p.getByRole('button', { name: 'Salgo para allá' }).click();
+    await p.getByRole('button', { name: 'Salir para allá' }).click();
     await p.waitForURL('**/en-camino/**');
     await p.getByRole('button', { name: 'Ya llegué' }).click();
     await p.waitForURL('**/trabajos/detalle/**');
@@ -726,6 +707,7 @@ async function main() {
     await foto('01-detalle-turno');
     await p.getByRole('link', { name: 'Ver el trabajo' }).click();
     await p.waitForURL('**/trabajos/detalle/**');
+    await p.getByRole('link', { name: 'Volver' }).click();
     // Mensajes y chat: agregar a contactos, respuestas rápidas que completan (no mandan) y programar turno
     await nav(p, 'Mensajes');
     await p.getByText('Cliente de prueba 2').first().click();
@@ -741,7 +723,7 @@ async function main() {
     await foto('02-chat');
     await p.getByRole('link', { name: /Programar turno/ }).click();
     await p.waitForURL('**/pedidos/propuesta/**');
-    await p.getByRole('link', { name: 'Volver al chat' }).click();
+    await p.getByRole('link', { name: 'Volver' }).click();
     await p.waitForURL('**/mensajes/hilo/**');
     // Contactos: solo los agregados desde un chat; quitar no borra la conversación
     await nav(p, 'Mensajes');
@@ -783,7 +765,7 @@ async function main() {
 
   await escenario('R-taller-electricidad', nav_, base, async ({ p, foto }) => {
     await p.goto(`${base}/inicio/?escenario=habilitado`);
-    await p.getByRole('link', { name: /Tu taller/ }).click();
+    await nav(p, 'Taller');
     await p.waitForURL('**/taller/');
     await ver(p, 'De tu oficio');
     await foto('01-taller');

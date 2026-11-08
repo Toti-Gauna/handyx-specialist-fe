@@ -104,7 +104,9 @@ async function main() {
   const dialogos = [
     ['hoja-aceptar', `/pedidos/detalle/?id=${id(0xb2)}`, 'Aceptar propuesta', '¿Aceptar esta propuesta?'],
     ['hoja-borrar-avisos', '/notificaciones/', 'Borrar todos', '¿Borrar todos los avisos?'],
-    ['hoja-pedido-entrante', '/inicio/', 'No disponible', 'Pedido urgente para vos'],
+    ['hoja-demora', '/inicio/', 'Avisar una demora', 'No cambia el horario acordado'],
+    ['hoja-teclado-precio', `/pedidos/propuesta/?id=${id(0xb2)}`, 'Escribir', 'Escribí el monto con los números'],
+    ['hoja-revisar-propuesta', `/pedidos/propuesta/?id=${id(0xb2)}&paso=fecha`, 'Revisar la propuesta', 'Hasta que acepte, no es un trabajo agendado'],
     ['hoja-otro-dia', `/trabajos/obra/jornadas/?id=${id(0xc6)}`, 'Pedir otro día', 'Otro día para la jornada'],
     ['hoja-etapa', `/trabajos/obra/plan/?id=${id(0xc4)}`, 'Terminé esta etapa', '¿Terminaste la etapa 2?'],
     ['hoja-llamada', `/trabajos/detalle/?id=${id(0xc1)}`, 'Llamar por la app', 'Ninguno de los dos ve el teléfono del otro'],
@@ -135,8 +137,9 @@ async function main() {
   // En camino compartiendo la ubicación (lote 4.3): mapa interactivo, hoja arrastrable y señal en texto
   {
     const p = await ctx.newPage();
-    await p.goto(`${base}/en-camino/?id=${id(0xc1)}&escenario=habilitado`);
-    await p.getByRole('button', { name: 'Salgo para allá' }).click();
+    await p.goto(`${base}/trabajos/detalle/?id=${id(0xc1)}&escenario=habilitado`);
+    await p.getByRole('button', { name: 'Salir para allá' }).click();
+    await p.waitForURL('**/en-camino/**');
     await p.getByRole('button', { name: 'Compartir mi ubicación' }).click();
     await p.getByText('Ubicación precisa').first().waitFor({ timeout: 8000 });
     await esperarMapas(p);
@@ -172,7 +175,7 @@ async function main() {
   {
     const p = await ctx.newPage();
     await p.goto(`${base}/inicio/`);
-    await p.getByText('Pedidos para vos').first().waitFor();
+    await p.getByText('Tu día · 3 paradas').first().waitFor();
     const vistos = new Set();
     for (let i = 0; i < 40; i++) {
       await p.keyboard.press('Tab');
@@ -196,7 +199,7 @@ async function main() {
   for (const preferencia of ['reduce', 'no-preference']) {
     const c = await nav.newContext({ viewport: { width: ancho, height: alto }, reducedMotion: preferencia });
     const p = await c.newPage();
-    await p.goto(`${base}/pedidos/?falla=red&escenario=habilitado`);
+    await p.goto(`${base}/caja/?falla=red&escenario=habilitado`);
     await p.getByText('No pudimos conectarnos').first().waitFor({ timeout: 8000 });
     const animaciones = await p.evaluate(() => document.getAnimations().filter((a) => a instanceof CSSAnimation).length);
     if (preferencia === 'reduce' && animaciones > 0) movimiento.push(`con "reducir movimiento" hay ${animaciones} animaciones`);

@@ -1,0 +1,792 @@
+/* Pantallas del núcleo (lote 1.3): Inicio con el mapa de arreglos, tu recorrido, el pedido, tu precio, el trabajo, el
+   viaje y el cobro. Solo composición y ubicación: las piezas tienen sus estilos en src/ui. Sin estilos inline. */
+
+.nu-nota {
+  margin: 0;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  line-height: 1.4;
+}
+.nu-nota--error {
+  color: var(--ui-error);
+  font-weight: 700;
+}
+.nu-vacio,
+.nu-fallo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  min-height: 60dvh;
+  padding: 24px var(--ui-gutter);
+}
+.nu-dos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 10px;
+}
+.nu-pie-columna {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.nu-subtitulo {
+  margin: 0;
+  font-size: var(--ui-texto-base);
+  font-weight: 800;
+}
+
+/* ── Inicio ──────────────────────────────────────────── */
+.nu-inicio {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: #f3f4f7;
+}
+.nu-inicio > .ui-cabecera-azul {
+  z-index: 5;
+}
+.nu-inicio__estado {
+  position: relative;
+  z-index: 4;
+  margin: -14px 16px 0;
+  padding: 18px 14px 8px;
+  border-radius: 0 0 18px 18px;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  font-weight: 700;
+}
+.nu-inicio__mapa {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 560px;
+  margin-top: -8px;
+}
+.nu-inicio__mapa > .ui-mapa-arreglos {
+  flex: 1;
+  min-height: 100%;
+  border-radius: 0;
+}
+.nu-inicio__mapa .ui-mapa-arreglos__arriba {
+  padding-top: 18px;
+}
+.nu-inicio__mapa .ui-mapa-arreglos__lista {
+  padding-bottom: 50dvh;
+}
+.nu-inicio__abajo {
+  position: fixed;
+  right: 0;
+  bottom: var(--ui-pestanas-reserva);
+  left: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 12px 6px;
+  pointer-events: none;
+}
+.nu-inicio__abajo > * {
+  width: 100%;
+  pointer-events: auto;
+}
+.nu-inicio__abajo > .ui-boton {
+  width: auto;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+}
+.nu-inicio__abajo .ui-cercanos {
+  max-height: min(38dvh, 380px);
+  border-radius: var(--ui-radio-tarjeta);
+}
+.nu-inicio .hx-mapa__centrar {
+  top: 118px;
+  bottom: auto;
+}
+.nu-inicio:has(.ui-mapa-arreglos--lista) .ui-cercanos {
+  display: none;
+}
+.nu-inicio__medir {
+  margin: -4px 0 0;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.nu-inicio--cargando {
+  background: #f3f4f7;
+}
+.nu-inicio--sin {
+  background: #fff;
+}
+.nu-inicio__sin {
+  padding: 20px var(--ui-gutter) calc(var(--ui-pestanas-reserva) + 16px);
+}
+
+/* ── Tu día (tarjeta del Inicio) ─────────────────────── */
+.nu-dia {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--ui-radio-tarjeta);
+  background: #fff;
+  box-shadow: var(--ui-elev-2);
+}
+.nu-dia__arriba {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+}
+.nu-dia__arriba .ui-etiqueta {
+  color: var(--ui-hondo);
+}
+.nu-dia__proxima {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 20px;
+  background: var(--ui-tinte);
+}
+.nu-dia__quien {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nu-dia__ico {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--ui-amarillo);
+}
+.nu-dia__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.nu-dia__texto strong {
+  font-size: 1.125rem;
+}
+.nu-dia__texto span {
+  color: var(--ui-hondo);
+  font-size: var(--ui-texto-chico);
+}
+.nu-dia__tramo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+.nu-dia__tramo strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.375rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.nu-dia__tramo span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-min);
+}
+.nu-dia__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.nu-dia__acciones > .ui-boton {
+  flex: 1 1 10rem;
+  width: auto;
+}
+.nu-dia__acciones > .ui-boton-icono {
+  background: #fff;
+}
+.nu-dia__listo {
+  margin: 0;
+  font-weight: 700;
+}
+
+/* ── Detalle del pedido ──────────────────────────────── */
+.nu-pedido {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.nu-pedido__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.nu-pedido__chips .ui-chip {
+  white-space: normal;
+}
+.nu-pedido__cabeza {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nu-pedido__ilu,
+.nu-resumen__ilu {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--ui-radio-mosaico);
+  background: var(--ui-mosaico);
+}
+.nu-pedido__ilu .ui-ilu,
+.nu-resumen__ilu .ui-ilu {
+  width: 66px;
+  height: 66px;
+}
+.nu-pedido__nombre {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.nu-pedido__nombre p {
+  margin: 0;
+  color: var(--ui-texto);
+}
+.nu-pedido__filas {
+  display: flex;
+  flex-direction: column;
+}
+.nu-pedido__fotos {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+}
+.nu-pedido__fotos img {
+  display: block;
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+.nu-pedido__sugiere {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--ui-tinte);
+  color: var(--ui-hondo);
+  font-weight: 800;
+}
+.nu-acciones-pedido {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nu-acciones-pedido__fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 10px;
+}
+
+/* Pedido abierto desde un aviso: hoja fija sobre el mapa dibujado. */
+.nu-arriba {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px var(--ui-gutter);
+}
+.nu-arriba .ui-boton-icono {
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+}
+.nu-zona-deco {
+  position: absolute;
+  top: 110px;
+  left: 50%;
+  width: 124px;
+  height: 124px;
+  border: 2px dashed var(--ui-azul);
+  border-radius: 50%;
+  background: rgb(31 87 168 / 0.12);
+}
+.nu-hoja-fija {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 120px;
+  padding: 8px var(--ui-gutter) 24px;
+  border-radius: var(--ui-radio-hoja) var(--ui-radio-hoja) 0 0;
+  background: #fff;
+  box-shadow: var(--ui-elev-hoja);
+}
+.nu-hoja-fija__pie {
+  padding-top: 12px;
+  border-top: 1px solid var(--ui-borde);
+}
+.nu-manija {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+.nu-manija span {
+  width: 40px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--ui-borde);
+}
+.nu-propuestas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nu-propuestas .lista-tarjetas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ── Tu precio y cuándo vas ──────────────────────────── */
+.nu-resumen {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nu-resumen__texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.nu-resumen__texto strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.1875rem;
+  font-weight: 900;
+}
+.nu-resumen__texto span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.nu-precio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+.nu-precio__monto .ui-cifra {
+  font-size: clamp(2.5rem, 13vw, 3.25rem);
+}
+.nu-precio__ayuda {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.nu-interruptores {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nu-recibis {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  color: var(--ui-exito-hondo);
+}
+.nu-recibis > span {
+  display: flex;
+  flex-direction: column;
+}
+.nu-recibis .ui-cifra {
+  color: var(--ui-exito-hondo);
+}
+.nu-pidio {
+  margin: 0;
+}
+.nu-pidio .ui-chip {
+  white-space: normal;
+}
+.nu-calendario {
+  padding: 12px;
+  border: 1px solid var(--ui-borde);
+  border-radius: var(--ui-radio-tarjeta);
+  box-shadow: var(--ui-elev-1);
+}
+.nu-franjas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.nu-franjas legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-weight: 800;
+}
+.nu-medida {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 8px 14px;
+  border: 2px dashed var(--ui-azul);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ui-azul);
+  font: 800 var(--ui-texto-base) / 1.2 var(--ui-fuente);
+  cursor: pointer;
+}
+.nu-medida:focus-visible {
+  outline: 3px solid var(--ui-azul);
+  outline-offset: 2px;
+}
+.nu-ruedas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.nu-ruedas--una {
+  grid-template-columns: 1fr;
+}
+.nu-ruedas > div {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  min-width: 0;
+}
+.nu-enviada {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+.nu-enviada__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px var(--ui-gutter);
+  text-align: center;
+}
+.nu-enviada__cuerpo .ui-tarjeta {
+  width: 100%;
+  text-align: left;
+}
+.nu-enviada__ilu {
+  display: grid;
+  place-items: center;
+  width: 180px;
+  height: 180px;
+  border-radius: 48px;
+  background: var(--ui-mosaico);
+}
+.nu-enviada__ilu .ui-ilu {
+  width: 160px;
+  height: 160px;
+}
+.nu-enviada__cuerpo .ui-etiqueta {
+  color: var(--ui-azul);
+}
+.nu-enviada__dato {
+  margin: 0;
+}
+
+/* ── Tu recorrido ────────────────────────────────────── */
+.nu-ruta {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: #f3f4f7;
+}
+.nu-ruta__fondo {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 460px;
+  overflow: hidden;
+}
+.nu-ruta__arriba {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px var(--ui-gutter);
+}
+.nu-ruta__arriba .ui-boton-icono,
+.nu-ruta__arriba .ui-chip {
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+}
+.nu-ruta__hoja {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 220px;
+  padding: 20px var(--ui-gutter) calc(20px + env(safe-area-inset-bottom, 0px));
+  border-radius: var(--ui-radio-hoja) var(--ui-radio-hoja) 0 0;
+  background: #fff;
+  box-shadow: var(--ui-elev-hoja);
+}
+.nu-ruta__cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 10px;
+}
+.nu-ruta__mes {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+}
+
+/* ── Trabajo ─────────────────────────────────────────── */
+.nu-trabajo__cabeza {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.nu-trabajo__nombre {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+.nu-trabajo__nombre p {
+  margin: 0;
+  color: var(--ui-texto);
+}
+.nu-mosaicos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: 10px;
+}
+.nu-adicionales {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nu-adicionales li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.nu-adicionales li > span {
+  display: flex;
+  flex-direction: column;
+}
+.nu-adicionales li > span span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.nu-desglose {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+.nu-desglose > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+.nu-desglose dd {
+  margin: 0;
+  font-weight: 800;
+}
+.nu-desglose__total {
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--ui-borde);
+}
+
+/* ── En camino ───────────────────────────────────────── */
+.nu-viaje__arriba {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nu-viaje__arriba .ui-boton-icono {
+  flex: none;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+}
+.nu-viaje__rumbo {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 20px;
+  background: var(--ui-azul);
+  box-shadow: var(--ui-elev-2);
+  color: #fff;
+}
+.nu-viaje__rumbo > .ui-icono {
+  flex: none;
+  color: var(--ui-amarillo);
+}
+.nu-viaje__rumbo > span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.nu-viaje__rumbo > span span {
+  color: rgb(255 255 255 / 0.9);
+  font-size: var(--ui-texto-chico);
+}
+.nu-viaje {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 62dvh;
+  margin: 0 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: 16px;
+  overflow-y: auto;
+  border-radius: var(--ui-radio-tarjeta);
+  background: #fff;
+  box-shadow: var(--ui-elev-2);
+}
+.nu-viaje__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.nu-viaje__fila .ui-chip {
+  white-space: normal;
+}
+.nu-viaje__tiempo {
+  display: flex;
+  flex-direction: column;
+}
+.nu-viaje__tiempo strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.75rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.nu-viaje__tiempo span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.nu-viaje__quien {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nu-viaje__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.nu-viaje__texto span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.nu-viaje__permiso {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nu-viaje__permiso p {
+  margin: 0;
+}
+
+/* ── Cobro ───────────────────────────────────────────── */
+.nu-cobro__sub {
+  color: rgb(255 255 255 / 0.92);
+  font-size: var(--ui-texto-chico);
+}
+.ui-tarjeta--azul .ui-cifra {
+  color: #fff;
+}
+.nu-campo-seg {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nu-campo-seg__rotulo {
+  margin: 0;
+  font-weight: 800;
+}
+
+.nu-cronometro {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: var(--ui-tinte);
+  color: var(--ui-hondo);
+  font-weight: 700;
+}
+.nu-cronometro strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.nu-fondo-mapa {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 340px;
+}
+.nu-fondo-mapa > .hx-mapa {
+  height: 100%;
+}
+.nu-fondo-mapa .hx-mapa__respaldo {
+  align-content: start;
+  padding-top: 76px;
+}
+.nu-pantalla-pedido + .nu-hoja-fija {
+  margin-top: 210px;
+}

@@ -10,6 +10,7 @@ import { fallo, ahoraMs, type EstadoMock } from './estado.ts';
 import { aPedidoElegible, habilitada, visible } from './reglas.ts';
 import { zodAFallo } from './validacion.ts';
 import { precioSugerido } from './precios.ts';
+import { descartar, destinosPrueba, mapaPedido, mapaPedidos } from './nucleo.ts';
 
 const ESTADOS_ACTIVOS = ['agendado', 'en_camino', 'en_sitio', 'en_curso'] as const;
 
@@ -95,5 +96,13 @@ export const pedidos = (s: EstadoMock) => ({
   },
   borrarAvisos(): void {
     s.avisos = [];
+  },
+
+  // Mapa de arreglos (lote 1.3): zona aproximada siempre, sin tiempos de llegada.
+  mapaDestinos: () => destinosPrueba(),
+  mapaPedidos: (busqueda: unknown) => mapaPedidos(s, busqueda),
+  mapaPedido: (id: string) => mapaPedido(s, id),
+  descartarPedido(id: string): void {
+    descartar(s, id);
   },
 });

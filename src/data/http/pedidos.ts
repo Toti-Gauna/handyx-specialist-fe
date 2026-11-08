@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { AvisoSchema, DisponibilidadSchema, InicioSchema, paginado, PedidoDetalleSchema, PedidoElegibleSchema } from '../../contracts/dto.ts';
+import { DestinoMapaSchema, MapaPedidosSchema, PedidoEntranteSchema } from '../../contracts/mapa.ts';
 import type { ApiPedidos } from '../api/pedidos.ts';
 import type { ClienteHttp } from './cliente.ts';
 import { id, Nada } from './comun.ts';
@@ -20,5 +21,12 @@ export const pedidosHttp = (c: ClienteHttp): ApiPedidos => ({
   },
   async borrarAvisos() {
     await c.pedir('DELETE', '/v1/especialista/avisos', Nada);
+  },
+  // Mapa de arreglos (0.11.0): la posición va en el cuerpo del POST, nunca en la URL.
+  mapaDestinos: () => c.pedir('GET', '/v1/especialista/mapa/destinos', z.array(DestinoMapaSchema)),
+  mapaPedidos: (busqueda) => c.pedir('POST', '/v1/especialista/mapa/pedidos', MapaPedidosSchema, { cuerpo: busqueda }),
+  mapaPedido: (pid) => c.pedir('GET', `/v1/especialista/mapa/pedidos/${id(pid)}`, PedidoEntranteSchema),
+  async descartarPedido(pid) {
+    await c.pedir('POST', `/v1/especialista/pedidos/${id(pid)}/descarte`, Nada);
   },
 });

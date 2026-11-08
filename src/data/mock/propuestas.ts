@@ -106,7 +106,7 @@ export const propuestas = (s: EstadoMock) => ({
       } else if (s.propuestas.some((x) => x.pedidoId === d.pedidoId && x.autorRol === 'especialista' && x.estado === 'pendiente')) {
         throw fallo('conflicto', 409, 'transicion_invalida', 'Ya tenés una propuesta pendiente en este pedido. Retirala o enviá una contrapropuesta.');
       }
-      const nueva: Propuesta = { id: idNuevo(s), pedidoId: d.pedidoId, autorRol: 'especialista', monto: d.monto, alcance: d.alcance, horario: d.horario, venceEn: venceEn(s, pedido), estado: 'pendiente', reemplazaA: d.reemplazaA, version: 0 };
+      const nueva: Propuesta = { id: idNuevo(s), pedidoId: d.pedidoId, autorRol: 'especialista', monto: d.monto, alcance: d.alcance, horario: d.horario, venceEn: venceEn(s, pedido), estado: 'pendiente', reemplazaA: d.reemplazaA, version: 0, ...(d.incluyeMateriales !== undefined ? { incluyeMateriales: d.incluyeMateriales } : {}), ...(d.garantiaDias !== undefined ? { garantiaDias: d.garantiaDias } : {}) };
       s.propuestas.push(nueva);
       const conv = asegurarConversacion(s, pedido);
       agregarMensaje(s, conv, { autorRol: 'especialista', tipo: 'propuesta', texto: null, propuestaId: nueva.id });

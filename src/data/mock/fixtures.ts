@@ -25,6 +25,7 @@ import {
 } from './estado.ts';
 import { BASE_PRUEBA, destinoPrueba, zonaPrueba } from './mapa.ts';
 import { FOTO_PRUEBA } from './fotos.ts';
+import { sembrarNucleo } from './nucleo.ts';
 import { calcularFaltantes } from './reglas.ts';
 import { turnosDePrueba } from './turnos.ts';
 
@@ -524,6 +525,9 @@ export function crearEstado(escenario: Escenario): EstadoMock {
     av(5, 'pago', 'Un pago no se acreditó', 'Mercado Pago informó un problema con un pago de una obra.', T0 - 2 * DIA, 'caja', null, true),
     av(6, 'soporte', 'Novedades en tu reclamo', 'Hay una respuesta en un caso abierto.', T0 - 20 * HORA, 'soporte', ID.s2, true),
   ];
+
+  // Lote 1.3: el trabajo de hoy de Lucía Ferreyra y pedidos fuera de tus zonas para «Me voy hasta…».
+  sembrarNucleo(s, T0);
 
   if (escenario === 'baja') {
     s.baja = {

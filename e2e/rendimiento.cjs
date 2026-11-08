@@ -25,7 +25,7 @@ const RUTAS = [
   '/acceso/',
   '/registro/',
   '/inicio/',
-  '/pedidos/',
+  '/inicio/recorrido/',
   `/pedidos/detalle/?id=${id(0xb2)}`,
   '/trabajos/',
   `/trabajos/detalle/?id=${id(0xc1)}`,
