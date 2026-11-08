@@ -12,6 +12,9 @@
   gap: 6px;
   min-width: 0;
 }
+.eq-cabecera .ui-titulo {
+  font-size: clamp(1.5rem, 7vw, 2.25rem); /* «equipamiento» entra entero en 320 px, al lado del botón */
+}
 .eq-cabecera .ui-boton-icono {
   border-radius: 16px;
 }

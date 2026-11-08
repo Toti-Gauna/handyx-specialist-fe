@@ -141,6 +141,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  justify-content: center;
+  min-width: 48px;
   min-height: var(--ui-toque);
   padding: 0 16px;
   border-radius: 14px;

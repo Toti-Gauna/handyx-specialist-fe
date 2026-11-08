@@ -23,5 +23,5 @@
 }
 /* Las pantallas raíz dejan lugar abajo para la barra de pestañas flotante. */
 .he-app:has(.ui-pestanas) .ui-pantalla__contenido {
-  padding-bottom: calc(var(--ui-pestanas-reserva) + 12px);
+  padding-bottom: calc(var(--ui-pestanas-reserva) + 24px);
 }
