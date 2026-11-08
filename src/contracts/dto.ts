@@ -432,6 +432,9 @@ export const PreferenciasSchema = z.strictObject({
   avisosNovedades: z.boolean().optional(),
   /** Horario de silencio (hora de Buenos Aires); los urgentes llegan igual si estás Disponible. Null = sin silencio. */
   silencio: z.strictObject({ desde: HoraSchema, hasta: HoraSchema }).nullable().optional(),
+  // 0.11.1 (lote 1.4, CU-Notificaciones / Cuenta). Opcional hasta 1.0.0.
+  /** «Letra más grande»: agranda toda la app. Se guarda en el servidor, nunca en el navegador. */
+  letraGrande: z.boolean().optional(),
 });
 export type Preferencias = z.infer<typeof PreferenciasSchema>;
 

@@ -1,6 +1,18 @@
 # Contrato compartido Usuario · Especialista · Portal (lote 1.3)
 
-Versión: **0.11.0 (borrador)** · `src/contracts/version.ts` · fecha 08/11/2026.
+Versión: **0.11.1 (borrador)** · `src/contracts/version.ts` · fecha 08/11/2026.
+
+**0.11.0 → 0.11.1 (ola 1, lote 1.5: lo que pidieron los lotes de la ola 1; compatible).**
+- `Preferencias` suma `letraGrande` (opcional hasta 1.0.0): «Letra más grande» en Cuenta (lote 1.4), guardada en el
+  servidor (`notification_preferences.letra_grande`), nunca en el navegador.
+- Implementado en `handyx-specialist-be` (lote 1.5): acceso con segunda verificación, seguridad, registro por pasos,
+  onboarding, mapa de arreglos (con SSE), perfil propio, preferencias, bandeja y descarga de datos. Decisiones del
+  servidor que la app tiene que saber: un error de reautenticación es **400** con el campo
+  `reautenticacion.password|codigo` (nunca 401: la sesión sigue); el código al email de D6-Acceso solo vale una vez y
+  solo el último; con la segunda verificación solo por email, entrar con un código al email responde 401 (falta otra
+  forma); los textos para especialistas de RG-10 son `esp-terminos-especialista-2026-11-08-prov` y
+  `esp-privacidad-especialista-2026-11-08-prov` (provisorios); el detalle del mapa y la propuesta valen también fuera
+  de tus zonas (lo viste yendo hacia otro destino), la bandeja y los avisos no.
 
 **0.10.0 → 0.11.0 (ola 0, lote 0.1: el contrato completo del bloque Taller, para que las olas 1 a 4 trabajen en
 paralelo sin cambiarlo).** Diseño de referencia: el lienzo (`design/deluxe/`); qué pantalla usa qué endpoint: §6.
