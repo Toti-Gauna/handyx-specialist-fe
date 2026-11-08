@@ -14,7 +14,6 @@ async function axe(p, nombre) {
   AXE ??= readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
   await p.addScriptTag({ content: AXE });
   const v = await p.evaluate(async () => {
-    // eslint-disable-next-line no-undef
     const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } });
     return r.violations.map((x) => `${x.id}: ${x.nodes.map((n) => n.target.join(' ')).join(', ')}`);
   });
@@ -58,6 +57,8 @@ const RECORRIDOS = [
       await p.getByLabel('Código de 6 números').fill('000000');
       await p.getByRole('button', { name: 'Entrar', exact: true }).click();
       await ver(p, 'Te quedan 4 intentos');
+      // El foco vuelve al código para probar de nuevo
+      await p.waitForFunction(() => document.activeElement?.getAttribute('autocomplete') === 'one-time-code');
       await foto('03-codigo-incorrecto');
       // Por SMS: se manda y se pide con la espera escrita
       await p.getByRole('button', { name: /Mandarme un SMS/ }).click();
@@ -184,8 +185,8 @@ const RECORRIDOS = [
       await ver(p, 'Por seguridad, el paso 2 dura unos minutos');
       await p.getByRole('link', { name: 'Volver a entrar' }).last().click();
       await p.waitForURL('**/acceso/');
-      const guardado = await p.evaluate(() => localStorage.length + sessionStorage.length + document.cookie.length);
-      assert.equal(guardado, 0, 'el acceso guardó algo en el navegador');
+      const { cookies, origins } = await p.context().storageState();
+      assert.deepEqual([cookies, origins.flatMap((o) => o.localStorage)], [[], []], 'el acceso guardó algo en el navegador');
     },
   ],
   [

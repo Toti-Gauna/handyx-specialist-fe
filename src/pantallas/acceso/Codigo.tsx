@@ -22,7 +22,7 @@ import { AccionFija } from '../../ui/organismos/Acciones.tsx';
 import { EscenaCiudad } from '../../ui/organismos/EscenaCiudad.tsx';
 import { PantallaAcceso } from '../../ui/plantillas/PantallaAcceso.tsx';
 import { AyudaPrueba } from './AyudaPrueba.tsx';
-import { mensajeAcceso } from './mensajes.ts';
+import { enfocarCodigo, mensajeAcceso } from './mensajes.ts';
 import { guardarAcceso, leerAcceso, olvidarAcceso } from './memoria.ts';
 
 const FORM = 'form-codigo-ingreso';
@@ -82,7 +82,10 @@ function EscribirCodigo({ inicial }: { inicial: CodigoEnviado }) {
     if (r.ok) {
       if (r.valor === RUTAS.accesoVerificacion.ruta) router.push(r.valor);
       else router.replace(r.valor);
-    } else setCodigo('');
+    } else {
+      setCodigo('');
+      enfocarCodigo();
+    }
   }
 
   const porEmail = enviado.canal === 'email';

@@ -24,7 +24,7 @@ import { AccionFija } from '../../ui/organismos/Acciones.tsx';
 import { BarraCompacta } from '../../ui/organismos/Cabeceras.tsx';
 import { PantallaSecundaria } from '../../ui/plantillas/Plantillas.tsx';
 import { AyudaPrueba } from './AyudaPrueba.tsx';
-import { mensajeAcceso } from './mensajes.ts';
+import { enfocarCodigo, mensajeAcceso } from './mensajes.ts';
 import { guardarAcceso, leerAcceso, olvidarAcceso } from './memoria.ts';
 
 const FORM = 'form-segunda-verificacion';
@@ -85,7 +85,10 @@ function Paso2({ desafio }: { desafio: DesafioSegundaVerificacion }) {
     if (r.ok) {
       olvidarAcceso();
       router.replace(r.valor);
-    } else setCodigo('');
+    } else {
+      setCodigo('');
+      enfocarCodigo();
+    }
   }
 
   if (vencido) {

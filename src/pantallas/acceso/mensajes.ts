@@ -17,3 +17,8 @@ export function mensajeAcceso(f: FalloApi, contexto: Contexto): string {
   }
   return 'Algo falló de nuestro lado. Probá de nuevo en un rato.';
 }
+
+/** Después de un código equivocado, el foco vuelve al campo del código para probar de nuevo (lo anuncia el lector). */
+export function enfocarCodigo(): void {
+  requestAnimationFrame(() => document.querySelector<HTMLInputElement>('input[autocomplete="one-time-code"]')?.focus());
+}
