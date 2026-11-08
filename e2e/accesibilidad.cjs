@@ -151,10 +151,9 @@ async function main() {
 
   // Errores de formulario: al enviar con datos faltantes, el foco va al primer campo marcado
   for (const [nombre, ruta, boton, escenario] of [
-    ['registro', '/registro/', 'Siguiente', 'nuevo'],
+    ['registro', '/registro/', 'Crear mi cuenta', 'nuevo'],
     ['verificar', '/verificar/', null, 'sin_verificar'],
-    ['alta-datos', '/alta/?paso=datos', 'Siguiente', 'incompleto'],
-    ['alta-identidad', '/alta/?paso=identidad', 'Guardar y seguir', 'incompleto'],
+    ['alta-domicilio', '/alta/?paso=domicilio', 'Seguir', 'incompleto'],
     ['caso', '/soporte/', 'Abrir un caso', 'habilitado'],
   ]) {
     const p = await ctx.newPage();

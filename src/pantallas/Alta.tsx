@@ -1,75 +1,86 @@
 'use client';
-// Alta guiada (lote 4.4). Con el alta editable: la lista con anillo de progreso, cada paso en su pantalla (`?paso=`) y el
-// resumen (`?paso=resumen`). Enviada o en revisión: la línea de tiempo (y el turno de antecedentes se puede elegir igual).
-// Rechazada o habilitada: su pantalla. Las piezas viven en ./alta/.
+// Tu alta (lote 1.2): el registro por pasos RG-2 a RG-10 (`?paso=`) y el estado del alta (D6-Alta). Sin `?paso=` el
+// registro se retoma en el paso que dice el servidor (`pasoActual`); no se saltean pasos. Mandada, se ve el estado y
+// solo se pueden sumar certificados o cargar los antecedentes que faltaban. Al quedar habilitado aparece, una vez,
+// «¡Estás habilitado!» (OB-Aprobado). Las piezas viven en ./registro/.
 import { api } from '@handyx/origen-datos';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { RUTAS } from '../app/rutas.ts';
 import { Cargando, ErrorCaja } from '../components/Estados.tsx';
 import { usePerfil } from '../components/GuardiaApp.tsx';
+import type { PasoRegistro, RegistroEspecialista } from '../contracts/registro.ts';
 import { useCarga } from '../hooks/useCarga.ts';
-import { esPasoAlta, itemsAlta, type PasoAlta } from '../lib/alta.ts';
-import { fechaHora } from '../lib/formato.ts';
-import type { PropsPaso } from './alta/comunes.tsx';
-import { AltaEnRevision, AltaHabilitada, AltaRechazada } from './alta/EstadosAlta.tsx';
-import { InicioAlta } from './alta/InicioAlta.tsx';
-import { PasoAntecedentes } from './alta/PasoAntecedentes.tsx';
-import { PasoDatos } from './alta/PasoDatos.tsx';
-import { PasoIdentidad } from './alta/PasoIdentidad.tsx';
-import { PasoRubros } from './alta/PasoRubros.tsx';
-import { PasoSelfie } from './alta/PasoSelfie.tsx';
-import { PasoZonas } from './alta/PasoZonas.tsx';
-import { ResumenAlta } from './alta/ResumenAlta.tsx';
-import './alta/alta.css';
+import { esPasoRegistro, pasoAMostrar, pasoSiguiente, registroEditable } from '../lib/registro.ts';
+import { ProveedorRegistro, rutaPaso, type CtxRegistro } from './registro/comunes.tsx';
+import { EstadoAlta } from './registro/EstadoAlta.tsx';
+import { PasoRevision } from './registro/PasoRevision.tsx';
+import { PasoDatos, PasoDomicilio, PasoRubros, PasoZonas } from './registro/PasosCuenta.tsx';
+import { PasoAntecedentes, PasoCertificados } from './registro/PasosDocumentos.tsx';
+import { PasoCuit, PasoDni, PasoSelfie } from './registro/PasosIdentidad.tsx';
+import './registro/registro.css';
 
-const PASOS: Record<PasoAlta, (p: PropsPaso) => ReactNode> = {
+const PASOS: Record<PasoRegistro, () => ReactNode> = {
   datos: PasoDatos,
-  identidad: PasoIdentidad,
-  selfie: PasoSelfie,
+  domicilio: PasoDomicilio,
   rubros: PasoRubros,
   zonas: PasoZonas,
+  selfie: PasoSelfie,
+  dni: PasoDni,
+  cuit_cuil: PasoCuit,
+  certificados: PasoCertificados,
   antecedentes: PasoAntecedentes,
+  revision: PasoRevision,
 };
+
+/** Lo que se puede abrir con el alta ya mandada. */
+const DESPUES_DE_MANDAR = new Set<PasoRegistro>(['certificados', 'antecedentes']);
+
+/** Qué mostrar: un paso o el estado del alta. Puro, para probarlo sin pantalla. */
+export function vistaAlta(r: RegistroEspecialista, pedido: string | null): PasoRegistro | 'estado' {
+  if (r.estadoAlta === 'borrador') return pasoAMostrar(r, pedido);
+  // Con una corrección pedida todo ya estaba cargado: se puede abrir cualquier paso.
+  if (r.estadoAlta === 'requiere_correccion') return esPasoRegistro(pedido) ? pedido : 'estado';
+  if (r.estadoAlta === 'enviada' || r.estadoAlta === 'en_revision' || r.estadoAlta === 'habilitada') return esPasoRegistro(pedido) && DESPUES_DE_MANDAR.has(pedido) ? pedido : 'estado';
+  return 'estado';
+}
 
 export function Alta() {
   const router = useRouter();
-  const paso = useSearchParams().get('paso');
-  const { perfil, recargar: recargarPerfil } = usePerfil();
-  const c = useCarga(async () => {
-    const [datos, disponibilidad] = await Promise.all([api.datosAlta(), api.disponibilidad()]);
-    return { datos, disponibilidad };
-  }, []);
+  const pedido = useSearchParams().get('paso');
+  const { recargar: recargarPerfil } = usePerfil();
+  // El alta la cambia el equipo de verificación: se vuelve a pedir cada minuto (con la pantalla a la vista).
+  const c = useCarga(() => api.registro(), [], { cadaMs: 60_000 });
+  const [propio, setPropio] = useState<RegistroEspecialista | null>(null);
+  const r = propio && (!c.datos || propio.version >= c.datos.version) ? propio : c.datos;
+  const habilitada = r?.estadoAlta === 'habilitada';
+  const ob = useCarga(async () => (habilitada ? api.onboarding() : null), [habilitada]);
 
-  // La celebración es para el momento en que se ve el cambio a habilitada (no cada vez que se abre esta pantalla).
-  const previo = useRef(perfil.estadoAlta);
-  const [celebrar, setCelebrar] = useState(false);
+  // Recién habilitado: la bienvenida aparece sola, una vez.
   useEffect(() => {
-    if (previo.current !== 'habilitada' && perfil.estadoAlta === 'habilitada') setCelebrar(true);
-    previo.current = perfil.estadoAlta;
-  }, [perfil.estadoAlta]);
+    if (habilitada && ob.datos && !ob.datos.bienvenidaVista) router.replace(RUTAS.obHabilitado.ruta);
+  }, [habilitada, ob.datos, router]);
 
-  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
-  if (!c.datos) return <Cargando />;
+  const recargar = c.recargar;
+  const seguir = useCallback(
+    (desde: PasoRegistro) => {
+      void recargarPerfil();
+      const sig = pasoSiguiente(desde);
+      router.push(r && registroEditable(r.estadoAlta) && sig ? rutaPaso(sig) : RUTAS.alta.ruta);
+    },
+    [r, router, recargarPerfil],
+  );
+  const ctx = useMemo<CtxRegistro | null>(() => (r ? { r, fijar: setPropio, recargar, seguir } : null), [r, recargar, seguir]);
 
-  const { datos, disponibilidad } = c.datos;
-  const recargar = async () => {
-    await Promise.all([c.recargar(), recargarPerfil()]);
-  };
-  const props: PropsPaso = { perfil, datos, disponibilidad, recargar, alTerminar: () => router.push(RUTAS.alta.ruta) };
-  const items = itemsAlta(perfil, datos, disponibilidad, fechaHora);
-  const e = perfil.estadoAlta;
+  if (c.fallo && !r) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (!r || !ctx || (habilitada && (!ob.datos || !ob.datos.bienvenidaVista) && !ob.fallo)) return <Cargando />;
 
-  if (e === 'habilitada') return <AltaHabilitada perfil={perfil} celebrar={celebrar} />;
-  if (e === 'rechazada' || e === 'suspendida') return <AltaRechazada perfil={perfil} />;
-  if (e === 'enviada' || e === 'en_revision') {
-    // Con el alta en revisión no se edita nada, pero el turno de antecedentes se puede elegir o cambiar.
-    return paso === 'antecedentes' ? <PasoAntecedentes {...props} /> : <AltaEnRevision perfil={perfil} />;
-  }
-  if (paso === 'resumen') return <ResumenAlta perfil={perfil} datos={datos} items={items} recargar={recargar} />;
-  if (esPasoAlta(paso)) {
-    const Paso = PASOS[paso];
-    return <Paso {...props} />;
-  }
-  return <InicioAlta perfil={perfil} items={items} />;
+  const vista = vistaAlta(r, pedido);
+  if (vista === 'estado') return <EstadoAlta r={r} />;
+  const Paso = PASOS[vista];
+  return (
+    <ProveedorRegistro value={ctx}>
+      <Paso key={vista} />
+    </ProveedorRegistro>
+  );
 }

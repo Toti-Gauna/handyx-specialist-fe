@@ -28,6 +28,9 @@ for (const m of PUBLICOS_ACCESO) PUBLICOS.add(m);
 // Con sesión pero sin terminar la cuenta (email sin verificar o términos sin aceptar) solo se puede esto.
 const CUENTA_A_MEDIAS = new Set<keyof Metodos>(['estadoVerificacion', 'reenviarCodigo', 'verificarEmail', 'aceptarTerminos']);
 
+// Lote 1.2: crear la cuenta del registro (RG-1) tampoco exige sesión.
+PUBLICOS.add('crearCuenta');
+
 export interface ApiMock {
   api: EspecialistaApi;
   estado: EstadoMock;

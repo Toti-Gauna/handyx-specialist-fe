@@ -12,6 +12,7 @@ import { FalloApi } from '../errores.ts';
 import { fallo, iso, ahoraMs, idNuevo, type EstadoMock } from './estado.ts';
 import { altaEditable, calcularFaltantes, nombrePublico, recalcular } from './reglas.ts';
 import { zodAFallo } from './validacion.ts';
+import { registroMock } from './alta-registro.ts';
 
 const ultimos = (v: string | null, n: number): string | null => (v ? `••••${v.slice(-n)}` : null);
 
@@ -26,6 +27,8 @@ function exigirEditable(s: EstadoMock): void {
 }
 
 export const alta = (s: EstadoMock) => ({
+  // Registro por pasos y onboarding (lote 1.2, contrato 0.11).
+  ...registroMock(s),
   perfil: (): PerfilEspecialista => s.perfil,
   perfilPublico(): PerfilPublico {
     const verificado = s.perfil.estadoAlta === 'habilitada' && faltantesParaHabilitar({
