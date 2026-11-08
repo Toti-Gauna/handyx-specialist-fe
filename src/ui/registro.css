@@ -46,7 +46,8 @@
 /* ── Moléculas: opciones ──────────────────────────────── */
 .ui-grilla-op {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Dos columnas si entran; en un celular angosto o con texto agrandado, una. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
   gap: 10px;
   margin: 0;
   padding: 0;
@@ -342,7 +343,7 @@
 /* ── Molécula: cargar foto o PDF ──────────────────────── */
 .ui-carga {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
   gap: 10px;
 }
 .ui-carga__op {
@@ -362,8 +363,8 @@
   cursor: pointer;
 }
 .ui-carga--compacta .ui-carga__op {
-  min-height: 72px;
-  flex-direction: row;
+  gap: 4px;
+  min-height: 88px;
 }
 .ui-carga__op--azul {
   background: var(--ui-azul);
@@ -583,4 +584,14 @@
     translate: 0 10px;
     rotate: 0deg;
   }
+}
+
+/* Sin la sangría de la plantilla: las láminas ya ocupan todo el ancho. */
+.ui-laminas > .ui-accion-fija {
+  margin: 0;
+}
+/* Con texto agrandado, el estado del permiso baja de renglón en vez de salirse. */
+.ui-permiso__estado .ui-chip {
+  max-width: 100%;
+  white-space: normal;
 }

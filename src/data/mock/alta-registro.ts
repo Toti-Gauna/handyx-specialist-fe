@@ -38,7 +38,7 @@ function crearRegistro(s: EstadoMock): RegistroInterno {
   const verificado = s.perfil.estadoAlta === 'habilitada';
   const r: RegistroInterno = {
     telefono: s.perfil.nombre ? '+5492235554521' : null,
-    domicilio: completo || s.escenario === 'incompleto' ? { barrio: 'La Perla' } : null,
+    domicilio: completo ? { barrio: 'La Perla' } : null,
     zonas: completo ? (s.disponibilidad.zonas.length ? [...s.disponibilidad.zonas] : ['Centro', 'La Perla', 'Playa Grande', 'Güemes']) : [],
     selfie: doc.fotoCara,
     dni: { frente: doc.dni, dorso: doc.dni, ultimos: s.alta.dni ? s.alta.dni.slice(-3) : null },

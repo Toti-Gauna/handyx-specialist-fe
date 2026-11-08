@@ -48,7 +48,7 @@ export function PrimerosPasos() {
         <Anillo hechas={hechos} total={pasos.length} unidad="pasos hechos" />
         <span className="ob-avance__texto">
           <Etiqueta>PARA ARRANCAR BIEN</Etiqueta>
-          <h1 className="ui-titulo ui-titulo--medio">{quedan ? `Te ${quedan === 1 ? 'queda' : 'quedan'} ${plural(quedan, 'cosa', 'cosas')}` : '¡Hiciste todo!'}</h1>
+          <h2 className="ui-titulo ui-titulo--medio">{quedan ? `Te ${quedan === 1 ? 'queda' : 'quedan'} ${plural(quedan, 'cosa', 'cosas')}` : '¡Hiciste todo!'}</h2>
           <span className="ob-nota">Ninguna es obligatoria para recibir pedidos.</span>
         </span>
       </section>

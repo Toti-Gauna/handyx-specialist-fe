@@ -20,8 +20,8 @@ import './onboarding.css';
 const ESTADO_PUSH = {
   activado: { texto: 'Activados', icono: 'check', tono: 'exito' },
   sin_pedir: { texto: 'Sin activar', icono: 'campana', tono: 'gris' },
-  rechazado: { texto: 'No los permitiste en el teléfono', icono: 'alerta', tono: 'amarillo' },
-  no_disponible: { texto: 'Este teléfono no los permite', icono: 'alerta', tono: 'gris' },
+  rechazado: { texto: 'Bloqueados en el teléfono', icono: 'alerta', tono: 'amarillo' },
+  no_disponible: { texto: 'No disponibles', icono: 'alerta', tono: 'gris' },
 } as const;
 
 export function Permisos() {
@@ -57,7 +57,7 @@ export function Permisos() {
         </AccionFija>
       }
     >
-      <Titulo antes="Dos " marcado="permisos" despues=" que te sirven" />
+      <Titulo nivel={2} antes="Dos " marcado="permisos" despues=" que te sirven" />
       <TarjetaPermiso
         icono="campana"
         titulo="Avisos"
@@ -77,7 +77,7 @@ export function Permisos() {
         cuando="Nunca en segundo plano ni cuando estás No disponible. Te la pedimos recién la primera vez que salgas para un trabajo."
         estado={
           <Chip icono="reloj" tono="gris">
-            Se pide en el momento
+            Se pide después
           </Chip>
         }
       />

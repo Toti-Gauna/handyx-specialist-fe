@@ -39,7 +39,8 @@ const DESPUES_DE_MANDAR = new Set<PasoRegistro>(['certificados', 'antecedentes']
 /** Qué mostrar: un paso o el estado del alta. Puro, para probarlo sin pantalla. */
 export function vistaAlta(r: RegistroEspecialista, pedido: string | null): PasoRegistro | 'estado' {
   if (r.estadoAlta === 'borrador') return pasoAMostrar(r, pedido);
-  if (r.estadoAlta === 'requiere_correccion') return esPasoRegistro(pedido) ? pasoAMostrar(r, pedido) : 'estado';
+  // Con una corrección pedida todo ya estaba cargado: se puede abrir cualquier paso.
+  if (r.estadoAlta === 'requiere_correccion') return esPasoRegistro(pedido) ? pedido : 'estado';
   if (r.estadoAlta === 'enviada' || r.estadoAlta === 'en_revision' || r.estadoAlta === 'habilitada') return esPasoRegistro(pedido) && DESPUES_DE_MANDAR.has(pedido) ? pedido : 'estado';
   return 'estado';
 }

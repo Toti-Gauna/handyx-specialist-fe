@@ -154,15 +154,20 @@ const RECORRIDOS = [
     'RC-Onboarding-se-retoma-donde-quedo',
     async ({ p, base }) => {
       await p.goto(`${base}/alta/?escenario=incompleto`);
-      await paso(p, 4);
-      await ver(p, '¿Por dónde');
+      await paso(p, 2);
+      await ver(p, '¿Dónde');
       // Volver lleva al paso anterior con lo guardado
       await p.getByRole('link', { name: 'Volver al paso anterior' }).click();
-      await paso(p, 3);
-      assert.equal(await p.getByRole('checkbox', { name: /Plomería/ }).isChecked(), true, 'Plomería ya estaba elegida');
+      await paso(p, 1);
+      assert.equal(await p.getByLabel('Nombre', { exact: true }).inputValue(), 'Especialista', 'el nombre ya estaba guardado');
+      // Vacío no se guarda: error con texto y foco en el campo
+      await p.getByRole('button', { name: 'Seguir', exact: true }).click();
+      await paso(p, 2);
+      await p.getByRole('button', { name: 'Seguir', exact: true }).click();
+      await ver(p, 'Escribí la calle.');
       // No se saltean pasos
       await p.goto(`${base}/alta/?escenario=incompleto&paso=antecedentes`);
-      await paso(p, 4);
+      await paso(p, 2);
     },
   ],
   [

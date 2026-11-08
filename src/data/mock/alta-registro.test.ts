@@ -107,8 +107,8 @@ describe('registro por pasos (mock)', () => {
     assert.equal(r2.pasos.find((p) => p.paso === 'selfie')?.estado, 'completo');
   });
 
-  it('el escenario incompleto retoma en las zonas', async () => {
+  it('el escenario incompleto retoma en el domicilio', async () => {
     const { api } = nuevo('incompleto');
-    assert.equal((await api.registro()).pasoActual, 'zonas');
+    assert.equal((await api.registro()).pasoActual, 'domicilio');
   });
 });
