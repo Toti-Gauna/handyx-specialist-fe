@@ -1,5 +1,6 @@
 // Textos de Cuenta que salen de fechas del servidor (lote 1.4). Lógica pura, con su prueba.
 import type { PreferenciasCuenta } from '../data/api/cuenta.ts';
+import type { FalloApi } from '../data/errores.ts';
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'] as const;
 
 /** "2026-11" → "nov 2026". */
@@ -42,4 +43,13 @@ export const SILENCIO_POR_DEFECTO = { desde: '22:00', hasta: '07:00' } as const;
 export function textoSilencio(s: { desde: string; hasta: string }): string {
   const h = (v: string) => (v.endsWith(':00') ? String(Number(v.slice(0, 2))) : v.replace(/^0/, ''));
   return `${h(s.desde)} a ${h(s.hasta)}`;
+}
+
+/** El texto de un cambio sensible (contraseña o código) que no salió. Una contraseña equivocada puede venir como 400 o 401. */
+export function mensajeReauth(f: FalloApi | null): string | null {
+  if (!f) return null;
+  if (f.tipo === 'validacion' || f.tipo === 'sesion') return 'No coincide. Revisá tu contraseña o tu código e intentá de nuevo.';
+  if (f.tipo === 'limite') return 'Probaste muchas veces. Esperá un rato y volvé a intentar.';
+  if (f.tipo === 'conflicto') return f.detalle?.mensaje ?? 'Esto ya estaba pedido.';
+  return f.detalle?.mensaje ?? 'No pudimos hacerlo ahora. Probá de nuevo en un rato.';
 }

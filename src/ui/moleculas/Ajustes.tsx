@@ -77,3 +77,17 @@ export function ResumenTarjeta({ icono, titulo, centavos, texto, detalle, href, 
     </Link>
   );
 }
+
+/** Una acción que no se puede deshacer a la ligera (darme de baja): borde y texto rojos, con el ícono de alerta. */
+export function FilaAlerta({ titulo, detalle, onClick }: { titulo: string; detalle: string; onClick(): void }) {
+  return (
+    <button type="button" className="ui-fila-alerta" onClick={onClick}>
+      <Icono nombre="alerta" />
+      <span className="ui-fila-alerta__texto">
+        <strong>{titulo}</strong>
+        <span>{detalle}</span>
+      </span>
+      <Icono nombre="flecha" />
+    </button>
+  );
+}

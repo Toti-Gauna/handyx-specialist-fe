@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import type { AvisoBandeja } from '../contracts/cuenta.ts';
-import { agruparAvisos, diasDeDistancia, grupoDeAviso, momentoDeAviso } from './avisos.ts';
+import { agruparAvisos, textoIngreso, diasDeDistancia, grupoDeAviso, momentoDeAviso } from './avisos.ts';
 
 const ahora = new Date('2026-11-17T21:00:00Z'); // martes 18:00 en Buenos Aires
 const aviso = (n: number, creadoEn: string): AvisoBandeja => ({ id: `00000000-0000-4000-8000-${n.toString().padStart(12, '0')}`, tipo: 'mensaje', titulo: 't', cuerpo: 'c', iniciales: null, creadoEn, leido: false, destino: { ruta: 'chat', id: null } });
@@ -26,5 +26,9 @@ describe('bandeja de avisos', () => {
     const g = agruparAvisos([aviso(1, '2026-11-12T15:00:00Z'), aviso(2, '2026-11-17T20:40:00Z'), aviso(3, '2026-11-17T21:00:00Z')], ahora);
     assert.deepEqual(g.map((x) => x.grupo), ['hoy', 'semana']);
     assert.deepEqual(g[0]?.items.map((a) => a.id.slice(-1)), ['3', '2']);
+  });
+  it('dice cuándo entró', () => {
+    assert.equal(textoIngreso('2026-11-17T20:40:00Z', ahora), 'hoy 17:40');
+    assert.match(textoIngreso('2026-11-12T15:00:00Z', ahora), /12\/11 · 12:00$/);
   });
 });

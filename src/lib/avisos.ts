@@ -1,7 +1,7 @@
 // Bandeja de avisos (lote 1.4): agrupa por día ("Hoy", "Esta semana", "Antes") y dice la hora o el día de cada uno.
 // Lógica pura, con su prueba. Las fechas se miran en hora de Buenos Aires.
 import type { AvisoBandeja } from '../contracts/cuenta.ts';
-import { diaLocal, hora } from './formato.ts';
+import { diaLocal, fechaHora, hora } from './formato.ts';
 
 export type GrupoAviso = 'hoy' | 'semana' | 'antes';
 export const TITULO_GRUPO: Record<GrupoAviso, string> = { hoy: 'Hoy', semana: 'Esta semana', antes: 'Antes' };
@@ -34,4 +34,9 @@ export function agruparAvisos(items: readonly AvisoBandeja[], ahora: Date): Arra
   return (['hoy', 'semana', 'antes'] as const)
     .map((grupo) => ({ grupo, items: orden.filter((a) => grupoDeAviso(a.creadoEn, ahora) === grupo) }))
     .filter((g) => g.items.length > 0);
+}
+
+/** «hoy 17:40» si es de hoy; si no, «mar 17/11 · 12:00». Para «Entró …» en sesiones y dispositivos. */
+export function textoIngreso(iso: string, ahora: Date): string {
+  return grupoDeAviso(iso, ahora) === 'hoy' && diasDeDistancia(iso, ahora) === 0 ? `hoy ${hora(iso)}` : fechaHora(iso);
 }

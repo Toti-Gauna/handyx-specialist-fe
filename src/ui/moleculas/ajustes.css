@@ -263,3 +263,42 @@
 .ui-ajuste__extra p {
   margin: 0;
 }
+
+/* ── Fila de acción delicada (darme de baja) ──────────── */
+.ui-fila-alerta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px 16px;
+  border: 2px solid #f0b9b4;
+  border-radius: var(--ui-radio-tarjeta);
+  background: var(--ui-error-tinte);
+  color: var(--ui-error-hondo);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ui-fila-alerta:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+}
+.ui-fila-alerta__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-fila-alerta__texto span {
+  font-size: var(--ui-texto-chico);
+}
+.ui-lista-simple {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding-left: 1.25rem;
+  line-height: 1.45;
+}
