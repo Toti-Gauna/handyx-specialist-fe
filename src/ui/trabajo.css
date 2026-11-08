@@ -104,11 +104,15 @@
 .ui-tareas__item--actual .ui-tareas__fila {
   background: var(--ui-tinte);
 }
+/* La casilla real cubre toda la fila: el área táctil es la fila entera (≥ 60 px). */
 .ui-tareas__control {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
   opacity: 0;
+  cursor: pointer;
 }
 .ui-tareas__caja {
   display: inline-flex;

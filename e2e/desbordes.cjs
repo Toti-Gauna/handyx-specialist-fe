@@ -120,7 +120,8 @@ function medir() {
     let fin = 0;
     let ultimo = '';
     for (const e of main.querySelectorAll('*')) {
-      if (fijos.some((f) => f.contains(e) || e.contains(f)) || decorativo(e) || !visible(e)) continue;
+      // Lo de una hoja abierta (dialog) va por encima de la acción fija de la pantalla: no queda tapado (lote 2.3).
+      if (fijos.some((f) => f.contains(e) || e.contains(f)) || decorativo(e) || !visible(e) || e.closest('dialog[open]')) continue;
       const s = getComputedStyle(e);
       if (s.position === 'fixed' || s.position === 'absolute') continue;
       const propio = [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()) || e.matches('a, button, input, img');
