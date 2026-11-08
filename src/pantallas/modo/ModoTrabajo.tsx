@@ -82,6 +82,7 @@ function EnCurso({ d, modo, recargar }: { d: TrabajoDetalle; modo: Modo; recarga
   const fin = useAccion();
   const [hoja, setHoja] = useState<'herramientas' | 'nota' | 'tarea' | 'terminar' | null>(q.get('hoja') === 'herramientas' ? 'herramientas' : null);
 
+  const [optimista, setOptimista] = useState<{ id: string; hecha: boolean } | null>(null);
   const tareas = ordenarTareas(modo.tareas);
   const actual = tareaActual(modo.tareas, modo.tareaActualId);
   const { hechas, total } = progresoTareas(tareas);
@@ -91,13 +92,15 @@ function EnCurso({ d, modo, recargar }: { d: TrabajoDetalle; modo: Modo; recarga
     texto: x.texto,
     seguridad: x.seguridad,
     detalle: x.material ? `Usás: ${x.material}` : null,
-    estado: x.estado === 'hecha' ? 'hecha' : x.id === actual?.id ? 'actual' : 'pendiente',
+    // Mientras se guarda, la casilla ya muestra lo que tocaste; si falla, vuelve a como estaba.
+    estado: (optimista?.id === x.id ? optimista.hecha : x.estado === 'hecha') ? 'hecha' : x.id === actual?.id ? 'actual' : 'pendiente',
   }));
 
   // El refresco va dentro de la acción: el control se libera con la versión nueva (evita un 409 al tocar dos veces).
   async function marcar(tareaId: string, hecha: boolean) {
     const x = modo.tareas.find((y) => y.id === tareaId);
     if (!x) return;
+    setOptimista({ id: tareaId, hecha });
     const r = await accion.ejecutar(async () => {
       await api.cambiarTarea(t.id, tareaId, {
         estado: hecha ? 'hecha' : 'pendiente',
@@ -105,6 +108,7 @@ function EnCurso({ d, modo, recargar }: { d: TrabajoDetalle; modo: Modo; recarga
       });
       await recargar();
     });
+    setOptimista(null);
     if (r.ok)
       isla({
         titulo: hecha ? 'Tarea lista' : 'Volviste a abrir la tarea',

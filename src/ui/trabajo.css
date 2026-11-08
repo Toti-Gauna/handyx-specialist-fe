@@ -41,7 +41,7 @@
 .ui-cabecera-trabajo__nombre h1 {
   margin: 0;
   font-family: var(--ui-titulos);
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   font-weight: 900;
   font-stretch: 112%;
   line-height: 1.08;

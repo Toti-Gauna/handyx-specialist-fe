@@ -93,6 +93,16 @@ const PANTALLAS = [
   ['taller-informe', '/taller/informe/', 'Estado del tablero', 'habilitado'],
   ['taller-canalizacion', '/taller/canalizacion/', 'Materiales', 'habilitado'],
   ['taller-checklists', '/taller/checklists/', 'pasos hechos', 'habilitado'],
+  // Lote 2.3: Modo trabajo y cierre (un trabajo en curso desde ayer, un informe mandado y otro por mandar)
+  ['modo-trabajo', `/trabajos/modo/?id=${id(0x23001)}`, 'Tus tareas · 2 de 4', 'habilitado'],
+  ['modo-herramientas', `/trabajos/modo/?id=${id(0x23001)}&hoja=herramientas`, 'Calculadoras', 'habilitado'],
+  ['modo-ayuda', `/trabajos/modo/ayuda/?id=${id(0x23001)}`, 'Diego Herrera', 'habilitado'],
+  ['modo-agenda', `/trabajos/modo/agenda/?id=${id(0x23001)}`, 'Avisarle al próximo cliente', 'habilitado'],
+  ['antes-despues', `/trabajos/antes-despues/?id=${id(0x23001)}`, 'Mecanismo nuevo', 'habilitado'],
+  ['antes-lado', `/trabajos/antes-despues/?id=${id(0x23001)}&vista=lado`, 'Mecanismo nuevo', 'habilitado'],
+  ['informe-en-curso', `/trabajos/informe/?id=${id(0x23001)}`, 'Qué encontraste', 'habilitado'],
+  ['informe-por-mandar', `/trabajos/informe/?id=${id(0xc3)}`, 'Mandar informe y pedir conformidad', 'habilitado'],
+  ['informe-enviado', `/trabajos/informe/enviado/?id=${id(0xc2)}`, 'Garantía activa', 'habilitado'],
 ];
 
 /** Espera a que los mapas de la pantalla terminen de cargar (o queden con su texto de respaldo). */
