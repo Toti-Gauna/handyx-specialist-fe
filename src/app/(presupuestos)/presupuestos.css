@@ -1,0 +1,19 @@
+/* Marco del grupo de rutas de presupuestos y precios (lote 2.2): fondo blanco y ancho de celular. */
+.pr-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: #fff;
+}
+.pr-app__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.pr-app .ui-chip {
+  max-width: 100%;
+  white-space: normal;
+}

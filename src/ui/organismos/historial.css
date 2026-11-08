@@ -1,0 +1,37 @@
+/* Barras del historial de un precio (lote 2.2). */
+.ui-historial__barras {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 8px;
+  align-items: end;
+  height: 150px;
+}
+.ui-historial__col {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 6px;
+  height: 100%;
+  text-align: center;
+}
+.ui-historial__valor {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+}
+.ui-historial__barra {
+  align-self: end;
+  height: var(--ui-alto, 50%);
+  border-radius: 8px 8px 4px 4px;
+  background: var(--ui-claro, #c9d7ee);
+}
+.ui-historial__col--ultima .ui-historial__barra {
+  background: var(--ui-azul);
+}
+.ui-historial__col--ultima .ui-historial__valor {
+  color: var(--ui-azul);
+}
+.ui-historial__rotulo {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
