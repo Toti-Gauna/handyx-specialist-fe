@@ -185,3 +185,7 @@ export type CambioClave = z.infer<typeof CambioClaveSchema>;
 
 export const CambioTelefonoSchema = z.strictObject({ telefono: TelefonoSchema });
 export type CambioTelefono = z.infer<typeof CambioTelefonoSchema>;
+
+/** El código de 6 dígitos que llegó por SMS al teléfono nuevo. */
+export const CodigoTelefonoSchema = z.strictObject({ codigo: CodigoSeisSchema });
+export type CodigoTelefono = z.infer<typeof CodigoTelefonoSchema>;

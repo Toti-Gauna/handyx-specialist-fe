@@ -226,6 +226,10 @@ export const ContactoProfesionalSchema = z.strictObject({
 });
 export type ContactoProfesional = z.infer<typeof ContactoProfesionalSchema>;
 
+/** Agregar a tus contactos a un profesional con el que hay relación (miembro de una obra, postulante). */
+export const NuevoContactoProfesionalSchema = z.strictObject({ profesionalId: IdSchema });
+export type NuevoContactoProfesional = z.infer<typeof NuevoContactoProfesionalSchema>;
+
 /** Sumar un contacto al trabajo de hoy (H0-ModoAyuda): una invitación para ese trabajo; el reparto se acuerda aparte. */
 export const SumarAyudaSchema = z.strictObject({ contactoId: IdSchema, rubro: z.enum(RUBROS) });
 export type SumarAyuda = z.infer<typeof SumarAyudaSchema>;

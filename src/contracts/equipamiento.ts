@@ -18,7 +18,7 @@ export const ESTADOS_EQUIPO = ['funciona', 'con_falla'] as const;
 export const MOTIVOS_BAJA_EQUIPO = ['se_rompio', 'la_vendi', 'la_perdi', 'me_la_robaron', 'la_regale', 'otro'] as const;
 export type MotivoBajaEquipo = (typeof MOTIVOS_BAJA_EQUIPO)[number];
 /** Qué hacer después de «Ya no la tengo». */
-export const REPOSICIONES = ['no', 'lista_compras', 'ferreteria'] as const;
+export const REPOSICIONES = ['no_reponer', 'lista_compras', 'ferreteria'] as const;
 export const TIPOS_ALERTA_EQUIPO = ['mantenimiento', 'calibracion', 'vencimiento', 'stock_bajo', 'devolucion'] as const;
 export const TIPOS_EVENTO_EQUIPO = ['alta', 'movimiento', 'prestamo', 'devolucion', 'uso', 'mantenimiento', 'baja'] as const;
 

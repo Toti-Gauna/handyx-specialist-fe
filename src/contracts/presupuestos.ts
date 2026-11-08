@@ -191,6 +191,10 @@ export const PlantillaPresupuestoSchema = z.strictObject({
 });
 export type PlantillaPresupuesto = z.infer<typeof PlantillaPresupuestoSchema>;
 
+/** Guardar un presupuesto como plantilla (sin el cliente ni el trabajo). */
+export const NuevaPlantillaSchema = z.strictObject({ nombre: z.string().trim().min(1).max(80) });
+export type NuevaPlantilla = z.infer<typeof NuevaPlantillaSchema>;
+
 /** Un kit para agregar varios de una vez ("Cambio de grifería"). Los de Handyx traen nombres, nunca precios. */
 export const KitMaterialesSchema = z.strictObject({
   id: IdSchema,
@@ -340,6 +344,9 @@ export const NuevaTarifaTareaSchema = z.strictObject({
   monto: MontoSchema,
 });
 export type NuevaTarifaTarea = z.infer<typeof NuevaTarifaTareaSchema>;
+
+export const CambioTarifaTareaSchema = NuevaTarifaTareaSchema.partial().extend({ version: z.int().nonnegative() });
+export type CambioTarifaTarea = z.infer<typeof CambioTarifaTareaSchema>;
 
 // ── Catálogo de nombres de Handyx (sin precios) ───────────────────────────────────────────────────
 export const MaterialCatalogoSchema = z.strictObject({

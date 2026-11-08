@@ -18,6 +18,21 @@ import {
 } from './maquinas.ts';
 import { RUBROS } from './rubros.ts';
 import { CONTRATO_VERSION } from './version.ts';
+import * as agenda from './agenda.ts';
+import * as camino from './camino.ts';
+import * as chat from './chat.ts';
+import * as cuenta from './cuenta.ts';
+import * as equipamiento from './equipamiento.ts';
+import * as equipo from './equipo.ts';
+import * as ferreterias from './ferreterias.ts';
+import * as ingresos from './ingresos.ts';
+import * as mapa from './mapa.ts';
+import * as modoTrabajo from './modo-trabajo.ts';
+import * as obras from './obras.ts';
+import * as presupuestos from './presupuestos.ts';
+import * as registro from './registro.ts';
+import * as repuestos from './repuestos.ts';
+import * as seguridad from './seguridad.ts';
 
 const yaml = readFileSync(new URL('../../docs/api/openapi.yaml', import.meta.url), 'utf8').replace(/\s+/g, ' ');
 
@@ -59,4 +74,23 @@ it('los enums del OpenAPI coinciden con el contrato', () => {
 
 it('la versión del OpenAPI es la del contrato', () => {
   assert.ok(yaml.includes(`version: ${CONTRATO_VERSION} `), `openapi.yaml no está en la versión ${CONTRATO_VERSION}`);
+});
+
+// 0.11.0: cada lista de valores exportada por los archivos de dominio (estados, tipos, motivos…) tiene que estar igual
+// en el OpenAPI. Una lista nueva que no aparece hace fallar esta prueba.
+it('los enums de los dominios del bloque Taller están en el OpenAPI (0.11.0)', () => {
+  const dominios = { agenda, camino, chat, cuenta, equipamiento, equipo, ferreterias, ingresos, mapa, modoTrabajo, obras, presupuestos, registro, repuestos, seguridad };
+  let revisadas = 0;
+  for (const [dominio, exportes] of Object.entries(dominios)) {
+    for (const [nombre, valor] of Object.entries(exportes)) {
+      if (!Array.isArray(valor) || !valor.every((v) => typeof v === 'string')) continue;
+      revisadas++;
+      assert.ok(yaml.includes(`enum: [${valor.join(', ')}]`), `${dominio}.${nombre} no aparece igual en openapi.yaml`);
+    }
+  }
+  assert.ok(revisadas >= 70, `solo ${revisadas} listas`);
+});
+
+it('el OpenAPI no deja cobrarle comisión al especialista (0.11.0)', () => {
+  assert.ok(yaml.includes('bpsEspecialista: { type: integer, minimum: 0, maximum: 0'));
 });

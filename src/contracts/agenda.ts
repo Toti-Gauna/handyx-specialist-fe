@@ -6,7 +6,7 @@
 // - Los kilómetros del mes salen de los trayectos de los trabajos, nunca de seguirte en segundo plano.
 import { z } from 'zod';
 import { FechaSchema, InicialesSchema, MesSchema, PersonaVisibleSchema, ResumenCortoSchema } from './comun.ts';
-import { IdSchema, InstanteSchema, MontoSchema } from './dto.ts';
+import { IdSchema, InstanteSchema, MontoSchema, PuntoSchema } from './dto.ts';
 import { ESTADOS_PAGO } from './maquinas.ts';
 import { RUBROS } from './rubros.ts';
 
@@ -104,6 +104,12 @@ export const DiaSchema = z.strictObject({
   version: z.int().nonnegative(),
 });
 export type Dia = z.infer<typeof DiaSchema>;
+
+/** Pedir el recorrido desde donde estás: la posición va en el cuerpo, se usa para esa respuesta y no se guarda. */
+export const RecorridoDiaSchema = z.strictObject({
+  desde: z.strictObject({ punto: PuntoSchema, precisionM: z.number().min(0).max(10_000) }).nullable(),
+});
+export type RecorridoDia = z.infer<typeof RecorridoDiaSchema>;
 
 export const OrdenParadasSchema = z.strictObject({
   /** Ids de turno en el orden nuevo (las hechas quedan primero). */
