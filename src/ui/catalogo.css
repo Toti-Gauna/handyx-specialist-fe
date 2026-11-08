@@ -1,0 +1,184 @@
+/* Catálogo del kit v3 (solo mock). */
+.cat3 {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px var(--ui-gutter) 48px;
+  background: #fff;
+  font-size: var(--ui-texto-base);
+}
+.cat3-cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cat3-cabecera p {
+  margin: 0;
+}
+.cat3-indice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cat3-indice a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--ui-tinte);
+  color: var(--ui-hondo);
+  font-weight: 800;
+  text-decoration: none;
+}
+.cat3-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--ui-borde);
+}
+.cat3-bloque__titulo {
+  margin: 0;
+  font-family: var(--ui-titulos);
+  font-size: 1.5rem;
+  font-weight: 900;
+  font-stretch: 115%;
+}
+.cat3-nota {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.cat3-pila {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cat3-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.cat3-fila--mapa {
+  gap: 28px;
+  padding: 24px 12px 8px;
+  border-radius: 20px;
+  background: #f3f4f7;
+}
+.cat3-fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.cat3-fieldset legend {
+  padding: 0;
+  font-weight: 800;
+}
+.cat3-datos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.cat3-mosaicos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.cat3-arreglo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+.cat3-arreglo p {
+  margin: 0;
+}
+.cat3-grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cat3-grilla li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 18px;
+  background: #f6f7f9;
+  font-size: var(--ui-texto-chico);
+  font-weight: 700;
+  text-align: center;
+}
+.cat3-iconos ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.cat3-iconos li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--ui-texto-min);
+  overflow-wrap: anywhere;
+}
+.cat3-iconos summary {
+  min-height: 44px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cat3-chat {
+  display: flex;
+  flex-direction: column;
+  height: 420px;
+  padding: 0 12px;
+  border: 1px solid var(--ui-borde);
+  border-radius: 24px;
+}
+.cat3-qr {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cat3-qr p {
+  margin: 0;
+}
+/* Marco de celular: las piezas fijas a la pantalla quedan dentro del marco. */
+.cat3-marco {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+  overflow: hidden;
+  border: 8px solid var(--ui-tinta);
+  border-radius: 36px;
+  background: #fff;
+}
+.cat3-marco__cuerpo {
+  flex: 1;
+  padding: 16px;
+}
+.cat3-marco .ui-pestanas {
+  position: absolute;
+}
+.cat3-marco .ui-barra-compacta {
+  position: relative;
+}
+.cat3-marco .ui-accion-fija {
+  position: relative;
+  bottom: auto;
+  margin: 0;
+  border-radius: 0;
+}
