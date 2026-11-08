@@ -211,6 +211,25 @@ landing. **Siempre `aria-hidden`**: el texto de al lado dice lo importante. Tama
 contenido + acción fija), `PantallaHoja` (la pantalla de atrás sigue a la vista), `PantallaMapa` (mapa a pantalla
 completa con controles arriba y hoja o acción abajo) y `SoloCelular`.
 
+### Cuenta, seguridad, avisos y ayuda (lote 1.4)
+
+Piezas nuevas en archivos propios (CSS junto a cada una: `moleculas/ajustes.css`, `organismos/cuenta.css`, `atomos/area.css`).
+
+| Pieza | Para qué | Notas |
+|---|---|---|
+| `GrupoAjustes` | Tarjeta con rótulo en mayúsculas y sus filas (`FilaIcono`, `FilaAjuste`, `FilaDato`) | El rótulo es `h2` (o `h3` con `nivel={3}`) |
+| `FilaAjuste` | Un ajuste que se enciende o apaga | `role="switch"`; el estado se dice con texto («Sí» / «No»), no solo con la perilla |
+| `FilaDato` | Rótulo, valor y el estado de ese dato (`ChipEtiqueta`) | Solo lo que llega ya enmascarado |
+| `FilaMetodo`, `FilaAlerta` | Método de segunda verificación; acción delicada (baja) | `FilaMetodo` deshabilitada dice por qué con un chip |
+| `ResumenTarjeta` | Mosaico de resumen de Cuenta (cobros, taller) | Enlace entero; tonos `tinte`, `noche`, `amarillo` |
+| `ChipEtiqueta` | Una `Etiqueta` de `lib/etiquetas.ts` como `Chip` del kit | Une los dos nombres de tono hasta migrar todo |
+| `AreaTexto`, `Seleccion` | Texto de varias líneas con «N de M letras»; lista desplegable | Misma caja que `Campo` |
+| `CabeceraCuenta`, `TarjetaPerfil` | Cabecera azul de F-Cuenta; tarjeta de CU-Perfil | El sello «Verificado por Handyx» solo con `verificado` |
+| `GrupoAvisos`, `ItemAviso` | D6-Avisos agrupado por día | Cada aviso abre su detalle; su botón «Quitar» reemplaza al deslizar |
+| `CabeceraAyuda`, `TemasAyuda`, `PreguntasAyuda`, `AccesoSoporte` | D6-Ayuda | Preguntas con `details` nativo; contenido en `lib/ayuda.ts` |
+| `HojaReautenticar`, `ListaCodigos` | Pedir contraseña (o código) antes de un cambio sensible; mostrar una vez los códigos de respaldo | Nada se guarda en el navegador |
+| `LetraGrande` + `aplicarLetraGrande` | «Letra más grande»: `html[data-letra="grande"]` sube la base a 125 % y todo el kit (en rem) lo sigue | La preferencia vive en el servidor (`preferencias.letraGrande`); `LetraGrande` la lee al abrir la app |
+
 ### Desbordes (`npm run desbordes`)
 
 `e2e/desbordes.cjs` recorre `e2e/pantallas.cjs` en 320 × 568 y 390 × 844 con las fuentes reales del build y falla si un

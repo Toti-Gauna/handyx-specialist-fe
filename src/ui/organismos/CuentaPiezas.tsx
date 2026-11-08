@@ -31,11 +31,11 @@ export function CabeceraCuenta({ nombre, iniciales, verificado, rubros, hrefPerf
                 Verificado por Handyx
               </Chip>
             ) : null}
-            {rubros.length > 0 ? (
-              <Chip tono="tinte" icono="herramienta">
-                {rubros.join(' · ')}
+            {rubros.map((r) => (
+              <Chip key={r} tono="tinte" icono="herramienta">
+                {r}
               </Chip>
-            ) : null}
+            ))}
           </div>
         </div>
       </div>

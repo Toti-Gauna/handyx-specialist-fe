@@ -33,7 +33,7 @@ export function ItemAviso({ titulo, cuerpo, momento, icono, iniciales, nuevo, hr
           </small>
         </span>
       </Link>
-      <BotonIcono icono="borrar" etiqueta={`Quitar el aviso: ${titulo}`} onClick={onQuitar} />
+      <BotonIcono icono="tacho" etiqueta={`Quitar el aviso: ${titulo}`} onClick={onQuitar} />
     </li>
   );
 }

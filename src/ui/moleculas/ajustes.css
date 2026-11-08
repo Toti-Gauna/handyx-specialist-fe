@@ -175,6 +175,7 @@
 }
 .ui-resumen .ui-cifra {
   margin: 0;
+  color: inherit;
 }
 .ui-resumen__detalle {
   font-size: var(--ui-texto-chico);
@@ -184,7 +185,7 @@
 /* ── Cuenta: mosaicos de resumen y pie ────────────────── */
 .ui-resumenes {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
   gap: 12px;
 }
 .ui-pie-cuenta {
@@ -365,4 +366,22 @@
 }
 .ui-metodo__chip {
   margin-top: 4px;
+}
+
+/* En un grupo, lo de la derecha (el chip de estado) baja debajo del texto en pantallas angostas, así el título nunca se
+   parte por la mitad; en pantallas más anchas queda a la derecha, en la misma línea. */
+@media (max-width: 439px) {
+  .ui-grupo .ui-fila__derecha {
+    order: 3;
+    flex: 1 0 100%;
+    margin: 0 0 0 56px;
+  }
+}
+@media (min-width: 440px) {
+  .ui-grupo .ui-fila {
+    flex-wrap: nowrap;
+  }
+  .ui-grupo .ui-fila__texto {
+    flex-basis: 0;
+  }
 }

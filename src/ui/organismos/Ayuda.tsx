@@ -22,7 +22,7 @@ export function CabeceraAyuda({ hrefVolver, horario, busqueda, onBusqueda }: { h
       <h1 className="ui-cab-ayuda__titulo">
         ¿En qué te <Marcador>ayudamos</Marcador>?
       </h1>
-      <Buscador valor={busqueda} onCambio={onBusqueda} etiqueta="Buscar en la ayuda" ejemplo="Buscá «cobro», «obra», «matrícula»…" />
+      <Buscador valor={busqueda} onCambio={onBusqueda} etiqueta="Buscar en la ayuda" ejemplo="Buscá «cobro» u «obra»…" />
     </header>
   );
 }

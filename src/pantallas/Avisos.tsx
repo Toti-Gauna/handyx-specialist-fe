@@ -96,7 +96,7 @@ export function Avisos() {
             </GrupoAvisos>
           ))}
           <p className="ui-nota">Los avisos te llevan al detalle. Nada se acepta desde acá.</p>
-          <Boton variante="contorno" icono="borrar" onClick={() => setConfirmar(true)}>
+          <Boton variante="contorno" icono="tacho" onClick={() => setConfirmar(true)}>
             Borrar todos los avisos
           </Boton>
         </>
