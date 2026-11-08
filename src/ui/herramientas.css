@@ -843,3 +843,34 @@
   left: 12px;
   bottom: 12px;
 }
+
+/* ── Lector de códigos de barras ──────────────────────── */
+.ui-lector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ui-lector__visor {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #2a2f38;
+}
+.ui-lector__marco {
+  position: absolute;
+  inset: 22% 12%;
+  border: 3px solid var(--ui-amarillo);
+  border-radius: 14px;
+  box-shadow: 0 0 0 999px rgb(14 29 54 / 0.35);
+}
+.ui-lector__estado {
+  margin: 0;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-lector__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
