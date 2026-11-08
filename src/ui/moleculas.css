@@ -1006,3 +1006,32 @@
   color: var(--ui-tinta);
   font-size: var(--ui-texto-chico);
 }
+
+/* ── Encabezado y formulario de pantalla (lote 1.1) ───────────────────────────────────────────────────────────── */
+.ui-encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ui-encabezado--centrado {
+  align-items: center;
+  text-align: center;
+}
+.ui-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.ui-fila-proveedores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+  gap: 10px;
+}
+.ui-fila-entre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 12px;
+}
