@@ -18,11 +18,11 @@ export function TiraDias({ desde, cuantos = 7, hoy, valor, onCambio, ocupados = 
             type="button"
             className={`ui-tira__dia${d.fecha === valor ? ' ui-tira__dia--on' : ''}${d.esHoy ? ' ui-tira__dia--hoy' : ''}`}
             aria-pressed={d.fecha === valor}
-            aria-label={`${d.corto} ${d.dia}${d.esHoy ? ', hoy' : ''}${ocupado ? ', ya tenés un trabajo' : ''}`}
             onClick={() => onCambio(d.fecha)}
           >
-            <span aria-hidden="true">{d.corto}</span>
-            <strong aria-hidden="true">{d.dia}</strong>
+            <span>{d.corto} </span>
+            <strong>{d.dia}</strong>
+            {d.esHoy || ocupado ? <span className="visualmente-oculto">{`${d.esHoy ? ', hoy' : ''}${ocupado ? ', ya tenés un trabajo' : ''}`}</span> : null}
             {ocupado ? <span className="ui-tira__punto" aria-hidden="true" /> : null}
           </button>
         );

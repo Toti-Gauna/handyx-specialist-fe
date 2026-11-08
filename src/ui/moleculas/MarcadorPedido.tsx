@@ -30,18 +30,21 @@ export interface PropsMarcadorPedido {
 export function MarcadorPedido({ rubro, zona, sugeridoCentavos, distanciaM, urgente = false, elegido = false, nuevo = false, onTocar }: PropsMarcadorPedido) {
   const precio = sugeridoCentavos !== null ? textoCifra(sugeridoCentavos) : null;
   const lejos = distanciaM !== null ? textoDistancia(distanciaM) : null;
-  const nombre = [`${NOMBRE_RUBRO[rubro]} en ${zona}`, urgente ? 'urgente' : null, precio ? `sugerido ${precio}` : null, lejos ? `a ${lejos}` : null].filter(Boolean).join(', ');
+  // Nombre accesible = el texto visible (urgente y precio) más lo que solo se ve en el dibujo (rubro, zona, distancia).
   return (
-    <button type="button" className={`ui-marcador-pedido${elegido ? ' ui-marcador-pedido--elegido' : ''}${nuevo ? ' ui-marcador-pedido--nuevo' : ''}`} aria-label={`${nombre}. Ver el detalle`} aria-pressed={elegido} onClick={onTocar}>
-      <span className="ui-marcador-pedido__pin" aria-hidden="true">
+    <button type="button" className={`ui-marcador-pedido${elegido ? ' ui-marcador-pedido--elegido' : ''}${nuevo ? ' ui-marcador-pedido--nuevo' : ''}`} aria-pressed={elegido} onClick={onTocar}>
+      <span className="visualmente-oculto">{`${NOMBRE_RUBRO[rubro]} en ${zona}, `}</span>
+      <span className="ui-marcador-pedido__pin">
         <Icono nombre={ICONO_RUBRO[rubro]} />
         {urgente ? <span className="ui-marcador-pedido__urgente">Urgente</span> : null}
       </span>
       {precio ? (
-        <span className="ui-marcador-pedido__precio" aria-hidden="true">
+        <span className="ui-marcador-pedido__precio">
+          <span className="visualmente-oculto">sugerido </span>
           {precio}
         </span>
       ) : null}
+      <span className="visualmente-oculto">{`${lejos ? `, a ${lejos}` : ''}. Ver el detalle`}</span>
     </button>
   );
 }

@@ -17,7 +17,7 @@ export function TecladoPrecio({ centavos, onCambio, etiqueta = 'Tu precio' }: { 
       </output>
       <div className="ui-teclado__teclas">
         {TECLAS_PRECIO.map((t) => (
-          <button key={t} type="button" className={`ui-teclado__tecla${t === 'borrar' ? ' ui-teclado__tecla--borrar' : ''}`} aria-label={t === 'borrar' ? 'Borrar el último número' : t === '000' ? 'Tres ceros' : t} onClick={() => onCambio(aplicarTecla(pesos, t) * 100)}>
+          <button key={t} type="button" className={`ui-teclado__tecla${t === 'borrar' ? ' ui-teclado__tecla--borrar' : ''}`} aria-label={t === 'borrar' ? 'Borrar el último número' : undefined} onClick={() => onCambio(aplicarTecla(pesos, t) * 100)}>
             {t === 'borrar' ? <Icono nombre="borrar" tam="grande" /> : t}
           </button>
         ))}

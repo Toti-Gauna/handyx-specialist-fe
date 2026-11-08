@@ -9,7 +9,8 @@ import { Burbuja } from '../moleculas/Burbuja.tsx';
 
 export function ListaChat({ mensajes, etiqueta }: { mensajes: readonly MensajeChat[]; etiqueta: string }) {
   return (
-    <div className="ui-chat" role="log" aria-label={etiqueta} aria-live="polite">
+    // tabIndex: la lista se desliza, así que también tiene que poder recorrerse con el teclado.
+    <div className="ui-chat" role="log" aria-label={etiqueta} aria-live="polite" tabIndex={0}>
       <div className="ui-chat__mensajes">
         {agruparMensajes(mensajes).map((m) => (
           <Burbuja key={m.id} m={m} primero={m.primero} ultimo={m.ultimo} />
