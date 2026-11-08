@@ -1,10 +1,12 @@
 // Compositor del mock: junta los métodos síncronos de cada dominio (un archivo por dominio, como `api/` y `http/`).
 // Un dominio nuevo de una ola se suma acá; el adaptador los envuelve con latencia, fallas y sesión.
 import { acceso } from './acceso.ts';
+import { agenda } from './agenda.ts';
 import { alta } from './alta.ts';
 import { caja } from './caja.ts';
 import { cuenta } from './cuenta.ts';
 import type { EstadoMock } from './estado.ts';
+import { ingresos } from './ingresos.ts';
 import { mensajes } from './mensajes.ts';
 import { obras } from './obras.ts';
 import { pedidos } from './pedidos.ts';
@@ -29,4 +31,6 @@ export const metodosMock = (s: EstadoMock) => ({
   ...soporte(s),
   ...cuenta(s),
   ...taller(),
+  ...agenda(s),
+  ...ingresos(s),
 });

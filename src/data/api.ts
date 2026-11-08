@@ -5,9 +5,11 @@
 // Partido por dominio (lote 0.2): cada lote de una ola toca solo su `api/<dominio>.ts`, `mock/<dominio>.ts` y
 // `http/<dominio>.ts`; este archivo solo compone el puerto.
 import type { ApiAcceso } from './api/acceso.ts';
+import type { ApiAgenda } from './api/agenda.ts';
 import type { ApiAlta } from './api/alta.ts';
 import type { ApiCaja } from './api/caja.ts';
 import type { ApiCuenta } from './api/cuenta.ts';
+import type { ApiIngresos } from './api/ingresos.ts';
 import type { ApiMensajes } from './api/mensajes.ts';
 import type { ApiObras } from './api/obras.ts';
 import type { ApiPedidos } from './api/pedidos.ts';
@@ -32,7 +34,9 @@ export interface EspecialistaApi
     ApiCaja,
     ApiSoporte,
     ApiCuenta,
-    ApiTaller {
+    ApiTaller,
+    ApiAgenda,
+    ApiIngresos {
   readonly origen: 'mock' | 'http';
   /** "Ahora" para mostrar cuentas regresivas. Los vencimientos los decide siempre el servidor. */
   ahora(): Date;

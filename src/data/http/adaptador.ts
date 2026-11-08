@@ -2,10 +2,12 @@
 // CSRF en memoria). Rutas: docs/api/openapi.yaml. Un cambio en un dominio exige el mismo cambio en el mock y en el OpenAPI.
 import type { EspecialistaApi } from '../api.ts';
 import { accesoHttp } from './acceso.ts';
+import { agendaHttp } from './agenda.ts';
 import { altaHttp } from './alta.ts';
 import { cajaHttp } from './caja.ts';
 import { ClienteHttp, type OpcionesCliente } from './cliente.ts';
 import { cuentaHttp } from './cuenta.ts';
+import { ingresosHttp } from './ingresos.ts';
 import { mensajesHttp } from './mensajes.ts';
 import { obrasHttp } from './obras.ts';
 import { pedidosHttp } from './pedidos.ts';
@@ -32,5 +34,7 @@ export function crearApiHttp(o: OpcionesCliente): EspecialistaApi {
     ...soporteHttp(c),
     ...cuentaHttp(c),
     ...tallerHttp(c),
+    ...agendaHttp(c),
+    ...ingresosHttp(c),
   };
 }
