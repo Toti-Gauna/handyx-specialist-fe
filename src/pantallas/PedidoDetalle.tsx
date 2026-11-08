@@ -1,144 +1,119 @@
 'use client';
+// Pedido (F-Pedido, lote 1.3) abierto desde un aviso, la bandeja o el chat: el mismo detalle que la hoja del Inicio, en
+// una hoja sobre el mapa, con las propuestas del pedido (la tuya, la del cliente, contraofertar o retirar). Desde acá se
+// cotiza, se propone otra fecha o se deja pasar («Ahora no» no tiene ninguna consecuencia). Nunca acepta nada desde el
+// aviso, y la dirección exacta llega recién cuando el cliente acepta.
 import { api } from '@handyx/origen-datos';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { RUTAS } from '../app/rutas.ts';
-import { CuentaRegresiva } from '../components/CuentaRegresiva.tsx';
-import { Cargando, ErrorCaja, Vacio } from '../components/Estados.tsx';
 import { EstadoMiPropuesta } from '../components/EstadoMiPropuesta.tsx';
-import { Icono } from '../components/Icono.tsx';
+import { ErrorCaja } from '../components/Estados.tsx';
 import { TarjetaPropuesta } from '../components/TarjetaPropuesta.tsx';
-import { Volver } from '../components/Volver.tsx';
-import { Aviso, ChipTipo, Seccion, Tarjeta } from '../components/ui.tsx';
-import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
+import { useAhora } from '../hooks/useAhora.ts';
 import { useCarga } from '../hooks/useCarga.ts';
 import { useIdDeUrl } from '../hooks/useIdDeUrl.ts';
-import { fechaHora, pesos } from '../lib/formato.ts';
-import { tarifaTexto } from '../lib/tarifa.ts';
-import { Mapa } from '../mapa/Mapa.tsx';
+import { useIsla } from '../kit/Efectos.tsx';
+import { diaLocal } from '../lib/formato.ts';
+import { BotonEnlace, BotonIconoEnlace } from '../ui/atomos/Boton.tsx';
+import { Chip, Etiqueta } from '../ui/atomos/Texto.tsx';
+import { PantallaHoja } from '../ui/plantillas/Plantillas.tsx';
+import { AccionesPedido, ContenidoPedido } from './nucleo/DetallePedido.tsx';
+import { PantallaFallo } from './nucleo/Fallo.tsx';
+import { vistaDesdeDetalle } from './nucleo/vista.ts';
+import './nucleo/nucleo.css';
+
+function Fondo() {
+  return (
+    <div className="ui-mapa-estilizado" aria-hidden="true">
+      <div className="ui-mapa-estilizado__manzanas" />
+      <div className="ui-mapa-estilizado__costa" />
+      <span className="nu-zona-deco" />
+    </div>
+  );
+}
 
 export function PedidoDetalle() {
   const id = useIdDeUrl();
   const router = useRouter();
-  const c = useCarga(async () => {
-    if (!id) return null;
-    const [pedido, fee] = await Promise.all([api.pedido(id), api.feeVigente()]);
-    return { pedido, fee };
-  }, [id]);
-  const chat = useAccion();
+  const isla = useIsla();
+  const ahora = useAhora(1000);
+  const descarte = useAccion();
+  const c = useCarga(async () => (id ? api.pedido(id) : null), [id]);
 
-  if (!id) return <Vacio icono="lupa" titulo="No indicaste qué pedido abrir"><Link href={RUTAS.pedidos.ruta}>Ver pedidos</Link></Vacio>;
-  if (c.fallo && !c.datos) {
+  if (!id || (c.fallo?.tipo === 'no_encontrado' && !c.datos)) {
     return (
-      <div className="pila">
-        <Volver a={RUTAS.pedidos.ruta} texto="Pedidos" />
-        {c.fallo.tipo === 'no_encontrado' ? <Vacio icono="lupa" titulo="Este pedido no está disponible para vos">Ya no está abierto o no corresponde a tus rubros y zonas.</Vacio> : <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />}
-      </div>
+      <PantallaHoja fondo={<Fondo />}>
+        <div className="nu-hoja-fija">
+          <h1 className="ui-titulo ui-titulo--medio">Este pedido no está disponible</h1>
+          <p>Ya no está abierto o no corresponde a tus rubros y zonas.</p>
+          <BotonEnlace href={RUTAS.inicio.ruta}>Volver al inicio</BotonEnlace>
+        </div>
+      </PantallaHoja>
     );
   }
-  if (!c.datos) return <Cargando />;
+  if (c.fallo && !c.datos) return <PantallaFallo fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (!c.datos) return <div className="nu-vacio" aria-busy="true" />;
 
-  const { pedido, fee } = c.datos;
-  const abierto = pedido.estado === 'buscando';
-  const pendienteMia = pedido.propuestas.some((p) => p.autorRol === 'especialista' && p.estado === 'pendiente' && Date.parse(p.venceEn) > api.ahora().getTime());
-  const urgente = pedido.tipo === 'urgente';
-  const ahoraMs = api.ahora().getTime();
-  const delUsuarioVigente = pedido.propuestas.some((p) => p.autorRol === 'usuario' && p.estado === 'pendiente' && Date.parse(p.venceEn) > ahoraMs);
-  const tarifa = tarifaTexto(fee.politica, api.ahora());
+  const pedido = c.datos;
+  const v = vistaDesdeDetalle(pedido);
+  const hoy = diaLocal(ahora.toISOString());
+  const ahoraMs = ahora.getTime();
+  const pendienteMia = pedido.propuestas.some((p) => p.autorRol === 'especialista' && p.estado === 'pendiente' && Date.parse(p.venceEn) > ahoraMs);
+  const delCliente = pedido.propuestas.some((p) => p.autorRol === 'usuario' && p.estado === 'pendiente' && Date.parse(p.venceEn) > ahoraMs);
+  const puedeCotizar = v.abierto && !pendienteMia && !delCliente;
 
-  async function abrirChat() {
-    const r = await chat.ejecutar(() => api.abrirConversacion(pedido.id));
-    if (r.ok) router.push(`${RUTAS.hilo.ruta}?id=${r.valor.id}`);
+  async function ahoraNo() {
+    if (!id) return;
+    const r = await descarte.ejecutar(() => api.descartarPedido(id));
+    if (r.ok) {
+      isla({ titulo: 'Lo sacamos de tu mapa', texto: 'No tiene ninguna consecuencia.', icono: 'check' });
+      router.push(RUTAS.inicio.ruta);
+    }
   }
 
   return (
-    <div className="pila">
-      <Volver a={RUTAS.pedidos.ruta} texto="Pedidos" />
-      {c.fallo ? <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} /> : null}
-      <Tarjeta className={urgente ? 'pedido--urgente' : ''}>
-        <div className="fila-flex fila-flex--entre">
-          <ChipTipo tipo={pedido.tipo} />
-          <span className="texto-suave texto-chico">Publicado {fechaHora(pedido.creadoEn)}</span>
-        </div>
-        <h1 className="titulo">{NOMBRE_RUBRO[pedido.rubro]}</h1>
-        <p>{pedido.descripcion}</p>
-        <dl>
-          <div className="dato"><dt>Zona</dt><dd>{pedido.zonaAproximada}</dd></div>
-          {pedido.fechaSolicitada ? <div className="dato"><dt>Fecha pedida</dt><dd>{fechaHora(pedido.fechaSolicitada)}</dd></div> : null}
-        </dl>
-        {abierto && pedido.ventanaHasta ? <CuentaRegresiva hasta={pedido.ventanaHasta} texto="La búsqueda cierra en" terminado="La búsqueda terminó" alVencer={() => void c.recargar()} /> : null}
-        {tarifa ? <p className="texto-suave texto-chico">{tarifa}</p> : null}
-      </Tarjeta>
-
-      <EstadoMiPropuesta pedido={pedido} alCambiar={() => void c.recargar()} />
-
-      {pedido.zonaMapa ? (
-        <Mapa
-          etiqueta={`Zona aproximada del pedido en ${pedido.zonaAproximada}`}
-          alto="chico"
-          zona={pedido.zonaMapa}
-          alternativa={
-            <p>
-              Zona aproximada: <strong>{pedido.zonaAproximada}</strong>
-            </p>
-          }
-        />
-      ) : null}
-      <Aviso tono="neutro" icono="candado">
-        {pedido.zonaMapa ? 'El círculo es aproximado. ' : ''}Todavía no ves el nombre ni la dirección exacta: se muestran cuando el usuario te elige, y solo para ese trabajo.
-      </Aviso>
-      {pedido.tipo === 'obra' ? (
-        <Aviso tono="azul" icono="info">
-          Una obra empieza con una visita de presupuesto, que se trata como un pedido programado. Después se presupuesta por etapas.
-        </Aviso>
-      ) : null}
-      {!abierto && !pedido.trabajoId ? (
-        <Aviso tono="aviso" icono="reloj" titulo="La búsqueda terminó" role="status">
-          Ya no se pueden enviar propuestas nuevas para este pedido. Si el usuario lo relanza, te volvemos a avisar solo si no lo habías dejado pasar.
-        </Aviso>
-      ) : null}
-
-      <Seccion titulo="Propuestas">
-        {pedido.propuestas.length === 0 ? (
-          <Vacio icono="etiqueta" titulo="Todavía no hay propuestas">
-            {abierto ? 'Podés enviar la tuya o consultar al usuario por el chat antes. No tenés obligación de hacer ninguna de las dos.' : 'No se enviaron propuestas.'}
-          </Vacio>
-        ) : (
-          <ul className="lista-tarjetas">
-            {[...pedido.propuestas].reverse().map((p) => (
-              <li key={p.id}>
-                <TarjetaPropuesta propuesta={p} puedeActuar={abierto} alCambiar={() => void c.recargar()} alContraofertar={(base) => router.push(`${RUTAS.tuPrecio.ruta}?id=${pedido.id}&base=${base.id}`)} />
-              </li>
-            ))}
-          </ul>
-        )}
-        {abierto && !pendienteMia && !delUsuarioVigente ? (
-          <Link className="boton boton--bloque pd-precio" href={`${RUTAS.tuPrecio.ruta}?id=${pedido.id}`}>
-            <Icono nombre="etiqueta" />
-            <span className="pd-precio__texto">
-              Poner mi precio
-              {pedido.precioSugerido ? <span className="pd-sugiere">Handyx sugiere {pesos(pedido.precioSugerido.monto)}</span> : null}
-            </span>
-          </Link>
+    <PantallaHoja fondo={<Fondo />}>
+      <div className="nu-arriba">
+        <BotonIconoEnlace icono="atras" etiqueta="Volver al inicio" href={RUTAS.inicio.ruta} />
+        <Chip tono="noche" icono="campana">
+          {v.tipo === 'urgente' ? 'Pedido urgente' : v.tipo === 'obra' ? 'Pedido de obra' : 'Pedido programado'}
+        </Chip>
+      </div>
+      <section className="nu-hoja-fija" aria-labelledby="nu-pedido-h1">
+        <span className="ui-hoja__manija nu-manija" aria-hidden="true">
+          <span />
+        </span>
+        <h1 id="nu-pedido-h1" className="visualmente-oculto">{`Pedido de ${v.titulo}`}</h1>
+        {c.fallo ? <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} /> : null}
+        <ContenidoPedido v={v} ahora={ahora} hoy={hoy} />
+        {pedido.tipo === 'obra' ? <p className="nu-nota">Una obra empieza con una visita para presupuestar; después se presupuesta por etapas.</p> : null}
+        {!v.abierto && !pedido.trabajoId ? <p className="nu-nota">La búsqueda de este pedido terminó: ya no se pueden enviar propuestas.</p> : null}
+        <EstadoMiPropuesta pedido={pedido} alCambiar={() => void c.recargar()} />
+        {pedido.propuestas.length > 0 ? (
+          <div className="nu-propuestas">
+            <Etiqueta como="h2">Propuestas</Etiqueta>
+            <ul className="lista-tarjetas">
+              {[...pedido.propuestas].reverse().map((p) => (
+                <li key={p.id}>
+                  <TarjetaPropuesta propuesta={p} puedeActuar={v.abierto} alCambiar={() => void c.recargar()} alContraofertar={(b) => router.push(`${RUTAS.tuPrecio.ruta}?id=${pedido.id}&base=${b.id}`)} />
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : null}
-        {pendienteMia ? <p className="texto-suave texto-chico">Tenés una propuesta esperando respuesta. Para cambiarla, retirala o esperá la contraoferta del usuario.</p> : null}
-        {delUsuarioVigente && !pendienteMia ? <p className="texto-suave texto-chico">Si no te sirve la propuesta del usuario, contraofertá con tu precio y horario.</p> : null}
-      </Seccion>
-
-      <Seccion titulo="Chat">
-        <p className="texto-suave">Consultá detalles o pedí fotos antes de cotizar. El chat queda ligado a este pedido y sigue si te contratan.</p>
-        {chat.fallo ? <ErrorCaja fallo={chat.fallo} onReintentar={() => void abrirChat()} /> : null}
-        {pedido.conversacionId ? (
-          <Link className="boton boton--claro boton--bloque" href={`${RUTAS.hilo.ruta}?id=${pedido.conversacionId}`}>
-            <Icono nombre="chat" /> Abrir el chat
-          </Link>
-        ) : (
-          <button type="button" className="boton boton--claro boton--bloque" disabled={chat.pendiente || !abierto} onClick={() => void abrirChat()}>
-            <Icono nombre="chat" /> {chat.pendiente ? 'Abriendo…' : 'Consultar por el chat'}
-          </button>
-        )}
-      </Seccion>
-    </div>
+        {pendienteMia ? <p className="nu-nota">Tu propuesta espera respuesta. Para cambiarla, retirala o esperá la contraoferta del cliente.</p> : null}
+        {descarte.fallo ? <ErrorCaja fallo={descarte.fallo} /> : null}
+        {puedeCotizar ? (
+          <div className="nu-hoja-fija__pie">
+            <AccionesPedido v={v} ocupado={descarte.pendiente} onAhoraNo={() => void ahoraNo()} />
+          </div>
+        ) : pedido.conversacionId ? (
+          <BotonEnlace variante="contorno" icono="chat" href={`${RUTAS.hilo.ruta}?id=${pedido.conversacionId}`}>
+            Abrir el chat
+          </BotonEnlace>
+        ) : null}
+      </section>
+    </PantallaHoja>
   );
 }

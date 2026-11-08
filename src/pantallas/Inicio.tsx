@@ -1,204 +1,248 @@
 'use client';
-// Inicio sobre el mapa (lote 4.5): bloque azul con el saludo y el interruptor grande "Disponible" (urgentes ahora), el
-// mapa con tus zonas y los pedidos abiertos (zonas aproximadas), y una hoja con los pedidos para vos, tu próximo trabajo y
-// lo cobrado del mes. Nunca tasas de aceptación, tiempos de respuesta ni puntualidad (PROD-06 §3).
+// Inicio (F-Inicio y F-InicioDia, lote 1.3): el mapa de arreglos siempre detrás, la cabecera azul con el único
+// Disponible, los pedidos que llegan flotando sobre el mapa y, abajo, los pedidos cercanos como las opciones de viaje de
+// Uber. Si tenés trabajos hoy, abajo va tu día (la próxima parada, escribirle, avisar una demora y salir). Tocar un
+// pedido abre su detalle en una hoja: nada se acepta desde el mapa. Zona aproximada siempre y sin tiempos de llegada
+// prometidos. Nunca tasas de aceptación, tiempos de respuesta ni puntualidad.
 import { api } from '@handyx/origen-datos';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { RUTAS } from '../app/rutas.ts';
-import { Cargando, ErrorCaja, Vacio } from '../components/Estados.tsx';
-import { Handy } from '../components/Handy.tsx';
 import { usePerfil } from '../components/GuardiaApp.tsx';
-import { Icono } from '../components/Icono.tsx';
-import { PedidoEntrante } from '../components/PedidoEntrante.tsx';
-import { TarjetaPedido } from '../components/TarjetaPedido.tsx';
-import { Aviso, Chip, ChipTipo, Interruptor, Tarjeta } from '../components/ui.tsx';
-import type { Disponibilidad, ZonaMapa } from '../contracts/dto.ts';
+import { ErrorCaja } from '../components/Estados.tsx';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
+import { useAhora } from '../hooks/useAhora.ts';
 import { useCarga } from '../hooks/useCarga.ts';
-import { ALTA, TRABAJO } from '../lib/etiquetas.ts';
-import { fechaHora, pesos, plural } from '../lib/formato.ts';
-import { tarifaTexto } from '../lib/tarifa.ts';
-import { Mapa } from '../mapa/Mapa.tsx';
-import './inicio.css';
+import { useIsla } from '../kit/Efectos.tsx';
+import { diaLocal } from '../lib/formato.ts';
+import { Boton, BotonEnlace } from '../ui/atomos/Boton.tsx';
+import { Titulo } from '../ui/atomos/Texto.tsx';
+import { BarraPestanas } from '../ui/organismos/BarraPestanas.tsx';
+import { CabeceraAzul } from '../ui/organismos/Cabeceras.tsx';
+import { Hoja } from '../ui/organismos/Hoja.tsx';
+import { MapaArreglos } from '../ui/organismos/MapaArreglos.tsx';
+import { HojaCercanos, PedidoFlotante } from '../ui/organismos/PedidosCercanos.tsx';
+import { Tarjeta } from '../ui/moleculas/Tarjeta.tsx';
+import { AccionesPedido, ContenidoPedido } from './nucleo/DetallePedido.tsx';
+import { PantallaFallo } from './nucleo/Fallo.tsx';
+import { useEventosMapa, useUbicacionUnaVez } from './nucleo/hooks.ts';
+import { TarjetaDia } from './nucleo/TarjetaDia.tsx';
+import { aPedidoCercano, aPedidoMapa, vistaDesdeMapa } from './nucleo/vista.ts';
+import './nucleo/nucleo.css';
+
+const TEXTO_ALTA: Record<string, { titulo: string; texto: string; boton: string }> = {
+  borrador: { titulo: 'Terminá tu alta', texto: 'Cuando el equipo de verificación revise tu alta, vas a ver los pedidos de tus zonas en el mapa.', boton: 'Seguir con mi alta' },
+  requiere_correccion: { titulo: 'Tu alta necesita un cambio', texto: 'Corregí lo que te pedimos y la volvemos a revisar.', boton: 'Ver qué corregir' },
+};
 
 export function Inicio() {
   const { perfil } = usePerfil();
-  return perfil.estadoAlta === 'habilitada' ? <PanelInicio nombre={perfil.nombre} /> : <SinHabilitar />;
+  return perfil.estadoAlta === 'habilitada' ? <InicioMapa /> : <SinHabilitar estado={perfil.estadoAlta} />;
 }
 
-function SinHabilitar() {
-  const { perfil } = usePerfil();
-  const info = ALTA[perfil.estadoAlta];
+function SinHabilitar({ estado }: { estado: string }) {
+  const t = TEXTO_ALTA[estado] ?? { titulo: 'Estamos revisando tu alta', texto: 'Todavía no recibís pedidos: se habilitan cuando el equipo de verificación revisa tu alta. No tenés que hacer nada más por ahora.', boton: 'Ver el estado de mi alta' };
   return (
-    <div className="pila">
-      <h1 className="titulo">Hola{perfil.nombre ? `, ${perfil.nombre}` : ''}</h1>
-      <Tarjeta tono="azul">
-        <p className="tarjeta__titulo">
-          <Icono nombre={info.icono} /> {info.texto}
-        </p>
-        <p>{info.detalle}</p>
-        <Link className="boton boton--amarillo boton--bloque" href={RUTAS.alta.ruta}>
-          {perfil.estadoAlta === 'borrador' || perfil.estadoAlta === 'requiere_correccion' ? 'Seguir con mi alta' : 'Ver el estado de mi alta'}
-        </Link>
-      </Tarjeta>
-      <Aviso tono="neutro" icono="info">
-        Todavía no recibís pedidos: se habilitan cuando Operations revisa tu alta. No recibís pedidos por haber creado la cuenta.
-      </Aviso>
+    <div className="nu-inicio nu-inicio--sin">
+      <CabeceraAzul hrefAvisos={RUTAS.notificaciones.ruta} hrefZonas={RUTAS.disponibilidad.ruta} disponible={null} onDisponible={() => undefined} />
+      <div className="nu-inicio__sin">
+        <Tarjeta>
+          <Titulo nivel={1} tam="medio" antes={t.titulo} />
+          <p>{t.texto}</p>
+          <BotonEnlace href={RUTAS.alta.ruta}>{t.boton}</BotonEnlace>
+        </Tarjeta>
+      </div>
+      <BarraPestanas />
     </div>
   );
 }
 
-function PanelInicio({ nombre }: { nombre: string | null }) {
-  const c = useCarga(async () => {
-    const [inicio, disp, pedidos, fee, barrios] = await Promise.all([api.inicio(), api.disponibilidad(), api.pedidosElegibles(), api.feeVigente(), api.barrios()]);
-    return { inicio, disp, pedidos: pedidos.items, fee, barrios };
-  }, []);
+function InicioMapa() {
+  const router = useRouter();
+  const isla = useIsla();
+  const ahora = useAhora(1000);
+  const hoy = diaLocal(ahora.toISOString());
+  const yo = useUbicacionUnaVez();
   const cambio = useAccion();
+  const salir = useAccion();
+  const descarte = useAccion();
 
-  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
-  if (!c.datos) return <Cargando />;
-  const { inicio, disp, pedidos, fee, barrios } = c.datos;
-  const tarifa = tarifaTexto(fee.politica, api.ahora());
-  const abiertos = pedidos.filter((p) => p.estado === 'buscando');
-  const misBarrios = barrios.filter((b) => disp.zonas.includes(b.id));
-  const zonas = abiertos.map((p) => p.zonaMapa).filter((z): z is ZonaMapa => z !== null);
+  const base = useCarga(async () => {
+    const [disp, inicio, dia] = await Promise.all([api.disponibilidad(), api.inicio(), api.dia()]);
+    return { disp, inicio, dia };
+  }, []);
+  const desde = yo.lectura;
+  const mapa = useCarga(() => api.mapaPedidos({ referencia: { tipo: 'mis_zonas' }, desde }), [desde?.punto.lat, desde?.punto.lng], { cadaMs: 20_000 });
+  useEventosMapa(!!base.datos?.disp.urgentesAhora || !!base.datos?.disp.programados, () => void mapa.recargar());
 
-  async function cambiar(parcial: Partial<Pick<Disponibilidad, 'urgentesAhora' | 'programados'>>) {
-    // El refresco va dentro de la acción: hasta tener la versión nueva el interruptor sigue deshabilitado.
+  // Pedidos que llegan: los urgentes que ya estaban al abrir y todo lo nuevo que aparezca después flotan sobre el mapa.
+  const vistos = useRef<Set<string> | null>(null);
+  const [entrantes, setEntrantes] = useState<string[]>([]);
+  const [indice, setIndice] = useState(0);
+  useEffect(() => {
+    const lista = mapa.datos?.pedidos;
+    if (!lista) return;
+    const abiertos = lista.filter((p) => p.miPropuesta === null);
+    if (vistos.current === null) {
+      vistos.current = new Set(lista.map((p) => p.id));
+      setEntrantes(abiertos.filter((p) => p.tipo === 'urgente').map((p) => p.id));
+      return;
+    }
+    const nuevos = abiertos.filter((p) => !vistos.current?.has(p.id)).map((p) => p.id);
+    for (const p of lista) vistos.current.add(p.id);
+    const ids = new Set(lista.map((p) => p.id));
+    setEntrantes((e) => [...nuevos, ...e.filter((x) => ids.has(x) && !nuevos.includes(x))]);
+    if (nuevos.length) setIndice(0);
+  }, [mapa.datos]);
+
+  const [elegido, setElegido] = useState<string | null>(null);
+  const [detalle, setDetalle] = useState<string | null>(null);
+  const [verPedidos, setVerPedidos] = useState(false);
+  const det = useCarga(() => (detalle ? api.mapaPedido(detalle) : Promise.resolve(null)), [detalle]);
+
+  // Lo que la cabecera necesita para la conversación de la próxima parada (escribirle).
+  const proxima = base.datos?.dia.paradas.find((p) => p.estado === 'proxima') ?? null;
+  const trabajoProximo = useCarga(() => (proxima?.turno.trabajoId ? api.trabajo(proxima.turno.trabajoId) : Promise.resolve(null)), [proxima?.turno.trabajoId]);
+
+  const pedidos = useMemo(() => mapa.datos?.pedidos ?? [], [mapa.datos]);
+  const nuevosSet = useMemo(() => new Set(entrantes), [entrantes]);
+  const cercanos = useMemo(() => pedidos.map((p) => aPedidoCercano(p, ahora, hoy)), [pedidos, ahora, hoy]);
+  const flotantes = cercanos.filter((p) => nuevosSet.has(p.id));
+
+  if (base.fallo && !base.datos) return <PantallaFallo fallo={base.fallo} onReintentar={() => void base.recargar()} />;
+  if (!base.datos) return <div className="nu-inicio nu-inicio--cargando" aria-busy="true" />;
+  const { disp, inicio, dia } = base.datos;
+  const hayDia = dia.paradas.some((p) => p.estado !== 'hecha');
+  const recibe = disp.urgentesAhora || disp.programados;
+
+  async function cambiarDisponible(v: boolean) {
     await cambio.ejecutar(async () => {
-      await api.actualizarDisponibilidad({ urgentesAhora: parcial.urgentesAhora ?? disp.urgentesAhora, programados: parcial.programados ?? disp.programados, version: disp.version });
-      await c.recargar();
+      await api.actualizarDisponibilidad({ urgentesAhora: v, programados: disp.programados, version: disp.version });
+      await base.recargar();
+      await mapa.recargar();
     });
   }
 
-  return (
-    <div className="in">
-      <section className={`in-hero${disp.urgentesAhora ? ' in-hero--on' : ''}`} aria-labelledby="in-hola">
-        <h1 id="in-hola" className="hx-titulo in-hero__hola">
-          Hola{nombre ? `, ${nombre}` : ''}
-        </h1>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={disp.urgentesAhora}
-          aria-describedby="in-disponible-d"
-          className="in-disponible"
-          disabled={cambio.pendiente}
-          onClick={() => void cambiar({ urgentesAhora: !disp.urgentesAhora })}
-        >
-          <span className="in-disponible__texto">
-            <strong>{disp.urgentesAhora ? 'Disponible' : 'No disponible'}</strong>
-            <span>Pedidos urgentes ahora</span>
-          </span>
-          <span className="in-disponible__perilla" aria-hidden="true" />
-        </button>
-        <p id="in-disponible-d" className="in-hero__nota">
-          {disp.urgentesAhora
-            ? 'Te ofrecemos urgentes de tus rubros y zonas. Apagalo cuando quieras: no tiene ninguna consecuencia.'
-            : 'No te ofrecemos urgentes. Prendelo cuando puedas salir: elegís vos qué pedidos tomar.'}
-        </p>
-      </section>
-      {cambio.fallo ? <ErrorCaja fallo={cambio.fallo} /> : null}
-      {c.fallo ? <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} /> : null}
+  async function salirAhora(trabajoId: string) {
+    const t = trabajoProximo.datos?.trabajo;
+    if (!t || t.id !== trabajoId) return;
+    const r = await salir.ejecutar(async () => {
+      await api.avanzarTrabajo(t.id, 'en_camino', t.version, salir.clave());
+    });
+    if (r.ok) router.push(`${RUTAS.enCamino.ruta}?id=${t.id}`);
+    else if (r.fallo.tipo === 'conflicto') {
+      salir.nueva();
+      await trabajoProximo.recargar();
+    }
+  }
 
-      <Mapa
-        etiqueta="Tus zonas y los pedidos abiertos (zonas aproximadas)"
-        alto="grande"
-        cobertura={misBarrios}
-        zonas={zonas}
-        radar={disp.urgentesAhora ? (misBarrios[0]?.centro ?? null) : null}
-        encuadre={`${misBarrios.map((b) => b.id).join('|')}-${zonas.length}`}
-        alternativa={<p>{misBarrios.length ? `Tus zonas: ${misBarrios.map((b) => b.nombre).join(', ')}` : 'Todavía no elegiste zonas'}</p>}
-      />
+  async function ahoraNo(id: string) {
+    const r = await descarte.ejecutar(async () => {
+      await api.descartarPedido(id);
+      await mapa.recargar();
+    });
+    if (r.ok) {
+      setDetalle(null);
+      setEntrantes((e) => e.filter((x) => x !== id));
+      isla({ titulo: 'Lo sacamos de tu mapa', texto: 'No tiene ninguna consecuencia.', icono: 'check' });
+    }
+  }
 
-      <div className="in-hoja">
-        <Interruptor
-          etiqueta="Pedidos programados y obras"
-          descripcion={disp.programados ? 'Encendido: ves pedidos para otro día y visitas de presupuesto.' : 'Apagado: no te ofrecemos pedidos programados ni obras.'}
-          activo={disp.programados}
-          deshabilitado={cambio.pendiente}
-          onCambio={(v) => void cambiar({ programados: v })}
+  const abrir = (id: string) => {
+    setElegido(id);
+    setDetalle(id);
+  };
+  const titulo = recibe ? (pedidos.length === 0 ? 'Todavía no hay pedidos cerca' : `${pedidos.length} ${pedidos.length === 1 ? 'pedido cerca' : 'pedidos cerca'}`) : 'Estás sin recibir pedidos';
+  const vacio = recibe ? 'Cuando llegue uno de tus rubros y zonas, aparece en el mapa.' : 'Prendé «Disponible» para que te lleguen los urgentes de tus zonas.';
+  const medir =
+    yo.estado === 'lista' ? null : (
+      <p className="nu-inicio__medir">
+        {yo.estado === 'sin_permiso' ? (
+          'Sin permiso de ubicación: las distancias no se muestran. Las zonas son aproximadas igual.'
+        ) : yo.estado === 'no_disponible' ? (
+          'Tu teléfono no dio la ubicación. Las zonas son aproximadas igual.'
+        ) : (
+          <Boton variante="texto" bloque={false} chico icono="pin" ocupado={yo.estado === 'buscando'} textoOcupado="Buscando dónde estás…" onClick={yo.pedir}>
+            Medir distancias desde donde estoy
+          </Boton>
+        )}
+      </p>
+    );
+
+  const vistaDetalle = det.datos ? vistaDesdeMapa(det.datos) : null;
+  let abajo: ReactNode;
+  if (flotantes.length > 0) {
+    abajo = <PedidoFlotante pedidos={flotantes} indice={Math.min(indice, flotantes.length - 1)} onIndice={setIndice} onVer={abrir} onCerrar={() => setEntrantes([])} />;
+  } else if (hayDia && !verPedidos) {
+    abajo = (
+      <>
+        <Boton variante="contorno" bloque={false} chico icono="lupa" onClick={() => setVerPedidos(true)}>
+          {pedidos.length ? `Ver ${pedidos.length} ${pedidos.length === 1 ? 'pedido' : 'pedidos'} cerca` : 'Ver pedidos cerca'}
+        </Boton>
+        <TarjetaDia
+          dia={dia}
+          ahora={ahora}
+          conversacionId={trabajoProximo.datos?.trabajo.conversacionId ?? null}
+          ocupado={salir.pendiente}
+          onSalir={(id) => void salirAhora(id)}
+          falloSalir={salir.fallo ? <ErrorCaja fallo={salir.fallo} /> : null}
         />
-        <Link className="in-enlace" href={RUTAS.disponibilidad.ruta}>
-          Cobertura, días y horarios
-        </Link>
+      </>
+    );
+  } else {
+    abajo = (
+      <>
+        {hayDia ? (
+          <Boton variante="contorno" bloque={false} chico icono="agenda" onClick={() => setVerPedidos(false)}>
+            Volver a tu día
+          </Boton>
+        ) : null}
+        <HojaCercanos pedidos={cercanos} elegido={elegido} onElegir={setElegido} onVer={abrir} titulo={titulo} vacio={vacio} extra={recibe && pedidos.length ? medir : null} />
+      </>
+    );
+  }
 
-        <section aria-labelledby="in-pedidos">
-          <div className="in-seccion">
-            <h2 id="in-pedidos">Pedidos para vos</h2>
-            <Link href={RUTAS.pedidos.ruta}>Ver todos</Link>
-          </div>
-          {abiertos.length === 0 ? (
-            <Vacio icono="lupa" titulo="No hay pedidos abiertos ahora">
-              {disp.urgentesAhora || disp.programados ? 'Cuando llegue uno de tus rubros y zonas, te avisamos.' : 'Tenés los pedidos apagados. Prendé "Disponible" o los programados para empezar a ver ofertas.'}
-            </Vacio>
-          ) : (
-            <ul className="lista-tarjetas">
-              {abiertos.slice(0, 2).map((p) => (
-                <li key={p.id}>
-                  <TarjetaPedido pedido={p} />
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="texto-suave texto-chico">
-            {plural(inicio.pedidosAbiertos, 'pedido abierto', 'pedidos abiertos')} · {plural(inicio.urgentesAbiertos, 'urgente', 'urgentes')} ·{' '}
-            {plural(inicio.propuestasPendientes, 'propuesta espera', 'propuestas esperan')} tu respuesta
-          </p>
-          {tarifa ? <p className="texto-suave texto-chico">{tarifa}</p> : null}
-        </section>
-
-        <section aria-labelledby="in-proximo">
-          <div className="in-seccion">
-            <h2 id="in-proximo">{inicio.proximoTrabajo && inicio.proximoTrabajo.estado !== 'agendado' ? 'Tu trabajo en curso' : 'Tu próximo trabajo'}</h2>
-            <Link href={RUTAS.agenda.ruta}>Agenda</Link>
-          </div>
-          {inicio.proximoTrabajo ? (
-            <Link className="tarjeta" href={`${RUTAS.trabajo.ruta}?id=${inicio.proximoTrabajo.id}`}>
-              <div className="fila-flex fila-flex--entre">
-                <ChipTipo tipo={inicio.proximoTrabajo.tipo} />
-                <Chip e={TRABAJO[inicio.proximoTrabajo.estado]} />
-              </div>
-              <p className="pedido__titulo">{NOMBRE_RUBRO[inicio.proximoTrabajo.rubro]}</p>
-              <div className="fila-flex fila-flex--entre">
-                <span className="texto-suave">{fechaHora(inicio.proximoTrabajo.acuerdo.horario.inicio)}</span>
-                <span className="monto monto--chico">{pesos(inicio.proximoTrabajo.acuerdo.monto)}</span>
-              </div>
-            </Link>
-          ) : (
-            <Vacio icono="calendario" titulo="No tenés trabajos agendados" />
-          )}
-        </section>
-
-        <ul className="in-mosaicos">
-          <li>
-            <Link className="in-mosaico" href={RUTAS.caja.ruta}>
-              <span className="in-mosaico__dato">{pesos(inicio.cobradoMes)}</span>
-              <span>Cobrado este mes</span>
-              <small>{plural(inicio.trabajosCobrados, 'trabajo verificado', 'trabajos verificados')} · directo a vos</small>
-            </Link>
-          </li>
-          <li>
-            <Link className="in-mosaico" href={RUTAS.notificaciones.ruta}>
-              <span className="in-mosaico__dato">{inicio.avisosSinLeer}</span>
-              <span>{inicio.avisosSinLeer === 1 ? 'Aviso sin leer' : 'Avisos sin leer'}</span>
-              <small>Ver avisos</small>
-            </Link>
-          </li>
-        </ul>
-        <p className="texto-suave texto-chico">Lo cobrado es plata que te pagaron directamente a vos. Handyx no guarda ni te transfiere dinero.</p>
-
-        <Link className="in-taller" href={RUTAS.taller.ruta}>
-          <span className="in-taller__texto">
-            <strong>Tu taller</strong>
-            <small>Calculá cables, armá tableros y medí pendientes, también sin conexión.</small>
-          </span>
-          <Handy nombre="lamparita" alto={64} />
-        </Link>
+  return (
+    <div className="nu-inicio">
+      <CabeceraAzul
+        hrefAvisos={RUTAS.notificaciones.ruta}
+        hrefZonas={RUTAS.disponibilidad.ruta}
+        avisosNuevos={inicio.avisosSinLeer}
+        disponible={disp.urgentesAhora}
+        ocupado={cambio.pendiente}
+        onDisponible={(v) => void cambiarDisponible(v)}
+      />
+      <p className="nu-inicio__estado" role="status">
+        {hayDia ? `Tenés ${dia.paradas.length} ${dia.paradas.length === 1 ? 'parada' : 'paradas'} hoy` : disp.urgentesAhora ? 'Te llegan pedidos de tus zonas' : 'Prendé Disponible para recibir urgentes'}
+      </p>
+      {cambio.fallo ? <ErrorCaja fallo={cambio.fallo} /> : null}
+      {mapa.fallo && !mapa.datos ? <ErrorCaja fallo={mapa.fallo} onReintentar={() => void mapa.recargar()} /> : null}
+      <div className="nu-inicio__mapa">
+        <MapaArreglos pedidos={pedidos.map((p) => aPedidoMapa(p, nuevosSet))} yo={desde?.punto ?? null} elegido={elegido} onElegir={abrir} etiqueta="Mapa de pedidos cerca tuyo (zonas aproximadas)" />
       </div>
+      <div className="nu-inicio__abajo">{abajo}</div>
+      <BarraPestanas />
 
-      <PedidoEntrante pedidos={abiertos} />
+      <Hoja
+        abierta={detalle !== null}
+        titulo={vistaDetalle ? `Pedido de ${NOMBRE_RUBRO[vistaDetalle.rubro].toLowerCase()}` : 'Pedido'}
+        onCerrar={() => setDetalle(null)}
+        pie={vistaDetalle ? <AccionesPedido v={vistaDetalle} ocupado={descarte.pendiente} onAhoraNo={() => void ahoraNo(vistaDetalle.id)} /> : undefined}
+      >
+        {det.fallo && !det.datos ? (
+          det.fallo.tipo === 'no_encontrado' ? (
+            <p>Este pedido ya no está disponible: lo tomó otra persona, venció o el cliente lo canceló.</p>
+          ) : (
+            <ErrorCaja fallo={det.fallo} onReintentar={() => void det.recargar()} />
+          )
+        ) : vistaDetalle ? (
+          <ContenidoPedido v={vistaDetalle} ahora={ahora} hoy={hoy} />
+        ) : (
+          <p role="status">Cargando el pedido…</p>
+        )}
+        {descarte.fallo ? <ErrorCaja fallo={descarte.fallo} /> : null}
+      </Hoja>
     </div>
   );
 }
