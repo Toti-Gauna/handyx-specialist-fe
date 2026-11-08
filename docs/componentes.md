@@ -268,3 +268,18 @@ de la ola 1; lógica pura en `src/ui/logicaNucleo.ts` con pruebas.
 | `PedidoFlotante`                                | organismo | El pedido que llega flotando sobre el mapa, con la ilustración que arma el arreglo y «Pedido 1 de 2»                | «Ver pedido» abre el detalle, nunca acepta; anterior/siguiente con botones; región `aria-live`                                                  |
 | `HojaCercanos`                                  | organismo | Pedidos cercanos estilo «Choose a ride»: rubro, zona aproximada, precio sugerido y distancia; el elegido resaltado  | Radios reales; una sola acción («Ver pedido de …»)                                                                                              |
 | `.ui-atajos` / `.ui-atajo`                      | CSS       | Atajos chicos en fila que bajan de renglón (precio, franjas, horarios)                                              | `aria-pressed`; deshabilitado con texto oculto que dice por qué                                                                                 |
+
+### Modo trabajo y cierre (lote 2.3)
+
+Piezas nuevas en archivos propios; CSS en `src/ui/trabajo.css`, lógica pura en `src/ui/logicaModo.ts` con pruebas
+(`docs/modo-trabajo.md`).
+
+| Pieza                            | Nivel     | Para qué                                                                                            | Accesibilidad                                                                                                       |
+| -------------------------------- | --------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `CabeceraTrabajo`                | organismo | Cabecera azul del Modo trabajo: salir, chip, chat, el trabajo, cronómetro y avance en tramos        | `role="timer"` que se lee en minutos («Trabajando hace 24 minutos»), sin anunciar cada segundo; avance `progressbar` |
+| `ListaTareas`                    | molécula  | Tareas grandes para guantes (fila de 60 px, cuadro de 36 px), la actual resaltada                  | Casilla real que cubre la fila; «Seguridad», «Hecha» y «Ahora» escritos; `aria-current="step"`                      |
+| `AccesoRapido` + `GrillaAccesos` | molécula  | Mosaicos blancos de 76 px (Foto, Repuestos, Pedir ayuda, Agenda)                                    | Enlace o botón con el texto visible; grilla que baja a dos columnas con texto agrandado                             |
+| `Comparador`                     | molécula  | Antes y después encimados con la manija                                                             | Control deslizante real (dedo, mouse y teclado) + «Ver el antes / Mitad y mitad / Ver el después»; `aria-valuetext` |
+| `FotosLado`                      | molécula  | Antes y después lado a lado con rótulo y pie                                                        | `figure` + `figcaption`; texto alternativo con la hora                                                              |
+| `FilaContacto`                   | molécula  | Un contacto profesional: iniciales, oficio, estado y escribir / llamar                              | Botones de 48 px con el nombre de la persona; estado escrito                                                        |
+| `BotonFoto`                      | molécula  | Sacar una foto con la cámara de atrás (o la de prueba en el mock)                                   | Botón con texto; el `input` de archivo queda oculto y fuera del orden de tabulación                                 |
