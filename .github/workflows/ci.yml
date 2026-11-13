@@ -30,3 +30,22 @@ jobs:
         env:
           NEXT_PUBLIC_DATA_SOURCE: http
           NEXT_PUBLIC_API_BASE_URL: https://api.example.test
+
+  desbordes:
+    # Lote 0.2: textos que se salen de su caja, controles partidos y contenido bajo la acción fija, con las fuentes
+    # reales del build (e2e/desbordes.cjs). Los desbordes viejos están en e2e/desbordes-conocidos.json.
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Playwright y Chromium (solo para la prueba; no entran al proyecto)
+        run: npm install --no-save playwright@1.63.0 && npx playwright install --with-deps chromium
+      - name: Build de vista previa (mock)
+        run: npm run build
+      - run: npm run desbordes

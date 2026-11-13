@@ -1,0 +1,384 @@
+/* Pantallas de cuenta (lote 4.2): bienvenida, entrar, crear cuenta, verificar y recuperar. Prefijo cu-.
+   Pantalla completa, sin cabecera de la app: arriba una escena de color con los Handys, abajo la acción principal. */
+
+.cu {
+  min-height: 100dvh;
+  background: var(--color-hueso);
+}
+
+.cu-cuerpo {
+  display: grid;
+  align-content: start;
+  gap: var(--esp-4);
+  width: 100%;
+  max-width: 480px;
+  min-height: calc(100dvh - 48px);
+  margin: 0 auto;
+  padding: 0 var(--esp-4) calc(var(--esp-5) + var(--hx-seguro-abajo));
+}
+
+.cu-cuerpo > * {
+  min-width: 0;
+}
+
+/* Escena de color de arriba (sale del borde: ocupa todo el ancho del celular). */
+.cu-escena {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: end;
+  gap: var(--esp-3);
+  min-height: 210px;
+  margin: 0 calc(-1 * var(--esp-4));
+  padding: calc(var(--esp-5) + var(--hx-seguro-arriba)) var(--esp-4) var(--esp-5);
+  border-radius: 0 0 36px 36px;
+  background: var(--hd-amarillo);
+  overflow: hidden;
+}
+
+.cu-escena--azul {
+  background: var(--hd-azul);
+}
+
+.cu-escena--noche {
+  background: var(--hd-noche);
+}
+
+.cu-escena--clara {
+  background: var(--hd-azul-tinte);
+}
+
+.cu-escena__logo {
+  width: 150px;
+  height: auto;
+}
+
+.cu-escena .handy--grupo {
+  width: min(100%, 300px);
+}
+
+/* Herramientas de fondo, como los íconos de arreglos de la landing (decorativas). */
+.cu-escena__mosaico {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.18);
+  color: rgb(255 255 255 / 0.75);
+}
+
+.cu-escena:not(.cu-escena--azul, .cu-escena--noche) .cu-escena__mosaico {
+  background: rgb(31 87 168 / 0.1);
+  color: rgb(31 87 168 / 0.55);
+}
+
+.cu-escena__mosaico--1 {
+  top: 26px;
+  left: 18px;
+  rotate: -10deg;
+}
+
+.cu-escena__mosaico--2 {
+  top: 54px;
+  right: 22px;
+  rotate: 12deg;
+}
+
+.cu-escena__mosaico--3 {
+  bottom: 30px;
+  left: 30px;
+  rotate: 6deg;
+}
+
+.cu-titulo {
+  font-size: clamp(1.9rem, 8.5vw, 2.5rem);
+}
+
+.cu-bajada {
+  margin: 0;
+  color: var(--hd-suave);
+  font-size: 1.02rem;
+  overflow-wrap: anywhere; /* el email enmascarado es una palabra larga */
+}
+
+.cu-cabecera {
+  display: grid;
+  gap: var(--esp-2);
+}
+
+.cu-cabecera > *,
+.cu-form > *,
+.cu-lamina > * {
+  min-width: 0;
+}
+
+/* ── Google y Apple ─────────────────────────────────────────────────── */
+
+.cu-proveedores {
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.cu-proveedor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 0 var(--esp-4);
+  border: 2px solid var(--hd-borde);
+  border-radius: var(--hx-radio-boton);
+  background: #fff;
+  color: var(--hd-tinta);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 var(--hx-base-boton) 0 var(--hd-mosaico-hondo);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.cu-proveedor:active {
+  transform: translateY(var(--hx-base-boton));
+  box-shadow: none;
+}
+
+.cu-proveedor--apple {
+  border-color: #000;
+  background: #000;
+  color: #fff;
+  box-shadow: 0 var(--hx-base-boton) 0 #3a3a3a;
+}
+
+.cu-logo {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+
+.cu-separador {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  margin: var(--esp-1) 0 0;
+  color: var(--hd-suave);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.cu-separador::before,
+.cu-separador::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--hd-linea);
+}
+
+/* ── Formularios ────────────────────────────────────────────────────── */
+
+.cu-form {
+  display: grid;
+  gap: var(--esp-4);
+}
+
+.cu-enlaces {
+  display: grid;
+  justify-items: center;
+  gap: var(--esp-1);
+  margin: 0;
+  text-align: center;
+}
+
+.cu-enlaces a,
+.cu-enlaces .enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque-min);
+}
+
+.cu-ver-clave {
+  justify-self: start;
+}
+
+/* Medidor de contraseña: 3 tramos + el texto (la fuerza se dice con palabras, no solo con color). */
+.cu-medidor {
+  display: grid;
+  gap: 6px;
+}
+
+.cu-medidor__barra {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cu-medidor__barra li {
+  height: 8px;
+  border-radius: 8px;
+  background: var(--hd-mosaico);
+  transition: background-color 0.3s ease;
+}
+
+.cu-medidor--1 .cu-medidor__barra li:nth-child(-n + 1) {
+  background: var(--hd-naranja);
+}
+
+.cu-medidor--2 .cu-medidor__barra li:nth-child(-n + 2) {
+  background: var(--hd-azul-ui);
+}
+
+.cu-medidor--3 .cu-medidor__barra li {
+  background: var(--hd-exito-boton);
+}
+
+.cu-medidor__texto {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.cu-medidor__texto strong {
+  color: var(--hd-tinta);
+}
+
+/* ── Bienvenida ─────────────────────────────────────────────────────── */
+
+.cu-bienvenida {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--esp-4);
+  min-height: calc(100dvh - 60px);
+}
+
+.cu-laminas {
+  display: grid;
+  grid-auto-columns: 100%;
+  grid-auto-flow: column;
+  margin: 0 calc(-1 * var(--esp-4));
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.cu-laminas::-webkit-scrollbar {
+  display: none;
+}
+
+.cu-lamina {
+  display: grid;
+  align-content: start;
+  gap: var(--esp-4);
+  padding: 0 var(--esp-4);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.cu-lamina .cu-escena {
+  min-height: min(46dvh, 360px);
+  margin: 0 calc(-1 * var(--esp-4));
+}
+
+.cu-lamina .handy {
+  max-width: 100%;
+}
+
+.cu-puntos {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cu-punto {
+  display: grid;
+  place-items: center;
+  width: var(--toque-min);
+  height: var(--toque-min);
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.cu-punto::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--hd-mosaico-hondo);
+  transition: width 0.3s var(--hx-salida), background-color 0.3s ease;
+}
+
+.cu-punto[aria-current='true']::before {
+  width: 28px;
+  background: var(--hd-azul);
+}
+
+.cu-acciones {
+  display: grid;
+  gap: var(--esp-3);
+  padding-bottom: var(--hx-seguro-abajo);
+}
+
+.cu-acciones__fila {
+  display: flex;
+  flex-wrap: wrap; /* con el texto agrandado, "Siguiente" baja de línea en vez de desbordar */
+  gap: var(--esp-3);
+}
+
+.cu-acciones__fila > .boton {
+  flex: 0 1 auto;
+}
+
+.cu-acciones__fila > .boton:last-child {
+  flex: 1 1 160px;
+}
+
+.cu-laminas:focus-visible {
+  outline: 3px solid var(--hd-azul);
+  outline-offset: -3px;
+  border-radius: 12px;
+}
+
+/* ── Verificar ──────────────────────────────────────────────────────── */
+
+.cu-reenvio {
+  display: grid;
+  justify-items: center;
+  gap: var(--esp-1);
+  margin: 0;
+  color: var(--hd-suave);
+  text-align: center;
+}
+
+.cu-ayuda-prueba {
+  display: grid;
+  gap: var(--esp-2);
+}
+
+.cu-ayuda-prueba .codigo {
+  font-size: 1.05rem;
+  letter-spacing: 0.15em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cu-escena .handy {
+    animation: hx-flotar 2.2s ease-in-out 2;
+  }
+  .cu-escena__mosaico {
+    animation: cu-mosaico 3s ease-in-out 2;
+  }
+  @keyframes cu-mosaico {
+    50% {
+      translate: 0 -6px;
+    }
+  }
+}

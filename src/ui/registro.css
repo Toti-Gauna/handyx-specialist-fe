@@ -1,0 +1,599 @@
+/* Kit v3 · piezas del registro y el onboarding (lote 1.2). Archivo aparte para no pisar los de la ola 0 mientras los
+   lotes corren en paralelo: el cierre de la ola 1 lo reparte en atomos/moleculas/organismos.css. Clases ui-*, tokens
+   --ui-*, sin estilos inline; movimiento solo con prefers-reduced-motion: no-preference. */
+
+/* ── Organismo: cabecera de pasos ─────────────────────── */
+.ui-cab-pasos {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) var(--ui-gutter) 10px;
+  background: #fff;
+}
+.ui-cab-pasos__fila {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+}
+.ui-cab-pasos__texto {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+  text-align: center;
+}
+.ui-cab-pasos__barra {
+  display: flex;
+  gap: 4px;
+}
+.ui-cab-pasos__tramo {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--ui-mosaico);
+}
+.ui-cab-pasos__tramo--hecho {
+  background: var(--ui-azul);
+}
+.ui-cab-pasos__tramo--actual {
+  background: var(--ui-amarillo);
+  box-shadow: inset 0 0 0 1.5px var(--ui-tinta);
+}
+
+/* ── Moléculas: opciones ──────────────────────────────── */
+.ui-grilla-op {
+  display: grid;
+  /* Dos columnas si entran; en un celular angosto o con texto agrandado, una. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ui-op-mosaico {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+  padding: 14px;
+  border-radius: 22px;
+  background: var(--ui-mosaico);
+  color: var(--ui-tinta);
+  cursor: pointer;
+}
+.ui-op-mosaico input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ui-op-mosaico:has(input:focus-visible) {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+}
+.ui-op-mosaico--on {
+  background: var(--ui-azul);
+  box-shadow: 0 var(--ui-base) 0 var(--ui-hondo);
+  color: #fff;
+}
+.ui-op-mosaico__tilde {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--ui-suave);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ui-azul);
+}
+.ui-op-mosaico--on .ui-op-mosaico__tilde {
+  border-color: #fff;
+}
+.ui-op-mosaico__titulo {
+  font-size: var(--ui-texto-base);
+  line-height: 1.2;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+.ui-op-mosaico__insignia {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--ui-amarillo);
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+}
+
+.ui-pastillas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ui-pastillas__leyenda {
+  padding: 0;
+  margin-bottom: 8px;
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-base);
+  font-weight: 800;
+}
+.ui-pastillas__lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ui-pastilla {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  min-width: 48px;
+  min-height: var(--ui-toque);
+  padding: 0 16px;
+  border-radius: 14px;
+  background: var(--ui-mosaico);
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-base);
+  font-weight: 800;
+  cursor: pointer;
+}
+.ui-pastilla input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ui-pastilla:has(input:focus-visible) {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+}
+.ui-pastilla--on {
+  background: var(--ui-azul);
+  box-shadow: 0 3px 0 var(--ui-hondo);
+  color: #fff;
+}
+
+/* ── Moléculas: avisos ────────────────────────────────── */
+.ui-aviso-privado {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--ui-tinte);
+  color: var(--ui-hondo);
+  font-size: var(--ui-texto-chico);
+  font-weight: 700;
+  line-height: 1.35;
+}
+.ui-aviso-caja {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--ui-tinte);
+  color: var(--ui-tinta);
+}
+.ui-aviso-caja--error {
+  background: var(--ui-error-tinte);
+  color: var(--ui-error-hondo);
+}
+.ui-aviso-caja--alerta {
+  background: #fdfbe0;
+  box-shadow: inset 0 0 0 2px var(--ui-amarillo-hondo);
+}
+.ui-aviso-caja--exito {
+  background: var(--ui-exito-tinte);
+}
+.ui-aviso-caja__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--ui-texto-chico);
+  line-height: 1.4;
+}
+.ui-aviso-caja__texto strong {
+  font-size: var(--ui-texto-base);
+}
+.ui-aviso-caja__accion {
+  margin-top: 6px;
+}
+
+/* ── Organismo: cámara con guía ───────────────────────── */
+.ui-camara {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ui-camara__visor {
+  position: relative;
+  height: min(52dvh, 400px);
+  min-height: 280px;
+  border-radius: 28px;
+  background: var(--ui-noche);
+  overflow: hidden;
+}
+.ui-camara__video,
+.ui-camara__foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ui-camara__guia {
+  position: absolute;
+  border: 4px solid var(--ui-amarillo);
+  box-shadow: 0 0 0 999px rgb(11 20 36 / 0.55);
+}
+.ui-camara__visor--ovalo .ui-camara__guia {
+  top: 12%;
+  left: 50%;
+  width: 56%;
+  height: 66%;
+  border-radius: 50%;
+  translate: -50% 0;
+}
+.ui-camara__visor--marco .ui-camara__guia {
+  top: 26%;
+  right: 8%;
+  left: 8%;
+  height: 46%;
+  border-radius: 18px;
+}
+.ui-camara__arriba {
+  position: absolute;
+  top: 16px;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.ui-camara__texto {
+  position: absolute;
+  right: 12px;
+  bottom: 18px;
+  left: 12px;
+  color: #fff;
+  font-size: var(--ui-texto-base);
+  font-weight: 800;
+  text-align: center;
+}
+.ui-camara__aviso,
+.ui-camara__sello {
+  position: absolute;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: var(--ui-amarillo);
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+}
+.ui-camara__aviso {
+  bottom: 56px;
+}
+.ui-camara__sello {
+  top: 56px;
+}
+.ui-camara .hx-camara__simulada {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2a3a58;
+}
+.ui-camara .hx-camara__dni-prueba {
+  padding: 30px 18px;
+  border-radius: 12px;
+  background: #d9e3f3;
+  color: var(--ui-hondo);
+  font-weight: 900;
+}
+.ui-camara .hx-camara__cara-prueba {
+  width: 110px;
+  height: 140px;
+  border-radius: 50%;
+  background: #c9d7ee;
+}
+.ui-camara__consejos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.ui-camara__consejos li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ui-camara__consejos .ui-icono {
+  color: var(--ui-exito);
+}
+.ui-camara__botones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Molécula: cargar foto o PDF ──────────────────────── */
+.ui-carga {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+  gap: 10px;
+}
+.ui-carga__op {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 120px;
+  padding: 12px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--ui-mosaico);
+  color: var(--ui-tinta);
+  font: 800 var(--ui-texto-base) / 1.2 var(--ui-fuente);
+  text-align: center;
+  cursor: pointer;
+}
+.ui-carga--compacta .ui-carga__op {
+  gap: 4px;
+  min-height: 88px;
+}
+.ui-carga__op--azul {
+  background: var(--ui-azul);
+  box-shadow: 0 var(--ui-base) 0 var(--ui-hondo);
+  color: #fff;
+}
+.ui-carga__op:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+}
+.ui-carga__op:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* ── Moléculas: primeros pasos y permisos ─────────────── */
+.ui-tarea {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 0;
+  color: var(--ui-tinta);
+  text-decoration: none;
+}
+.ui-tarea + .ui-tarea {
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-tarea:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+.ui-tarea__circulo {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--ui-suave);
+  border-radius: 50%;
+  background: #fff;
+}
+.ui-tarea--hecha .ui-tarea__circulo {
+  border-color: var(--ui-exito-boton);
+  background: var(--ui-exito-boton);
+  color: #fff;
+}
+.ui-tarea__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.ui-tarea__texto strong {
+  font-size: var(--ui-texto-base);
+}
+.ui-tarea__texto span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-tarea--hecha .ui-tarea__texto strong {
+  color: var(--ui-suave);
+  text-decoration: line-through;
+}
+
+.ui-permiso {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--ui-borde);
+  border-radius: 22px;
+  background: #fff;
+}
+.ui-permiso--activo {
+  border: 2px solid var(--ui-azul);
+  background: var(--ui-tinte);
+}
+.ui-permiso__ico {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--ui-mosaico);
+}
+.ui-permiso--activo .ui-permiso__ico {
+  background: var(--ui-azul);
+  color: #fff;
+}
+.ui-permiso__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.ui-permiso__texto strong {
+  font-size: 1.125rem;
+}
+.ui-permiso__texto span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-base);
+}
+.ui-permiso__texto small {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-permiso__estado {
+  margin-top: 4px;
+}
+
+/* ── Organismo: láminas de «Cómo funciona» ─────────────── */
+.ui-laminas {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+.ui-laminas__escena {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46dvh;
+  padding: 56px var(--ui-gutter) 24px;
+  border-radius: 0 0 40px 40px;
+  background: var(--ui-tinte);
+}
+.ui-laminas__saltar {
+  position: absolute;
+  top: calc(8px + env(safe-area-inset-top, 0px));
+  right: var(--ui-gutter);
+}
+.ui-laminas__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px var(--ui-gutter);
+}
+.ui-laminas__avance {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+}
+.ui-laminas__puntos {
+  display: inline-flex;
+  gap: 6px;
+}
+.ui-laminas__punto {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background: #c9cfda;
+}
+.ui-laminas__punto--on {
+  width: 28px;
+  background: var(--ui-azul);
+}
+.ui-laminas__cuerpo h1:focus {
+  outline: none;
+}
+.ui-laminas__cuerpo h1:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+}
+.ui-laminas__texto {
+  margin: 0;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-base);
+  line-height: 1.45;
+}
+.ui-laminas__botones {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Ilustración: papelitos de festejo ────────────────── */
+.ui-papelitos {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ui-papelitos__p {
+  position: absolute;
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--ui-amarillo);
+}
+.ui-papelitos__p--1 { top: 18%; left: 12%; rotate: 20deg; }
+.ui-papelitos__p--2 { top: 14%; right: 14%; rotate: -15deg; background: #fff; }
+.ui-papelitos__p--3 { top: 30%; left: 8%; rotate: 40deg; background: #fff; }
+.ui-papelitos__p--4 { top: 34%; right: 9%; rotate: -30deg; }
+.ui-papelitos__p--5 { top: 8%; left: 48%; rotate: 10deg; background: #f08c3c; }
+.ui-papelitos__p--6 { top: 6%; right: 32%; rotate: 30deg; background: #1e9e57; }
+.ui-papelitos__p--7 { top: 36%; left: 6%; rotate: -20deg; background: #f08c3c; }
+.ui-papelitos__p--8 { top: 40%; right: 6%; rotate: 60deg; background: #fff; }
+@media (prefers-reduced-motion: no-preference) {
+  .ui-papelitos__p {
+    animation: ui-papelito 3.2s ease-in-out infinite alternate;
+  }
+  .ui-papelitos__p:nth-child(2n) {
+    animation-duration: 4s;
+  }
+}
+@keyframes ui-papelito {
+  to {
+    translate: 0 10px;
+    rotate: 0deg;
+  }
+}
+
+/* Sin la sangría de la plantilla: las láminas ya ocupan todo el ancho. */
+.ui-laminas > .ui-accion-fija {
+  margin: 0;
+}
+/* Con texto agrandado, el estado del permiso baja de renglón en vez de salirse. */
+.ui-permiso__estado .ui-chip {
+  max-width: 100%;
+  white-space: normal;
+}

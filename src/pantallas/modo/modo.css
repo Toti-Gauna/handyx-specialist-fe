@@ -1,0 +1,285 @@
+/* Pantallas del Modo trabajo y del cierre (lote 2.3). Clases mt-*; las piezas del kit van en src/ui/trabajo.css. */
+.mt-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: #fff;
+}
+.mt-app__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.mt-app .ui-chip {
+  max-width: 100%;
+  white-space: normal;
+}
+.mt-app .ui-segmento {
+  flex-wrap: wrap;
+}
+.mt-vacio {
+  flex: 1;
+  min-height: 60dvh;
+}
+
+.mt-nota {
+  margin: 0;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  line-height: 1.4;
+}
+.mt-subtitulo {
+  margin: 0;
+  font-size: var(--ui-texto-base);
+  font-weight: 800;
+}
+.mt-aviso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: var(--ui-amarillo);
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-chico);
+  font-weight: 800;
+}
+.mt-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mt-cabeza-lista {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+.mt-cabeza-lista h2 {
+  margin: 0;
+}
+.mt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.mt-pie {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mt-dos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+  gap: 10px;
+}
+
+/* ── Modo trabajo ─────────────────────────────────────── */
+.mt-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.mt-acciones > .ui-boton {
+  flex: 1 1 12rem;
+  min-height: 58px;
+}
+.mt-acciones > .ui-boton--amarilla {
+  flex: 0 1 auto;
+}
+.mt-herramientas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+  gap: 8px;
+}
+.mt-herramientas .ui-mosaico-herr {
+  min-height: 112px;
+}
+.mt-desglose {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+.mt-desglose > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+.mt-desglose dd {
+  margin: 0;
+  font-weight: 800;
+}
+.mt-desglose__total {
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--ui-borde);
+}
+
+/* ── Agenda desde el trabajo ──────────────────────────── */
+.mt-sigue {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 0;
+  border-top: 1px solid var(--ui-borde);
+  color: var(--ui-tinta);
+  text-decoration: none;
+}
+.mt-sigue__hora {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--ui-mosaico);
+  font-family: var(--ui-titulos);
+  font-size: 1rem;
+  font-weight: 900;
+}
+.mt-sigue__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+.mt-sigue__texto > span:not(.ui-chip) {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.mt-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mt-atajo {
+  min-height: 52px;
+  text-decoration: none;
+}
+
+/* ── Antes y después ──────────────────────────────────── */
+.mt-falta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-weight: 700;
+}
+.mt-cambios {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mt-cambios li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--ui-borde);
+}
+.mt-cambios__n {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ui-azul);
+  color: #fff;
+  font-size: var(--ui-texto-chico);
+  font-weight: 900;
+}
+.mt-cambios__texto {
+  display: flex;
+  flex: 1 1 10rem;
+  flex-direction: column;
+  gap: 2px;
+}
+.mt-cambios__texto span {
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+}
+.mt-dictar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mt-dictar .ui-icono {
+  color: var(--ui-azul);
+}
+
+/* ── Informe ──────────────────────────────────────────── */
+.mt-portada {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  background: var(--ui-azul);
+  box-shadow: 0 4px 0 var(--ui-hondo);
+  color: #fff;
+}
+.mt-portada__fotos {
+  display: grid;
+  flex: none;
+  grid-template-columns: 1fr 1fr;
+  width: 86px;
+  height: 70px;
+  overflow: hidden;
+  border-radius: 14px;
+}
+.mt-portada__fotos img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mt-portada__texto {
+  display: flex;
+  flex: 1 1 10rem;
+  flex-direction: column;
+  gap: 4px;
+}
+.mt-portada__texto strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.25rem;
+  font-weight: 900;
+  font-stretch: 112%;
+  line-height: 1.08;
+}
+.mt-seccion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* ── Informe enviado ──────────────────────────────────── */
+.mt-hecho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+  text-align: center;
+}
+.mt-hecho__ilu {
+  display: flex;
+  justify-content: center;
+  width: 132px;
+}

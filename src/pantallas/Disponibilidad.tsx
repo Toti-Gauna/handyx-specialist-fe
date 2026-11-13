@@ -1,144 +1,168 @@
 'use client';
+// CU-Disponibilidad (lote 1.4): tus días, horarios y zonas, y si aceptás urgencias. Declarás vos cuándo y dónde querés
+// pedidos: no hay obligación de aceptar ninguno y nunca deducimos que estás disponible por tener la app abierta.
+// Cada interruptor se guarda al instante; horarios y zonas se editan en una hoja y se guardan con un botón.
 import { api } from '@handyx/origen-datos';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { RUTAS } from '../app/rutas.ts';
-import { ControlDisponibilidad } from '../components/ControlDisponibilidad.tsx';
 import { Cargando, ErrorCaja } from '../components/Estados.tsx';
 import { usePerfil } from '../components/GuardiaApp.tsx';
-import { Volver } from '../components/Volver.tsx';
-import { Aviso, Tarjeta } from '../components/ui.tsx';
 import type { Disponibilidad as Disp } from '../contracts/dto.ts';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
 import { useCarga } from '../hooks/useCarga.ts';
-import { DIAS, ZONAS } from '../lib/etiquetas.ts';
+import { ZONAS } from '../lib/etiquetas.ts';
+import { Boton } from '../ui/atomos/Boton.tsx';
+import { Campo, Casilla } from '../ui/atomos/Controles.tsx';
+import { Chip } from '../ui/atomos/Texto.tsx';
+import { FilaAjuste, GrupoAjustes } from '../ui/moleculas/Ajustes.tsx';
+import { FilaIcono } from '../ui/moleculas/Tarjeta.tsx';
+import { BarraCompacta } from '../ui/organismos/Cabeceras.tsx';
+import { Hoja } from '../ui/organismos/Hoja.tsx';
+import { PantallaSecundaria } from '../ui/plantillas/Plantillas.tsx';
 
-type Franjas = Record<number, { activo: boolean; desde: string; hasta: string }>;
+/** De lunes a domingo, con el número de día del contrato (0 = domingo). */
+const DIAS = [
+  { dia: 1, corto: 'Lun', largo: 'lunes' },
+  { dia: 2, corto: 'Mar', largo: 'martes' },
+  { dia: 3, corto: 'Mié', largo: 'miércoles' },
+  { dia: 4, corto: 'Jue', largo: 'jueves' },
+  { dia: 5, corto: 'Vie', largo: 'viernes' },
+  { dia: 6, corto: 'Sáb', largo: 'sábado' },
+  { dia: 0, corto: 'Dom', largo: 'domingo' },
+] as const;
 
-const aFranjas = (d: Disp): Franjas =>
-  Object.fromEntries([0, 1, 2, 3, 4, 5, 6].map((dia) => {
-    const f = d.franjas.find((x) => x.dia === dia);
-    return [dia, { activo: !!f, desde: f?.desde ?? '08:00', hasta: f?.hasta ?? '17:00' }];
-  }));
+const horas = (f: { desde: string; hasta: string }) => `${f.desde.replace(/^0/, '')} a ${f.hasta.replace(/^0/, '')}`;
 
 export function Disponibilidad() {
   const { perfil } = usePerfil();
   const c = useCarga(() => api.disponibilidad(), []);
   const habilitada = perfil.estadoAlta === 'habilitada';
   const guardado = useAccion();
-  const [franjas, setFranjas] = useState<Franjas | null>(null);
-  const [zonas, setZonas] = useState<string[]>([]);
-  const [errores, setErrores] = useState<Record<number, string>>({});
-  const [ok, setOk] = useState(false);
+  const [dia, setDia] = useState<number | null>(null);
+  const [zonas, setZonas] = useState(false);
 
-  useEffect(() => {
-    if (c.datos) {
-      setFranjas(aFranjas(c.datos));
-      setZonas(c.datos.zonas);
-    }
-  }, [c.datos]);
-
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
-  if (!c.datos || !franjas) return <Cargando />;
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  if (!c.datos) return <Cargando />;
   const d = c.datos;
-  const habilitados = perfil.rubros.filter((r) => r.estado === 'habilitado');
+  const habilitados = perfil.rubros.filter((r) => r.estado === 'habilitado').map((r) => NOMBRE_RUBRO[r.rubro]);
 
-  async function guardar() {
-    if (!franjas) return;
-    const err: Record<number, string> = {};
-    const lista = Object.entries(franjas)
-      .filter(([, f]) => f.activo)
-      .map(([dia, f]) => {
-        if (f.desde >= f.hasta) err[Number(dia)] = 'La hora de inicio tiene que ser anterior a la de fin.';
-        return { dia: Number(dia), desde: f.desde, hasta: f.hasta };
-      });
-    setErrores(err);
-    if (Object.keys(err).length > 0) return;
-    const r = await guardado.ejecutar(async () => {
-      await api.actualizarDisponibilidad({ urgentesAhora: d.urgentesAhora, programados: d.programados, franjas: lista, zonas, version: d.version });
+  /** El refresco va dentro de la acción: hasta tener la versión nueva no se puede cambiar otra cosa (evita el 409). */
+  async function guardar(cambio: Partial<Pick<Disp, 'urgentesAhora' | 'programados' | 'franjas' | 'zonas'>>) {
+    return guardado.ejecutar(async () => {
+      await api.actualizarDisponibilidad({ urgentesAhora: d.urgentesAhora, programados: d.programados, franjas: d.franjas, zonas: d.zonas, ...cambio, version: d.version });
       await c.recargar();
     });
-    setOk(r.ok);
   }
 
   return (
-    <div className="pila">
-      <Volver a={RUTAS.cuenta.ruta} texto="Cuenta" />
-      <h1 className="titulo">Tu disponibilidad</h1>
-      <p className="texto-suave">Declarás cuándo y dónde querés recibir pedidos. No tenés obligación de aceptar ninguno y no te asignamos trabajos.</p>
+    <PantallaSecundaria barra={<BarraCompacta titulo="Disponibilidad y zonas" hrefVolver={RUTAS.cuenta.ruta} />}>
       {!habilitada ? (
-        <Aviso tono="aviso" icono="alerta" titulo="Todavía no podés declarar disponibilidad">
-          Se habilita cuando tu alta esté habilitada. <Link href={RUTAS.alta.ruta}>Ver mi alta</Link>.
-        </Aviso>
+        <p className="ui-nota">
+          Vas a poder recibir pedidos cuando tu alta esté habilitada. <Link href={RUTAS.alta.ruta}>Ver mi alta</Link>. Mientras tanto, podés dejar cargados tus horarios y zonas.
+        </p>
       ) : null}
-      <Tarjeta>
-        <ControlDisponibilidad disp={d} bloqueado={!habilitada} alCambiar={() => c.recargar()} />
-        <p className="texto-suave texto-chico">Los pedidos urgentes (“Ahora”) y los programados se avisan por separado. Apagar “Ahora” corta la oferta de urgentes en el momento.</p>
-      </Tarjeta>
+      {guardado.fallo ? <ErrorCaja fallo={guardado.fallo} /> : null}
 
-      <Tarjeta>
-        <p className="tarjeta__titulo">Rubros habilitados</p>
-        {habilitados.length > 0 ? <p>{habilitados.map((r) => NOMBRE_RUBRO[r.rubro]).join(', ')}</p> : <p className="texto-suave">Ninguno todavía.</p>}
-        {perfil.rubros.some((r) => r.estado === 'requiere_matricula') ? (
-          <Aviso tono="aviso" icono="alerta">
-            Un rubro no está habilitado porque falta verificar la matrícula o certificación. No recibís pedidos de ese rubro.
-          </Aviso>
-        ) : null}
-      </Tarjeta>
+      <GrupoAjustes>
+        <FilaAjuste titulo="Urgentes ahora" detalle="Solo cuando prendés Disponible en el Inicio. Apagarlo no tiene ninguna consecuencia." encendido={d.urgentesAhora} deshabilitado={!habilitada || guardado.pendiente} onCambio={(v) => void guardar({ urgentesAhora: v })} />
+        <FilaAjuste titulo="Pedidos programados" detalle="Te llegan para otro día, dentro de tus horarios. No tenés obligación de aceptar." encendido={d.programados} deshabilitado={!habilitada || guardado.pendiente} onCambio={(v) => void guardar({ programados: v })} />
+      </GrupoAjustes>
 
-      <fieldset disabled={!habilitada} className="pila">
-        <legend>Zonas que cubrís</legend>
-        <div className="opciones">
-          {ZONAS.map((z) => (
-            <div className="opcion" key={z}>
-              <input id={`zona-${z}`} type="checkbox" checked={zonas.includes(z)} onChange={(e) => setZonas((x) => (e.target.checked ? [...x, z] : x.filter((y) => y !== z)))} />
-              <label htmlFor={`zona-${z}`}>{z}</label>
-            </div>
-          ))}
-        </div>
-        <p className="texto-suave texto-chico">Solo ves pedidos de las zonas que marques. No usamos tu ubicación del teléfono para esto.</p>
-      </fieldset>
-
-      <fieldset disabled={!habilitada} className="pila">
-        <legend>Días y horarios para pedidos programados</legend>
-        {DIAS.map((nombre, dia) => {
-          const f = franjas[dia];
-          if (!f) return null;
+      <GrupoAjustes etiqueta="Horarios">
+        {DIAS.map(({ dia: n, corto, largo }) => {
+          const f = d.franjas.find((x) => x.dia === n);
           return (
-            <div key={dia} className="tarjeta">
-              <div className="opcion opcion--plana">
-                <input id={`dia-${dia}`} type="checkbox" checked={f.activo} onChange={(e) => setFranjas({ ...franjas, [dia]: { ...f, activo: e.target.checked } })} />
-                <label htmlFor={`dia-${dia}`}>{nombre}</label>
-              </div>
-              {f.activo ? (
-                <div className="botones botones--fila">
-                  <div className="campo">
-                    <label htmlFor={`desde-${dia}`}>Desde</label>
-                    <input id={`desde-${dia}`} type="time" value={f.desde} onChange={(e) => setFranjas({ ...franjas, [dia]: { ...f, desde: e.target.value } })} />
-                  </div>
-                  <div className="campo">
-                    <label htmlFor={`hasta-${dia}`}>Hasta</label>
-                    <input id={`hasta-${dia}`} type="time" value={f.hasta} onChange={(e) => setFranjas({ ...franjas, [dia]: { ...f, hasta: e.target.value } })} />
-                  </div>
-                </div>
-              ) : null}
-              {errores[dia] ? <p className="campo__error">{errores[dia]}</p> : null}
+            <div key={n} className="ui-horario">
+              <strong>{corto}</strong>
+              <span>{f ? horas(f) : 'No trabajo'}</span>
+              <Boton variante="contorno" chico bloque={false} icono={f ? 'reloj' : 'mas'} onClick={() => setDia(n)} aria-label={`${f ? 'Editar' : 'Agregar'} el horario del ${largo}`}>
+                {f ? 'Editar' : 'Agregar'}
+              </Boton>
             </div>
           );
         })}
-        <p className="texto-suave texto-chico">Las franjas son una declaración tuya: nunca te imponemos un horario ni deducimos que estás disponible porque tengas la app abierta.</p>
-      </fieldset>
+        <p className="ui-nota ui-horario__nota">Los horarios son una declaración tuya: nunca te imponemos uno.</p>
+      </GrupoAjustes>
 
-      {guardado.fallo ? <ErrorCaja fallo={guardado.fallo} onReintentar={() => void guardar()} /> : null}
-      {ok && !guardado.fallo ? (
-        <Aviso tono="exito" icono="checkCirculo" role="status">
-          Guardamos tu disponibilidad.
-        </Aviso>
-      ) : null}
-      <button type="button" className="boton boton--bloque" disabled={!habilitada || guardado.pendiente} onClick={() => void guardar()}>
-        {guardado.pendiente ? 'Guardando…' : 'Guardar zonas y horarios'}
-      </button>
-    </div>
+      <GrupoAjustes>
+        <FilaIcono icono="pin" titulo="Zonas" detalle={d.zonas.length > 0 ? d.zonas.join(', ') : 'Todavía no elegiste ninguna'} onClick={() => setZonas(true)} />
+        <FilaIcono
+          icono="herramienta"
+          titulo="Rubros"
+          detalle={habilitados.length > 0 ? habilitados.join(' y ') : 'Ninguno habilitado todavía'}
+          derecha={perfil.rubros.some((r) => r.estado === 'requiere_matricula') ? <Chip tono="amarillo" icono="alerta">Falta una matrícula</Chip> : undefined}
+        />
+      </GrupoAjustes>
+
+      <HojaHorario abierta={dia !== null} dia={dia} disp={d} ocupado={guardado.pendiente} onCerrar={() => setDia(null)} onGuardar={async (franjas) => {
+        const r = await guardar({ franjas });
+        if (r.ok) setDia(null);
+      }} />
+      <HojaZonas abierta={zonas} elegidas={d.zonas} ocupado={guardado.pendiente} onCerrar={() => setZonas(false)} onGuardar={async (z) => {
+        const r = await guardar({ zonas: z });
+        if (r.ok) setZonas(false);
+      }} />
+    </PantallaSecundaria>
+  );
+}
+
+function HojaHorario({ abierta, dia, disp, ocupado, onCerrar, onGuardar }: { abierta: boolean; dia: number | null; disp: Disp; ocupado: boolean; onCerrar(): void; onGuardar(f: Disp['franjas']): Promise<void> }) {
+  const info = DIAS.find((x) => x.dia === dia);
+  const actual = disp.franjas.find((f) => f.dia === dia);
+  // Se arma de nuevo cada vez que se abre (la hoja se monta con `key`).
+  return abierta && info ? <FormHorario key={info.dia} info={info} actual={actual} disp={disp} ocupado={ocupado} onCerrar={onCerrar} onGuardar={onGuardar} /> : <Hoja abierta={false} titulo="Horario" onCerrar={onCerrar}>{null}</Hoja>;
+}
+
+function FormHorario({ info, actual, disp, ocupado, onCerrar, onGuardar }: { info: (typeof DIAS)[number]; actual: Disp['franjas'][number] | undefined; disp: Disp; ocupado: boolean; onCerrar(): void; onGuardar(f: Disp['franjas']): Promise<void> }) {
+  const [trabaja, setTrabaja] = useState(actual !== undefined);
+  const [desde, setDesde] = useState(actual?.desde ?? '08:00');
+  const [hasta, setHasta] = useState(actual?.hasta ?? '17:00');
+  const [error, setError] = useState<string | null>(null);
+
+  async function guardar() {
+    if (trabaja && desde >= hasta) return setError('La hora de inicio tiene que ser anterior a la de fin.');
+    setError(null);
+    const otras = disp.franjas.filter((f) => f.dia !== info.dia);
+    await onGuardar(trabaja ? [...otras, { dia: info.dia, desde, hasta }] : otras);
+  }
+
+  return (
+    <Hoja abierta titulo={`Horario del ${info.largo}`} onCerrar={onCerrar} pie={<Boton ocupado={ocupado} textoOcupado="Guardando…" onClick={() => void guardar()}>Guardar horario</Boton>}>
+      <div className="ui-edicion">
+        <Casilla checked={trabaja} onChange={(e) => setTrabaja(e.target.checked)}>
+          Trabajo este día
+        </Casilla>
+        {trabaja ? (
+          <>
+            <Campo etiqueta="Desde" type="time" value={desde} onChange={(e) => setDesde(e.target.value)} />
+            <Campo etiqueta="Hasta" type="time" value={hasta} onChange={(e) => setHasta(e.target.value)} error={error} />
+          </>
+        ) : (
+          <p>Ese día no te vamos a ofrecer pedidos programados.</p>
+        )}
+      </div>
+    </Hoja>
+  );
+}
+
+function HojaZonas({ abierta, elegidas, ocupado, onCerrar, onGuardar }: { abierta: boolean; elegidas: string[]; ocupado: boolean; onCerrar(): void; onGuardar(z: string[]): Promise<void> }) {
+  return abierta ? <FormZonas elegidas={elegidas} ocupado={ocupado} onCerrar={onCerrar} onGuardar={onGuardar} /> : <Hoja abierta={false} titulo="Zonas" onCerrar={onCerrar}>{null}</Hoja>;
+}
+
+function FormZonas({ elegidas, ocupado, onCerrar, onGuardar }: { elegidas: string[]; ocupado: boolean; onCerrar(): void; onGuardar(z: string[]): Promise<void> }) {
+  const [z, setZ] = useState<string[]>(elegidas);
+  return (
+    <Hoja abierta titulo="Zonas que cubrís" onCerrar={onCerrar} pie={<Boton ocupado={ocupado} textoOcupado="Guardando…" onClick={() => void onGuardar(z)}>Guardar zonas</Boton>}>
+      <div className="ui-edicion">
+        <p>Solo ves pedidos de las zonas que marques. No usamos la ubicación del teléfono para esto.</p>
+        {ZONAS.map((nombre) => (
+          <Casilla key={nombre} checked={z.includes(nombre)} onChange={(e) => setZ(e.target.checked ? [...z, nombre] : z.filter((x) => x !== nombre))}>
+            {nombre}
+          </Casilla>
+        ))}
+      </div>
+    </Hoja>
   );
 }

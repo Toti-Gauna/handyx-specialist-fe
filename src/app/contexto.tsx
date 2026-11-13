@@ -28,7 +28,7 @@ export function Proveedor({ children }: { children: ReactNode }) {
           className="boton boton--bloque"
           onClick={() => {
             setExpirada(false);
-            router.replace(RUTAS.acceso.ruta);
+            router.replace(`${RUTAS.acceso.ruta}?motivo=sesion`);
           }}
         >
           Volver a entrar

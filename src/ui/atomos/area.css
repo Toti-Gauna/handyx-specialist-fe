@@ -1,0 +1,45 @@
+/* Kit v3 · área de texto (lote 1.4): hereda `.ui-campo` de atomos.css. */
+.ui-area__texto {
+  width: 100%;
+  min-height: 7rem;
+  padding: 12px 14px;
+  border: 2px solid var(--ui-borde);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ui-tinta);
+  font: inherit;
+  font-size: 1.125rem;
+  line-height: 1.4;
+  resize: vertical;
+}
+.ui-area__texto:focus-visible {
+  border-color: var(--ui-azul);
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 2px;
+}
+.ui-campo--error .ui-area__texto {
+  border-color: var(--ui-error);
+}
+.ui-area__cuenta {
+  align-self: flex-end;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+
+/* ── Lista desplegable ────────────────────────────────── */
+.ui-seleccion {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 14px;
+  border: 2px solid var(--ui-borde);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ui-tinta);
+  font: inherit;
+  font-size: 1.125rem;
+}
+.ui-seleccion:focus-visible {
+  border-color: var(--ui-azul);
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 2px;
+}

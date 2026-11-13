@@ -1,0 +1,1115 @@
+{
+ "CU-Cobros.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "CU-Datos.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "CU-Disponibilidad.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "CU-Notificaciones.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "CU-Perfil.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "CU-Privacidad.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Acceso.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Alta.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Avisos.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Ayuda.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Bienvenida.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Codigo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Error.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Fallo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Login.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Login2FA.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Recuperar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-Seguridad.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "D6-TOTP.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Agenda.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-AgendaMes.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-AgendaPasadas.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Chat.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ChatAcciones.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ChatAdjuntar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ChatBorrar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ChatEditar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ChatGrupo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ChatGrupoInfo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ChatMedia.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ChatSeleccion.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ConvocatoriaDetalle.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Cuenta.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": [
+   "monto partido: $ 239.500"
+  ]
+ },
+ "F-Enviada.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Fecha.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-FechaHora.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Herramientas.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Ingresos.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Inicio.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-InicioConvocatoria.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-InicioDia.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-InicioRuta.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Invitar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Mensajes.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Obra.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraBuscar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraDia.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraDiaAvance.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraDiaHorario.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraDiaTarea.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraEquipo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraFecha.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraNueva.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraPostulantes.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraRepuesto.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-ObraRepuestos.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Obras.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Pedido.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-PerfilProfesional.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Precio.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": [
+   "borde: 37",
+   "borde: 39",
+   "borde: 41",
+   "borde: 53"
+  ]
+ },
+ "F-PrecioTeclado.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": [
+   "monto partido: $ 48.500"
+  ]
+ },
+ "F-PropuestaObra.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Regalo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Reparto.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-RepuestoOrigen.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Revisar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "F-Trabajo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FE-Alta.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FE-Catalogo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FE-Escanear.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FE-Importar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FE-Inicio.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FE-Metricas.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FE-Movil.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FE-MovilEscanear.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FE-Pedido.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FE-Retiro.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Acceso.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Alta.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Camino.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Cierre.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Dia.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Equipamiento.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Equipo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Ferreteria.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Ferretero.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Mapa.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Mensajes.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Obra.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Pedido.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Plata.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Presupuesto.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Taller.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "FL-Trabajo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "G-Areas.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "G-Bienvenida.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "G-Camino.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "G-Canje.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "G-Inicio.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "G-Insignias.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "G-Manual.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "G-MiniCamino.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "G-Vitrina.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-AgregarLista.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-AgregarMaterial.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-AntesDespues.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-AntesLado.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-Equipo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-EquipoAgregar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-EquipoBaja.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-EquipoCategoria.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-EquipoDetalle.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-Gasto.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-Informe.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-InformeEnviado.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-ManoObra.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-MaterialNuevo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-MaterialOpciones.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-Modo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-ModoAgenda.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-ModoAyuda.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-ModoHerramientas.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-PrecioItem.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-Precios.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-PreciosFoto.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-PreciosRevisar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "H0-Presupuesto.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "OB-Aprobado.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "OB-Permisos.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "OB-PrimerosPasos.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "OB-Tour.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "OF-Aire.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "OF-Albanileria.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "OF-Cerrajeria.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "OF-Gas.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "OF-Plomeria.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "R-Catalogo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "R-Categoria.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "R-Comparar.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "R-Estado.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "R-Ferreterias.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "R-Mostrador.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "R-Pedir.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "R-Retiro.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Agenda.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Camino.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Chat.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Cuenta.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Dia.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Equipamiento.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Equipo.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Ferreteria.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Login.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Mensajes.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Obra.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Onboarding.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Pedido.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Presupuesto.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Repuestos.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RC-Taller.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RG-1.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RG-10.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RG-2.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RG-3.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RG-4.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RG-5.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RG-6.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RG-7.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RG-8.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "RG-9.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "T-Cables.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "T-Electricidad.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "T-Escanear.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "T-Informe.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "T-Medir.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "T-Modelo3D.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "T-Nivel.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "T-Tablero.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "T-TableroPared.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "T-Taller.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "TR-Cobro.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "TR-EnCamino.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "UX-Revision.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ },
+ "X-Escritorio.dc.html": {
+  "viol": [],
+  "chicos": [],
+  "letra": 0,
+  "desborde": []
+ }
+}

@@ -7,7 +7,20 @@ Estado: **decidido para implementar en 4.2**. Nada implementado en backend.
 - Identidad compartida con la app Usuario (`accounts` + `account_roles`): una persona puede tener los dos roles sin
   duplicar cuenta. Credenciales separadas del perfil.
 - Login con email (o WhatsApp normalizado, a confirmar con Legal y Product) y contraseña **Argon2id**, como el
-  backend de captación. Sin OTP/SMS contratado y sin proveedores pagos nuevos.
+  backend de captación. Sin SMS.
+- **Lote 4.2 (decisiones de Ignacio del 29/10/2026)**:
+  - **Código de 6 dígitos al email** para verificar las cuentas nuevas: vence a los 10 minutos, 5 intentos y reenvío después de
+    1 minuto. El código nunca viaja del servidor al cliente.
+  - Hasta verificar, la sesión solo puede verificar, reenviar o salir.
+  - **Google** (en todos los dispositivos) y **Apple** (solo en dispositivos Apple) con OpenID Connect. El servidor valida firma,
+    emisor, audiencia, vencimiento y nonce del id_token.
+  - Una cuenta nueva por proveedor viene verificada y acepta términos y privacidad antes de seguir.
+  - Se necesitan cuentas de desarrollador (Apple ≈ USD 99 al año, Google gratis) que Ignacio tiene que autorizar (lote 5.2).
+  - **Recuperación** con enlace de un solo uso (30 minutos):
+    - El token va en el cuerpo de las llamadas, nunca en la ruta.
+    - La PWA lo saca de la barra de direcciones apenas lo lee.
+    - Cambiar la contraseña cierra todas las sesiones.
+    - Un enlace desconocido se ve como vencido.
 - Sesión: cookie **host-only, HttpOnly, Secure, SameSite=Lax** emitida por `api-especialista`; registro en
   `sessions` (expirable y revocable, token guardado como hash). Refresh rotativo con detección de reutilización.
 - **CSRF**: token en el cuerpo de `GET /v1/auth/sesion`, guardado solo en memoria; `X-CSRF-Token` en toda mutación.
@@ -31,7 +44,13 @@ Estado: **decidido para implementar en 4.2**. Nada implementado en backend.
 7. **Campos de servidor**: `verificado`, `estadoAlta`, `venceEn`, fee y montos derivados nunca se aceptan del cliente
    (los esquemas estrictos rechazan campos extra con `400 validacion`).
 8. **Uploads**: tipos y tamaños limitados (imágenes); cualquier tipo "antecedentes" o PDF de antecedentes →
-   `415/400 tipo_archivo_prohibido`.
+   `415/400 tipo_archivo_prohibido`. El DNI llega con `archivo` (frente) y `dorso` (0.5.0).
+9. **Alta y disponibilidad (0.5.0)**: durante el alta solo se guardan zonas y franjas; `urgentesAhora` y `programados` →
+   `403 sin_permiso` hasta la habilitación.
+10. **Turnos de antecedentes (0.5.0)**: reservar o cambiar solo con la verificación sin resultado y el alta no rechazada ni
+    suspendida; un turno ocupado o pasado → `409 transicion_invalida`. El resultado lo registra solo Operations.
+11. **Cámara (lote 4.4)**: la PWA pide la cámara solo dentro del paso del alta y la apaga al salir. La foto queda en memoria
+    hasta mandarla, sin almacenamiento del navegador. En la vista previa (mock) la cámara es simulada y nunca se abre.
 
 ## Matriz de permisos por endpoint
 

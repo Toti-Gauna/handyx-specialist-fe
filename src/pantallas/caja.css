@@ -1,0 +1,178 @@
+/* Caja (lote 4.8). Prefijo cj-. */
+
+.cj > * {
+  min-width: 0;
+}
+
+.cj-mes {
+  display: grid;
+  gap: var(--esp-1);
+  padding: var(--esp-4);
+  border-radius: 28px;
+  background: var(--hd-azul);
+  color: #fff;
+}
+
+.cj-mes__titulo {
+  margin: 0;
+  color: rgb(255 255 255 / 0.9);
+  font-size: 1rem;
+}
+
+.cj-mes__monto {
+  margin: 0;
+  font-family: var(--fuente-titulos-app);
+  font-size: clamp(2rem, 10vw, 2.6rem);
+  font-weight: 900;
+  font-stretch: 112%;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.cj-mes__detalle {
+  margin: 0;
+  color: rgb(255 255 255 / 0.88);
+  font-size: 0.9rem;
+}
+
+.cj-totales {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--esp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cj-totales li {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: var(--esp-1);
+  padding: var(--esp-3);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+  overflow-wrap: anywhere;
+}
+
+.cj-totales li > * {
+  max-width: 100%;
+}
+
+.cj-totales__dato {
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.25rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--hd-tinta);
+}
+
+.cj-totales small {
+  color: var(--hd-suave);
+}
+
+.cj-subtitulo {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.cj-lista {
+  display: grid;
+  gap: var(--esp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cj-mov {
+  display: grid;
+  gap: var(--esp-2);
+  padding: var(--esp-4) var(--esp-4) 0;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+  overflow: hidden;
+}
+
+.cj-mov > * {
+  min-width: 0;
+}
+
+.cj-mov__cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-3);
+}
+
+.cj-mov__ico {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--hd-mosaico);
+  color: var(--hd-azul);
+}
+
+.cj-mov__texto {
+  display: grid;
+  flex: 1;
+  justify-items: start;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cj-mov__texto small {
+  color: var(--hd-suave);
+}
+
+.cj-mov__monto {
+  flex: none;
+  max-width: 45%;
+  font-family: var(--fuente-titulos-app);
+  font-size: 1.1rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--hd-exito);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.cj-mov__desglose[hidden] {
+  display: none;
+}
+
+.cj-mov__desglose {
+  display: grid;
+  gap: var(--esp-2);
+  padding: var(--esp-3);
+  border-radius: 14px;
+  background: var(--hd-fondo-2);
+}
+
+/* La franja gris de "Ver más información" de la app de Handy */
+.cj-mov__franja {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+  width: calc(100% + 2 * var(--esp-4));
+  min-height: var(--toque-min);
+  margin: var(--esp-1) calc(-1 * var(--esp-4)) 0;
+  padding: var(--esp-2) var(--esp-4);
+  border: 0;
+  background: var(--hd-mosaico);
+  color: var(--hd-tinta);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cj-mov__franja:focus-visible {
+  outline: 3px solid var(--hd-azul);
+  outline-offset: -3px;
+}

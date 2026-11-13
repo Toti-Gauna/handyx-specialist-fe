@@ -1,0 +1,61 @@
+# Capturas sanitizadas · PWA Especialista (lotes 3.3 y 4.2 a 4.8)
+
+Generadas con `npm run build && npm run capturas:docs` (`scripts/capturas-docs.sh`). Datos **sintéticos** del mock, nunca de
+producción. `e2e/capturas.cjs` rechaza la captura si aparece un email que no sea `@example.test`, un DNI/CUIT que no sea de
+prueba, un teléfono o si falta el banner "Datos de prueba" (salvo en las dos pantallas sin datos de la cuenta).
+
+Celular 390×844 en `390x844/` (las 59) y escritorio 1280×800 en `1280x800/` (inicio, pedido, trabajo, agenda, caja y cuenta).
+
+| Pantalla | Ruta | Escenario |
+|---|---|---|
+| [bienvenida](390x844/bienvenida.webp) | `/bienvenida/` | `nuevo` |
+| [acceso](390x844/acceso.webp) | `/acceso/` | `nuevo` |
+| [acceso-de-nuevo](390x844/acceso-de-nuevo.webp) | `/acceso/?motivo=sesion` | `nuevo` |
+| [registro](390x844/registro.webp) | `/registro/` | `nuevo` |
+| [verificar](390x844/verificar.webp) | `/verificar/` | `sin_verificar` |
+| [aceptar](390x844/aceptar.webp) | `/registro/aceptar/` | `sin_aceptar` |
+| [recuperar](390x844/recuperar.webp) | `/recuperar/` | `nuevo` |
+| [enlace-vencido](390x844/enlace-vencido.webp) | `/recuperar/nueva/?token=…vencido` | `nuevo` |
+| [alta-borrador](390x844/alta-borrador.webp) | `/alta/` | `incompleto` |
+| [alta-datos](390x844/alta-datos.webp) | `/alta/?paso=datos` | `incompleto` |
+| [alta-identidad](390x844/alta-identidad.webp) | `/alta/?paso=identidad` | `incompleto` |
+| [alta-selfie](390x844/alta-selfie.webp) | `/alta/?paso=selfie` | `incompleto` |
+| [alta-rubros](390x844/alta-rubros.webp) | `/alta/?paso=rubros` | `incompleto` |
+| [alta-zonas](390x844/alta-zonas.webp) | `/alta/?paso=zonas` | `incompleto` |
+| [alta-antecedentes](390x844/alta-antecedentes.webp) | `/alta/?paso=antecedentes` | `incompleto` |
+| [alta-resumen](390x844/alta-resumen.webp) | `/alta/?paso=resumen` | `incompleto` |
+| [alta-en-revision](390x844/alta-en-revision.webp) | `/alta/` | `en_revision` |
+| [alta-correccion](390x844/alta-correccion.webp) | `/alta/` | `correccion` |
+| [alta-rechazada](390x844/alta-rechazada.webp) | `/alta/` | `rechazado` |
+| [alta-habilitada](390x844/alta-habilitada.webp) | `/alta/` | `habilitado` |
+| [inicio-sin-habilitar](390x844/inicio-sin-habilitar.webp) | `/inicio/` | `en_revision` |
+| [inicio](390x844/inicio.webp) | `/inicio/` | `habilitado` |
+| [disponibilidad](390x844/disponibilidad.webp) | `/disponibilidad/` | `habilitado` |
+| [pedidos](390x844/pedidos.webp) | `/pedidos/` | `habilitado` |
+| [tu-precio](390x844/tu-precio.webp) | `/pedidos/propuesta/?id=…b4` | `habilitado` |
+| [tu-contraoferta](390x844/tu-contraoferta.webp) | `/pedidos/propuesta/?id=…b2&base=…f1` | `habilitado` |
+| [avisos](390x844/avisos.webp) | `/notificaciones/` | `habilitado` |
+| [mensajes](390x844/mensajes.webp) | `/mensajes/` | `habilitado` |
+| [contactos](390x844/contactos.webp) | `/mensajes/contactos/` | `habilitado` |
+| [trabajos](390x844/trabajos.webp) | `/trabajos/` | `habilitado` |
+| [en-camino](390x844/en-camino.webp) | `/en-camino/?id=…c1` | `habilitado` |
+| [trabajo-cambiar-fecha](390x844/trabajo-cambiar-fecha.webp) | `/trabajos/cambio/?id=…c1` | `habilitado` |
+| [trabajo-cancelar](390x844/trabajo-cancelar.webp) | `/trabajos/cancelar/?id=…c1` | `habilitado` |
+| [trabajo-terminaste](390x844/trabajo-terminaste.webp) | `/trabajos/terminado/?id=…c2` | `habilitado` |
+| [obra-plan](390x844/obra-plan.webp) | `/trabajos/obra/plan/?id=…c4` | `habilitado` |
+| [obra-jornadas](390x844/obra-jornadas.webp) | `/trabajos/obra/jornadas/?id=…c4` | `habilitado` |
+| [obra-diario](390x844/obra-diario.webp) | `/trabajos/obra/diario/?id=…c4` | `habilitado` |
+| [agenda](390x844/agenda.webp) | `/agenda/` | `habilitado` |
+| [caja](390x844/caja.webp) | `/caja/` | `habilitado` |
+| [soporte](390x844/soporte.webp) | `/soporte/` | `habilitado` |
+| [cuenta](390x844/cuenta.webp) | `/cuenta/` | `habilitado` |
+| [cuenta-datos](390x844/cuenta-datos.webp) | `/cuenta/datos/` | `habilitado` |
+| [cuenta-cobros](390x844/cuenta-cobros.webp) | `/cuenta/cobros/` | `habilitado` |
+| [cuenta-notificaciones](390x844/cuenta-notificaciones.webp) | `/cuenta/notificaciones/` | `habilitado` |
+| [cuenta-privacidad](390x844/cuenta-privacidad.webp) | `/cuenta/privacidad/` | `habilitado` |
+| [baja](390x844/baja.webp) | `/baja/` | `baja` |
+| [error-red](390x844/error-red.webp) | `/pedidos/?falla=red` | `habilitado` |
+| [error-servidor](390x844/error-servidor.webp) | `/caja/?falla=servidor` | `habilitado` |
+| [sin-conexion](390x844/sin-conexion.webp) | `/sin-conexion/` | `habilitado` |
+| [no-encontrada](390x844/no-encontrada.webp) | `/no-existe/` | `habilitado` |
+| [catalogo](390x844/catalogo.webp) | `/catalogo/` | `habilitado` |

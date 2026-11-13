@@ -1,0 +1,986 @@
+/* Kit v3 · organismos (lote 0.2): cabeceras, barra de pestañas de vidrio, hoja y modal, acción fija, chat, calendario,
+   estados, mapa de arreglos y pantalla de escritorio. */
+
+:root {
+  --ui-pestanas-alto: 70px;
+  --ui-pestanas-margen: 14px;
+  /* Lo que ocupa la barra de pestañas abajo (el contenido deja este lugar libre). */
+  --ui-pestanas-reserva: calc(var(--ui-pestanas-alto) + 2 * var(--ui-pestanas-margen) + env(safe-area-inset-bottom, 0px));
+}
+
+/* ── Cabecera azul (solo Inicio) ──────────────────────── */
+.ui-cabecera-azul {
+  position: relative;
+  padding: calc(18px + env(safe-area-inset-top, 0px)) 16px 20px 22px;
+  border-radius: 0 0 30px 30px;
+  background: var(--ui-azul);
+  box-shadow: 0 12px 30px -16px rgb(14 29 54 / 0.55);
+  color: #fff;
+}
+.ui-cabecera-azul__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ui-cabecera-azul__marca {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-cabecera-azul__logo {
+  font-family: var(--ui-titulos);
+  font-size: clamp(1.75rem, 9.5vw, 2.5rem);
+  white-space: nowrap;
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 1;
+}
+.ui-cabecera-azul__lema {
+  font-size: var(--ui-texto-min);
+  font-weight: 700;
+}
+.ui-cabecera-azul__botones {
+  display: flex;
+  flex: none;
+  gap: 10px;
+}
+.ui-cabecera-azul__disponible {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 14px;
+}
+.ui-cabecera-azul__estado {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: #fff;
+  font-size: var(--ui-texto-chico);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+/* ── Barra compacta ───────────────────────────────────── */
+.ui-barra-compacta {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: var(--ui-toque) minmax(0, 1fr) var(--ui-toque);
+  align-items: center;
+  gap: 8px;
+  min-height: 64px;
+  padding: calc(8px + env(safe-area-inset-top, 0px)) var(--ui-gutter) 8px;
+  background: #fff;
+}
+.ui-barra-compacta__titulo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  text-align: center;
+}
+.ui-barra-compacta__titulo h1 {
+  margin: 0;
+  color: var(--ui-tinta);
+  font-family: var(--ui-titulos);
+  font-size: 1.125rem;
+  font-weight: 800;
+  font-stretch: 112%;
+  line-height: 1.2;
+}
+.ui-barra-compacta__titulo span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-min);
+  font-weight: 700;
+}
+.ui-barra-compacta__accion {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Barra de pestañas de vidrio ──────────────────────── */
+.ui-pestanas {
+  position: fixed;
+  right: var(--ui-pestanas-margen);
+  bottom: calc(var(--ui-pestanas-margen) + env(safe-area-inset-bottom, 0px));
+  left: var(--ui-pestanas-margen);
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2px;
+  max-width: 560px;
+  min-height: var(--ui-pestanas-alto);
+  margin: 0 auto;
+  padding: 6px;
+  border: 1px solid rgb(255 255 255 / 0.28);
+  border-radius: 30px;
+  background: var(--ui-azul); /* respaldo sólido */
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), var(--ui-elev-2);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .ui-pestanas {
+    background: rgb(31 87 168 / 0.88);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    backdrop-filter: blur(22px) saturate(180%);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .ui-pestanas {
+    background: var(--ui-azul);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (forced-colors: active) {
+  .ui-pestanas {
+    border: 2px solid CanvasText;
+  }
+}
+.ui-pestanas__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: 56px;
+  border-radius: 22px;
+  color: #fff;
+  font-size: var(--ui-texto-min);
+  font-weight: 700;
+  line-height: 1.1;
+  text-decoration: none;
+}
+.ui-pestanas__texto {
+  max-width: 100%;
+  letter-spacing: -0.01em;
+  text-align: center;
+  white-space: nowrap;
+}
+@media (max-width: 360px) {
+  :root {
+    --ui-pestanas-margen: 8px;
+  }
+  .ui-pestanas {
+    padding: 4px;
+  }
+  .ui-pestanas__texto {
+    letter-spacing: -0.03em;
+  }
+}
+.ui-pestanas__item--on {
+  background: #fff;
+  box-shadow: 0 3px 0 rgb(0 0 0 / 0.18);
+  color: var(--ui-azul);
+  font-weight: 900;
+}
+.ui-pestanas__item:focus-visible {
+  outline: 3px solid var(--ui-amarillo);
+  outline-offset: 1px;
+}
+.ui-pestanas__insignia {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 22px);
+  min-width: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--ui-amarillo);
+  color: var(--ui-tinta);
+  font-size: 0.75rem;
+  font-weight: 900;
+  line-height: 20px;
+  text-align: center;
+}
+/* La app deja lugar abajo para la barra flotante. */
+.app:has(.ui-pestanas) .app-cuerpo {
+  padding-bottom: calc(var(--ui-pestanas-reserva) + 8px);
+}
+
+/* ── Hoja y modal ─────────────────────────────────────── */
+.ui-hoja,
+.ui-modal {
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ui-tinta);
+}
+.ui-hoja {
+  inset: auto 0 0;
+  width: 100%;
+  margin: auto auto 0;
+}
+.ui-hoja::backdrop,
+.ui-modal::backdrop {
+  background: rgb(14 29 54 / 0.45);
+}
+.ui-hoja__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 92dvh;
+  margin: 0 auto;
+  padding: 8px var(--ui-gutter) calc(16px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  border-radius: var(--ui-radio-hoja) var(--ui-radio-hoja) 0 0;
+  background: #fff;
+  box-shadow: var(--ui-elev-hoja);
+  translate: 0 var(--ui-arrastre, 0);
+}
+.ui-hoja__manija {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 28px;
+  margin: 0 -16px;
+  cursor: grab;
+  touch-action: none;
+}
+.ui-hoja__manija span {
+  width: 48px;
+  height: 5px;
+  border-radius: 3px;
+  background: #c8ced9;
+}
+.ui-hoja__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ui-hoja__titulo {
+  margin: 0;
+  color: var(--ui-tinta);
+  font-family: var(--ui-titulos);
+  font-size: 1.5rem;
+  font-weight: 900;
+  font-stretch: 115%;
+  line-height: 1.1;
+}
+.ui-hoja__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: var(--ui-texto-base);
+}
+.ui-hoja__pie {
+  position: sticky;
+  bottom: calc(-16px - env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 calc(-1 * var(--ui-gutter));
+  padding: 12px var(--ui-gutter) 4px;
+  border-top: 1px solid var(--ui-borde);
+  background: #fff;
+}
+.ui-modal {
+  inset: 0;
+  width: calc(100% - 2 * var(--ui-gutter));
+  max-width: 420px;
+  margin: auto;
+}
+.ui-modal__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 18px 18px;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: var(--ui-elev-2);
+}
+.ui-modal__pie {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ui-hoja[open] .ui-hoja__panel {
+    animation: ui-sube 0.32s var(--hx-salida, ease-out);
+  }
+  .ui-hoja:not(.ui-hoja--arrastrando) .ui-hoja__panel {
+    transition: translate 0.2s var(--ui-curva);
+  }
+  .ui-modal[open] .ui-modal__panel {
+    animation: ui-aparece 0.22s var(--ui-curva);
+  }
+}
+@keyframes ui-sube {
+  from {
+    translate: 0 100%;
+  }
+}
+@keyframes ui-aparece {
+  from {
+    opacity: 0;
+    scale: 0.94;
+  }
+}
+
+/* ── Acción fija ──────────────────────────────────────── */
+.ui-accion-fija {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 calc(-1 * var(--ui-gutter));
+  padding: 12px var(--ui-gutter) calc(18px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--ui-borde);
+  background: #fff;
+}
+.app:has(.ui-pestanas) .ui-accion-fija {
+  bottom: var(--ui-pestanas-reserva);
+  border-radius: 20px;
+  border: 1px solid var(--ui-borde);
+}
+.ui-accion-fija__nota {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  text-align: center;
+}
+.ui-accion-fija__botones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ui-accion-fija--fila .ui-accion-fija__botones {
+  flex-flow: row-reverse wrap;
+}
+/* Si no entran lado a lado (pantalla angosta o texto agrandado), pasan a columna solos. */
+.ui-accion-fija--fila .ui-accion-fija__botones > * {
+  flex: 1 1 9rem;
+  min-width: 0;
+}
+
+/* ── Chat ─────────────────────────────────────────────── */
+.ui-chat {
+  display: flex;
+  flex: 1;
+  flex-direction: column-reverse; /* lo último queda pegado abajo, junto a la entrada */
+  min-height: 0;
+  overflow-y: auto;
+}
+.ui-chat__mensajes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0;
+}
+.ui-burbuja--ultima {
+  margin-bottom: 8px;
+}
+.ui-entrada-chat {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--ui-borde);
+  background: #fff;
+}
+.ui-entrada-chat__texto {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--ui-toque);
+  max-height: 140px;
+  padding: 12px 16px;
+  border: 2px solid var(--ui-borde);
+  border-radius: 24px;
+  color: var(--ui-tinta);
+  font: 500 var(--ui-texto-base) / 1.3 var(--ui-fuente);
+  field-sizing: content;
+  resize: none;
+}
+.ui-entrada-chat__texto:focus {
+  border-color: var(--ui-azul);
+  outline: none;
+}
+
+/* ── Calendario ───────────────────────────────────────── */
+.ui-calendario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ui-calendario__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ui-calendario__cabecera strong {
+  font-family: var(--ui-titulos);
+  font-size: 1.25rem;
+  font-weight: 900;
+  font-stretch: 110%;
+  text-transform: capitalize;
+}
+.ui-calendario__grilla {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.ui-calendario__dia-semana {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+}
+.ui-calendario__dia {
+  position: relative;
+  aspect-ratio: 1;
+  min-height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: #f6f7f9;
+  color: var(--ui-tinta);
+  font: 700 1.0625rem var(--ui-fuente);
+  cursor: pointer;
+}
+.ui-calendario__dia--hoy {
+  background: #fff;
+  box-shadow: inset 0 0 0 2px var(--hd-naranja);
+}
+.ui-calendario__dia--on {
+  background: var(--ui-azul);
+  box-shadow: 0 3px 0 var(--ui-hondo);
+  color: #fff;
+  font-weight: 900;
+}
+.ui-calendario__dia--pasado {
+  background: transparent;
+  color: #56627a;
+  cursor: default;
+}
+.ui-calendario__punto {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ── Estados (vacío, sin conexión, error del servidor) ── */
+.ui-estado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 8px;
+  text-align: center;
+}
+.ui-estado__texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 34rem;
+}
+.ui-estado__texto p {
+  margin: 0;
+  color: var(--ui-texto);
+}
+.ui-estado__texto .ui-estado__codigo {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-estado__acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 28rem;
+}
+
+/* ── Mapa de arreglos ─────────────────────────────────── */
+.ui-mapa-arreglos {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: min(720px, 100dvh);
+  overflow: hidden;
+  border-radius: var(--ui-radio-tarjeta);
+  background: #f3f4f7;
+}
+.ui-mapa-arreglos__arriba {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+.ui-mapa-arreglos--mapa .ui-mapa-arreglos__arriba {
+  position: absolute;
+  inset: 0 0 auto;
+}
+.ui-mapa-arreglos__barra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ui-mapa-arreglos__barra .ui-segmento {
+  flex: none;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+}
+.ui-mapa-arreglos__voy {
+  flex: 1 1 12rem;
+  min-height: 56px;
+  padding: 0 18px;
+  border: 2px solid var(--ui-borde);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+  color: var(--ui-tinta);
+  font: 800 var(--ui-texto-base) var(--ui-fuente);
+  text-align: left;
+  cursor: pointer;
+}
+.ui-mapa-arreglos__destino {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--ui-elev-2);
+}
+.ui-mapa-arreglos__sugerencias {
+  display: flex;
+  flex-direction: column;
+  max-height: 280px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.ui-mapa-arreglos__sugerencia {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  color: var(--ui-tinta);
+  font: 700 var(--ui-texto-base) var(--ui-fuente);
+  text-align: left;
+  cursor: pointer;
+}
+.ui-mapa-arreglos__sugerencia:hover {
+  background: var(--ui-tinte);
+}
+.ui-mapa-arreglos__sugerencia span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  white-space: nowrap;
+}
+.ui-mapa-arreglos__resumen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 0;
+}
+.ui-mapa-arreglos__resumen .ui-chip {
+  box-shadow: var(--ui-elev-1);
+}
+.ui-mapa-arreglos__resumen .ui-boton--texto {
+  min-height: 40px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #fff;
+}
+.ui-mapa-arreglos__entrante {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 24px;
+  background: var(--ui-noche);
+  box-shadow: var(--ui-elev-2);
+  color: #fff;
+}
+.ui-mapa-arreglos__entrante .ui-ilu {
+  width: 72px;
+}
+.ui-mapa-arreglos__entrante-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.ui-mapa-arreglos__entrante-texto span {
+  color: rgb(255 255 255 / 0.85);
+  font-size: var(--ui-texto-chico);
+}
+.ui-mapa-arreglos__mapa {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.ui-mapa-arreglos__mapa > .hx-mapa {
+  position: absolute;
+  inset: 0;
+}
+.ui-mapa-arreglos__lista {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0 16px 16px;
+  list-style: none;
+  background: #fff;
+}
+.ui-mapa-arreglos__lista li + li {
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-mapa-arreglos__vacio {
+  padding: 24px 0;
+  color: var(--ui-suave);
+  text-align: center;
+}
+.hx-mapa-ancla {
+  z-index: 2;
+}
+/* Los controles del motor no van debajo de la barra de arriba ni el "Centrar" debajo del pedido que llegó. */
+.ui-mapa-arreglos .maplibregl-ctrl-top-right {
+  top: 150px;
+}
+.ui-mapa-arreglos:has(.ui-mapa-arreglos__entrante) .hx-mapa__centrar {
+  bottom: 118px;
+}
+.ui-mapa-estilizado {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #f3f4f7;
+}
+.ui-mapa-estilizado__manzanas {
+  position: absolute;
+  inset: -20px;
+  background:
+    linear-gradient(90deg, transparent 54px, #f3f4f7 54px 66px) 0 0 / 66px 62px,
+    linear-gradient(transparent 50px, #f3f4f7 50px 62px) 0 0 / 66px 62px,
+    #e7e9ee;
+}
+.ui-mapa-estilizado__costa {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 18%;
+  border-left: 8px solid #efe8d8;
+  background: #e8edf5;
+}
+.ui-mapa-estilizado__lugar {
+  position: absolute;
+  top: clamp(130px, var(--y, 50%), calc(100% - 80px));
+  left: clamp(32px, var(--x, 50%), calc(100% - 32px));
+  translate: -50% -100%;
+}
+
+/* ── Pantalla de escritorio (X-Escritorio) ────────────── */
+.ui-escritorio {
+  min-height: 100dvh;
+  background: var(--ui-tinte);
+  color: var(--ui-tinta);
+}
+.ui-escritorio__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 48px;
+  background: var(--ui-azul);
+  color: #fff;
+}
+.ui-escritorio__logo {
+  font-family: var(--ui-titulos);
+  font-size: 2rem;
+  font-weight: 900;
+  font-stretch: 125%;
+}
+.ui-escritorio__solo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+.ui-escritorio__cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 64px;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 56px 48px;
+}
+.ui-escritorio__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 36rem;
+}
+.ui-escritorio__titulo {
+  font-size: 3.25rem;
+}
+.ui-escritorio__texto > p {
+  margin: 0;
+  font-size: 1.1875rem;
+  line-height: 1.5;
+}
+.ui-escritorio__qr {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+}
+.ui-escritorio__qr > span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ui-escritorio__qr strong {
+  font-size: 1.25rem;
+}
+.ui-escritorio__dir {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  overflow-wrap: anywhere;
+}
+.ui-qr {
+  display: block;
+  flex: none;
+  width: 156px;
+  height: 156px;
+}
+.ui-qr--vacio {
+  border-radius: 12px;
+  background: var(--ui-mosaico);
+}
+.ui-escritorio__muestra {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+}
+.ui-escritorio__telefono {
+  width: 320px;
+  aspect-ratio: 9 / 19.5;
+  max-height: 72dvh;
+  padding: 12px;
+  border-radius: 48px;
+  background: var(--ui-tinta);
+  box-shadow: var(--ui-elev-2);
+}
+.ui-escritorio__pantalla {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 20px 18px;
+  overflow: hidden;
+  border-radius: 38px;
+  background: #fff;
+  pointer-events: none;
+}
+.ui-escritorio__marca {
+  display: flex;
+  flex-direction: column;
+}
+.ui-escritorio__marca span {
+  color: var(--ui-azul);
+  font-family: var(--ui-titulos);
+  font-size: 1.75rem;
+  font-weight: 900;
+  font-stretch: 125%;
+}
+.ui-escritorio__marca small {
+  color: var(--ui-suave);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.ui-escritorio__bajada {
+  color: var(--ui-texto);
+  font-size: 0.9375rem;
+}
+.ui-escritorio__falso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border: 2px solid var(--ui-azul);
+  border-radius: 16px;
+  color: var(--ui-azul);
+  font-weight: 800;
+}
+.ui-escritorio__falso--azul {
+  margin-top: auto;
+  background: var(--ui-azul);
+  box-shadow: 0 4px 0 var(--ui-hondo);
+  color: #fff;
+}
+.ui-escritorio__muestra figcaption {
+  display: flex;
+  flex-direction: column;
+  max-width: 320px;
+  color: var(--ui-texto);
+  font-size: var(--ui-texto-chico);
+  text-align: center;
+}
+
+/* ── Escena con la ciudad (lote 1.1: bienvenida y pantallas de entrar) ─────────────────────────────────────────
+   Cielo de noche con luna, estrellas y la Mar del Plata isométrica. Decorativa: lo que se lee está afuera. */
+.ui-escena-ciudad {
+  position: relative;
+  flex: none;
+}
+.ui-escena-ciudad--con-icono {
+  margin-bottom: 52px;
+}
+.ui-escena-ciudad__cielo {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  border-radius: 0 0 36px 36px;
+  background: var(--ui-azul);
+}
+.ui-escena-ciudad--alta .ui-escena-ciudad__cielo {
+  height: clamp(260px, 46dvh, 420px);
+  border-radius: 0 0 40px 40px;
+}
+.ui-escena-ciudad__ciudad {
+  position: absolute;
+  right: -14%;
+  bottom: -26%;
+  width: 92%;
+}
+.ui-escena-ciudad--alta .ui-escena-ciudad__ciudad {
+  right: -10%;
+  bottom: -6%;
+  width: 120%;
+}
+.ui-escena-ciudad__luna {
+  position: absolute;
+  top: calc(64px + env(safe-area-inset-top, 0px));
+  right: 34px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--ui-amarillo);
+  box-shadow: 0 0 0 10px rgb(245 245 154 / 0.18);
+}
+.ui-escena-ciudad--baja .ui-escena-ciudad__luna {
+  top: calc(18px + env(safe-area-inset-top, 0px));
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 0 0 8px rgb(245 245 154 / 0.18);
+}
+.ui-escena-ciudad__estrella {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.7;
+}
+.ui-escena-ciudad__estrella:nth-child(1) { top: 22%; left: 10%; }
+.ui-escena-ciudad__estrella:nth-child(2) { top: 13%; left: 31%; opacity: 0.5; }
+.ui-escena-ciudad__estrella:nth-child(3) { top: 28%; left: 52%; }
+.ui-escena-ciudad__estrella:nth-child(4) { top: 9%; left: 64%; opacity: 0.5; }
+.ui-escena-ciudad__estrella:nth-child(5) { top: 34%; left: 88%; }
+.ui-escena-ciudad__estrella:nth-child(6) { top: 40%; left: 22%; opacity: 0.45; }
+.ui-escena-ciudad__estrella:nth-child(7) { top: 18%; left: 46%; opacity: 0.6; }
+.ui-escena-ciudad__estrella:nth-child(8) { top: 46%; left: 6%; opacity: 0.5; }
+.ui-escena-ciudad__estrella:nth-child(9) { top: 6%; left: 18%; opacity: 0.6; }
+@media (prefers-reduced-motion: no-preference) {
+  .ui-escena-ciudad__estrella:nth-child(3n) {
+    animation: ui-titila 3.2s ease-in-out infinite;
+  }
+  .ui-escena-ciudad__estrella:nth-child(3n + 1) {
+    animation: ui-titila 4.6s ease-in-out 1s infinite;
+  }
+}
+.ui-escena-ciudad__arriba {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: var(--ui-gutter);
+  left: var(--ui-gutter);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ui-escena-ciudad--alta .ui-escena-ciudad__arriba {
+  top: calc(28px + env(safe-area-inset-top, 0px));
+}
+.ui-escena-ciudad__marca {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  margin: 0;
+  color: #fff;
+  overflow-wrap: anywhere;
+}
+/* La marca es un logo: con el texto agrandado crece hasta donde entra (lo que se lee está más abajo). */
+.ui-escena-ciudad__logo {
+  font-family: var(--ui-titulos);
+  font-size: min(1.875rem, 9vw);
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 1;
+}
+.ui-escena-ciudad--alta .ui-escena-ciudad__logo {
+  font-size: min(2.25rem, 11vw);
+}
+.ui-escena-ciudad__lema {
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+}
+.ui-escena-ciudad__icono {
+  position: absolute;
+  bottom: -46px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px;
+  height: 92px;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: var(--ui-elev-2);
+  color: var(--ui-azul);
+  translate: -50% 0;
+}
+.ui-escena-ciudad__icono .ui-icono {
+  width: 42px;
+  height: 42px;
+}

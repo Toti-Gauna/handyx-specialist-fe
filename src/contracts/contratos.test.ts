@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
-import { formatearPesos, monto, porcion, sumar } from './dinero.ts';
-import { avisoFee, POLITICA_FEE_DEMO, politicaVigente, type PoliticaFee } from './fee.ts';
+import { formatearPesos, monto, multiplicar, porcion, sumar } from './dinero.ts';
+import { avisoFee, BPS_ESPECIALISTA, POLITICA_FEE_DEMO, politicaVigente, type PoliticaFee } from './fee.ts';
 import {
   faltantesParaHabilitar,
   MAQUINA_ALTA,
   MAQUINA_DOCUMENTO,
+  MAQUINA_ADICIONAL,
   MAQUINA_PAGO,
   MAQUINA_PEDIDO,
   MAQUINA_PRESENCIAL,
@@ -18,7 +19,7 @@ import {
 } from './maquinas.ts';
 import { RUBROS, requiereMatricula } from './rubros.ts';
 import { fechaLocal } from './tiempos.ts';
-import { MontoSchema, NuevaPropuestaSchema, PerfilEspecialistaSchema } from './dto.ts';
+import { CajaResumenSchema, MontoSchema, NuevaPropuestaSchema, PagoSchema, PerfilEspecialistaSchema, PoliticaFeeSchema } from './dto.ts';
 
 describe('dinero', () => {
   it('solo acepta centavos enteros no negativos', () => {
@@ -33,6 +34,14 @@ describe('dinero', () => {
     assert.equal(porcion(monto(4_500_000), 500).centavos, 225_000);
     assert.equal(porcion(monto(333), 1_000).centavos, 33);
     assert.equal(porcion(monto(335), 1_000).centavos, 34); // 33,5 → 34
+  });
+  it('multiplica por cantidades con decimales sin floats en la plata (0.11.0)', () => {
+    assert.equal(multiplicar(monto(980_000), 1).centavos, 980_000);
+    assert.equal(multiplicar(monto(160_000), 2).centavos, 320_000);
+    assert.equal(multiplicar(monto(333), 2.5).centavos, 833); // 832,5 → 833
+    assert.equal(multiplicar(monto(100), 0.001).centavos, 0);
+    assert.throws(() => multiplicar(monto(100), 1.0005));
+    assert.throws(() => multiplicar(monto(100), -1));
   });
   it('formatea en pesos como la landing', () => {
     assert.equal(formatearPesos(monto(4_500_000)), '$ 45.000');
@@ -61,6 +70,21 @@ describe('fee 0 % de la demo', () => {
     const ultimo = avisoFee(new Date('2026-12-11T02:30:00Z'), p);
     assert.equal(ultimo.fase === 'vigente' && ultimo.ultimoDia, true);
     assert.equal(avisoFee(new Date('2026-12-11T03:00:00Z'), p).fase, 'terminada');
+  });
+  it('Handyx no le cobra comisión al especialista, nunca (0.11.0)', () => {
+    assert.equal(BPS_ESPECIALISTA, 0);
+    assert.equal(POLITICA_FEE_DEMO.bpsEspecialista, 0);
+    const conComision: PoliticaFee = { ...p, id: 'mala', bpsEspecialista: 500 };
+    assert.equal(politicaVigente(new Date('2026-11-20T12:00:00Z'), [conComision]), null);
+    assert.equal(PoliticaFeeSchema.safeParse({ ...p, bpsEspecialista: 1 }).success, false);
+    assert.equal(PoliticaFeeSchema.safeParse(p).success, true);
+    const pago = {
+      id: crypto.randomUUID(), trabajoId: crypto.randomUUID(), etapaId: null, descripcion: 'Cambio de cartucho', neto: monto(4_700_000),
+      metodo: 'efectivo', monto: monto(4_700_000), estado: 'pendiente', fuenteConfirmacion: null, referenciaProveedor: null, actualizadoEn: '2026-11-17T21:00:00Z',
+    };
+    assert.equal(PagoSchema.safeParse({ ...pago, feeHandy: monto(0) }).success, true);
+    assert.equal(PagoSchema.safeParse({ ...pago, feeHandy: monto(1) }).success, false);
+    assert.equal(CajaResumenSchema.safeParse({ pendiente: monto(0), reportado: monto(0), verificado: monto(0), feeHandyPeriodo: monto(10) }).success, false);
   });
   it('fechaLocal usa la zona de Buenos Aires, no UTC', () => {
     assert.equal(fechaLocal(new Date('2026-12-11T02:30:00Z')), '2026-12-10');
@@ -109,9 +133,17 @@ describe('propuestas, pedidos, trabajos y pagos', () => {
     assert.equal(puedeTransicionar(MAQUINA_PEDIDO, 'buscando', 'acordado', 'especialista'), false);
     assert.equal(puedeTransicionar(MAQUINA_PEDIDO, 'buscando', 'acordado', 'sistema'), true);
   });
-  it('"Llegué" es un paso explícito del especialista', () => {
+  it('la llegada la marca la geocerca (sistema) o el especialista con "Ya llegué"; nadie más (decisión del 29/10/2026)', () => {
     assert.equal(puedeTransicionar(MAQUINA_TRABAJO, 'en_camino', 'en_sitio', 'especialista'), true);
-    assert.equal(puedeTransicionar(MAQUINA_TRABAJO, 'en_camino', 'en_sitio', 'sistema'), false);
+    assert.equal(puedeTransicionar(MAQUINA_TRABAJO, 'en_camino', 'en_sitio', 'sistema'), true);
+    assert.equal(puedeTransicionar(MAQUINA_TRABAJO, 'en_camino', 'en_sitio', 'usuario'), false);
+    assert.equal(puedeTransicionar(MAQUINA_TRABAJO, 'agendado', 'en_sitio', 'sistema'), false);
+  });
+  it('un adicional lo responde solo el usuario; lo retira el especialista o el sistema al terminar', () => {
+    assert.equal(puedeTransicionar(MAQUINA_ADICIONAL, 'pendiente', 'aceptado', 'usuario'), true);
+    assert.equal(puedeTransicionar(MAQUINA_ADICIONAL, 'pendiente', 'aceptado', 'especialista'), false);
+    assert.equal(puedeTransicionar(MAQUINA_ADICIONAL, 'pendiente', 'retirado', 'sistema'), true);
+    assert.equal(puedeTransicionar(MAQUINA_ADICIONAL, 'aceptado', 'retirado', 'especialista'), false);
   });
   it('un pago reportado no lo verifica quien lo reporta', () => {
     assert.equal(puedeTransicionar(MAQUINA_PAGO, 'reportado', 'verificado', 'especialista'), false);
@@ -126,11 +158,14 @@ describe('propuestas, pedidos, trabajos y pagos', () => {
   });
 });
 
-// Sincronía con la fuente canónica (handyx-client-be) cuando exista: HANDYX_CONTRATOS=<ruta a su src/contracts>.
+// Sincronía con otra copia del contrato (HANDYX_CONTRATOS=<ruta a su src/contracts>): todos los archivos que no son
+// pruebas, incluidos los de cada dominio que suma 0.11.0.
 describe('sincronía del contrato', () => {
   const ruta = process.env.HANDYX_CONTRATOS;
   it('copia idéntica byte a byte de la fuente canónica', { skip: !ruta && 'HANDYX_CONTRATOS no definido' }, () => {
-    for (const archivo of ['version.ts', 'rubros.ts', 'tiempos.ts', 'dinero.ts', 'fee.ts', 'maquinas.ts', 'dto.ts']) {
+    const archivos = readdirSync(new URL('.', import.meta.url)).filter((a) => a.endsWith('.ts') && !a.endsWith('.test.ts'));
+    assert.ok(archivos.length >= 20);
+    for (const archivo of archivos) {
       assert.equal(readFileSync(new URL(archivo, import.meta.url), 'utf8'), readFileSync(`${ruta}/${archivo}`, 'utf8'), archivo);
     }
   });

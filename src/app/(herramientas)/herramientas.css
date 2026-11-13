@@ -1,0 +1,27 @@
+/* Marco del grupo de rutas del lote 2.4 (equipamiento y herramientas del teléfono): fondo blanco y ancho de celular. */
+.he-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: #fff;
+}
+.he-app__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.he-app__cuerpo > .ui-pantalla {
+  flex: 1;
+}
+/* Con texto al 200 % los chips bajan de renglón en vez de salirse de la pantalla. */
+.he-app .ui-chip {
+  max-width: 100%;
+  white-space: normal;
+}
+/* Las pantallas raíz dejan lugar abajo para la barra de pestañas flotante. */
+.he-app:has(.ui-pestanas) .ui-pantalla__contenido {
+  padding-bottom: calc(var(--ui-pestanas-reserva) + 24px);
+}

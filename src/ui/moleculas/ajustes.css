@@ -1,0 +1,408 @@
+/* Kit v3 · moléculas de Cuenta (lote 1.4). */
+
+/* ── Grupo de ajustes ─────────────────────────────────── */
+.ui-grupo {
+  padding: 8px 16px;
+  border: 1px solid var(--ui-borde);
+  border-radius: var(--ui-radio-tarjeta);
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+  color: var(--ui-tinta);
+}
+.ui-grupo__etiqueta {
+  margin: 0;
+  padding: 14px 0 6px;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.ui-grupo > .ui-fila + .ui-fila,
+.ui-grupo > .ui-ajuste + .ui-ajuste,
+.ui-grupo > .ui-fila-dato + .ui-fila-dato,
+.ui-grupo__etiqueta + .ui-fila {
+  border-top: 1px solid var(--ui-borde);
+}
+
+/* ── Fila con interruptor ─────────────────────────────── */
+.ui-ajuste {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  color: var(--ui-tinta);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ui-grupo__etiqueta + .ui-ajuste,
+.ui-ajuste + .ui-ajuste {
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-ajuste:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 2px;
+}
+.ui-ajuste:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.ui-ajuste__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-ajuste__texto strong {
+  font-size: var(--ui-texto-base);
+}
+.ui-ajuste__texto span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-ajuste__control {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 56px;
+}
+.ui-ajuste__pista {
+  display: inline-flex;
+  align-items: center;
+  width: 52px;
+  height: 32px;
+  padding: 3px;
+  border-radius: 999px;
+  background: #c3cad6;
+}
+.ui-ajuste--on .ui-ajuste__pista {
+  background: var(--ui-azul);
+}
+.ui-ajuste__perilla {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(14 29 54 / 0.3);
+}
+.ui-ajuste--on .ui-ajuste__perilla {
+  translate: 20px 0;
+}
+.ui-ajuste__estado {
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-min);
+  font-weight: 800;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ui-ajuste__perilla {
+    transition: translate var(--ui-dur) var(--ui-curva);
+  }
+  .ui-ajuste__pista {
+    transition: background-color var(--ui-dur) var(--ui-curva);
+  }
+}
+
+/* ── Fila de dato con estado ──────────────────────────── */
+.ui-fila-dato {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  min-height: 72px;
+  padding: 12px 0;
+}
+.ui-fila-dato__texto {
+  display: flex;
+  flex: 1 1 10rem;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-fila-dato__texto span {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-fila-dato__texto strong {
+  font-size: var(--ui-texto-base);
+  overflow-wrap: anywhere;
+}
+.ui-fila-dato__estado {
+  flex: none;
+}
+
+/* ── Mosaico de resumen ───────────────────────────────── */
+.ui-resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 24px;
+  background: var(--ui-tinte);
+  box-shadow: 0 4px 0 0 #b9ccea;
+  color: var(--ui-hondo);
+  text-decoration: none;
+}
+.ui-resumen--noche {
+  background: var(--ui-noche);
+  box-shadow: 0 4px 0 0 #070f1d;
+  color: #fff;
+}
+.ui-resumen--amarillo {
+  background: var(--ui-amarillo);
+  box-shadow: 0 4px 0 0 var(--ui-amarillo-hondo);
+  color: var(--ui-noche);
+}
+.ui-resumen:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+}
+.ui-resumen__ico {
+  display: inline-flex;
+  margin-bottom: 4px;
+}
+.ui-resumen__titulo {
+  font-size: var(--ui-texto-base);
+}
+.ui-resumen .ui-cifra {
+  margin: 0;
+  color: inherit;
+}
+.ui-resumen__detalle {
+  font-size: var(--ui-texto-chico);
+  opacity: 0.85;
+}
+
+/* ── Cuenta: mosaicos de resumen y pie ────────────────── */
+.ui-resumenes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 12px;
+}
+.ui-pie-cuenta {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+  text-align: center;
+}
+.ui-nota {
+  margin: 0;
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-aviso-ok {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--ui-exito-tinte);
+  color: var(--ui-exito-hondo);
+  font-weight: 700;
+}
+.ui-edicion {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ui-edicion p {
+  margin: 0;
+}
+
+/* ── Horarios por día ─────────────────────────────────── */
+.ui-horario {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 12px;
+  min-height: 64px;
+  padding: 8px 0;
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-grupo__etiqueta + .ui-horario {
+  border-top: 1px solid var(--ui-borde);
+}
+.ui-horario strong {
+  font-size: var(--ui-texto-base);
+}
+.ui-horario__nota {
+  padding: 8px 0 12px;
+  border-top: 1px solid var(--ui-borde);
+}
+
+/* ── Banda de aviso corta ─────────────────────────────── */
+.ui-banda {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+.ui-banda--exito {
+  background: var(--ui-exito-tinte);
+  color: var(--ui-exito-hondo);
+}
+
+/* ── Contenido extra de un grupo (botón o texto dentro de la tarjeta) ── */
+.ui-ajuste__extra {
+  padding: 0 0 14px;
+}
+.ui-ajuste__extra--pila {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 8px;
+}
+.ui-ajuste__extra p {
+  margin: 0;
+}
+
+/* ── Fila de acción delicada (darme de baja) ──────────── */
+.ui-fila-alerta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px 16px;
+  border: 2px solid #f0b9b4;
+  border-radius: var(--ui-radio-tarjeta);
+  background: var(--ui-error-tinte);
+  color: var(--ui-error-hondo);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ui-fila-alerta:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+}
+.ui-fila-alerta__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-fila-alerta__texto span {
+  font-size: var(--ui-texto-chico);
+}
+.ui-lista-simple {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding-left: 1.25rem;
+  line-height: 1.45;
+}
+
+/* ── Método de segunda verificación ───────────────────── */
+.ui-metodo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 14px 16px;
+  border: 1px solid var(--ui-borde);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: var(--ui-elev-1);
+  color: var(--ui-tinta);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ui-metodo--destacado {
+  border: 2px solid var(--ui-azul);
+  background: var(--ui-tinte);
+}
+.ui-metodo:disabled {
+  background: var(--ui-gris-franja);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.ui-metodo:focus-visible {
+  outline: 3px solid var(--hd-azul-vivo);
+  outline-offset: 3px;
+}
+.ui-metodo__ico {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--ui-mosaico);
+}
+.ui-metodo--destacado .ui-metodo__ico {
+  background: var(--ui-azul);
+  color: #fff;
+}
+.ui-metodo__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-metodo__texto strong {
+  font-size: var(--ui-texto-base);
+}
+.ui-metodo__texto > span:not(.ui-metodo__chip) {
+  color: var(--ui-suave);
+  font-size: var(--ui-texto-chico);
+}
+.ui-metodo__chip {
+  margin-top: 4px;
+}
+
+/* En un grupo, lo de la derecha (el chip de estado) baja debajo del texto en pantallas angostas, así el título nunca se
+   parte por la mitad; en pantallas más anchas queda a la derecha, en la misma línea. */
+@media (max-width: 439px) {
+  .ui-grupo .ui-fila__derecha {
+    order: 3;
+    flex: 1 1 calc(100% - 56px);
+    min-width: 0;
+    margin: 0 0 0 56px;
+  }
+}
+@media (min-width: 440px) {
+  .ui-grupo .ui-fila {
+    flex-wrap: nowrap;
+  }
+  .ui-grupo .ui-fila__texto {
+    flex-basis: 0;
+  }
+}
+
+/* Pantallas angostas: el botón del día pasa a un renglón propio, así «No trabajo» no se parte. */
+@media (max-width: 439px) {
+  .ui-horario {
+    grid-template-columns: 3rem minmax(0, 1fr);
+  }
+  .ui-horario > .ui-boton {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+/* Con texto agrandado, un chip largo baja de renglón en vez de salirse de la pantalla (nunca queda cortado). */
+.ui-grupo .ui-chip,
+.ui-metodo .ui-chip,
+.ui-ajuste__extra .ui-chip {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}

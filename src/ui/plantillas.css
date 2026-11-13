@@ -1,0 +1,85 @@
+/* Kit v3 · plantillas (lote 0.2). Esqueleto de cada tipo de pantalla: el contenido nunca queda bajo la acción fija
+   ni bajo la barra de pestañas. */
+
+.ui-pantalla {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: #fff;
+  color: var(--ui-tinta);
+  font-size: var(--ui-texto-base);
+}
+.ui-pantalla__contenido {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  padding: 12px var(--ui-gutter) 24px;
+}
+.ui-pantalla--raiz .ui-pantalla__contenido {
+  padding-top: 16px;
+}
+.ui-pantalla--con-accion .ui-pantalla__contenido {
+  padding-bottom: 16px;
+}
+.ui-pantalla--con-accion > .ui-accion-fija {
+  margin: 0;
+}
+.ui-pantalla--hoja {
+  position: relative;
+  min-height: 100dvh;
+}
+.ui-pantalla__fondo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0.9;
+}
+.ui-pantalla--mapa {
+  position: relative;
+  min-height: 100dvh;
+}
+.ui-pantalla__mapa {
+  position: absolute;
+  inset: 0;
+}
+.ui-pantalla__arriba {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: var(--ui-gutter);
+  left: var(--ui-gutter);
+  z-index: 3;
+}
+.ui-pantalla__abajo {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+}
+
+/* Entrar (lote 1.1): escena con la ciudad arriba, sin cabecera de la app ni pestañas. */
+.ui-pantalla--acceso {
+  min-height: 100dvh;
+}
+.ui-pantalla--acceso > .ui-pantalla__contenido {
+  padding-top: 20px;
+}
+.ui-marco-acceso {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: #fff;
+}
+.ui-marco-acceso__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.ui-marco-acceso__cuerpo > .ui-pantalla {
+  flex: 1;
+  min-height: 0;
+}

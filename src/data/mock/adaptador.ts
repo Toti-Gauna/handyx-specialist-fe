@@ -1,20 +1,15 @@
 // Adaptador mock: estado en memoria de la pestaña (nada en localStorage, cookies ni IndexedDB).
 // Reglas de servidor emuladas (elegibilidad, transiciones, vencimientos, idempotencia) en los dominios;
-// escenarios y simulaciones para recorrer todos los estados sin backend en ./controles.ts.
+// escenarios y simulaciones para recorrer todos los estados sin backend en ./controles.ts. Los dominios se juntan en
+// ./dominios.ts.
 import type { EspecialistaApi } from '../api.ts';
 import { FalloApi } from '../errores.ts';
-import { acceso } from './acceso.ts';
-import { alta } from './alta.ts';
+import { cuentaLista, PUBLICOS_ACCESO } from './acceso.ts';
 import { caja } from './caja.ts';
-import { cuenta } from './cuenta.ts';
-import { ahora, type Escenario, type EstadoMock } from './estado.ts';
+import { metodosMock } from './dominios.ts';
+import { ahora, fallo, type Escenario, type EstadoMock } from './estado.ts';
 import { crearEstado } from './fixtures.ts';
-import { mensajes } from './mensajes.ts';
-import { pedidos } from './pedidos.ts';
-import { propuestas } from './propuestas.ts';
-import { soporte } from './soporte.ts';
-import { trabajos } from './trabajos.ts';
-import { fallo } from './estado.ts';
+import { cargarGrafo } from './mapa.ts';
 
 export interface OpcionesMock {
   escenario?: Escenario;
@@ -26,8 +21,15 @@ type Metodos = Omit<EspecialistaApi, 'origen' | 'ahora' | 'simulacionPostDemo'>;
 /** Versión síncrona de cada método del puerto: el adaptador la envuelve con latencia, fallas y sesión. */
 type Sincrono = { [K in keyof Metodos]: Metodos[K] extends (...a: infer A) => Promise<infer R> ? (...a: A) => R : never };
 
-// No exigen sesión: acceso y consulta de sesión.
-const PUBLICOS = new Set<keyof Metodos>(['sesion', 'ingresar', 'registrar', 'recuperar', 'salir']);
+// No exigen sesión: acceso, consulta de sesión y recuperación con el enlace del email.
+const PUBLICOS = new Set<keyof Metodos>(['sesion', 'ingresar', 'registrar', 'recuperar', 'salir', 'ingresarConProveedor', 'estadoRecuperacion', 'restablecer']);
+// Entrar con email o teléfono, con un código y la segunda verificación (lote 1.1).
+for (const m of PUBLICOS_ACCESO) PUBLICOS.add(m);
+// Con sesión pero sin terminar la cuenta (email sin verificar o términos sin aceptar) solo se puede esto.
+const CUENTA_A_MEDIAS = new Set<keyof Metodos>(['estadoVerificacion', 'reenviarCodigo', 'verificarEmail', 'aceptarTerminos']);
+
+// Lote 1.2: crear la cuenta del registro (RG-1) tampoco exige sesión.
+PUBLICOS.add('crearCuenta');
 
 export interface ApiMock {
   api: EspecialistaApi;
@@ -38,17 +40,7 @@ export function crearApiMockConEstado(o: OpcionesMock = {}): ApiMock {
   const s = crearEstado(o.escenario ?? 'habilitado');
   const latencia = o.latenciaMs ?? 250;
 
-  const todos = {
-    ...acceso(s),
-    ...alta(s),
-    ...pedidos(s),
-    ...propuestas(s),
-    ...trabajos(s),
-    ...mensajes(s),
-    ...caja(s),
-    ...soporte(s),
-    ...cuenta(s),
-  } as unknown as Sincrono;
+  const todos = metodosMock(s) as unknown as Sincrono;
 
   const api = { origen: 'mock' as const, ahora: () => ahora(s) } as Record<string, unknown>;
   for (const nombre of Object.keys(todos) as Array<keyof Metodos>) {
@@ -63,6 +55,11 @@ export function crearApiMockConEstado(o: OpcionesMock = {}): ApiMock {
         s.sesionActiva = false;
         throw fallo('sesion', 401, 'no_autenticado', 'Tu sesión expiró. Volvé a entrar.');
       }
+      if (!PUBLICOS.has(nombre) && !CUENTA_A_MEDIAS.has(nombre) && !cuentaLista(s)) {
+        throw fallo('permiso', 403, 'sin_permiso', 'Primero terminá de crear tu cuenta.');
+      }
+      // El grafo de calles se carga recién cuando hace falta un trayecto (pesa: no va en el arranque de la vista previa).
+      if (nombre === 'enviarPosicion') await cargarGrafo();
       return structuredClone(hacer(...args));
     };
   }

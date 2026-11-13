@@ -29,6 +29,22 @@ export function porcion(m: Monto, bps: number): Monto {
   return monto(Number(centavos), m.moneda);
 }
 
+/** Decimales que admite una cantidad (metros, kilos, litros): milésimas. */
+export const DECIMALES_CANTIDAD = 3;
+
+/**
+ * Importe × cantidad (0.11.0): un precio unitario por 2,5 metros o 3 unidades. La cantidad se lleva a milésimas enteras
+ * y la cuenta se hace con enteros, con redondeo al centavo (mitad hacia arriba). Nunca floats para la plata.
+ */
+export function multiplicar(m: Monto, cantidad: number): Monto {
+  const milesimas = Math.round(cantidad * 1_000);
+  if (!Number.isSafeInteger(milesimas) || milesimas < 0 || Math.abs(cantidad * 1_000 - milesimas) > 1e-6) {
+    throw new RangeError('La cantidad tiene que ser no negativa y con hasta 3 decimales');
+  }
+  const centavos = (BigInt(m.centavos) * BigInt(milesimas) + 500n) / 1_000n;
+  return monto(Number(centavos), m.moneda);
+}
+
 /** "$ 45.000" o "$ 45.000,50" (pesos argentinos, formato de la landing). */
 export function formatearPesos(m: Monto): string {
   const entero = Math.floor(m.centavos / 100);

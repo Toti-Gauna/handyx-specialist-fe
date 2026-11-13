@@ -1,0 +1,164 @@
+/* Mensajes, contactos y chat (lote 4.8). Prefijo me-. */
+
+.me > *,
+.me-chat > * {
+  min-width: 0;
+}
+
+.me-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+}
+
+.me-cabeza .titulo {
+  margin: 0;
+}
+
+.me-cabeza__contactos {
+  text-decoration: none;
+}
+
+.me-lista {
+  display: grid;
+  margin: 0;
+  padding: 0 var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  list-style: none;
+  box-shadow: var(--hx-elev-1);
+}
+
+.me-lista > li + li {
+  border-top: 1px solid var(--hd-linea);
+}
+
+.me-fila,
+.me-contacto {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  min-height: 72px;
+  padding: var(--esp-3) 0;
+  color: var(--hd-tinta);
+  text-decoration: none;
+}
+
+.me-fila:focus-visible {
+  outline: 3px solid var(--hd-azul);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+.me-fila__texto {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.me-fila__texto small {
+  color: var(--hd-suave);
+}
+
+.me-fila__arriba,
+.me-fila__abajo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-1) var(--esp-2);
+}
+
+.me-fila__arriba small {
+  color: var(--hd-suave);
+  font-size: 0.85rem;
+}
+
+.me-fila__ultimo {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--hd-suave);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.me-fila--nueva .me-fila__ultimo {
+  color: var(--hd-tinta);
+  font-weight: 700;
+}
+
+.me-contacto .hx-circulo {
+  flex: none;
+}
+
+.me-ayuda {
+  padding: 0 var(--esp-4);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: var(--hx-elev-1);
+}
+
+.me-ayuda .hx-fila {
+  border-bottom: 0;
+}
+
+.me-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* Chat */
+.me-chat__cabeza {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+}
+
+.me-chat__quien {
+  display: grid;
+  justify-items: start;
+  gap: var(--esp-1);
+  min-width: 0;
+}
+
+.me-chat__quien .titulo {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.me-chat__enlaces,
+.me-chat__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-2) var(--esp-4);
+}
+
+.me-chat__enlaces a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque-min);
+}
+
+.me-chat__acciones .hx-chip {
+  text-decoration: none;
+}
+
+.me-chip--azul {
+  background: var(--hd-azul);
+  color: #fff;
+  box-shadow: 0 3px 0 var(--hd-azul-hondo);
+}
+
+.me-rapidas {
+  margin-bottom: var(--esp-2);
+}
+
+.me-rapidas .hx-chip {
+  background: var(--hd-azul-tinte);
+}

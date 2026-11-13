@@ -1,81 +1,124 @@
 'use client';
+// D6-Avisos (lote 1.4): todos tus avisos (pedidos, obras, mensajes, pagos) agrupados por día. Cada aviso abre su detalle;
+// NINGUNO acepta nada por vos. Cada uno tiene su botón para quitarlo (no hace falta deslizar) y «Borrar todos» pide
+// confirmación. Lo importante no se pierde al borrar: sigue en su pantalla (pedido, trabajo, caja).
 import { api } from '@handyx/origen-datos';
-import Link from 'next/link';
+import { useState } from 'react';
 import { RUTAS } from '../app/rutas.ts';
-import { Cargando, ErrorCaja, Vacio } from '../components/Estados.tsx';
-import { Icono, type NombreIcono } from '../components/Icono.tsx';
-import { Volver } from '../components/Volver.tsx';
-import { Aviso as Callout, ChipTexto, ChipTipo } from '../components/ui.tsx';
-import type { Aviso } from '../contracts/dto.ts';
+import { Cargando, ErrorCaja } from '../components/Estados.tsx';
+import type { TipoAvisoBandeja } from '../contracts/cuenta.ts';
+import { useAccion } from '../hooks/useAccion.ts';
 import { useAhora } from '../hooks/useAhora.ts';
 import { useCarga } from '../hooks/useCarga.ts';
-import { haceCuanto } from '../lib/formato.ts';
+import { agruparAvisos, destinoAviso, momentoDeAviso, TITULO_GRUPO } from '../lib/avisos.ts';
+import { Boton } from '../ui/atomos/Boton.tsx';
+import type { NombreIconoUi } from '../ui/atomos/Icono.tsx';
+import { Ciudad } from '../ui/ilustraciones/Ciudad.tsx';
+import { BarraCompacta } from '../ui/organismos/Cabeceras.tsx';
+import { EstadoVacio } from '../ui/organismos/EstadosPantalla.tsx';
+import { Hoja } from '../ui/organismos/Hoja.tsx';
+import { GrupoAvisos, ItemAviso } from '../ui/organismos/ListaAvisos.tsx';
+import { PantallaSecundaria } from '../ui/plantillas/Plantillas.tsx';
 
-function destino(a: Aviso): string {
-  const q = a.destino.id ? `?id=${a.destino.id}` : '';
-  switch (a.destino.ruta) {
-    case 'pedido': return `${RUTAS.pedido.ruta}${q}`;
-    case 'trabajo': return `${RUTAS.trabajo.ruta}${q}`;
-    case 'hilo': return `${RUTAS.hilo.ruta}${q}`;
-    case 'soporte': return `${RUTAS.casoSoporte.ruta}${q}`;
-    case 'caja': return RUTAS.caja.ruta;
-    case 'cuenta': return RUTAS.cuenta.ruta;
-    case 'alta': return RUTAS.alta.ruta;
-  }
-}
-
-const ICONO: Record<Aviso['tipo'], NombreIcono> = {
-  pedido_urgente: 'rayo',
+const ICONO: Record<TipoAvisoBandeja, NombreIconoUi> = {
+  pedido_urgente: 'herramienta',
   pedido_programado: 'calendario',
-  propuesta: 'etiqueta',
+  propuesta: 'billete',
+  te_eligieron: 'check',
   mensaje: 'chat',
-  trabajo: 'maletin',
-  pago: 'caja',
-  soporte: 'pregunta',
-  cuenta: 'usuario',
+  trabajo: 'herramienta',
+  pago: 'billete',
+  soporte: 'ayuda',
+  cuenta: 'cuenta',
+  alta_habilitada: 'escudo',
+  presupuesto: 'documento',
+  obra: 'obra',
+  repuesto: 'alerta',
+  reparto: 'cuenta',
+  equipo: 'cuenta',
+  busqueda: 'lupa',
+  ferreteria: 'tienda',
+  camino: 'estrella',
+  recordatorio: 'reloj',
 };
 
 export function Avisos() {
-  const c = useCarga(() => api.avisos(), []);
+  const c = useCarga(() => api.bandeja(), []);
   const ahora = useAhora(30_000);
-
-  if (c.fallo && !c.datos) return <ErrorCaja fallo={c.fallo} onReintentar={() => void c.recargar()} />;
+  const quitar = useAccion();
+  const [confirmar, setConfirmar] = useState(false);
+  if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
+  const items = c.datos.items;
+  const grupos = agruparAvisos(items, ahora);
 
-  async function abrir(a: Aviso) {
-    if (!a.leido) await api.marcarAvisoLeido(a.id).catch(() => undefined);
+  async function quitarUno(id: string) {
+    await quitar.ejecutar(async () => {
+      await api.borrarDeBandeja(id);
+      await c.recargar();
+    });
+  }
+  async function quitarTodos() {
+    const r = await quitar.ejecutar(async () => {
+      await api.vaciarBandeja();
+      await c.recargar();
+    });
+    if (r.ok) setConfirmar(false);
   }
 
   return (
-    <div className="pila">
-      <Volver a={RUTAS.inicio.ruta} texto="Inicio" />
-      <h1 className="titulo">Avisos</h1>
-      <Callout tono="neutro" icono="info">
-        Abrir un aviso solo te muestra el detalle: nunca acepta nada por vos. Los avisos urgentes y los programados se distinguen. Todo lo importante queda acá aunque el aviso del teléfono no llegue.
-      </Callout>
-      {c.datos.length === 0 ? (
-        <Vacio icono="campana" titulo="No tenés avisos" />
+    <PantallaSecundaria barra={<BarraCompacta titulo="Avisos" hrefVolver={RUTAS.inicio.ruta} />}>
+      {quitar.fallo && !confirmar ? <ErrorCaja fallo={quitar.fallo} /> : null}
+      {items.length === 0 ? (
+        <EstadoVacio ilustracion={<Ciudad tam="medio" />} titulo="No tenés avisos">
+          Cuando haya un pedido para vos, una respuesta o un cobro, te avisamos acá.
+        </EstadoVacio>
       ) : (
-        <ul className="lista-tarjetas">
-          {c.datos.map((a) => (
-            <li key={a.id}>
-              <Link className={`tarjeta${a.tipo === 'pedido_urgente' ? ' pedido--urgente' : ''}`} href={destino(a)} onClick={() => void abrir(a)}>
-                <div className="fila-flex fila-flex--entre">
-                  <span className="fila-flex">
-                    <Icono nombre={ICONO[a.tipo]} />
-                    {a.tipo === 'pedido_urgente' ? <ChipTipo tipo="urgente" /> : null}
-                    {a.tipo === 'pedido_programado' ? <ChipTipo tipo="programado" /> : null}
-                    {!a.leido ? <ChipTexto tono="azul">Sin leer</ChipTexto> : null}
-                  </span>
-                  <span className="texto-suave texto-chico">{haceCuanto(a.creadoEn, ahora)}</span>
-                </div>
-                <p className="tarjeta__titulo">{a.titulo}</p>
-                <p className="texto-suave">{a.cuerpo}</p>
-              </Link>
-            </li>
+        <>
+          {grupos.map((g) => (
+            <GrupoAvisos key={g.grupo} titulo={TITULO_GRUPO[g.grupo]}>
+              {g.items.map((a) => (
+                <ItemAviso
+                  key={a.id}
+                  titulo={a.titulo}
+                  cuerpo={a.cuerpo}
+                  momento={momentoDeAviso(a.creadoEn, ahora)}
+                  icono={ICONO[a.tipo]}
+                  iniciales={a.iniciales}
+                  nuevo={!a.leido}
+                  href={destinoAviso(a.destino)}
+                  onAbrir={() => {
+                    if (!a.leido) void api.marcarLeidoEnBandeja(a.id).catch(() => undefined);
+                  }}
+                  onQuitar={() => void quitarUno(a.id)}
+                />
+              ))}
+            </GrupoAvisos>
           ))}
-        </ul>
+          <p className="ui-nota">Los avisos te llevan al detalle. Nada se acepta desde acá.</p>
+          <Boton variante="contorno" icono="tacho" onClick={() => setConfirmar(true)}>
+            Borrar todos los avisos
+          </Boton>
+        </>
       )}
-    </div>
+      <Hoja
+        abierta={confirmar}
+        titulo="¿Borrar todos los avisos?"
+        onCerrar={() => setConfirmar(false)}
+        pie={
+          <>
+            <Boton variante="peligro" ocupado={quitar.pendiente} textoOcupado="Borrando…" onClick={() => void quitarTodos()}>
+              Sí, borrar todos
+            </Boton>
+            <Boton variante="contorno" onClick={() => setConfirmar(false)}>
+              No, volver
+            </Boton>
+          </>
+        }
+      >
+        <p>Se borran de esta lista. Lo importante no se pierde: los pedidos, trabajos y cobros siguen en sus pantallas.</p>
+        {quitar.fallo ? <ErrorCaja fallo={quitar.fallo} onReintentar={() => void quitarTodos()} /> : null}
+      </Hoja>
+    </PantallaSecundaria>
   );
 }

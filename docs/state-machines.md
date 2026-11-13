@@ -30,8 +30,13 @@ menos un rubro habilitado. El especialista no puede llegar a `habilitada` por ni
 
 ## Antecedentes (presencial)
 
-`pendiente_cita → cita_coordinada → aprobada | no_aprobada | no_asistio` y `no_asistio → cita_coordinada`, todo por
-Operations. No existe estado ni campo para archivos.
+`pendiente_cita → cita_coordinada → aprobada | no_aprobada | no_asistio` y `no_asistio → cita_coordinada`.
+- Desde 0.5.0 (lote 4.4), el especialista reserva el turno él mismo (`pendiente_cita` o `no_asistio` → `cita_coordinada`), o
+  se lo coordina Operations.
+- Cambiar de turno no cambia el estado.
+- El resultado (aprobada, no aprobada, no asistió) lo registra solo Operations.
+
+No existe estado ni campo para archivos: la app guarda el turno (`citaAntecedentes`), nunca el certificado.
 
 ## Pedido (dueño: api-usuario)
 
@@ -69,7 +74,7 @@ resultado.
 stateDiagram-v2
   [*] --> agendado
   agendado --> en_camino: especialista
-  en_camino --> en_sitio: especialista ("Llegué")
+  en_camino --> en_sitio: sistema (geocerca) / especialista ("Ya llegué")
   en_sitio --> en_curso: especialista
   en_curso --> finalizado: especialista
   agendado --> cancelado: usuario / especialista / operations
@@ -80,6 +85,25 @@ stateDiagram-v2
 
 Cambiar monto, alcance u horario no es una transición: requiere una nueva propuesta aceptada por la otra parte, que
 reemplaza el snapshot y queda en el historial. Confirmación del usuario al finalizar: PENDIENTE.
+
+**Llegada (0.7.0, decisión del 29/10/2026).** La marca el servidor (`sistema`) cuando una posición del viaje entra en
+el radio de 80 m del destino con una precisión de 50 m o mejor (geocerca: solo con la app abierta). "Ya llegué"
+(`especialista`) es el respaldo cuando la ubicación anda mal, con el motivo (`sin_permiso`, `imprecisa`, `sin_senal` o
+`sin_ubicacion`); va por `POST /trabajos/{id}/llegada`, no por `eventos`. `Trabajo.llegada` guarda el modo, el motivo y
+la hora. Cancelar va por `POST /trabajos/{id}/cancelacion`, siempre con motivo.
+
+## Etapa de obra (0.8.0)
+
+`pendiente → en_curso` (**sistema**: al empezar la obra la primera, y al terminar una etapa la siguiente) ·
+`en_curso → terminada` (**especialista**, con `POST .../etapas/{id}/fin`, que crea el cobro de la etapa). Una sola en
+curso a la vez. La obra pasa a `finalizado` solo con todas terminadas. Las jornadas (`programada → hecha`) cambian al
+cargar el avance de ese día; pedir otro día deja un `cambioPendiente` que resuelve el usuario y no mueve las demás.
+
+## Adicional (0.7.0)
+
+`pendiente → aceptado | rechazado` (solo el **usuario**) · `pendiente → retirado` (el **especialista**, o el
+**sistema** al terminar el trabajo). Se crean solo con el trabajo `en_curso`. Mientras están pendientes rige el precio
+vigente (`totalVigente` = lo acordado + los aceptados); el cobro al terminar va por ese total.
 
 ## Pago directo
 
@@ -97,3 +121,29 @@ Quien reporta nunca verifica. Ningún estado implica que Handy recibió dinero.
 
 `solicitada → en_proceso → completada | completada_con_retencion`; `solicitada → cancelada` (la persona). El estado
 se muestra tal cual: no hay éxito ficticio.
+
+## Bloque Taller (contrato 0.11.0)
+
+Cada máquina vive en el archivo de su dominio (`src/contracts/<dominio>.ts`) y tiene sus pruebas en
+`src/contracts/bloque.test.ts`. Actor nuevo: `ferreteria` (el equipo de una ferretería adherida).
+
+- **Presupuesto** (`presupuestos.ts`): `borrador → enviado` (especialista) → `visto` (sistema) →
+  `aceptado | rechazado` (solo el **usuario**); `enviado | visto → reemplazado | vencido` (sistema). Una versión enviada
+  no se edita: se arma otra y al mandarla la anterior queda reemplazada.
+- **Conformidad** (`modo-trabajo.ts`): `sin_enviar → esperando` (especialista, al mandar el informe) →
+  `dada | con_observaciones` (solo el **usuario**); `con_observaciones → dada`.
+- **Obra** (`obras.ts`): `borrador ⇄ propuesta_enviada` (especialista) → `aceptada | rechazada` (usuario);
+  `aceptada → en_curso` (sistema, con la primera jornada) → `terminada` (especialista, con todas las etapas
+  terminadas); cancelar antes de empezar (las partes u Operations), después solo Operations.
+- **Repuesto** (`repuestos.ts`): `sin_mandar → esperando_aprobacion` (especialista) → `aprobado | rechazado` (solo el
+  **usuario**) → `comprado` (especialista, o sistema al retirar en la ferretería). Sin cobrárselo al cliente,
+  `sin_mandar → comprado` directo.
+- **Búsqueda y postulación** (`equipo.ts`): `abierta → cubierta` (el titular elige) `| cerrada` (sistema, a las 24 h)
+  `| cancelada`; `postulada → elegida` (solo el titular) `| no_elegida | retirada`. Nadie entra solo a una obra.
+- **Pedido de ferretería** (`ferreterias.ts`): `borrador → enviado` (especialista) → `confirmado → preparando → listo`
+  (ferretería) → `retirado` (**solo la ferretería**, escaneando el QR de un uso); cancelar antes de retirar (las dos
+  partes); `listo → vencido` (sistema).
+- **Hito del camino y canje** (`camino.ts`): `pendiente → alcanzado → en_revision` (sistema, solo con lo verificado) →
+  `disponible` (**solo Operations**) → `canjeado` (especialista) → `entregado` (Operations). Canje:
+  `pedido → preparando → listo | enviado → entregado` (Operations); `pedido → cancelado`. Sin azar: el premio se ve
+  antes.

@@ -12,6 +12,7 @@ import { FalloApi } from '../errores.ts';
 import { fallo, iso, ahoraMs, idNuevo, type EstadoMock } from './estado.ts';
 import { altaEditable, calcularFaltantes, nombrePublico, recalcular } from './reglas.ts';
 import { zodAFallo } from './validacion.ts';
+import { registroMock } from './alta-registro.ts';
 
 const ultimos = (v: string | null, n: number): string | null => (v ? `••••${v.slice(-n)}` : null);
 
@@ -26,6 +27,8 @@ function exigirEditable(s: EstadoMock): void {
 }
 
 export const alta = (s: EstadoMock) => ({
+  // Registro por pasos y onboarding (lote 1.2, contrato 0.11).
+  ...registroMock(s),
   perfil: (): PerfilEspecialista => s.perfil,
   perfilPublico(): PerfilPublico {
     const verificado = s.perfil.estadoAlta === 'habilitada' && faltantesParaHabilitar({
@@ -57,6 +60,7 @@ export const alta = (s: EstadoMock) => ({
   },
   // El mock nunca lee ni guarda el archivo: solo registra que se cargó.
   cargarDocumento(tipo: TipoDocumento, rubro?: Rubro): PerfilEspecialista {
+    // Con datos de prueba nunca llega un archivo (ni frente ni dorso): solo se registra la carga.
     // Antecedentes no existen como documento: se verifican en persona con Operations.
     if (!(TIPOS_DOCUMENTO as readonly string[]).includes(tipo)) {
       throw new FalloApi('validacion', 415, { codigo: 'tipo_archivo_prohibido', mensaje: 'Ese tipo de archivo no se acepta.', requestId: 'req-prueba-0001' });

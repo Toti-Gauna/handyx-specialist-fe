@@ -1,71 +1,44 @@
 // Mapa de rutas de la PWA (exportación estática: cada ruta es una carpeta con index.html).
 // Los ids de recursos van por query (?id=…), no por segmento, porque no se conocen en build.
-// `lote`: dónde se construye la pantalla (docs/plan.md). Mapa completo de pantallas: docs/screens.md.
-import type { NombreIcono } from '../components/Icono.tsx';
+// Partido por dominio (lote 0.2): cada lote de una ola agrega sus rutas en `rutas/<dominio>.ts`; acá solo se componen.
+// Las pestañas de la barra de abajo están en `rutas/navegacion.ts`.
+import { rutasAcceso } from './rutas/acceso.ts';
+import { rutasAgenda } from './rutas/agenda.ts';
+import { rutasAlta } from './rutas/alta.ts';
+import { rutasBase } from './rutas/base.ts';
+import { rutasCaja } from './rutas/caja.ts';
+import { rutasCuenta } from './rutas/cuenta.ts';
+import { rutasEquipamiento } from './rutas/equipamiento.ts';
+import { rutasHerramientas } from './rutas/herramientas.ts';
+import { rutasMensajes } from './rutas/mensajes.ts';
+import { rutasModo } from './rutas/modo.ts';
+import { rutasObras } from './rutas/obras.ts';
+import { rutasPedidos } from './rutas/pedidos.ts';
+import { rutasPresupuestos } from './rutas/presupuestos.ts';
+import { rutasSoporte } from './rutas/soporte.ts';
+import { rutasTaller } from './rutas/taller.ts';
+import { rutasTrabajos } from './rutas/trabajos.ts';
+import type { Ruta } from './rutas/tipos.ts';
 
-export interface Ruta {
-  ruta: string;
-  titulo: string;
-  lote: string;
-  descripcion: string;
-  nav?: { icono: NombreIcono; texto: string };
-}
+export type { Ruta } from './rutas/tipos.ts';
 
 export const RUTAS = {
-  puerta: { ruta: '/', titulo: 'Entrada', lote: '1.1', descripcion: 'Decide a dónde ir según la sesión y el estado del alta.' },
-  baja: { ruta: '/baja/', titulo: 'Baja de tu cuenta', lote: '2.1', descripcion: 'Estado real de la solicitud de baja.' },
-  disponibilidad: { ruta: '/disponibilidad/', titulo: 'Tu disponibilidad', lote: '2.2', descripcion: 'Urgentes Ahora, programados, franjas y zonas.' },
-  casoSoporte: { ruta: '/soporte/detalle/', titulo: 'Caso de ayuda', lote: '2.4', descripcion: 'Respuestas y estado de un caso.' },
-  acceso: { ruta: '/acceso/', titulo: 'Entrar', lote: '2.1', descripcion: 'Ingreso con tu cuenta de especialista.' },
-  registro: { ruta: '/registro/', titulo: 'Crear cuenta', lote: '2.1', descripcion: 'Cuenta, términos y privacidad versionados.' },
-  recuperar: { ruta: '/recuperar/', titulo: 'Recuperar acceso', lote: '2.1', descripcion: 'Recuperación de contraseña.' },
-  alta: { ruta: '/alta/', titulo: 'Tu alta', lote: '2.1', descripcion: 'Datos, identidad, rubros, foto y envío a revisión.' },
-  inicio: {
-    ruta: '/inicio/',
-    titulo: 'Inicio',
-    lote: '2.2',
-    descripcion: 'Estado del alta, disponibilidad, pedidos elegibles y agenda próxima.',
-    nav: { icono: 'casa', texto: 'Inicio' },
-  },
-  pedidos: { ruta: '/pedidos/', titulo: 'Pedidos', lote: '2.2', descripcion: 'Bandeja de pedidos urgentes y programados.' },
-  pedido: { ruta: '/pedidos/detalle/', titulo: 'Pedido', lote: '2.3', descripcion: 'Detalle, propuesta, contrapropuesta y vencimiento.' },
-  trabajos: {
-    ruta: '/trabajos/',
-    titulo: 'Mis trabajos',
-    lote: '2.4',
-    descripcion: 'Trabajos activos e historial.',
-    nav: { icono: 'maletin', texto: 'Trabajos' },
-  },
-  trabajo: { ruta: '/trabajos/detalle/', titulo: 'Trabajo', lote: '2.4', descripcion: 'Acuerdo, en camino, Llegué, avance, fin y cancelación.' },
-  agenda: {
-    ruta: '/agenda/',
-    titulo: 'Agenda',
-    lote: '2.4',
-    descripcion: 'Calendario propio y fechas alternativas.',
-    nav: { icono: 'calendario', texto: 'Agenda' },
-  },
-  mensajes: {
-    ruta: '/mensajes/',
-    titulo: 'Mensajes',
-    lote: '2.3',
-    descripcion: 'Conversaciones por pedido y trabajo.',
-    nav: { icono: 'chat', texto: 'Mensajes' },
-  },
-  hilo: { ruta: '/mensajes/hilo/', titulo: 'Conversación', lote: '2.3', descripcion: 'Chat con texto, fotos y presupuesto estructurado.' },
-  caja: { ruta: '/caja/', titulo: 'Caja', lote: '2.5', descripcion: 'Pagos directos: pendientes, reportados y verificados.' },
-  cuenta: {
-    ruta: '/cuenta/',
-    titulo: 'Cuenta',
-    lote: '2.1',
-    descripcion: 'Documentos y estado, fee 0 % con contador, preferencias, soporte y baja.',
-    nav: { icono: 'usuario', texto: 'Cuenta' },
-  },
-  soporte: { ruta: '/soporte/', titulo: 'Ayuda y reclamos', lote: '2.4', descripcion: 'Asistencia y reclamos con su historial.' },
-  notificaciones: { ruta: '/notificaciones/', titulo: 'Avisos', lote: '2.2', descripcion: 'Avisos dentro de la app, urgentes y programados diferenciados.' },
+  ...rutasBase,
+  ...rutasAcceso,
+  ...rutasAlta,
+  ...rutasPedidos,
+  ...rutasTrabajos,
+  ...rutasObras,
+  ...rutasMensajes,
+  ...rutasCaja,
+  ...rutasCuenta,
+  ...rutasSoporte,
+  ...rutasTaller,
+  ...rutasAgenda,
+  ...rutasPresupuestos,
+  ...rutasModo,
+  ...rutasHerramientas,
+  ...rutasEquipamiento,
 } as const satisfies Record<string, Ruta>;
 
 export type ClaveRuta = keyof typeof RUTAS;
-
-type ClaveNav = { [K in ClaveRuta]: (typeof RUTAS)[K] extends { nav: unknown } ? K : never }[ClaveRuta];
-
-export const NAV: ClaveNav[] = ['inicio', 'trabajos', 'agenda', 'mensajes', 'cuenta'];

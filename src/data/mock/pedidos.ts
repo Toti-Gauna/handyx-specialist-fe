@@ -9,15 +9,23 @@ import { monto } from '../../contracts/dinero.ts';
 import { fallo, ahoraMs, type EstadoMock } from './estado.ts';
 import { aPedidoElegible, habilitada, visible } from './reglas.ts';
 import { zodAFallo } from './validacion.ts';
+import { precioSugerido } from './precios.ts';
+import { descartar, destinosPrueba, mapaPedido, mapaPedidos } from './nucleo.ts';
 
 const ESTADOS_ACTIVOS = ['agendado', 'en_camino', 'en_sitio', 'en_curso'] as const;
 
 export const pedidos = (s: EstadoMock) => ({
   disponibilidad: (): Disponibilidad => s.disponibilidad,
   actualizarDisponibilidad(cambio: unknown): Disponibilidad {
-    if (!habilitada(s)) throw fallo('permiso', 403, 'sin_permiso', 'Podés declarar tu disponibilidad cuando tu alta esté habilitada.');
     const ok = CambioDisponibilidadSchema.safeParse(cambio);
     if (!ok.success) throw zodAFallo(ok.error);
+    // Durante el alta (0.5.0) se declaran zonas y horarios; recibir pedidos se activa recién con el alta habilitada.
+    if (!habilitada(s)) {
+      const enAlta = ['borrador', 'requiere_correccion', 'enviada', 'en_revision'].includes(s.perfil.estadoAlta) && s.perfil.baja === null;
+      if (!enAlta || ok.data.urgentesAhora || ok.data.programados) {
+        throw fallo('permiso', 403, 'sin_permiso', 'Podés recibir pedidos cuando tu alta esté habilitada. Mientras tanto, solo zonas y horarios.');
+      }
+    }
     if (ok.data.version !== s.disponibilidad.version) {
       throw fallo('conflicto', 409, 'conflicto_version', 'Tu disponibilidad cambió desde otra pantalla. Volvé a cargarla.');
     }
@@ -69,6 +77,9 @@ export const pedidos = (s: EstadoMock) => ({
       ...aPedidoElegible(s, p),
       conversacionId: p.conversacionId,
       propuestas,
+      precioSugerido: precioSugerido(p.pub.rubro, p.pub.tipo),
+      // Solo el trabajo que salió de una propuesta aceptada en este pedido (en el mock, todos los trabajos son míos).
+      trabajoId: s.trabajos.find((t) => t.trabajo.pedidoId === p.pub.id)?.trabajo.id ?? null,
     };
   },
 
@@ -78,5 +89,20 @@ export const pedidos = (s: EstadoMock) => ({
   marcarAvisoLeido(id: string): void {
     const a = s.avisos.find((x) => x.id === id);
     if (a) a.leido = true;
+  },
+  // Borrar un aviso ajeno o inexistente responde igual que uno propio (no se revela nada).
+  borrarAviso(id: string): void {
+    s.avisos = s.avisos.filter((x) => x.id !== id);
+  },
+  borrarAvisos(): void {
+    s.avisos = [];
+  },
+
+  // Mapa de arreglos (lote 1.3): zona aproximada siempre, sin tiempos de llegada.
+  mapaDestinos: () => destinosPrueba(),
+  mapaPedidos: (busqueda: unknown) => mapaPedidos(s, busqueda),
+  mapaPedido: (id: string) => mapaPedido(s, id),
+  descartarPedido(id: string): void {
+    descartar(s, id);
   },
 });
