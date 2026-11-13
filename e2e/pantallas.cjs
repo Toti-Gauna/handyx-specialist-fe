@@ -81,7 +81,6 @@ const PANTALLAS = [
   ['catalogo', '/catalogo/', 'Mapa de arreglos', 'habilitado'],
   ['catalogo-v2', '/catalogo/v2/', 'Todavía no hay pedidos para vos', 'habilitado'],
   ['taller', '/taller/', 'Herramientas del teléfono', 'habilitado'],
-  ['taller-herramientas', '/taller/herramientas/', 'De tu oficio', 'habilitado'],
   ['taller-conductores', '/taller/conductores/', 'La decide', 'habilitado'],
   ['taller-vivienda', '/taller/vivienda/', 'Bocas mínimas por ambiente', 'habilitado'],
   ['taller-tablero', '/taller/tablero/', 'Lista de materiales', 'habilitado'],

@@ -2,7 +2,6 @@ import type { Ruta } from './tipos.ts';
 
 export const rutasTaller = {
   taller: { ruta: '/taller/', titulo: 'Taller', lote: '2.1', descripcion: 'F-Herramientas: la pestaña Taller con la agenda de la semana, ingresos y gastos, presupuestos y precios, tu equipamiento, las herramientas del teléfono y la ferretería.' },
-  tallerHerramientas: { ruta: '/taller/herramientas/', titulo: 'Herramientas del teléfono', lote: '2.1', descripcion: 'Portal de herramientas del teléfono: las de tu oficio primero (lo rehace el lote 2.4 como T-Taller).' },
   tallerConductores: { ruta: '/taller/conductores/', titulo: 'Sección y caída de tensión', lote: 'H1.1', descripcion: 'Sección del cable, protección y caída de tensión con el porqué.' },
   tallerVivienda: { ruta: '/taller/vivienda/', titulo: 'Planificador de vivienda', lote: 'H1.1', descripcion: 'Grado de electrificación, circuitos y bocas mínimas por ambiente.' },
   tallerTablero: { ruta: '/taller/tablero/', titulo: 'Armador de tablero', lote: 'H1.2', descripcion: 'Tablero en 3D, gabinete, materiales, etiquetas y vista en la pared (iPhone).' },

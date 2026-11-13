@@ -773,7 +773,7 @@ async function main() {
     await p.waitForURL('**/taller/');
     await p.getByRole('link', { name: /Herramientas del teléfono/ }).click();
     await p.waitForURL('**/taller/herramientas/');
-    await ver(p, 'De tu oficio');
+    await ver(p, 'Tu oficio: Electricidad');
     // T-Electricidad (lote 2.4): la puerta a las herramientas del oficio
     await p.goto(`${base}/taller/electricidad/?escenario=habilitado`);
     await ver(p, 'Herramientas del electricista');

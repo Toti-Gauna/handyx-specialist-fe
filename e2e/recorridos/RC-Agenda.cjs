@@ -34,7 +34,7 @@ const RECORRIDOS = [
       for (const t of ['Ingresos y gastos', 'Presupuestos y precios', 'Tu equipamiento', 'Herramientas del teléfono', 'Ferretería']) await ver(p, t, { exact: true });
       assert.equal(await p.getByText('0 % durante la demo').count(), 0);
       const hrefs = await p.getByRole('main').getByRole('link').evaluateAll((l) => l.map((a) => a.getAttribute('href')));
-      for (const r of ['/taller/ingresos/', '/taller/herramientas/', '/taller/equipamiento/', '/taller/presupuestos/']) assert.ok(hrefs.some((h) => h?.endsWith(r)), `falta el acceso a ${r}`);
+      for (const r of ['/taller/ingresos/', '/taller/herramientas/', '/taller/equipamiento/', '/precios/']) assert.ok(hrefs.some((h) => h?.endsWith(r)), `falta el acceso a ${r}`);
       await foto('01-taller');
       await axe(p, 'F-Herramientas');
 

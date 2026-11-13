@@ -19,7 +19,7 @@ import { Fallo } from './piezas.tsx';
 
 /** Rutas de los lotes que todavía no están: 2.2 (presupuestos), 2.4 (equipamiento) y la ola 4 (ferretería). */
 export const ACCESOS_TALLER = {
-  presupuestos: '/taller/presupuestos/',
+  presupuestos: '/precios/',
   equipamiento: '/taller/equipamiento/',
   ferreteria: '/taller/ferreteria/',
 } as const;
