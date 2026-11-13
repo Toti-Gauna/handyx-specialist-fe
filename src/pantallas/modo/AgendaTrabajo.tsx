@@ -46,8 +46,8 @@ export function AgendaTrabajo() {
       barra={<BarraCompacta titulo={TITULO} subtitulo={`Desde el trabajo · ${tituloTrabajo(detalle.trabajo.acuerdo.alcance)}`} hrefVolver={conId('modoTrabajo', id)} />}
       accion={
         <AccionFija>
-          <BotonEnlace icono="agenda" href={RUTAS.agenda.ruta}>
-            Ver toda la agenda
+          <BotonEnlace icono="agenda" href={RUTAS.agendaMes.ruta}>
+            Ver el mes
           </BotonEnlace>
         </AccionFija>
       }

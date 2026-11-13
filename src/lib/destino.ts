@@ -9,5 +9,8 @@ export async function destinoCuenta(): Promise<string> {
   if (!sesion.cuenta.terminosAceptados) return RUTAS.aceptar.ruta;
   const perfil = await api.perfil();
   if (perfil.baja && perfil.baja !== 'cancelada') return RUTAS.baja.ruta;
-  return perfil.estadoAlta === 'habilitada' ? RUTAS.inicio.ruta : RUTAS.alta.ruta;
+  if (perfil.estadoAlta !== 'habilitada') return RUTAS.alta.ruta;
+  // Recién habilitada: la primera vez se abre sola la bienvenida (OB-Aprobado). Si no se puede saber, va al Inicio.
+  const onboarding = await api.onboarding().catch(() => null);
+  return onboarding && !onboarding.bienvenidaVista ? RUTAS.obHabilitado.ruta : RUTAS.inicio.ruta;
 }

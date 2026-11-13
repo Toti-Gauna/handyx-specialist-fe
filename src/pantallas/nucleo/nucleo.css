@@ -49,18 +49,6 @@
 .nu-inicio > .ui-cabecera-azul {
   z-index: 5;
 }
-.nu-inicio__estado {
-  position: relative;
-  z-index: 4;
-  margin: -14px 16px 0;
-  padding: 18px 14px 8px;
-  border-radius: 0 0 18px 18px;
-  background: #fff;
-  box-shadow: var(--ui-elev-1);
-  color: var(--ui-texto);
-  font-size: var(--ui-texto-chico);
-  font-weight: 700;
-}
 .nu-inicio__mapa {
   position: relative;
   display: flex;

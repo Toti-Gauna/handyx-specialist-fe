@@ -1,7 +1,7 @@
 'use client';
 // Tira de días (elegir un día de la semana con botones grandes) y rueda de hora: una lista que se desliza y, para
 // quien no puede deslizar, botones "Antes" y "Después" (todo gesto tiene botón).
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { BotonIcono } from '../atomos/Boton.tsx';
 import { indiceCercano, textoHora, tiraDias } from '../logica.ts';
 import { sinMovimiento } from '../../kit/movimiento.ts';
@@ -34,10 +34,23 @@ export function TiraDias({ desde, cuantos = 7, hoy, valor, onCambio, ocupados = 
 export function RuedaHora({ opciones, valor, onCambio, etiqueta = 'Hora' }: { opciones: readonly number[]; valor: number; onCambio(minutos: number): void; etiqueta?: string }) {
   const lista = useRef<HTMLDivElement>(null);
   const i = indiceCercano(opciones, valor);
+  // Se mueve solo la rueda (no la página ni la hoja que la contiene) hasta dejar la hora elegida en el medio.
+  const centrar = useCallback((suave: boolean) => {
+    const caja = lista.current;
+    const el = caja?.querySelector<HTMLElement>('[aria-checked="true"]');
+    if (!caja || !el || caja.clientHeight === 0) return;
+    const arriba = el.getBoundingClientRect().top - caja.getBoundingClientRect().top + caja.scrollTop;
+    caja.scrollTo({ top: arriba - (caja.clientHeight - el.offsetHeight) / 2, behavior: suave && !sinMovimiento() ? 'smooth' : 'auto' });
+  }, []);
+  useEffect(() => centrar(true), [i, centrar]);
+  // Dentro de una hoja recién abierta la rueda todavía no mide nada: se centra en cuanto aparece.
   useEffect(() => {
-    const el = lista.current?.querySelector<HTMLElement>('[aria-checked="true"]');
-    el?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: sinMovimiento() ? 'auto' : 'smooth' });
-  }, [i]);
+    const caja = lista.current;
+    if (!caja || typeof ResizeObserver === 'undefined') return;
+    const o = new ResizeObserver(() => centrar(false));
+    o.observe(caja);
+    return () => o.disconnect();
+  }, [centrar]);
   const mover = (d: number) => {
     const n = Math.max(0, Math.min(opciones.length - 1, i + d));
     const v = opciones[n];

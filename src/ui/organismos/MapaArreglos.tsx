@@ -4,6 +4,8 @@
 // Tocar uno abre su detalle en una hoja, nunca lo acepta. Se puede mover el mapa, ver las zonas aproximadas, volver a
 // centrar y elegir "Me voy hasta…" (Batán, Sierra de los Padres…) para ver los pedidos de ese lado. Todo está también
 // como lista (Segmento Mapa / Lista), y sin WebGL queda el mapa estilizado con los mismos marcadores.
+// Con `destino` y `onDestino` el destino lo maneja la pantalla, que le pide al servidor los pedidos de ese lado (también
+// los que están fuera de tus zonas): ahí el mapa muestra lo que llega sin filtrar nada en el teléfono.
 // Zona aproximada siempre: nunca la dirección exacta antes de que el cliente acepte.
 import { useMemo, useState, type ReactNode } from 'react';
 import type { Punto } from '../../contracts/dto.ts';
@@ -31,6 +33,13 @@ export interface PedidoMapa {
   nuevo?: boolean;
 }
 
+/** Un destino para «Me voy hasta…»: un barrio o una localidad cercana, con su centro aproximado. */
+export interface DestinoMapaUi {
+  id: string;
+  nombre: string;
+  centro: Punto;
+}
+
 const CENTRO_CIUDAD = DESTINOS[0]?.centro ?? { lat: -38.0005, lng: -57.5516 };
 
 export function MapaArreglos({
@@ -41,6 +50,10 @@ export function MapaArreglos({
   entrante,
   onVerEntrante,
   etiqueta = 'Mapa de pedidos cerca tuyo',
+  destinos = DESTINOS,
+  destino: destinoElegido,
+  onDestino,
+  buscandoDestino = false,
 }: {
   pedidos: readonly PedidoMapa[];
   /** Tu posición aproximada, si diste permiso; si no, el centro de la ciudad. */
@@ -51,21 +64,34 @@ export function MapaArreglos({
   entrante?: PedidoMapa | null;
   onVerEntrante?: () => void;
   etiqueta?: string;
+  /** Los destinos que ofrece «Me voy hasta…». Si no vienen, los del kit. */
+  destinos?: readonly DestinoMapaUi[];
+  /** Destino elegido cuando lo maneja la pantalla (con `onDestino`): `pedidos` ya son los de ese lado. */
+  destino?: string | null;
+  onDestino?(id: string | null): void;
+  /** La pantalla está pidiendo los pedidos del destino: el resumen lo dice en vez de contar los de antes. */
+  buscandoDestino?: boolean;
 }) {
   const [vista, setVista] = useState<'mapa' | 'lista'>('mapa');
   const [busqueda, setBusqueda] = useState('');
   const [buscando, setBuscando] = useState(false);
-  const [destino, setDestino] = useState<(typeof DESTINOS)[number] | null>(null);
+  const [destinoPropio, setDestinoPropio] = useState<string | null>(null);
+  const controlado = onDestino !== undefined;
+  const destinoId = controlado ? (destinoElegido ?? null) : destinoPropio;
+  const destino = destinos.find((d) => d.id === destinoId) ?? null;
+  const setDestino = (id: string | null) => (onDestino ? onDestino(id) : setDestinoPropio(id));
   const origen = yo ?? CENTRO_CIUDAD;
 
   const visibles = useMemo(() => {
-    const lista = destino ? pedidosHacia(origen, destino.centro, pedidos) : [...pedidos];
+    // Controlado: el servidor ya eligió los pedidos del destino y los del camino. Si no, se filtra acá con lo que hay.
+    const lista = destino && !controlado ? pedidosHacia(origen, destino.centro, pedidos) : [...pedidos];
     return lista.map((p) => ({ ...p, distancia: distanciaM(origen, p.punto) }));
-  }, [pedidos, destino, origen]);
+  }, [pedidos, destino, controlado, origen]);
 
   const marcador = (p: (typeof visibles)[number]) => <MarcadorPedido rubro={p.rubro} zona={p.zona} sugeridoCentavos={p.sugeridoCentavos} distanciaM={p.distancia} urgente={p.urgente} nuevo={p.nuevo} elegido={p.id === elegido} onTocar={() => onElegir(p.id)} />;
 
-  const resumen = destino ? `Camino a ${destino.nombre}: ${visibles.length} ${visibles.length === 1 ? 'pedido' : 'pedidos'}` : `${visibles.length} ${visibles.length === 1 ? 'pedido' : 'pedidos'} cerca`;
+  const cuantos = `${visibles.length} ${visibles.length === 1 ? 'pedido' : 'pedidos'}`;
+  const resumen = destino ? (buscandoDestino ? `Buscando pedidos camino a ${destino.nombre}…` : `Camino a ${destino.nombre}: ${cuantos}`) : `${cuantos} cerca`;
 
   return (
     <section className={`ui-mapa-arreglos ui-mapa-arreglos--${vista}`} aria-label={etiqueta}>
@@ -74,13 +100,13 @@ export function MapaArreglos({
           <div className="ui-mapa-arreglos__destino">
             <Buscador valor={busqueda} onCambio={setBusqueda} etiqueta="Me voy hasta… (zona o barrio)" ejemplo="Por ejemplo, Batán" />
             <ul className="ui-mapa-arreglos__sugerencias" aria-label="Zonas">
-              {buscarDestinos(busqueda).map((d) => (
+              {buscarDestinos(busqueda, destinos).map((d) => (
                 <li key={d.id}>
                   <button
                     type="button"
                     className="ui-mapa-arreglos__sugerencia"
                     onClick={() => {
-                      setDestino(d);
+                      setDestino(d.id);
                       setBuscando(false);
                       setBusqueda('');
                     }}

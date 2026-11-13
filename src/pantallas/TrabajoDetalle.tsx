@@ -176,7 +176,9 @@ function Trabajo({ d, recargar, falloCarga }: { d: Detalle; recargar(): Promise<
 
       <Tarjeta franja={t.estado === 'en_sitio' || t.estado === 'en_curso' ? { texto: 'Agregar repuestos o mano de obra', href: `${RUTAS.trabajoAdicional.ruta}${q}` } : undefined}>
         {t.direccion ? <FilaIcono icono="pin" titulo={t.direccion} detalle="Te la mostramos porque el cliente aceptó" /> : null}
-        <FilaIcono icono="billete" titulo={textoCifra(d.totalVigente.centavos)} detalle={conAdicionales ? 'Incluye los adicionales que aceptó el cliente. Directo a vos' : 'Efectivo o Mercado Pago, directo a vos'} borde={false} />
+        <FilaIcono icono="billete" titulo={textoCifra(d.totalVigente.centavos)} detalle={conAdicionales ? 'Incluye los adicionales que aceptó el cliente. Directo a vos' : 'Efectivo o Mercado Pago, directo a vos'} borde={activo && !obra} />
+        {/* H0-Presupuesto (lote 2.2): el detalle de materiales y mano de obra de este trabajo, que se manda por el chat. */}
+        {activo && !obra ? <FilaIcono icono="ticket" titulo="Presupuesto detallado" detalle="Materiales y mano de obra. Se manda por el chat" href={`${RUTAS.presupuesto.ruta}?trabajo=${t.id}`} borde={false} /> : null}
       </Tarjeta>
 
       {activo && t.destino ? (

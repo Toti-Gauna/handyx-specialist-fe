@@ -10,7 +10,7 @@ export const TERMINOS = [
 
 export const PRIVACIDAD = [
   'Guardamos tus datos de identidad y de contacto cifrados y solo los ve el personal autorizado.',
-  'Los antecedentes se verifican en persona: no guardamos ningún archivo, foto ni grabación de ese certificado.',
+  'El certificado de antecedentes lo cargás por foto o PDF: se guarda cifrado, lo ve solo el equipo de verificación y se borra cuando termina la verificación.',
   'No compartimos tus datos personales con servicios de inteligencia artificial.',
   'Podés pedir la baja de tu cuenta y de tus datos desde la app. Conservamos solo lo que la ley nos obliga a guardar.',
 ];

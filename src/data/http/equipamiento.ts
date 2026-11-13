@@ -1,53 +1,32 @@
-// Adaptador HTTP del equipamiento (lote 2.4, contrato 0.11.0). Rutas: docs/api/openapi.yaml (tag equipamiento y los
-// adjuntos de un trabajo, tag modo-trabajo).
-import { z } from 'zod';
-import { ItemCompraSchema, ItemEquipoDetalleSchema, ItemEquipoSchema, ResultadoBajaEquipoSchema, ResumenEquipamientoSchema, SugerenciaCodigoSchema } from '../../contracts/equipamiento.ts';
-import { AdjuntoTrabajoSchema } from '../../contracts/modo-trabajo.ts';
+// Adaptador HTTP del equipamiento (lote 2.4). Las rutas y la validación viven en `servidor/equipamiento.ts`,
+// `servidor/presupuestos.ts` (códigos de barras) y `servidor/modo-trabajo.ts` (adjuntos del trabajo), del lote 2.5 y
+// probados contra la API real: acá solo se adapta al puerto de la PWA.
 import type { ApiEquipamiento } from '../api/equipamiento.ts';
 import type { ClienteHttp } from './cliente.ts';
-import { id, Nada } from './comun.ts';
+import { equipamientoServidor } from './servidor/equipamiento.ts';
+import { modoTrabajoServidor } from './servidor/modo-trabajo.ts';
+import { presupuestosServidor } from './servidor/presupuestos.ts';
 
-const E = '/v1/especialista';
-const PaginaEquipo = z.strictObject({ items: z.array(ItemEquipoSchema), siguienteCursor: z.string().nullable() });
-const parteJson = (v: unknown) => new Blob([JSON.stringify(v)], { type: 'application/json' });
-
-export const equipamientoHttp = (c: ClienteHttp): ApiEquipamiento => ({
-  equipamiento: () => c.pedir('GET', `${E}/equipamiento`, ResumenEquipamientoSchema),
-  equipamientoItems(f = {}) {
-    const q = new URLSearchParams();
-    if (f.categoria) q.set('categoria', f.categoria);
-    if (f.ubicacion) q.set('ubicacion', f.ubicacion);
-    if (f.prestados) q.set('prestados', 'true');
-    if (f.q) q.set('q', f.q);
-    if (f.cursor) q.set('cursor', f.cursor);
-    const s = q.toString();
-    return c.pedir('GET', `${E}/equipamiento/items${s ? `?${s}` : ''}`, PaginaEquipo);
-  },
-  equipamientoItem: (i) => c.pedir('GET', `${E}/equipamiento/items/${id(i)}`, ItemEquipoDetalleSchema),
-  agregarEquipamiento(datos, foto, clave) {
-    if (!foto) return c.pedir('POST', `${E}/equipamiento/items`, ItemEquipoSchema, { cuerpo: datos, idempotencyKey: clave });
-    const f = new FormData();
-    f.set('datos', parteJson(datos));
-    f.set('foto', foto, 'herramienta.jpg');
-    return c.pedir('POST', `${E}/equipamiento/items`, ItemEquipoSchema, { formulario: f, idempotencyKey: clave });
-  },
-  corregirEquipamiento: (i, cambio) => c.pedir('PATCH', `${E}/equipamiento/items/${id(i)}`, ItemEquipoDetalleSchema, { cuerpo: cambio }),
-  prestarEquipamiento: (i, d) => c.pedir('POST', `${E}/equipamiento/items/${id(i)}/prestamo`, ItemEquipoDetalleSchema, { cuerpo: d }),
-  devolverEquipamiento: (i, version) => c.pedir('POST', `${E}/equipamiento/items/${id(i)}/devolucion`, ItemEquipoDetalleSchema, { cuerpo: { version } }),
-  moverEquipamiento: (i, d) => c.pedir('POST', `${E}/equipamiento/items/${id(i)}/movimiento`, ItemEquipoDetalleSchema, { cuerpo: d }),
-  bajaEquipamiento: (i, d) => c.pedir('POST', `${E}/equipamiento/items/${id(i)}/baja`, ResultadoBajaEquipoSchema, { cuerpo: d }),
-  mantenimientoHecho: (i, m, version) => c.pedir('POST', `${E}/equipamiento/items/${id(i)}/mantenimientos/${id(m)}/hecho`, ItemEquipoDetalleSchema, { cuerpo: { version } }),
-  listaCompras: () => c.pedir('GET', `${E}/lista-compras`, z.array(ItemCompraSchema)),
-  sumarListaCompras: (d) => c.pedir('POST', `${E}/lista-compras`, ItemCompraSchema, { cuerpo: d }),
-  async sacarListaCompras(i) {
-    await c.pedir('DELETE', `${E}/lista-compras/${id(i)}`, Nada);
-  },
-  sugerenciaCodigo: (codigo) => c.pedir('GET', `${E}/catalogo/codigos?codigo=${encodeURIComponent(codigo)}`, SugerenciaCodigoSchema),
-  adjuntosTrabajo: (t) => c.pedir('GET', `${E}/trabajos/${id(t)}/adjuntos`, z.array(AdjuntoTrabajoSchema)),
-  guardarAdjuntoTrabajo(t, datos, archivo, clave) {
-    const f = new FormData();
-    f.set('datos', parteJson(datos));
-    f.set('archivo', archivo, datos.tipo === 'modelo_3d' ? 'modelo.glb' : 'informe.pdf');
-    return c.pedir('POST', `${E}/trabajos/${id(t)}/adjuntos`, AdjuntoTrabajoSchema, { formulario: f, idempotencyKey: clave });
-  },
-});
+export const equipamientoHttp = (c: ClienteHttp): ApiEquipamiento => {
+  const s = equipamientoServidor(c);
+  const modo = modoTrabajoServidor(c);
+  return {
+    equipamiento: s.equipamiento,
+    // `prestados` solo viaja cuando se pide (el filtro apagado no es «los no prestados»).
+    equipamientoItems: (f = {}) => s.equipos({ categoria: f.categoria, ubicacion: f.ubicacion, prestados: f.prestados || undefined, q: f.q || undefined, cursor: f.cursor ?? undefined }),
+    equipamientoItem: s.equipo,
+    agregarEquipamiento: (datos, foto, clave) => s.crearEquipo(datos, clave, foto ?? undefined),
+    corregirEquipamiento: s.cambiarEquipo,
+    prestarEquipamiento: s.prestarEquipo,
+    devolverEquipamiento: s.devolverEquipo,
+    moverEquipamiento: s.moverEquipo,
+    bajaEquipamiento: s.bajaEquipo,
+    mantenimientoHecho: s.mantenimientoHecho,
+    listaCompras: s.listaCompras,
+    sumarListaCompras: s.sumarCompra,
+    sacarListaCompras: s.sacarCompra,
+    sugerenciaCodigo: presupuestosServidor(c).sugerenciaCodigo,
+    adjuntosTrabajo: modo.adjuntosTrabajo,
+    guardarAdjuntoTrabajo: (t, datos, archivo, clave) => modo.adjuntarTrabajo(t, datos.tipo, datos.nombre, archivo, clave),
+  };
+};

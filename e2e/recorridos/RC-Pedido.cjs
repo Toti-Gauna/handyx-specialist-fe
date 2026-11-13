@@ -147,6 +147,8 @@ const RECORRIDOS = [
       await p.getByRole('searchbox', { name: /Me voy hasta/ }).fill('batan');
       await p.getByRole('button', { name: /^Batán/ }).click();
       await ver(p, /Camino a Batán/);
+      // El servidor trae el pedido de Batán, que está fuera de tus zonas (no se filtra en el teléfono)
+      await p.locator('button.ui-marcador-pedido:visible', { hasText: 'Electricidad en Batán' }).first().waitFor();
       await foto('02-me-voy-hasta-batan');
       await p.getByRole('button', { name: 'Ver todos' }).click();
       // La vista Lista es equivalente al mapa

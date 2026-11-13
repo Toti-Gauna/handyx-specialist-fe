@@ -43,7 +43,9 @@ export function ContenidoPedido({ v, ahora, hoy, armar = true }: { v: VistaPedid
           titulo={v.horario ? textoHorario(v.horario, hoy) : v.tipo === 'urgente' ? 'Lo antes que puedas' : 'Sin horario pedido'}
           detalle={v.horario ? 'Lo pidió el cliente. Podés proponer otro horario.' : 'Proponé vos cuándo podés ir.'}
         />
-        <FilaIcono icono="lista" titulo="Lo que cuenta el cliente" detalle={`«${v.descripcion}»`} borde={false} />
+        <FilaIcono icono="lista" titulo="Lo que cuenta el cliente" detalle={`«${v.descripcion}»`} borde={v.abierto} />
+        {/* H0-Presupuesto (lote 2.2): para cotizar con el detalle de materiales y mano de obra. */}
+        {v.abierto ? <FilaIcono icono="ticket" titulo="Armar un presupuesto detallado" detalle="Con materiales y mano de obra. Se manda por el chat" href={`${RUTAS.presupuesto.ruta}?pedido=${v.id}`} borde={false} /> : null}
       </div>
       {v.fotos.length > 0 ? (
         <ul className="nu-pedido__fotos" aria-label="Fotos del cliente">

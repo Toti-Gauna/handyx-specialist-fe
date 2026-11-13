@@ -73,7 +73,11 @@ function InicioMapa() {
     return { disp, inicio, dia };
   }, []);
   const desde = yo.lectura;
-  const mapa = useCarga(() => api.mapaPedidos({ referencia: { tipo: 'mis_zonas' }, desde }), [desde?.punto.lat, desde?.punto.lng], { cadaMs: 20_000 });
+  // «Me voy hasta…»: con un destino elegido, el servidor trae los pedidos de ese lado y los del camino (también fuera de
+  // tus zonas). Si la lista de destinos no llega, el mapa usa la del kit y filtra con lo que ya tiene.
+  const destinos = useCarga(() => api.mapaDestinos(), []);
+  const [destino, setDestino] = useState<string | null>(null);
+  const mapa = useCarga(() => api.mapaPedidos({ referencia: destino ? { tipo: 'destino', destinoId: destino } : { tipo: 'mis_zonas' }, desde }), [destino, desde?.punto.lat, desde?.punto.lng], { cadaMs: 20_000 });
   useEventosMapa(!!base.datos?.disp.urgentesAhora || !!base.datos?.disp.programados, () => void mapa.recargar());
 
   // Pedidos que llegan: los urgentes que ya estaban al abrir y todo lo nuevo que aparezca después flotan sobre el mapa.
@@ -98,6 +102,13 @@ function InicioMapa() {
 
   const [elegido, setElegido] = useState<string | null>(null);
   const [detalle, setDetalle] = useState<string | null>(null);
+  /** Cambiar de destino es otra búsqueda: lo que aparezca no «acaba de llegar», así que se vuelve a empezar la cuenta. */
+  function elegirDestino(id: string | null) {
+    vistos.current = null;
+    setEntrantes([]);
+    setElegido(null);
+    setDestino(id);
+  }
   const [verPedidos, setVerPedidos] = useState(false);
   const det = useCarga(() => (detalle ? api.mapaPedido(detalle) : Promise.resolve(null)), [detalle]);
 
@@ -213,14 +224,19 @@ function InicioMapa() {
         disponible={disp.urgentesAhora}
         ocupado={cambio.pendiente}
         onDisponible={(v) => void cambiarDisponible(v)}
+        subtitulo={hayDia ? `Tenés ${dia.paradas.length} ${dia.paradas.length === 1 ? 'parada' : 'paradas'} hoy` : disp.urgentesAhora ? 'Te llegan pedidos de tus zonas' : 'Prendé Disponible para recibir urgentes'}
       />
-      <p className="nu-inicio__estado" role="status">
-        {hayDia ? `Tenés ${dia.paradas.length} ${dia.paradas.length === 1 ? 'parada' : 'paradas'} hoy` : disp.urgentesAhora ? 'Te llegan pedidos de tus zonas' : 'Prendé Disponible para recibir urgentes'}
-      </p>
       {cambio.fallo ? <ErrorCaja fallo={cambio.fallo} /> : null}
       {mapa.fallo && !mapa.datos ? <ErrorCaja fallo={mapa.fallo} onReintentar={() => void mapa.recargar()} /> : null}
       <div className="nu-inicio__mapa">
-        <MapaArreglos pedidos={pedidos.map((p) => aPedidoMapa(p, nuevosSet))} yo={desde?.punto ?? null} elegido={elegido} onElegir={abrir} etiqueta="Mapa de pedidos cerca tuyo (zonas aproximadas)" />
+        <MapaArreglos
+          pedidos={pedidos.map((p) => aPedidoMapa(p, nuevosSet))}
+          yo={desde?.punto ?? null}
+          elegido={elegido}
+          onElegir={abrir}
+          etiqueta="Mapa de pedidos cerca tuyo (zonas aproximadas)"
+          {...(destinos.datos ? { destinos: destinos.datos, destino, onDestino: elegirDestino, buscandoDestino: mapa.estado === 'cargando' } : {})}
+        />
       </div>
       <div className="nu-inicio__abajo">{abajo}</div>
       <BarraPestanas />

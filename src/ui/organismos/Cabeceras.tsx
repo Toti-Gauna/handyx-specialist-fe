@@ -15,6 +15,7 @@ export function CabeceraAzul({
   disponible,
   onDisponible,
   ocupado = false,
+  subtitulo,
 }: {
   hrefAvisos: string;
   hrefZonas: string;
@@ -23,6 +24,8 @@ export function CabeceraAzul({
   disponible: boolean | null;
   onDisponible(v: boolean): void;
   ocupado?: boolean;
+  /** Una línea junto a Disponible que dice qué pasa ahora («Te llegan pedidos de tus zonas»). Se anuncia al cambiar. */
+  subtitulo?: string;
 }) {
   return (
     <header className="ui-cabecera-azul">
@@ -38,6 +41,11 @@ export function CabeceraAzul({
       </div>
       {disponible !== null ? (
         <div className="ui-cabecera-azul__disponible">
+          {subtitulo ? (
+            <p className="ui-cabecera-azul__estado" role="status">
+              {subtitulo}
+            </p>
+          ) : null}
           <Interruptor tono="noche" encendido={disponible} etiqueta="Recibir pedidos" textoEncendido="Disponible" textoApagado="No disponible" deshabilitado={ocupado} onCambio={onDisponible} />
         </div>
       ) : null}

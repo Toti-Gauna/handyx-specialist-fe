@@ -1,7 +1,8 @@
 'use client';
 // F-Cuenta (lote 1.4): todo lo tuyo en un lugar. Cabecera azul con tu nombre, el sello (solo si lo dice el servidor) y lo que
-// hiciste; los mosaicos de cobros y taller; tu trabajo, tu cuenta, cómo ves la app (letra más grande, guardada en el
-// servidor) y ayuda. Los mosaicos de ingresos, camino, presupuestos, equipamiento y ferretería llegan con sus lotes (2.x y 3.x).
+// hiciste; los mosaicos de ingresos, taller, presupuestos y equipamiento (cierre de la ola 2); tu trabajo, tu cuenta, cómo
+// ves la app (letra más grande, guardada en el servidor) y ayuda. Los mosaicos del Camino y de la ferretería llegan con
+// sus lotes (3.4 y 4.1). Las cifras de los mosaicos son un extra: si no llegan, el mosaico igual lleva a su pantalla.
 import { api } from '@handyx/origen-datos';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -11,8 +12,10 @@ import { usePerfil } from '../components/GuardiaApp.tsx';
 import { NOMBRE_RUBRO } from '../contracts/rubros.ts';
 import { useAccion } from '../hooks/useAccion.ts';
 import { useCarga } from '../hooks/useCarga.ts';
+import { mesDe, nombreMes } from '../lib/agendaTaller.ts';
 import { cuerpoPreferencias } from '../lib/cuenta.ts';
 import { ALTA } from '../lib/etiquetas.ts';
+import { diaLocal } from '../lib/formato.ts';
 import { FilaIcono } from '../ui/moleculas/Tarjeta.tsx';
 import { FilaAjuste, GrupoAjustes, ResumenTarjeta } from '../ui/moleculas/Ajustes.tsx';
 import { CabeceraCuenta } from '../ui/organismos/CuentaPiezas.tsx';
@@ -22,10 +25,17 @@ import { aplicarLetraGrande } from '../ui/letra.tsx';
 export function Cuenta() {
   const router = useRouter();
   const { perfil } = usePerfil();
+  const mes = mesDe(diaLocal(api.ahora().toISOString()));
   const c = useCarga(async () => {
-    const [propio, caja, preferencias] = await Promise.all([api.perfilPropio(), api.cajaResumen(), api.preferencias()]);
-    return { propio, caja, preferencias };
-  }, []);
+    const [propio, preferencias, ingresos, abiertos, equipo] = await Promise.all([
+      api.perfilPropio(),
+      api.preferencias(),
+      api.resumenIngresos(mes).catch(() => null),
+      api.presupuestos('abiertos').catch(() => null),
+      api.equipamiento().catch(() => null),
+    ]);
+    return { propio, preferencias, ingresos, abiertos, equipo };
+  }, [mes]);
   const salida = useAccion();
   const letra = useAccion();
   // La preferencia que se acaba de guardar, mientras la pantalla se vuelve a cargar.
@@ -33,7 +43,10 @@ export function Cuenta() {
 
   if (c.fallo && !c.datos) return <ErrorCaja pantalla fallo={c.fallo} onReintentar={() => void c.recargar()} />;
   if (!c.datos) return <Cargando />;
-  const { propio, caja, preferencias } = c.datos;
+  const { propio, preferencias, ingresos, abiertos, equipo } = c.datos;
+  const nombreDelMes = nombreMes(mes).split(' ')[0]?.toLowerCase() ?? 'este mes';
+  const cuantosAbiertos = abiertos?.items.length ?? 0;
+  const herramientas = equipo ? equipo.categorias.reduce((n, x) => n + x.cantidad, 0) : 0;
   const nombre = propio.nombrePublico ?? ([perfil.nombre, perfil.apellido].filter(Boolean).join(' ') || 'Tu cuenta');
   const rubros = propio.rubros.filter((r) => r.habilitado).map((r) => NOMBRE_RUBRO[r.rubro]);
   const grande = letraGrande ?? preferencias.letraGrande === true;
@@ -69,13 +82,30 @@ export function Cuenta() {
       }
     >
       <div className="ui-resumenes">
-        <ResumenTarjeta icono="billete" titulo="Tus cobros" centavos={caja.verificado.centavos} detalle="Verificados. El pago va directo a vos" href={RUTAS.caja.ruta} tono="noche" />
-        <ResumenTarjeta icono="herramienta" titulo="Tu taller" detalle="Herramientas de tu oficio" href={RUTAS.taller.ruta} />
+        {ingresos?.neto ? (
+          <ResumenTarjeta icono="billete" titulo="Tus ingresos" centavos={ingresos.neto.centavos} detalle={`Neto de ${nombreDelMes}`} href={RUTAS.ingresos.ruta} tono="noche" />
+        ) : (
+          <ResumenTarjeta icono="billete" titulo="Tus ingresos" detalle={ingresos ? 'Este mes gastaste más de lo que cobraste' : 'Lo que cobraste y lo que gastaste'} href={RUTAS.ingresos.ruta} tono="noche" />
+        )}
+        <ResumenTarjeta icono="herramienta" titulo="Tu taller" detalle="Agenda y herramientas de tu oficio" href={RUTAS.taller.ruta} />
+        <ResumenTarjeta
+          icono="ticket"
+          titulo="Presupuestos y precios"
+          detalle={cuantosAbiertos > 0 ? `${cuantosAbiertos} ${cuantosAbiertos === 1 ? 'presupuesto abierto' : 'presupuestos abiertos'}${abiertos?.siguienteCursor ? ' o más' : ''}` : 'Tu lista de precios y mano de obra'}
+          href={RUTAS.precios.ruta}
+        />
+        <ResumenTarjeta
+          icono="caja"
+          titulo="Tu equipamiento"
+          detalle={herramientas > 0 ? `${herramientas} ${herramientas === 1 ? 'herramienta' : 'herramientas'}${equipo && equipo.listaCompras > 0 ? ` · ${equipo.listaCompras} para comprar` : ''}` : 'Tus herramientas y dónde están'}
+          href={RUTAS.equipamiento.ruta}
+        />
       </div>
 
       <GrupoAjustes etiqueta="Tu trabajo">
         <FilaIcono icono="cuenta" titulo="Tu perfil" detalle="Cómo te ven los clientes" href={RUTAS.cuentaPerfil.ruta} />
         <FilaIcono icono="pin" titulo="Disponibilidad y zonas" detalle="Días, horarios y zonas" href={RUTAS.disponibilidad.ruta} />
+        <FilaIcono icono="ticket" titulo="Tus cobros" detalle="Verificados y por verificar. El pago va directo a vos" href={RUTAS.caja.ruta} />
         <FilaIcono icono="billete" titulo="Medios de cobro" detalle="Mercado Pago, efectivo o transferencia" href={RUTAS.cuentaCobros.ruta} />
         <FilaIcono icono="chat" titulo="Contactos" detalle="Los profesionales que agregaste" href={RUTAS.contactos.ruta} />
       </GrupoAjustes>

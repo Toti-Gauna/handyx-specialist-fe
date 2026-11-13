@@ -159,7 +159,7 @@ export const DESTINOS: readonly { id: string; nombre: string; centro: Punto }[] 
 ];
 
 /** Busca destinos por nombre sin importar mayúsculas ni tildes ("batan" encuentra Batán). */
-export function buscarDestinos(texto: string, lista = DESTINOS) {
+export function buscarDestinos<T extends { nombre: string }>(texto: string, lista: readonly T[] = DESTINOS as unknown as readonly T[]): T[] {
   const n = plano(texto);
   if (!n) return [...lista];
   return lista.filter((d) => plano(d.nombre).includes(n));

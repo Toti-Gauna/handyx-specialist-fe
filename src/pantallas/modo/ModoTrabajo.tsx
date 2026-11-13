@@ -206,7 +206,7 @@ function EnCurso({ d, modo, recargar }: { d: TrabajoDetalle; modo: Modo; recarga
 
       <GrillaAccesos etiqueta="Mientras trabajás">
         <AccesoRapido icono="camara" texto="Foto" href={conId('antesDespues', t.id)} />
-        <AccesoRapido icono="caja" texto="Repuestos" href={conId('trabajoAdicional', t.id)} />
+        <AccesoRapido icono="caja" texto="Repuestos" href={`${RUTAS.presupuesto.ruta}?trabajo=${t.id}`} />
         <AccesoRapido icono="telefono" texto="Pedir ayuda" href={conId('modoAyuda', t.id)} />
         <AccesoRapido icono="agenda" texto="Agenda" href={conId('modoAgenda', t.id)} />
       </GrillaAccesos>
@@ -292,11 +292,11 @@ function HojaHerramientas({ abierta, trabajoId, onCerrar, onNota }: { abierta: b
       <p className="mt-nota">Sin salir del trabajo: al volver, seguís donde estabas.</p>
       <div className="mt-herramientas">
         <MosaicoHerramienta icono="nivel" titulo="Nivel" detalle="Giroscopio" href={RUTAS.tallerNivel.ruta} />
-        <MosaicoHerramienta icono="linterna" titulo="Linterna" detalle="Flash" href={RUTAS.taller.ruta} />
-        <MosaicoHerramienta icono="lupa" titulo="Lupa" detalle="Cámara con zoom" href={RUTAS.taller.ruta} />
-        <MosaicoHerramienta icono="regla" titulo="Medir" detalle="Con la cámara" href={RUTAS.taller.ruta} />
+        <MosaicoHerramienta icono="linterna" titulo="Linterna" detalle="Flash" href={RUTAS.tallerLinterna.ruta} />
+        <MosaicoHerramienta icono="lupa" titulo="Lupa" detalle="Cámara con zoom" href={RUTAS.tallerLinterna.ruta} />
+        <MosaicoHerramienta icono="regla" titulo="Medir" detalle="Con la cámara" href={RUTAS.tallerMedir.ruta} />
         <MosaicoHerramienta icono="rayo" titulo="Calculadoras" detalle="Del Taller" href={RUTAS.tallerConductores.ruta} />
-        <MosaicoHerramienta icono="escaner" titulo="Código de barras" detalle="Sumar material" href={conId('trabajoAdicional', trabajoId)} />
+        <MosaicoHerramienta icono="escaner" titulo="Código de barras" detalle="Sumar material" href={`${RUTAS.presupuesto.ruta}?trabajo=${trabajoId}`} />
       </div>
       <BotonEnlace variante="amarilla" icono="usuario2" href={conId('modoAyuda', trabajoId)}>
         Pedir ayuda
